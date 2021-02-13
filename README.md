@@ -20,11 +20,10 @@ BilHub is a comprehensive classroom helper for instructors, teaching assistans a
 - Each user will have their pages. Their page will include information, projects, and hosted project sections. Any empty section will not be displayed. 
 
 # Contributors
-	
-	Mustafa Çağrı Durgut ([mcagridurgut](http://github.com/mcagridurgut)) <br />
-	Halil Özgür Demir ([hozgurde](http://github.com/hozgurde)) <br />
-	Aybala Karakaya ([aaybala](http://github.com/aaybala)) <br />
-	Yusuf Miraç Uyar (Y-Yosu) <br />
-	Barış Ogün Yörük (barisoyoruk) <br />
-	Oğuzhan Özçelik (ozc0) <br />
+	Team Lead:		Mustafa Çağrı Durgut ([mcagridurgut](http://github.com/mcagridurgut)) <br />
+	Chief Tech Officer:	Halil Özgür Demir (hozgurde) <br />
+	Human Resources:	Aybala Karakaya ([aaybala](http://github.com/aaybala)) <br />
+	Requirements Engineer:	Yusuf Miraç Uyar (Y-Yosu) <br />
+	Debug Manager:		Barış Ogün Yörük (barisoyoruk) <br />
+	Database Manager:	Oğuzhan Özçelik (ozc0) <br />
 
