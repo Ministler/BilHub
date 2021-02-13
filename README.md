@@ -20,13 +20,13 @@ BilHub is a comprehensive classroom helper for instructors, teaching assistans a
 •Each user will have their pages. Their page will include information, projects, and hosted project sections. Any empty section will not be displayed. <br />
 
 # Contributors
+Name - Surname: Barış Ogün Yörük
+Bilkent ID: 21801761 <br />
 Name - Surname: Halil Özgür Demir
 Bilkent ID: 21801761 <br />
 Name - Surname: Aybala Karakaya
 Bilkent ID: 21801630 <br />
 Name - Surname: Yusuf Miraç Uyar
-Bilkent ID: 21801761 <br />
-Name - Surname: Barış Ogün Yörük
 Bilkent ID: 21801761 <br />
 Name - Surname: Oğuzhan Özçelik
 Bilkent ID: 21801761 <br />
