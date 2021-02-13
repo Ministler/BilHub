@@ -21,7 +21,7 @@ BilHub is a comprehensive classroom helper for instructors, teaching assistans a
 
 # Contributors
 
-  Mustafa Çağrı Durgut ([mcagridurgut](http://github.com/mcagridurgut)) <br />
+  <h1>Mustafa Çağrı Durgut ([mcagridurgut](http://github.com/mcagridurgut)) </h1><br />
   Halil Özgür Demir (hozgurde) <br />
   Aybala Karakaya (aaybala) <br />
   Yusuf Miraç Uyar (Y-Yosu) <br />
