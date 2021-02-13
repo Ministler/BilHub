@@ -25,6 +25,6 @@ Mustafa Çağrı Durgut ([mcagridurgut](http://github.com/mcagridurgut)) <br />
 Halil Özgür Demir (hozgurde) <br />
 Aybala Karakaya ([aaybala](http://github.com/aaybala)) <br />
 Yusuf Miraç Uyar (Y-Yosu) <br />
-Barış Ogün Yörük (barisoyoruk) <br />
+Barış Ogün Yörük ([barisoyoruk](https://github.com/barisoyoruk)) <br />
 Oğuzhan Özçelik (ozc0) <br />
 
