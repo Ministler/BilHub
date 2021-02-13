@@ -25,6 +25,6 @@ BilHub is a comprehensive classroom helper for instructors, teaching assistans a
   Halil Özgür Demir (hozgurde) <br />
   Aybala Karakaya (aaybala) <br />
   Yusuf Miraç Uyar (Y-Yosu) <br />
-  Barış Ogün Yörük (barisoyoruk) <br />
+  Barış Ogün Yörük ([barisoyoruk](https://github.com/barisoyoruk)) <br />
   Oğuzhan Özçelik (ozc0) <br />
 
