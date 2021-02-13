@@ -14,7 +14,7 @@ BilHub is a comprehensive classroom helper for academicians especially designed 
 •For each group page, TA's can assign assignments to group pages. eg: Report 1 assignment. <br />
 •TA can also assign peer grading assignments that students can grade each other for assignments. <br />
 •The visibility of those assignments and peer gradings will be decided by TA. Other students can only view those assignments if TA enables them. <br />
-•Assignments can be done by uploading files or sharing a Github link. <br />
+•Assignments can be done by uploading files or sharing a GitHub link. <br />
 •Users can search for other users' pages to review students' other projects. <br />
 •Users can also search for previous semesters' project groups to get information. The visibility of those project pages will be decided by the previous TA users.  <br />
 •Each user will have their pages. Their page will include information, projects, and hosted project sections. Any empty section will not be displayed. <br />
