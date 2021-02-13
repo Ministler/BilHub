@@ -1,6 +1,6 @@
 # BilHub
 
-BilHub is a comprehensive classroom helper for instructors, Teaching Assistans and students especially designed for classes that include teamwork. <br />
+BilHub is a comprehensive classroom helper for instructors, teaching assistans and students especially designed for classes that include teamwork. <br />
 <br />
 •There will be 3 user types; Instructor, TA, and Student. <br />
 •Instructor users can host lectures, eg: CS 319 SPRING 2021. <br />
