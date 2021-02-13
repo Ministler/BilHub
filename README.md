@@ -1,5 +1,4 @@
-# Work In Progress
-Classroom helper <br/>
+# Classroom helper
 •Group formation <br/>
 •Peer review <br/>
 •Term project team member assessment <br/>
