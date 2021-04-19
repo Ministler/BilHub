@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
-import { Layout } from './hoc';
+import { AppLayout } from './components';
 // prettier-ignore
 import {
     Logout, Login, Signup, Course, CourseAssignment, CourseCreation, CourseSettings,
@@ -23,7 +23,7 @@ class App extends Component {
         );
 
         const authenticatedRoutes = (
-            <Layout>
+            <AppLayout>
                 <Switch>
                     <Route exact path={'/notifications'} component={Notifications} />
                     <Route exact path={'/project/assignment/:id'} component={ProjectAssignment} />
@@ -43,7 +43,7 @@ class App extends Component {
                     <Route exact path={'/'} component={Home} />
                     <Redirect to={'/'} />
                 </Switch>
-            </Layout>
+            </AppLayout>
         );
 
         return true ? authenticatedRoutes : unauthenticatedRoutes;
