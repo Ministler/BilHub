@@ -1,27 +1,11 @@
-.HomeDiv {
-    margin: 0px 120px;
-}
-
-.HomeDiv:after {
-    content: '';
-    display: table;
-    clear: both;
-}
-
-.HomeDiv > div {
-    float: left;
-}
-
-.HomeDivSide {
-    width: 25%;
-}
-
 .HomeDivLeft {
     padding-right: 100px;
+    width: 25%;
 }
 
 .HomeDivRight {
     padding-left: 100px;
+    width: 25%;
 }
 
 .HomeDivMiddle {
