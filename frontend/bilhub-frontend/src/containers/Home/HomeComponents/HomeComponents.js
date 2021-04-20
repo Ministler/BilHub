@@ -5,7 +5,7 @@ import './HomeComponents.css';
 
 export const ProfilePrompt = (props) => {
     return (
-        <div>
+        <div onClick={props.onClick}>
             <Icon name="user circle" />
             {props.name}
         </div>
@@ -24,7 +24,7 @@ export const BriefList = (props) => {
 
 export const TitledIconedBriefElement = (props) => {
     return (
-        <div>
+        <div onClick={props.onClick}>
             {props.icon}
             {props.title}
         </div>
@@ -33,7 +33,7 @@ export const TitledIconedBriefElement = (props) => {
 
 export const TitledDatedBriefElement = (props) => {
     return (
-        <div>
+        <div onClick={props.onClick}>
             <div>{props.title}</div>
             <div>{props.date}</div>
         </div>
@@ -51,11 +51,11 @@ export const FeedElement = (props) => {
     }
     return (
         <div>
-            <div>
+            <div onClick={props.titleClicked}>
                 {props.title}
                 {titleIcon}
             </div>
-            <div>
+            <div onClick={props.fileClicked}>
                 {props.children}
                 {props.file ? <Icon name="file" /> : null}
             </div>
