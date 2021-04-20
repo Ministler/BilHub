@@ -1,0 +1,19 @@
+.FloatingPageDiv:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.FloatingPageDiv > div {
+    float: left;
+}
+
+.FloatingLeftDiv {
+    padding-right: 50px;
+    width: 30%;
+}
+
+.FloatingCenterDiv {
+    padding-left: 50px;
+    width: 70%;
+}

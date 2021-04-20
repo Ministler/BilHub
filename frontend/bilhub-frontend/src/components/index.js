@@ -1,3 +1,3 @@
 export { Navbar } from './Navbar';
-export { AppLayout } from './Layouts';
+export { AppLayout } from './AppLayout';
 export { InfList } from './InfList';

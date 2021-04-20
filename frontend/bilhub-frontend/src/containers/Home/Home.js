@@ -18,8 +18,8 @@ export class Home extends Component {
             user: null,
             myProjects: null,
             instructedCourses: null,
-            feeds: null,
-            upcomingCourses: null,
+            feeds: [],
+            upcomingAssignments: [],
             notGradedAssignments: null,
         };
     }
@@ -80,7 +80,6 @@ export class Home extends Component {
     };
 
     convertFeedsToFeedList = (feeds) => {
-        feeds = feeds ? feeds : [];
         return feeds.map((feed) => {
             const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
             return (
@@ -102,15 +101,14 @@ export class Home extends Component {
         this.props.history.push('project/' + projectId + '/assignment/' + projectAssignmentId);
     };
 
-    convertUpcomingEventsToBriefList = (upcomingEvents) => {
-        upcomingEvents = upcomingEvents ? upcomingEvents : [];
-        return upcomingEvents.map((event) => {
-            const title = event.courseCode + '/' + event.assignmentName;
+    convertUpcomingEventsToBriefList = (upcomingAssignments) => {
+        return upcomingAssignments.map((assignment) => {
+            const title = assignment.courseCode + '/' + assignment.assignmentName;
             return (
                 <TitledDatedBriefElement
                     title={title}
-                    date={event.dueDate}
-                    onClick={() => this.onUpcomingEventClicked(event.projectId, event.projectAssignmentId)}
+                    date={assignment.dueDate}
+                    onClick={() => this.onUpcomingEventClicked(assignment.projectId, assignment.projectAssignmentId)}
                 />
             );
         });
@@ -157,8 +155,8 @@ export class Home extends Component {
         ) : null;
 
         return (
-            <div className={'HomeDiv'}>
-                <div className={'HomeDivLeft HomeDivSide'}>
+            <div className={'FloatingPageDiv '}>
+                <div className={'HomeDivLeft'}>
                     <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
                     {myProjects}
                     {instructedCourses}
@@ -166,7 +164,7 @@ export class Home extends Component {
                 <div className={'HomeDivMiddle'}>
                     <InfList title={'Feeds'}>{this.convertFeedsToFeedList(this.state.feeds)}</InfList>
                 </div>
-                <div className={'HomeDivRight HomeDivSide'}>
+                <div className={'HomeDivRight'}>
                     <BriefList title="Upcoming">
                         {this.convertUpcomingEventsToBriefList(this.state.upcomingAssignments)}
                     </BriefList>
