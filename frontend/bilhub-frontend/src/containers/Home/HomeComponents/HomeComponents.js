@@ -5,7 +5,7 @@ import './HomeComponents.css';
 
 export const ProfilePrompt = (props) => {
     return (
-        <div onClick={props.onClick}>
+        <div className={'ProfilePromt'}>
             <Icon name="user circle" />
             {props.name}
         </div>
