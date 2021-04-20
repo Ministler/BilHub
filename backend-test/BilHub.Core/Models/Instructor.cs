@@ -3,16 +3,13 @@ using System.Collections.ObjectModel;
 
 namespace BilHub.Core.Models
 {
-    public class Instructor
+    public class Instructor : User
     {
         public Instructor()
         {
-            Courses = new Collection<Course>();
+            InstructedCourses = new Collection<InstructorCourse>();
         }
-
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public ICollection<Course> Courses { get; set; }
+        public ICollection<InstructorCourse> InstructedCourses { get; set; }
 
 
     }

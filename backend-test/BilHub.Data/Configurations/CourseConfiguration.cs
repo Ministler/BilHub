@@ -21,11 +21,16 @@ namespace BilHub.Data.Configurations
                 .HasMaxLength(50);
 
             builder
-                .Property(m => m.description)
+                .Property(m => m.Name)
+                .IsRequired()
                 .HasMaxLength(50);
 
             builder
-                .HasOne(m => m.Instructor)
+                .Property(m => m.CourseInformation)
+                .HasMaxLength(50);
+
+            builder
+                .HasOne(m => m.Instructors)
                 .WithMany(a => a.Courses)
                 .HasForeignKey(m => m.InstructorId);
 

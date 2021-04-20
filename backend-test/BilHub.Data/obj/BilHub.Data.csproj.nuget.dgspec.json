@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj": {}
+    "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
+    "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
+        "projectUniqueName": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
         "projectName": "BilHub.Core",
-        "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
+        "projectPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
         "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\obj\\",
+        "outputPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -58,14 +58,14 @@
         }
       }
     },
-    "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj": {
+    "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj",
+        "projectUniqueName": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj",
         "projectName": "BilHub.Data",
-        "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj",
+        "projectPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj",
         "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\obj\\",
+        "outputPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -82,8 +82,8 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
-                "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj"
+              "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
+                "projectPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj"
               }
             }
           }
