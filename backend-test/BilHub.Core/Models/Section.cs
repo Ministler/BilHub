@@ -12,6 +12,7 @@ namespace BilHub.Core.Models
             JoinRequests = new Collection<JoinRequest>();
             MergeRequests = new Collection<MergeRequest>();
         }
+        public int Id { get; set; }
         public bool SectionlessState { get; set; }
         public int SectionNo { get; set; }
         public ICollection<ProjectGroup> ProjectGroups { get; set; }
