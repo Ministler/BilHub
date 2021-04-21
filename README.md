@@ -28,7 +28,7 @@ Barış Ogün Yörük ([barisoyoruk](http://github.com/barisoyoruk)) <br />
 Oğuzhan Özçelik ([ozc0](http://github.com/ozc0)) <br />
 
 Database'i kurmak icin:<br />
-dotnet ef --startup-project ./MyMusic.Api/MyMusic.Api.csproj database update<br />
+dotnet ef --startup-project ./BilHub.Api/BilHub.Api.csproj database update<br />
 BilHub.Api/appsettings.Development.json -> "ConnectionStrings": {
     "Default": "server=.\\SQLEXPRESS; database=BilHubTest; user id=USERNAME; password=PASSWORD"
   }<br />
