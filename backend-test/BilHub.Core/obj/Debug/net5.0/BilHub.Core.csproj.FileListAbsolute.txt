@@ -10,3 +10,15 @@ C:\Users\ASUS\desktop\hade\BilHub.Core\obj\Debug\net5.0\BilHub.Core.csproj.CoreC
 C:\Users\ASUS\desktop\hade\BilHub.Core\obj\Debug\net5.0\BilHub.Core.dll
 C:\Users\ASUS\desktop\hade\BilHub.Core\obj\Debug\net5.0\ref\BilHub.Core.dll
 C:\Users\ASUS\desktop\hade\BilHub.Core\obj\Debug\net5.0\BilHub.Core.pdb
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\bin\Debug\net5.0\BilHub.Core.deps.json
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\bin\Debug\net5.0\BilHub.Core.dll
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\bin\Debug\net5.0\ref\BilHub.Core.dll
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\bin\Debug\net5.0\BilHub.Core.pdb
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.csprojAssemblyReference.cache
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.AssemblyInfoInputs.cache
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.AssemblyInfo.cs
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.csproj.CoreCompileInputs.cache
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.dll
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\ref\BilHub.Core.dll
+C:\Users\ASUS\Desktop\asd\BilHub\backend-test\BilHub.Core\obj\Debug\net5.0\BilHub.Core.pdb

@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
+      "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
       "projectName": "BilHub.Core",
-      "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
+      "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\obj\\",
+      "outputPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",

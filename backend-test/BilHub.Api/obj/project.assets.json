@@ -6851,11 +6851,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Api\\BilHub.Api.csproj",
+      "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Api\\BilHub.Api.csproj",
       "projectName": "BilHub.Api",
-      "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Api\\BilHub.Api.csproj",
+      "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Api\\BilHub.Api.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Api\\obj\\",
+      "outputPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -6872,14 +6872,14 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
-              "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj"
+            "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
+              "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj"
             },
-            "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj": {
-              "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj"
+            "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj": {
+              "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Data\\BilHub.Data.csproj"
             },
-            "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj": {
-              "projectPath": "C:\\Users\\ASUS\\Desktop\\hade\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj"
+            "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj": {
+              "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj"
             }
           }
         }
