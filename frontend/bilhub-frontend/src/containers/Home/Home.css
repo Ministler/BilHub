@@ -11,3 +11,7 @@
 .HomeDivMiddle {
     width: 50%;
 }
+
+body {
+    margin: 0px 60px;
+}

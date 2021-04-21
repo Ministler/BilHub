@@ -1,13 +1,15 @@
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Container } from 'semantic-ui-react';
 
 import './HomeComponents.css';
 
 export const ProfilePrompt = (props) => {
     return (
         <div className={'ProfilePromt'}>
-            <Icon name="user circle" />
-            {props.name}
+            <span>
+                <Icon name="user circle" size="huge" />
+            </span>
+            <span>{props.name}</span>
         </div>
     );
 };
@@ -15,8 +17,9 @@ export const ProfilePrompt = (props) => {
 export const BriefList = (props) => {
     return (
         <div className={'BriefList'}>
-            <hr />
-            <div>{props.title}</div>
+            <span className="BriefListTitle">
+                <b>{props.title}</b>
+            </span>
             {props.children}
         </div>
     );
@@ -24,18 +27,24 @@ export const BriefList = (props) => {
 
 export const TitledIconedBriefElement = (props) => {
     return (
-        <div onClick={props.onClick}>
-            {props.icon}
-            {props.title}
+        <div>
+            <div className="BriefListElements" onClick={props.onClick}>
+                <span>{props.icon}</span>
+                <span>{props.title}</span>
+            </div>
         </div>
     );
 };
 
 export const TitledDatedBriefElement = (props) => {
     return (
-        <div onClick={props.onClick}>
-            <div>{props.title}</div>
-            <div>{props.date}</div>
+        <div>
+            <span className="BriefListElements" onClick={props.onClick}>
+                <div>{props.title}</div>
+                <div align="right" className="DueDate">
+                    {props.date}
+                </div>
+            </span>
         </div>
     );
 };
