@@ -5,15 +5,19 @@ import './ProjectComponents.css';
 export const InformationSection = (props) => {
     return (
         <div>
-            <div onClick={props.onCourseClicked}>{props.group.courseName}</div>
-            <div>{props.group.name}</div>
+            <div onClick={props.onCourseClicked}>{props.courseName}</div>
+            <div>
+                {props.groupNameElement}
+                {props.nameEditIcon}
+            </div>
             <div>
                 <div>Members</div>
                 {props.memberElements}
             </div>
             <div>
                 <div>Information</div>
-                {props.group.information}
+                {props.informationElement}
+                {props.informationEditIcon}
             </div>
         </div>
     );
