@@ -2,14 +2,8 @@ import React, { Component } from 'react';
 import { Icon } from 'semantic-ui-react';
 
 import './Home.css';
-import { InfList } from '../../components';
-import {
-    BriefList,
-    TitledIconedBriefElement,
-    TitledDatedBriefElement,
-    ProfilePrompt,
-    FeedElement,
-} from './HomeComponents';
+import { FeedList, AssignmentFeedElement } from '../../components';
+import { BriefList, TitledIconedBriefElement, TitledDatedBriefElement, ProfilePrompt } from './HomeComponents';
 
 export class Home extends Component {
     constructor(props) {
@@ -79,20 +73,27 @@ export class Home extends Component {
         console.log('FILE');
     };
 
+    onFeedPublisherClicked = (userId) => {
+        this.props.history.push('profile/' + userId);
+    };
+
     convertFeedsToFeedList = (feeds) => {
         return feeds.map((feed) => {
             const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
             return (
-                <FeedElement
+                <AssignmentFeedElement
                     title={feed.title}
                     titleClicked={() => this.onFeedClicked(feed.projectId, feed.projectAssignmentId)}
                     file={feed.file}
                     fileClicked={this.onFeedFileClicked}
                     status={feed.status}
                     date={date}
-                    publisher={feed.publisher}>
+                    publisher={feed.publisher}
+                    publisherClicked={() => {
+                        this.onFeedPublisherClicked(feed.publisherId);
+                    }}>
                     {feed.caption}
-                </FeedElement>
+                </AssignmentFeedElement>
             );
         });
     };
@@ -162,7 +163,7 @@ export class Home extends Component {
                     {instructedCourses}
                 </div>
                 <div className={'HomeDivMiddle'}>
-                    <InfList title={'Feeds'}>{this.convertFeedsToFeedList(this.state.feeds)}</InfList>
+                    <FeedList title={'Feeds'}>{this.convertFeedsToFeedList(this.state.feeds)}</FeedList>
                 </div>
                 <div className={'HomeDivRight'}>
                     <BriefList title="Upcoming">
@@ -227,6 +228,7 @@ const dummyFeedsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
+        publisherId: 5,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 1,
@@ -238,6 +240,7 @@ const dummyFeedsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
+        publisherId: 5,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
@@ -247,6 +250,7 @@ const dummyFeedsList = [
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
         status: 'graded',
+        publisherId: 5,
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',

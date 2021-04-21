@@ -1,6 +1,7 @@
 import React from 'react';
 
 import './ProjectComponents.css';
+import { FeedList, Table, Accordion } from '../../../components';
 
 export const InformationSection = (props) => {
     return (
@@ -29,4 +30,22 @@ export const MemberElement = (props) => {
             {props.member.name} - {props.member.information}
         </div>
     );
+};
+
+export const AssignmentPane = (props) => {
+    return <FeedList>{props.feedList}</FeedList>;
+};
+
+export const GradePane = (props) => {
+    return (
+        <div>
+            <Table bodyRowsData={props.firstBodyRowsData} headerNames={props.firstHeaderNames} />
+            <Table bodyRowsData={props.secondBodyRowsData} headerNames={props.secondHeaderNames} />
+            {props.finalGrade ? <div>Final Grade: {props.finalGrade}</div> : null}
+        </div>
+    );
+};
+
+export const FeedbackPane = (props) => {
+    return <Accordion accordionElements={props.accordionElements} />;
 };

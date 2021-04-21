@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Button } from 'semantic-ui-react';
 
 import './Project.css';
-import { InformationSection, MemberElement } from './ProjectComponents';
+import { InformationSection, MemberElement, AssignmentPane, GradePane, FeedbackPane } from './ProjectComponents';
+import { Tab, AssignmentFeedElement, FeedbackFeedElement, FeedList } from '../../components';
 
 export class Project extends Component {
     constructor(props) {
@@ -13,7 +14,7 @@ export class Project extends Component {
             projectGroup: { members: [] },
             assignments: null,
             grades: null,
-            feedbacks: null,
+            feedbacks: [],
 
             // States Regarding chaning left part of the page
             nameEditMode: false,
@@ -36,6 +37,7 @@ export class Project extends Component {
         });
     }
 
+    // Logic Regardin Left Side
     onCourseClicked = (courseId) => {
         this.props.history.push('/course/' + courseId);
     };
@@ -50,7 +52,6 @@ export class Project extends Component {
         });
     }
 
-    // For two way binding with the input
     onInputChange = (e, stateName) => {
         e.preventDefault();
         this.setState({
@@ -82,6 +83,160 @@ export class Project extends Component {
                 [editMode]: !prevState[editMode],
             };
         });
+    };
+
+    // For logic regarding Assignments
+    onFeedClicked = (projectId, projectAssignmentId) => {
+        this.props.history.push('/project/' + projectId + '/assignment/' + projectAssignmentId);
+    };
+
+    onFeedFileClicked = () => {
+        console.log('FILE');
+    };
+
+    onFeedPublisherClicked = (userId) => {
+        this.props.history.push('/profile/' + userId);
+    };
+
+    convertFeedsToFeedList = (feeds) => {
+        return feeds.map((feed) => {
+            const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
+            return (
+                <AssignmentFeedElement
+                    title={feed.title}
+                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.projectAssignmentId)}
+                    file={feed.file}
+                    fileClicked={this.onFeedFileClicked}
+                    status={feed.status}
+                    date={date}
+                    publisher={feed.publisher}
+                    publisherClicked={() => {
+                        this.onFeedPublisherClicked(feed.publisherId);
+                    }}>
+                    {feed.caption}
+                </AssignmentFeedElement>
+            );
+        });
+    };
+
+    // For logic regarding grades
+    getTableBodyRowsData = (grades) => {
+        const persons = grades.persons;
+
+        const personsData = persons.map((person) => {
+            return [person.type, person.name, person.grade];
+        });
+
+        if (grades.studentsAverage) {
+            personsData.push(['Students Average', '', grades.studentsAverage]);
+        }
+
+        return personsData;
+    };
+
+    getSRSFeedbackContent = (SRSResult) => {
+        if (SRSResult) {
+            let icons = null;
+            if (this.state.user.isTAorInstructor) {
+                icons = (
+                    <span>
+                        <Icon name="edit" />
+                        <Icon name="delete" />
+                    </span>
+                );
+            }
+
+            return (
+                <FeedbackFeedElement
+                    feedback={SRSResult.feedback}
+                    grade={SRSResult.grade}
+                    totalGrade={10}
+                    author={SRSResult.name}
+                    date={SRSResult.date}
+                    icons={icons}
+                />
+            );
+        } else if (this.state.isTAorInstructor) {
+            return <Button>Add SRS Grade</Button>;
+        } else {
+            return <div>No Feedback</div>;
+        }
+    };
+
+    getFeedbacksContent = (feedbacks) => {
+        if (feedbacks) {
+            const feedbackFeedElements = feedbacks.map((feedback) => {
+                let icons = null;
+                if (this.state.user.userId === feedback.userId) {
+                    icons = (
+                        <span>
+                            <Icon name="edit" />
+                            <Icon name="delete" />
+                        </span>
+                    );
+                }
+
+                return (
+                    <FeedbackFeedElement
+                        feedback={feedback.feedback}
+                        grade={feedback.grade}
+                        totalGrade={10}
+                        author={feedback.name}
+                        date={feedback.date}
+                        icons={icons}
+                    />
+                );
+            });
+
+            return <FeedList>{feedbackFeedElements}</FeedList>;
+        } else {
+            return <div>No Feedback</div>;
+        }
+    };
+
+    getCommentsAsAccordionElements = () => {
+        const feedbacks = this.state.feedbacks;
+
+        return [
+            { title: 'SRS Feedback', content: this.getSRSFeedbackContent(feedbacks.SRSResult) },
+            {
+                title: 'Instructor Feedbacks',
+                content: this.getFeedbacksContent(feedbacks.InstructorComments),
+            },
+            { title: 'TA Feedbacks', content: this.getFeedbacksContent(feedbacks.TAComments) },
+            { title: 'Student Feedbacks', content: this.getFeedbacksContent(feedbacks.StudentComments) },
+        ];
+    };
+
+    getPaneElements = () => {
+        return [
+            {
+                title: 'Assignments',
+                content: this.state.assignments ? (
+                    <AssignmentPane feedList={this.convertFeedsToFeedList(this.state.assignments)} />
+                ) : (
+                    <div>No Assignments</div>
+                ),
+            },
+            {
+                title: 'Grades',
+                content: this.state.grades ? (
+                    <GradePane
+                        firstBodyRowsData={this.getTableBodyRowsData(this.state.grades)}
+                        firstHeaderNames={['User', 'Person', 'Grade']}
+                        secondBodyRowsData={[[this.state.grades.projectAverage, this.state.grades.courseAverage]]}
+                        secondHeaderNames={[this.state.projectGroup.name + ' Avarage', 'Course Average']}
+                        finalGrade={this.state.grades.finalGrade}
+                    />
+                ) : (
+                    <div>No Grades</div>
+                ),
+            },
+            {
+                title: 'Feedbacks',
+                content: <FeedbackPane accordionElements={this.getCommentsAsAccordionElements()}></FeedbackPane>,
+            },
+        ];
     };
 
     render() {
@@ -141,6 +296,8 @@ export class Project extends Component {
             );
         }
 
+        const paneElements = this.getPaneElements();
+
         return (
             <div className={'FloatingPageDiv'}>
                 <div className={'FloatingLeftDiv'}>
@@ -154,7 +311,9 @@ export class Project extends Component {
                         informationEditIcon={informationEditIcon}
                     />
                 </div>
-                <div className={'FloatingCenterDiv'}></div>
+                <div className={'FloatingCenterDiv'}>
+                    <Tab panes={paneElements} />
+                </div>
             </div>
         );
     }
@@ -165,6 +324,7 @@ const dummyUser = {
     userType: 'student',
     userId: 1,
     isInGroup: true,
+    isTAorInstructor: true,
 };
 
 const dummyProjectGroup = {
@@ -192,6 +352,7 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
+        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 1,
@@ -199,10 +360,11 @@ const dummyAssignmentsList = [
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
-        status: 'graded',
+        status: 'notsubmitted',
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
+        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
@@ -211,10 +373,11 @@ const dummyAssignmentsList = [
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
-        status: 'graded',
+        status: 'submitted',
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
+        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
@@ -249,8 +412,6 @@ const dummyGrades = {
             userId: 4,
         },
     ],
-    insturctorsAverage: 9,
-    taAverage: 9.5,
     studentsAverage: 8,
     projectAverage: 7.1,
     courseAverage: 6.5,
