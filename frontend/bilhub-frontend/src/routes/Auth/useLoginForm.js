@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default (props) => {
+export const LoginForm = (props) => {
     const [form, setForm] = useState({});
     const [error, setError] = useState('');
     const onChange = (e, { name, value }) => {

@@ -394,6 +394,35 @@ export class Project extends Component {
         this.setState({
             [modelType]: false,
         });
+        console.log('asd');
+        if (!isSuccess) return;
+
+        if (this.state.isFeedbackSRS) {
+            let feed = { ...this.state.feedbacks.SRSResult };
+            if (this.state.isEditFeedbackOpen) {
+                feed.feedback = this.state.currentFeedbackText;
+                feed.grade = this.state.currentFeedbackGrade;
+            } else if (this.state.isGiveFeedbackOpen) {
+                feed.feedback = this.state.currentFeedbackText;
+                feed.grade = this.state.currentFeedbackGrade;
+            } else if (this.state.isDeleteFeedbackOpen) {
+                feed = null;
+            }
+            this.setState({
+                feedbacks: {
+                    ...this.state.feedbacks,
+                    SRSResult: feed,
+                },
+            });
+            return;
+        }
+
+        if (this.state.isEditFeedbackOpen) {
+        } else if (this.state.isGiveFeedbackOpen) {
+        } else if (this.state.isDeleteFeedbackOpen) {
+        }
+
+        // POST
     };
 
     // Modals
@@ -673,6 +702,8 @@ const dummyFeedbacks = {
             date: '11 March 2021',
             commentId: 5,
             userId: 1,
+            userGroupName: 'ClassRoom Helper',
+            userGroupId: 5,
         },
         {
             name: 'Alper Sarıkan',
@@ -682,6 +713,8 @@ const dummyFeedbacks = {
             file: 'dummyFile',
             grade: '8.1',
             userId: 2,
+            userGroupName: 'ProjectManager',
+            userGroupId: 4,
         },
     ],
 };

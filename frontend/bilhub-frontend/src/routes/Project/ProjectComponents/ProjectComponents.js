@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Icon, TextArea, LabelGroup } from 'semantic-ui-react';
+import { Card, Button, Icon, TextArea } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
 import { Table, Accordion, Modal } from '../../../commonComponents';

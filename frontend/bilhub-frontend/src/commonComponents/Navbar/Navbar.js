@@ -1,7 +1,6 @@
 import React from 'react';
-import { Search, Menu, Image, Icon, Dropdown, Divider } from 'semantic-ui-react';
+import { Search, Menu, Image, Icon, Dropdown } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
-import { ProfileNav } from './ProfileNav';
 
 import './Navbar.css';
 
@@ -19,14 +18,8 @@ const Navbar = (props) => {
                 <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
                     <Icon name="bell" size="large" />
                 </Menu.Item>
-                <Dropdown
-                    as={Menu.Item}
-                    icon={{ name: 'user circle outline', size: 'big' }}
-                    className="ProfileNav"
-                    simple
-                    item>
+                <Dropdown icon={{ name: 'user circle outline', size: 'big' }} className="ProfileNav" simple item>
                     <Dropdown.Menu direction="left">
-
                         <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
 
@@ -37,7 +30,6 @@ const Navbar = (props) => {
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/logout" icon="sign out" text="Sign Out" />
                         <div className="MyDivider" />
-
                     </Dropdown.Menu>
                 </Dropdown>
             </Menu.Menu>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Button, Grid, Segment } from 'semantic-ui-react';
-import useSignupForm from './useSignupForm';
+import { SignupForm } from './useSignupForm';
 import './Signup.css';
 
 const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
@@ -8,19 +8,19 @@ const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
         <div>
             <Grid centered>
                 <Grid.Column style={{ maxWidth: 400, marginTop: 5 }}>
-                    <h2 class="ui center aligned icon header">
-                        <i class="circular users icon"></i>
+                    <h2 className="ui center aligned icon header">
+                        <i className="circular users icon"></i>
                         Create account
                     </h2>
                     {error && (
-                        <div class="ui negative message" style={{ fontSize: '12px' }}>
-                            <i class="close icon" onClick={pepe}></i>
+                        <div className="ui negative message" style={{ fontSize: '12px' }}>
+                            <i className="close icon" onClick={pepe}></i>
                             {error}
                         </div>
                     )}
                     <Segment>
-                        <Form class="Sign in form">
-                            <div class="field">
+                        <Form className="Sign in form">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>First name</label>
                                 <Form.Input
                                     type="text"
@@ -29,7 +29,7 @@ const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
                                     onChange={onChange}
                                 />
                             </div>
-                            <div class="field">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>Last name</label>
                                 <Form.Input
                                     type="text"
@@ -38,11 +38,11 @@ const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
                                     onChange={onChange}
                                 />
                             </div>
-                            <div class="field">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>Bilkent email adress</label>
                                 <Form.Input type="email" name="email" value={form.email || ''} onChange={onChange} />
                             </div>
-                            <div class="field">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>Password</label>
                                 <Form.Input
                                     type="password"
@@ -51,7 +51,7 @@ const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
                                     onChange={onChange}
                                 />
                             </div>
-                            <div class="field">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>Re-enter password</label>
                                 <Form.Input
                                     type="password"
@@ -60,12 +60,12 @@ const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
                                     onChange={onChange}
                                 />
                             </div>
-                            <Button onClick={onSubmit} fluid positive class="Sign in button" type="submit">
+                            <Button onClick={onSubmit} fluid positive className="Sign in button" type="submit">
                                 Create your BilHub account
                             </Button>
                         </Form>
                     </Segment>
-                    <div class="ui center aligned segment">
+                    <div className="ui center aligned segment">
                         <p
                             style={{
                                 display: 'inline',
@@ -88,5 +88,5 @@ const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
 };
 
 export const Signup = (props) => {
-    return <SignupUI form={useSignupForm(props)} />;
+    return <SignupUI form={SignupForm(props)} />;
 };

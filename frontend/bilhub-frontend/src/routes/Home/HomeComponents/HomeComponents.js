@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Container, Card } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 import './HomeComponents.css';
 

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Form, Button, Grid, Header, Segment, Message } from 'semantic-ui-react';
-import useLoginForm from './useLoginForm';
+import React from 'react';
+import { Form, Button, Grid, Segment } from 'semantic-ui-react';
+import { LoginForm } from './useLoginForm';
 import './Login.css';
 
 const LoginUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
@@ -8,23 +8,23 @@ const LoginUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
         <div>
             <Grid centered>
                 <Grid.Column style={{ maxWidth: 300, marginTop: 50 }}>
-                    <h2 class="ui center aligned icon header">
-                        <i class="circular users icon"></i>
+                    <h2 className="ui center aligned icon header">
+                        <i className="circular users icon"></i>
                         Sign in to BilHub
                     </h2>
                     {error && (
-                        <div class="ui negative message" style={{ fontSize: '12px' }}>
-                            <i class="close icon" onClick={pepe}></i>
+                        <div className="ui negative message" style={{ fontSize: '12px' }}>
+                            <i className="close icon" onClick={pepe}></i>
                             {error}
                         </div>
                     )}
                     <Segment>
-                        <Form class="Sign in form">
-                            <div class="field">
+                        <Form className="Sign in form">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>Bilkent email adress</label>
                                 <Form.Input type="email" name="email" value={form.email || ''} onChange={onChange} />
                             </div>
-                            <div class="field">
+                            <div className="field">
                                 <label style={{ fontSize: '12px' }}>Password</label>
                                 <Form.Input
                                     type="password"
@@ -33,12 +33,12 @@ const LoginUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
                                     onChange={onChange}
                                 />
                             </div>
-                            <Button onClick={onSubmit} fluid positive class="Sign in button" type="submit">
+                            <Button onClick={onSubmit} fluid positive className="Sign in button" type="submit">
                                 Login
                             </Button>
                         </Form>
                     </Segment>
-                    <div class="ui center aligned segment">
+                    <div className="ui center aligned segment">
                         <p
                             style={{
                                 display: 'inline',
@@ -61,5 +61,5 @@ const LoginUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
 };
 
 export const Login = (props) => {
-    return <LoginUI form={useLoginForm(props)} />;
+    return <LoginUI form={LoginForm(props)} />;
 };
