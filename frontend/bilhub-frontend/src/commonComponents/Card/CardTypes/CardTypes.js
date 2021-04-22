@@ -17,14 +17,16 @@ export const AssignmentCardElement = (props) => {
         <Card className="AssignmentCard">
             <Card.Content>
                 <Card.Header>
-                    <span className="clickable" onClick={props.titleClicked}>
+                    <span className="clickableChangeColor" onClick={props.titleClicked}>
                         {props.title}
                         {titleIcon}
                     </span>
                 </Card.Header>
                 <Card.Description onClick={props.fileClicked}>
                     <div> {props.children}</div>
-                    <span className="clickable docFile">{props.file ? <Icon name="file" size="big" /> : null}</span>
+                    <span className="clickableChangeColor docFile">
+                        {props.file ? <Icon name="file" size="big" /> : null}
+                    </span>
                 </Card.Description>
             </Card.Content>
             <Card.Content extra textAlign="right">
@@ -38,17 +40,22 @@ export const AssignmentCardElement = (props) => {
 // Feedack = Comment
 export const FeedbackCardElement = (props) => {
     return (
-        <div>
-            <div>{props.feedback}</div>
-            <div>
-                <span>
-                    Grade: {props.grade}/{props.totalGrade}
-                </span>
-                <span>
+        <Card className="FeedbackCardElement">
+            <Card.Content>
+                <Card.Header>
+                    <div>{props.author}</div>
+                </Card.Header>
+                <Card.Description>
+                    {props.feedback}
                     {props.icons}
-                    {props.author}, {props.date}
-                </span>
-            </div>
-        </div>
+                </Card.Description>
+            </Card.Content>
+            <Card.Content className="FeedbackCardExtra">
+                <div className="FeedbackGrade">
+                    Grade: {props.grade}/{props.totalGrade}
+                </div>
+                <div className="FeedbackDate">{props.date}</div>
+            </Card.Content>
+        </Card>
     );
 };

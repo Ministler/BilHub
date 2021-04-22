@@ -28,7 +28,7 @@ export const BriefList = (props) => {
 export const TitledIconedBriefElement = (props) => {
     return (
         <div>
-            <div className="BriefListElements" onClick={props.onClick}>
+            <div className="BriefListElements clickableHighlightBack" onClick={props.onClick}>
                 <span>{props.icon}</span>
                 <span>{props.title}</span>
             </div>
@@ -39,7 +39,7 @@ export const TitledIconedBriefElement = (props) => {
 export const TitledDatedBriefElement = (props) => {
     return (
         <div>
-            <span className="BriefListElements" onClick={props.onClick}>
+            <span className="BriefListElements clickableHighlightBack" onClick={props.onClick}>
                 <div>{props.title}</div>
                 <div align="right" className="DueDate">
                     {props.date}

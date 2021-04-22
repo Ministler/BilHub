@@ -296,6 +296,7 @@ export class Project extends Component {
         if (this.state.projectGroup.isNameChangeable && this.state.projectGroup.isInGroup) {
             nameEditIcon = this.state.nameEditMode ? (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.changeGroupName(this.state.newName);
                         this.toggleEditMode('nameEditMode');
@@ -304,6 +305,7 @@ export class Project extends Component {
                 />
             ) : (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.toggleEditMode('nameEditMode');
                     }}
@@ -322,6 +324,7 @@ export class Project extends Component {
         if (this.state.projectGroup.isProjectActive && this.state.projectGroup.isInGroup) {
             informationEditIcon = this.state.informationEditMode ? (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.changeGroupInformation(this.state.newInformation);
                         this.toggleEditMode('informationEditMode');
@@ -330,6 +333,7 @@ export class Project extends Component {
                 />
             ) : (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.toggleEditMode('informationEditMode');
                     }}

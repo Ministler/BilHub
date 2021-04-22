@@ -1,0 +1,5 @@
+.FloatingCenterDiv a {
+    width: 33.33%;
+    align-content: center;
+    flex-direction: column;
+}
