@@ -1,15 +1,17 @@
 .HomeDivLeft {
-    padding-right: 100px;
+    padding-right: 50px;
     width: 25%;
+    height: 100%;
 }
 
 .HomeDivRight {
-    padding-left: 100px;
+    padding-left: 50px;
     width: 25%;
 }
-
 .HomeDivMiddle {
+    padding-left: 50px;
     width: 50%;
+    padding-right: 50px;
 }
 
 body {

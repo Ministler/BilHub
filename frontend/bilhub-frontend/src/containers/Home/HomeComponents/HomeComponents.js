@@ -5,8 +5,8 @@ import './HomeComponents.css';
 
 export const ProfilePrompt = (props) => {
     return (
-        <div className={'ProfilePromt'}>
-            <span>
+        <div className={'ProfilePrompt'}>
+            <span className={'ProfileSpan'}>
                 <Icon name="user circle" size="huge" />
             </span>
             <span>{props.name}</span>
