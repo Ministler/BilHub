@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Button, Grid, Segment } from 'semantic-ui-react';
-import { LoginForm } from './useLoginForm';
+import { LoginForm } from './LoginForm';
 import './Login.css';
 
 const LoginUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
