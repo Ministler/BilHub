@@ -46,7 +46,7 @@ class App extends Component {
             </AppLayout>
         );
 
-        return true ? authenticatedRoutes : unauthenticatedRoutes;
+        return false ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }
 
