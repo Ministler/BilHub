@@ -48,7 +48,7 @@ namespace BilHub.Services
         public async Task UpdateStudent(Student studentToBeUpdated, Student student)
         {
             studentToBeUpdated.Name = student.Name;
-            studentToBeUpdated.CourseId = student.CourseId;
+            studentToBeUpdated.TakenCourses = student.TakenCourses;
             await _unitOfWork.CommitAsync();
         }
     }

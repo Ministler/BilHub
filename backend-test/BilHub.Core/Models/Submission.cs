@@ -5,6 +5,7 @@ namespace BilHub.Core.Models
 {
     public class Submission
     {
+        public int Id { get; set; }
         public Assignment AffiliatedAssignment { get; set; }
         public ProjectGroup AffiliatedGroup { get; set; }
         public Byte[] File { get; set; }

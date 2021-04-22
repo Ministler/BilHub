@@ -84,6 +84,435 @@
   },
   "components": {
     "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "information": {
+            "type": "string",
+            "nullable": true
+          },
+          "verifiedStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "loginStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "darkModeStatus": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PeerGradeAssignment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "publishedUser": {
+            "$ref": "#/components/schemas/User"
+          },
+          "assignmentDescription": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GroupSize": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AssistantCourse": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "course": {
+            "$ref": "#/components/schemas/Course"
+          },
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "student": {
+            "$ref": "#/components/schemas/Student"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StudentCourse": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "course": {
+            "$ref": "#/components/schemas/Course"
+          },
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "student": {
+            "$ref": "#/components/schemas/Student"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Assignment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "publishedUsed": {
+            "$ref": "#/components/schemas/User"
+          },
+          "assignmentDescription": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "acceptedTypes": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxFileSizeInBytes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visibilityOfSubmission": {
+            "type": "boolean"
+          },
+          "canBeGradedByStudents": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "commentedUser": {
+            "$ref": "#/components/schemas/User"
+          },
+          "commentedSubmission": {
+            "$ref": "#/components/schemas/Submission"
+          },
+          "commentText": {
+            "type": "string",
+            "nullable": true
+          },
+          "gradeStatus": {
+            "type": "boolean"
+          },
+          "maxGrade": {
+            "type": "number",
+            "format": "double"
+          },
+          "grade": {
+            "type": "number",
+            "format": "double"
+          },
+          "fileAttachmentAvailability": {
+            "type": "boolean"
+          },
+          "file": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Submission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "affiliatedAssignment": {
+            "$ref": "#/components/schemas/Assignment"
+          },
+          "affiliatedGroup": {
+            "$ref": "#/components/schemas/ProjectGroup"
+          },
+          "file": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "myProperty": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StudentMergeRequest": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "student": {
+            "$ref": "#/components/schemas/Student"
+          },
+          "mergeRequestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mergeRequest": {
+            "$ref": "#/components/schemas/MergeRequest"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MergeRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "senderGroup": {
+            "$ref": "#/components/schemas/ProjectGroup"
+          },
+          "receiverGroup": {
+            "$ref": "#/components/schemas/ProjectGroup"
+          },
+          "acceptedNumberInSender": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rejectedNumberInSender": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "acceptedNumberInReceiver": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rejectedNumberInReceiver": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "votedStudents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentMergeRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "affiliatedCourse": {
+            "$ref": "#/components/schemas/Course"
+          },
+          "confirmationState": {
+            "type": "boolean"
+          },
+          "confirmedUserNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "groupSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "projectInformation": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupMembers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentProjectGroup"
+            },
+            "nullable": true
+          },
+          "submissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Submission"
+            },
+            "nullable": true
+          },
+          "projectGradings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectGrade"
+            },
+            "nullable": true
+          },
+          "outgoingMergeRequest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MergeRequest"
+            },
+            "nullable": true
+          },
+          "incomingMergeRequest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MergeRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StudentProjectGroup": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "student": {
+            "$ref": "#/components/schemas/Student"
+          },
+          "projectGroupId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "projectGroup": {
+            "$ref": "#/components/schemas/ProjectGroup"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JoinRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "requestingStudent": {
+            "$ref": "#/components/schemas/Student"
+          },
+          "requestedGroup": {
+            "$ref": "#/components/schemas/ProjectGroup"
+          },
+          "acceptedNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rejectedNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "votedStudents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentJoinRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StudentJoinRequest": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "student": {
+            "$ref": "#/components/schemas/Student"
+          },
+          "joinRequestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "joinRequest": {
+            "$ref": "#/components/schemas/JoinRequest"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UnvotedJoinRequest": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "student": {
+            "$ref": "#/components/schemas/Student"
+          },
+          "joinRequestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "joinRequest": {
+            "$ref": "#/components/schemas/JoinRequest"
+          }
+        },
+        "additionalProperties": false
+      },
       "Student": {
         "type": "object",
         "properties": {
@@ -95,12 +524,143 @@
             "type": "string",
             "nullable": true
           },
-          "courseId": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "information": {
+            "type": "string",
+            "nullable": true
+          },
+          "verifiedStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "loginStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "darkModeStatus": {
+            "type": "boolean"
+          },
+          "assistedCourses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssistantCourse"
+            },
+            "nullable": true
+          },
+          "takenCourses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentCourse"
+            },
+            "nullable": true
+          },
+          "projectGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentProjectGroup"
+            },
+            "nullable": true
+          },
+          "outgoingJoinRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentJoinRequest"
+            },
+            "nullable": true
+          },
+          "unvotedJoinRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnvotedJoinRequest"
+            },
+            "nullable": true
+          },
+          "unvotedMergeRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentMergeRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProjectGrade": {
+        "type": "object",
+        "properties": {
+          "myProperty": {
             "type": "integer",
             "format": "int32"
           },
-          "course": {
-            "$ref": "#/components/schemas/Course"
+          "gradingStudent": {
+            "$ref": "#/components/schemas/Student"
+          },
+          "gradedProjectGroup": {
+            "$ref": "#/components/schemas/ProjectGroup"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxGrade": {
+            "type": "number",
+            "format": "double"
+          },
+          "grade": {
+            "type": "number",
+            "format": "double"
+          },
+          "additionalComment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Section": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sectionlessState": {
+            "type": "boolean"
+          },
+          "sectionNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "projectGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectGroup"
+            },
+            "nullable": true
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Student"
+            },
+            "nullable": true
+          },
+          "joinRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JoinRequest"
+            },
+            "nullable": true
+          },
+          "mergeRequests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MergeRequest"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -116,23 +676,96 @@
             "type": "string",
             "nullable": true
           },
-          "instructorId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "description": {
+          "courseInformation": {
             "type": "string",
             "nullable": true
           },
-          "instructor": {
-            "$ref": "#/components/schemas/Instructor"
+          "lockDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "courseSemester": {
+            "type": "string",
+            "nullable": true
+          },
+          "peerGradeAssignment": {
+            "$ref": "#/components/schemas/PeerGradeAssignment"
+          },
+          "groupSizes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupSize"
+            },
+            "nullable": true
+          },
+          "projectGrades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectGrade"
+            },
+            "nullable": true
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "nullable": true
+          },
+          "instructors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstructorCourse"
+            },
+            "nullable": true
+          },
+          "assistants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssistantCourse"
+            },
+            "nullable": true
           },
           "students": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Student"
+              "$ref": "#/components/schemas/StudentCourse"
             },
             "nullable": true
+          },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Assignment"
+            },
+            "nullable": true
+          },
+          "submissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Submission"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InstructorCourse": {
+        "type": "object",
+        "properties": {
+          "instructorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "instructor": {
+            "$ref": "#/components/schemas/Instructor"
+          },
+          "courseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "course": {
+            "$ref": "#/components/schemas/Course"
           }
         },
         "additionalProperties": false
@@ -148,10 +781,29 @@
             "type": "string",
             "nullable": true
           },
-          "courses": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "information": {
+            "type": "string",
+            "nullable": true
+          },
+          "verifiedStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "loginStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "darkModeStatus": {
+            "type": "boolean"
+          },
+          "instructedCourses": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Course"
+              "$ref": "#/components/schemas/InstructorCourse"
             },
             "nullable": true
           }

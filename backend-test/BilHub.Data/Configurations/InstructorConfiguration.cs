@@ -21,6 +21,11 @@ namespace BilHub.Data.Configurations
                 .HasMaxLength(50);
 
             builder
+                .HasMany(i => i.InstructedCourses)
+                .WithOne(ic => ic.Instructor)
+                .HasForeignKey(i => i.InstructorId);
+
+            builder
                 .ToTable("Instructors");
         }
     }

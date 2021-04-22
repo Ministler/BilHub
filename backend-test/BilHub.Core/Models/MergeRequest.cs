@@ -7,7 +7,7 @@ namespace BilHub.Core.Models
     {
         public MergeRequest()
         {
-            VotedStudents = new Collection<Student>();
+            VotedStudents = new Collection<StudentMergeRequest>();
         }
         public int Id { get; set; }
         public ProjectGroup SenderGroup { get; set; }
@@ -16,6 +16,6 @@ namespace BilHub.Core.Models
         public int RejectedNumberInSender { get; set; }
         public int AcceptedNumberInReceiver { get; set; }
         public int RejectedNumberInReceiver { get; set; }
-        public ICollection<Student> VotedStudents { get; set; }
+        public ICollection<StudentMergeRequest> VotedStudents { get; set; }
     }
 }

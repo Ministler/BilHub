@@ -48,8 +48,8 @@ namespace BilHub.Services
         public async Task UpdateCourse(Course courseToBeUpdated, Course course)
         {
             courseToBeUpdated.Name = course.Name;
-            courseToBeUpdated.InstructorId = course.InstructorId;
-            courseToBeUpdated.description = course.description;
+            courseToBeUpdated.Instructors = course.Instructors;
+            courseToBeUpdated.Id = course.Id;
             await _unitOfWork.CommitAsync();
         }
     }

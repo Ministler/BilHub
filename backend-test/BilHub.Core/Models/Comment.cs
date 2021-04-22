@@ -4,6 +4,7 @@ namespace BilHub.Core.Models
 {
     public class Comment
     {
+        public int Id { get; set; }
         public User CommentedUser { get; set; }
         public Submission CommentedSubmission { get; set; }
         public string CommentText { get; set; }

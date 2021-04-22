@@ -11,11 +11,11 @@ namespace BilHub.Core.Models
         {
             Sections = new Collection<Section>();
             Instructors = new Collection<InstructorCourse>();
-            Assistants = new Collection<StudentCourse>();
+            Assistants = new Collection<AssistantCourse>();
             Students = new Collection<StudentCourse>();
             Assignments = new Collection<Assignment>();
             Submissions = new Collection<Submission>();
-            GroupSizes = new Collection<int>();
+            GroupSizes = new Collection<GroupSize>();
             ProjectGrades = new Collection<ProjectGrade>();
         }
         public int Id { get; set; }
@@ -24,11 +24,11 @@ namespace BilHub.Core.Models
         public DateTime LockDate { get; set; }
         public string CourseSemester { get; set; }
         public PeerGradeAssignment PeerGradeAssignment { get; set; }
-        public ICollection<int> GroupSizes { get; set; }
+        public ICollection<GroupSize> GroupSizes { get; set; }
         public ICollection<ProjectGrade> ProjectGrades { get; set; }
         public ICollection<Section> Sections { get; set; }
         public ICollection<InstructorCourse> Instructors { get; set; }
-        public ICollection<StudentCourse> Assistants { get; set; }
+        public ICollection<AssistantCourse> Assistants { get; set; }
         public ICollection<StudentCourse> Students { get; set; }
         public ICollection<Assignment> Assignments { get; set; }
         public ICollection<Submission> Submissions { get; set; }

@@ -30,9 +30,19 @@ namespace BilHub.Data.Configurations
                 .HasMaxLength(50);
 
             builder
-                .HasOne(m => m.Instructors)
-                .WithMany(a => a.Courses)
-                .HasForeignKey(m => m.InstructorId);
+                .HasMany(c => c.Instructors)
+                .WithOne(ic => ic.Course)
+                .HasForeignKey(c => c.CourseId);
+
+            builder
+                .HasMany(c => c.Assistants)
+                .WithOne(ac => ac.Course)
+                .HasForeignKey(c => c.CourseId);
+
+            builder
+                .HasMany(c => c.Students)
+                .WithOne(sc => sc.Course)
+                .HasForeignKey(s => s.CourseId);
 
 
             builder

@@ -11,6 +11,7 @@ namespace BilHub.Core.Models
             Submissions = new Collection<Submission>();
             ProjectGradings = new Collection<ProjectGrade>();
             OutgoingMergeRequest = new Collection<MergeRequest>();
+            IncomingMergeRequest = new Collection<MergeRequest>();
         }
         public int Id { get; set; }
         public Course AffiliatedCourse { get; set; }
@@ -22,6 +23,8 @@ namespace BilHub.Core.Models
         public ICollection<Submission> Submissions { get; set; }
         public ICollection<ProjectGrade> ProjectGradings { get; set; }
         public ICollection<MergeRequest> OutgoingMergeRequest { get; set; }
+        public ICollection<MergeRequest> IncomingMergeRequest { get; set; }
+
 
     }
 }

@@ -16,22 +16,22 @@ namespace BilHub.Data.Repositories
         public async Task<IEnumerable<Student>> GetAllWithCourseAsync()
         {
             return await BilHubDbContext.Students
-            .Include(s => s.Course)
+            .Include(s => s.TakenCourses)
             .ToListAsync();
         }
 
         public async Task<IEnumerable<Student>> GetAllWithCourseByCourseIdAsync(int courseId)
         {
             return await BilHubDbContext.Students
-                .Include(s => s.Course)
-                .Where(s => s.CourseId == courseId)
+                .Include(s => s.TakenCourses
+                .Any(c => c.CourseId == courseId))
                 .ToListAsync();
         }
 
         public async Task<Student> GetWithCourseByIdAsync(int id)
         {
             return await BilHubDbContext.Students
-                .Include(s => s.CourseId)
+                .Include(s => s.TakenCourses)
                 .SingleOrDefaultAsync(s => s.Id == id);
         }
 

@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj",
+      "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj",
       "projectName": "BilHub.Services",
-      "projectPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj",
+      "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\BilHub.Services.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\obj\\",
+      "outputPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Services\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -53,8 +53,8 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
-              "projectPath": "c:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj"
+            "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj": {
+              "projectPath": "C:\\Users\\ASUS\\Desktop\\asd\\BilHub\\backend-test\\BilHub.Core\\BilHub.Core.csproj"
             }
           }
         }

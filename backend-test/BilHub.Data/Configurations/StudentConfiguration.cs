@@ -21,9 +21,24 @@ namespace BilHub.Data.Configurations
                 .HasMaxLength(50);
 
             builder
-                .HasOne(m => m.Course)
-                .WithMany(a => a.Students)
-                .HasForeignKey(m => m.CourseId);
+                .HasMany(s => s.TakenCourses)
+                .WithOne(sc => sc.Student)
+                .HasForeignKey(m => m.StudentId);
+
+            builder
+                .HasMany(s => s.AssistedCourses)
+                .WithOne(ac => ac.Student)
+                .HasForeignKey(m => m.StudentId);
+
+            builder
+                .HasMany(s => s.OutgoingJoinRequests)
+                .WithOne(sjr => sjr.Student)
+                .HasForeignKey(s => s.StudentId);
+
+            builder
+                .HasMany(s => s.UnvotedJoinRequests)
+                .WithOne(ujr => ujr.Student)
+                .HasForeignKey(s => s.StudentId);
 
             builder
                 .ToTable("Students");
