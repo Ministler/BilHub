@@ -3,24 +3,29 @@ import { Icon, Input, TextArea, Button } from 'semantic-ui-react';
 
 import './Project.css';
 import { InformationSection, MemberElement, AssignmentPane, GradePane, FeedbackPane } from './ProjectComponents';
-import { Tab, AssignmentFeedElement, FeedbackFeedElement, FeedList } from '../../components';
+import { Tab, AssignmentFeedElement, FeedbackFeedElement, FeedList, Modal } from '../../components';
 
 export class Project extends Component {
     constructor(props) {
         super(props);
         this.state = {
             user: null,
-            projectId: this.props.match.params.id,
             projectGroup: { members: [] },
             assignments: null,
             grades: null,
             feedbacks: [],
 
-            // States Regarding chaning left part of the page
+            // States regarding changing left part of the page
             nameEditMode: false,
             informationEditMode: false,
             newName: '',
             newInformation: '',
+
+            // States regarding open models of right part
+            isGiveFeedbackModelOpen: false,
+            isAddSRARGradeModelOpen: false,
+            isEditingCommentModelOpen: false,
+            isDeletingCommentModelOpen: false,
         };
     }
 
@@ -137,7 +142,7 @@ export class Project extends Component {
     getSRSFeedbackContent = (SRSResult) => {
         if (SRSResult) {
             let icons = null;
-            if (this.state.user.isTAorInstructor) {
+            if (this.state.projectGroup.isTAorInstructor) {
                 icons = (
                     <span>
                         <Icon name="edit" />
@@ -156,7 +161,7 @@ export class Project extends Component {
                     icons={icons}
                 />
             );
-        } else if (this.state.isTAorInstructor) {
+        } else if (this.state.projectGroup?.isTAorInstructor) {
             return <Button>Add SRS Grade</Button>;
         } else {
             return <div>No Feedback</div>;
@@ -209,6 +214,19 @@ export class Project extends Component {
     };
 
     getPaneElements = () => {
+        let newCommentButton = null;
+        if (this.state.projectGroup.canUserComment) {
+            newCommentButton = (
+                <Button
+                    content="Give Feedback"
+                    labelPosition="right"
+                    icon="edit"
+                    primary
+                    onClick={() => this.openModal('isGiveFeedbackModelOpen')}
+                />
+            );
+        }
+
         return [
             {
                 title: 'Assignments',
@@ -234,9 +252,27 @@ export class Project extends Component {
             },
             {
                 title: 'Feedbacks',
-                content: <FeedbackPane accordionElements={this.getCommentsAsAccordionElements()}></FeedbackPane>,
+                content: (
+                    <FeedbackPane
+                        newCommentButton={newCommentButton}
+                        accordionElements={this.getCommentsAsAccordionElements()}></FeedbackPane>
+                ),
             },
         ];
+    };
+
+    // Models
+    openModal = (modelType) => {
+        this.setState({
+            [modelType]: true,
+        });
+    };
+
+    closeModal = (modelType) => {
+        console.log('asd');
+        this.setState({
+            [modelType]: false,
+        });
     };
 
     render() {
@@ -244,7 +280,7 @@ export class Project extends Component {
 
         // EDITING GROUP NAME ELEMENTS
         let nameEditIcon = null;
-        if (this.state.projectGroup.isNameChangeable && this.state.user.isInGroup) {
+        if (this.state.projectGroup.isNameChangeable && this.state.projectGroup.isInGroup) {
             nameEditIcon = this.state.nameEditMode ? (
                 <Icon
                     onClick={() => {
@@ -270,7 +306,7 @@ export class Project extends Component {
 
         // EDITING GROUP INFORMATION ELEMENTS
         let informationEditIcon = null;
-        if (this.state.projectGroup.isProjectActive && this.state.user.isInGroup) {
+        if (this.state.projectGroup.isProjectActive && this.state.projectGroup.isInGroup) {
             informationEditIcon = this.state.informationEditMode ? (
                 <Icon
                     onClick={() => {
@@ -314,6 +350,25 @@ export class Project extends Component {
                 <div className={'FloatingCenterDiv'}>
                     <Tab panes={paneElements} />
                 </div>
+                <Modal
+                    isOpen={this.state.isGiveFeedbackModelOpen}
+                    closeModal={() => {
+                        this.closeModal('isGiveFeedbackModelOpen');
+                        console.log('ads');
+                    }}
+                />
+                <Modal
+                    isOpen={this.state.isAddSRARGradeModelOpen}
+                    closeModal={() => this.closeModal('isAddSRARGradeModelOpen')}
+                />
+                <Modal
+                    isOpen={this.state.isDeletingCommentModelOpen}
+                    closeModal={() => this.closeModal('isDeletingCommentModelOpen')}
+                />
+                <Modal
+                    isOpen={this.state.isEditingCommentModelOpen}
+                    closeModal={() => this.closeModal('isEditingCommentModelOpen')}
+                />
             </div>
         );
     }
@@ -323,11 +378,12 @@ const dummyUser = {
     name: 'Aybala Karakaya',
     userType: 'student',
     userId: 1,
-    isInGroup: true,
-    isTAorInstructor: true,
 };
 
 const dummyProjectGroup = {
+    isInGroup: true,
+    isTAorInstructor: true,
+    canUserComment: true,
     name: 'BilHub',
     isNameChangeable: true,
     isProjectActive: true,
@@ -419,13 +475,13 @@ const dummyGrades = {
 };
 
 const dummyFeedbacks = {
-    SRSResult: {
-        name: 'Elgun Jabrayilzade',
-        feedback: 'Please download the complete feedback file',
-        file: 'dummyFile',
-        date: '11 March 2021',
-        grade: 9.5,
-    },
+    // SRSResult: {
+    //     name: 'Elgun Jabrayilzade',
+    //     feedback: 'Please download the complete feedback file',
+    //     file: 'dummyFile',
+    //     date: '11 March 2021',
+    //     grade: 9.5,
+    // },
     InstructorComments: [
         {
             name: 'Eray Tüzün',

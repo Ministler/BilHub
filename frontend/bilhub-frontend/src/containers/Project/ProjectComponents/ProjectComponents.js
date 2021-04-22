@@ -1,7 +1,8 @@
 import React from 'react';
 
 import './ProjectComponents.css';
-import { FeedList, Table, Accordion } from '../../../components';
+import { FeedList, Table } from '../../../components';
+import { Accordion } from '../../../components';
 
 export const InformationSection = (props) => {
     return (
@@ -47,5 +48,10 @@ export const GradePane = (props) => {
 };
 
 export const FeedbackPane = (props) => {
-    return <Accordion accordionElements={props.accordionElements} />;
+    return (
+        <>
+            <Accordion accordionElements={props.accordionElements} />
+            {props.newCommentButton}
+        </>
+    );
 };

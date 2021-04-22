@@ -178,7 +178,6 @@ export class Home extends Component {
 
 const dummyUser = {
     name: 'Aybala Karakaya',
-    userType: 'student',
     userId: 1,
 };
 
