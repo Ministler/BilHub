@@ -26,15 +26,18 @@ const Navbar = (props) => {
                     simple
                     item>
                     <Dropdown.Menu direction="left">
+
                         <div className="MyDivider" />
-                        <Dropdown.Item icon="user circle outline" text="My Profile" />
+                        <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
+
                         <Dropdown.Divider />
-                        <Dropdown.Item icon="star outline" text="Create New Class" />
+                        <Dropdown.Item as={NavLink} to="/profile" icon="star outline" text="Create New Class" />
                         <Dropdown.Divider />
-                        <Dropdown.Item icon="settings" text="Settings" />
+                        <Dropdown.Item as={NavLink} to="/settings" icon="settings" text="Settings" />
                         <Dropdown.Divider />
-                        <Dropdown.Item icon="sign out" text="Sign Out" />
+                        <Dropdown.Item as={NavLink} to="/logout" icon="sign out" text="Sign Out" />
                         <div className="MyDivider" />
+
                     </Dropdown.Menu>
                 </Dropdown>
             </Menu.Menu>
