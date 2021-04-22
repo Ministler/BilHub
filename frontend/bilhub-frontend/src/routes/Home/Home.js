@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Icon, Card } from 'semantic-ui-react';
 
 import './Home.css';
-import { FeedList, AssignmentFeedElement } from '../../components';
+import { AssignmentCardElement } from '../../commonComponents';
 import { BriefList, TitledIconedBriefElement, TitledDatedBriefElement, ProfilePrompt } from './HomeComponents';
 
 export class Home extends Component {
@@ -81,7 +81,7 @@ export class Home extends Component {
         return feeds.map((feed) => {
             const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
             return (
-                <AssignmentFeedElement
+                <AssignmentCardElement
                     title={feed.title}
                     titleClicked={() => this.onFeedClicked(feed.projectId, feed.projectAssignmentId)}
                     file={feed.file}
@@ -93,7 +93,7 @@ export class Home extends Component {
                         this.onFeedPublisherClicked(feed.publisherId);
                     }}>
                     {feed.caption}
-                </AssignmentFeedElement>
+                </AssignmentCardElement>
             );
         });
     };
@@ -164,7 +164,6 @@ export class Home extends Component {
                 </div>
                 <div className={'HomeDivMiddle'}>
                     <Card.Group>{this.convertFeedsToFeedList(this.state.feeds)}</Card.Group>
-
                 </div>
                 <div className={'HomeDivRight'}>
                     <BriefList title="Upcoming">

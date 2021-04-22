@@ -1,8 +1,8 @@
 import React from 'react';
+import { Card } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
-import { FeedList, Table } from '../../../components';
-import { Accordion } from '../../../components';
+import { Table, Accordion } from '../../../commonComponents';
 
 export const InformationSection = (props) => {
     return (
@@ -34,7 +34,7 @@ export const MemberElement = (props) => {
 };
 
 export const AssignmentPane = (props) => {
-    return <FeedList>{props.feedList}</FeedList>;
+    return <Card.Group>{props.feedList}</Card.Group>;
 };
 
 export const GradePane = (props) => {
@@ -50,7 +50,11 @@ export const GradePane = (props) => {
 export const FeedbackPane = (props) => {
     return (
         <>
-            <Accordion accordionElements={props.accordionElements} />
+            <Accordion
+                activeIndex={props.activeIndex}
+                handleClick={(e, titleProps) => props.handleClick(titleProps)}
+                accordionElements={props.accordionElements}
+            />
             {props.newCommentButton}
         </>
     );

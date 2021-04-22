@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
-import { AppLayout } from './components';
-// prettier-ignore
+import { AppLayout } from './commonComponents';
 import {
-    Logout, Login, Signup, Course, CourseAssignment, CourseCreation, CourseSettings,
-    Home, Project, ProjectAssignment, Profile, Settings, Notifications
-} from './containers';
+    Logout,
+    Login,
+    Signup,
+    Course,
+    CourseAssignment,
+    CourseCreation,
+    CourseSettings,
+    Home,
+    Project,
+    ProjectAssignment,
+    Profile,
+    Settings,
+    Notifications,
+} from './routes';
 
 class App extends Component {
     render() {
@@ -46,7 +56,7 @@ class App extends Component {
             </AppLayout>
         );
 
-        return false ? authenticatedRoutes : unauthenticatedRoutes;
+        return true ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }
 

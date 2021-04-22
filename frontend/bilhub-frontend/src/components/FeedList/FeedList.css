@@ -1,8 +1,0 @@
-.FeedListDiv {
-    padding: 5px 5px;
-}
-
-.FeedListDiv > div {
-    padding: 5px;
-    border: bottom black 1px solid;
-}

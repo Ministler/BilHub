@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea, Button } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Button, Card } from 'semantic-ui-react';
 
 import './Project.css';
 import { InformationSection, MemberElement, AssignmentPane, GradePane, FeedbackPane } from './ProjectComponents';
-import { Tab, AssignmentFeedElement, FeedbackFeedElement, FeedList, Modal } from '../../components';
+import { Tab, AssignmentFeedElement, FeedbackCardElement, Modal, AssignmentCardElement } from '../../commonComponents';
 
 export class Project extends Component {
     constructor(props) {
@@ -26,6 +26,9 @@ export class Project extends Component {
             isAddSRARGradeModelOpen: false,
             isEditingCommentModelOpen: false,
             isDeletingCommentModelOpen: false,
+
+            // States regarding accordion
+            accordionActiveIndex: 0,
         };
     }
 
@@ -107,7 +110,7 @@ export class Project extends Component {
         return feeds.map((feed) => {
             const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
             return (
-                <AssignmentFeedElement
+                <AssignmentCardElement
                     title={feed.title}
                     titleClicked={() => this.onFeedClicked(feed.projectId, feed.projectAssignmentId)}
                     file={feed.file}
@@ -119,7 +122,7 @@ export class Project extends Component {
                         this.onFeedPublisherClicked(feed.publisherId);
                     }}>
                     {feed.caption}
-                </AssignmentFeedElement>
+                </AssignmentCardElement>
             );
         });
     };
@@ -152,7 +155,7 @@ export class Project extends Component {
             }
 
             return (
-                <FeedbackFeedElement
+                <FeedbackCardElement
                     feedback={SRSResult.feedback}
                     grade={SRSResult.grade}
                     totalGrade={10}
@@ -182,7 +185,7 @@ export class Project extends Component {
                 }
 
                 return (
-                    <FeedbackFeedElement
+                    <FeedbackCardElement
                         feedback={feedback.feedback}
                         grade={feedback.grade}
                         totalGrade={10}
@@ -193,7 +196,7 @@ export class Project extends Component {
                 );
             });
 
-            return <FeedList>{feedbackFeedElements}</FeedList>;
+            return <Card.Group>{feedbackFeedElements}</Card.Group>;
         } else {
             return <div>No Feedback</div>;
         }
@@ -254,6 +257,8 @@ export class Project extends Component {
                 title: 'Feedbacks',
                 content: (
                     <FeedbackPane
+                        handleClick={(titleProps) => this.handleAccordionClick(titleProps)}
+                        activeIndex={this.state.accordionActiveIndex}
                         newCommentButton={newCommentButton}
                         accordionElements={this.getCommentsAsAccordionElements()}></FeedbackPane>
                 ),
@@ -269,10 +274,18 @@ export class Project extends Component {
     };
 
     closeModal = (modelType) => {
-        console.log('asd');
         this.setState({
             [modelType]: false,
         });
+    };
+
+    // Accordion
+    handleAccordionClick = (titleProps) => {
+        const index = titleProps.index;
+        const activeIndex = this.state.accordionActiveIndex;
+        const newIndex = activeIndex === index ? -1 : index;
+
+        this.setState({ accordionActiveIndex: newIndex });
     };
 
     render() {
@@ -354,7 +367,6 @@ export class Project extends Component {
                     isOpen={this.state.isGiveFeedbackModelOpen}
                     closeModal={() => {
                         this.closeModal('isGiveFeedbackModelOpen');
-                        console.log('ads');
                     }}
                 />
                 <Modal
