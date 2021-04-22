@@ -42,7 +42,7 @@ export const MemberElement = (props) => {
 };
 
 export const AssignmentPane = (props) => {
-    return <Card.Group>{props.feedList}</Card.Group>;
+    return <Card.Group className="AssignmentCardGroup">{props.feedList}</Card.Group>;
 };
 
 export const GradePane = (props) => {

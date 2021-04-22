@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Icon, Card } from 'semantic-ui-react';
+import React, { Component, createRef } from 'react';
+import { Icon, Card, Sticky, Rail, Ref, Segment, Grid, GridColumn } from 'semantic-ui-react';
 
 import './Home.css';
 import { AssignmentCardElement } from '../../commonComponents';
@@ -137,7 +137,7 @@ export class Home extends Component {
     onProfilePromptClicked = () => {
         this.props.history.push('profile');
     };
-
+    contextRef = createRef();
     render() {
         let myProjects = this.state.myProjects ? (
             <BriefList title="My Projects">{this.convertProjectsToBriefList(this.state.myProjects)}</BriefList>
@@ -156,22 +156,28 @@ export class Home extends Component {
         ) : null;
 
         return (
-            <div className={'FloatingPageDiv '}>
-                <div className={'HomeDivLeft'}>
-                    <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
-                    {myProjects}
-                    {instructedCourses}
-                </div>
-                <div className={'HomeDivMiddle'}>
+            <Grid className={'FloatingPageDiv'}>
+                <GridColumn width={4}>
+                    <div className={'HomeDivLeft'}>
+                        <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
+                        {myProjects}
+                        {instructedCourses}
+                    </div>
+                </GridColumn>
+                <GridColumn width={1} />
+                <GridColumn width={6} className={'HomeDivMiddle'}>
                     <Card.Group>{this.convertFeedsToFeedList(this.state.feeds)}</Card.Group>
-                </div>
-                <div className={'HomeDivRight'}>
-                    <BriefList title="Upcoming">
-                        {this.convertUpcomingEventsToBriefList(this.state.upcomingAssignments)}
-                    </BriefList>
-                    {notGradedAssignments}
-                </div>
-            </div>
+                </GridColumn>
+                <GridColumn width={1} />
+                <GridColumn width={4} className={'HomeDivRight'}>
+                    <div className={'HomeDivRight'}>
+                        <BriefList title="Upcoming">
+                            {this.convertUpcomingEventsToBriefList(this.state.upcomingAssignments)}
+                        </BriefList>
+                        {notGradedAssignments}
+                    </div>
+                </GridColumn>
+            </Grid>
         );
     }
 }
@@ -221,6 +227,43 @@ const dummyInstructedCoursesList = [
 ];
 
 const dummyFeedsList = [
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'graded',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 5,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 1,
+        projectAssignmentId: 1,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'graded',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 5,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 2,
+        projectAssignmentId: 2,
+        file: 'asd',
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'graded',
+        publisherId: 5,
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
         status: 'graded',

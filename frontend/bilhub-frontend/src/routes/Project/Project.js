@@ -455,6 +455,54 @@ const dummyAssignmentsList = [
         projectId: 3,
         projectAssignmentId: 3,
     },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
 ];
 
 const dummyGrades = {
@@ -537,6 +585,40 @@ const dummyFeedbacks = {
         },
     ],
     StudentComments: [
+        {
+            name: 'Eray Tüzün',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: '11 March 2021',
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: '11 March 2021',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+        {
+            name: 'Eray Tüzün',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: '11 March 2021',
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: '11 March 2021',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
         {
             name: 'Eray Tüzün',
             feedback:
