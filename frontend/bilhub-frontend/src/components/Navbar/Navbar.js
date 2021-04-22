@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Menu, Image, Icon, Dropdown } from 'semantic-ui-react';
+import { Search, Menu, Image, Icon, Dropdown, Divider } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 import { ProfileNav } from './ProfileNav';
 
@@ -15,22 +15,31 @@ const Navbar = (props) => {
             <Menu.Item>
                 <Search />
             </Menu.Item>
-            <Menu.Menu position="right">
-                <Dropdown as={Menu.Item} icon={{ name: 'user circle outline', size: 'big' }} className="ProfileNav">
+            <Menu.Menu className="NavigatorRightMenu" position="right">
+                <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
+                    <Icon name="bell" size="large" />
+                </Menu.Item>
+                <Dropdown
+                    as={Menu.Item}
+                    icon={{ name: 'user circle outline', size: 'big' }}
+                    className="ProfileNav"
+                    simple
+                    item>
                     <Dropdown.Menu direction="left">
+
+                        <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
+
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/profile" icon="star outline" text="Create New Class" />
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/settings" icon="settings" text="Settings" />
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/logout" icon="sign out" text="Sign Out" />
+                        <div className="MyDivider" />
+
                     </Dropdown.Menu>
                 </Dropdown>
-
-                <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
-                    <Icon name="bell" size="large" />
-                </Menu.Item>
             </Menu.Menu>
         </Menu>
     );

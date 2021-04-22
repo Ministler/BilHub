@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Card } from 'semantic-ui-react';
 
 import './Home.css';
 import { FeedList, AssignmentFeedElement } from '../../components';
@@ -163,7 +163,8 @@ export class Home extends Component {
                     {instructedCourses}
                 </div>
                 <div className={'HomeDivMiddle'}>
-                    <FeedList title={'Feeds'}>{this.convertFeedsToFeedList(this.state.feeds)}</FeedList>
+                    <Card.Group>{this.convertFeedsToFeedList(this.state.feeds)}</Card.Group>
+
                 </div>
                 <div className={'HomeDivRight'}>
                     <BriefList title="Upcoming">
