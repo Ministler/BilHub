@@ -58,3 +58,21 @@
     display: inline-block;
     width: 100%;
 }
+
+.FeedCard {
+    width: 100% !important;
+}
+
+.clickable:hover {
+    cursor: pointer;
+    color: blue;
+}
+
+.clickable {
+    transition: 0.25s;
+}
+
+.docFile i {
+    margin: 5px;
+    float: right;
+}

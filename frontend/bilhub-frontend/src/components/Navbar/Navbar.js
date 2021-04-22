@@ -16,6 +16,9 @@ const Navbar = (props) => {
                 <Search />
             </Menu.Item>
             <Menu.Menu className="NavigatorRightMenu" position="right">
+                <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
+                    <Icon name="bell" size="large" />
+                </Menu.Item>
                 <Dropdown
                     as={Menu.Item}
                     icon={{ name: 'user circle outline', size: 'big' }}
@@ -34,10 +37,6 @@ const Navbar = (props) => {
                         <div className="MyDivider" />
                     </Dropdown.Menu>
                 </Dropdown>
-
-                <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
-                    <Icon name="bell" size="large" />
-                </Menu.Item>
             </Menu.Menu>
         </Menu>
     );

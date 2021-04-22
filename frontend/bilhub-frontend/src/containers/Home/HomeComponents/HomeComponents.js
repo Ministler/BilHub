@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Container } from 'semantic-ui-react';
+import { Icon, Container, Card } from 'semantic-ui-react';
 
 import './HomeComponents.css';
 
@@ -59,17 +59,23 @@ export const FeedElement = (props) => {
         titleIcon = <Icon name="remove circle" />;
     }
     return (
-        <div>
-            <div onClick={props.titleClicked}>
-                {props.title}
-                {titleIcon}
-            </div>
-            <div onClick={props.fileClicked}>
-                {props.children}
-                {props.file ? <Icon name="file" /> : null}
-            </div>
-            <div>{props.publisher}</div>
-            <div>{props.date}</div>
-        </div>
+        <Card className="FeedCard">
+            <Card.Content>
+                <Card.Header>
+                    <span className="clickable" onClick={props.titleClicked}>
+                        {props.title}
+                        {titleIcon}
+                    </span>
+                </Card.Header>
+                <Card.Description onClick={props.fileClicked}>
+                    <div> {props.children}</div>
+                    <span className="clickable docFile">{props.file ? <Icon name="file" size="big" /> : null}</span>
+                </Card.Description>
+            </Card.Content>
+            <Card.Content extra textAlign="right">
+                <div>-{props.publisher}</div>
+                <div>{props.date}</div>
+            </Card.Content>
+        </Card>
     );
 };
