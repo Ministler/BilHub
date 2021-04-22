@@ -2,8 +2,17 @@ import React, { Component } from 'react';
 import { Icon, Input, TextArea, Button, Card } from 'semantic-ui-react';
 
 import './Project.css';
-import { InformationSection, MemberElement, AssignmentPane, GradePane, FeedbackPane } from './ProjectComponents';
-import { Tab, AssignmentFeedElement, FeedbackCardElement, Modal, AssignmentCardElement } from '../../commonComponents';
+import {
+    InformationSection,
+    MemberElement,
+    AssignmentPane,
+    GradePane,
+    FeedbackPane,
+    NewCommentModal,
+    EditCommentModal,
+    DeleteCommentModal,
+} from './ProjectComponents';
+import { Tab, FeedbackCardElement, AssignmentCardElement } from '../../commonComponents';
 
 export class Project extends Component {
     constructor(props) {
@@ -22,10 +31,14 @@ export class Project extends Component {
             newInformation: '',
 
             // States regarding open models of right part
-            isGiveFeedbackModelOpen: false,
-            isAddSRARGradeModelOpen: false,
-            isEditingCommentModelOpen: false,
-            isDeletingCommentModelOpen: false,
+            isGiveFeedbackOpen: false,
+            isEditFeedbackOpen: false,
+            isDeleteFeedbackOpen: false,
+            isFeedbackSRS: false,
+            currentFeedbackText: '',
+            currentFeedbackFile: null,
+            currentFeedbackGrade: 10,
+            currentFeedbackId: 0,
 
             // States regarding accordion
             accordionActiveIndex: 0,
@@ -148,8 +161,30 @@ export class Project extends Component {
             if (this.state.projectGroup.isTAorInstructor) {
                 icons = (
                     <span>
-                        <Icon name="edit" />
-                        <Icon name="delete" />
+                        <Icon
+                            name="edit"
+                            onClick={() =>
+                                this.openModelWithComment(
+                                    'isEditFeedbackOpen',
+                                    true,
+                                    SRSResult.commentId,
+                                    SRSResult.feedback,
+                                    SRSResult.grade
+                                )
+                            }
+                        />
+                        <Icon
+                            name="delete"
+                            onClick={() =>
+                                this.openModelWithComment(
+                                    'isDeleteFeedbackOpen',
+                                    true,
+                                    SRSResult.commentId,
+                                    SRSResult.feedback,
+                                    SRSResult.grade
+                                )
+                            }
+                        />
                     </span>
                 );
             }
@@ -165,7 +200,7 @@ export class Project extends Component {
                 />
             );
         } else if (this.state.projectGroup?.isTAorInstructor) {
-            return <Button>Add SRS Grade</Button>;
+            return <Button onClick={() => this.openModal('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
         } else {
             return <div>No Feedback</div>;
         }
@@ -178,8 +213,30 @@ export class Project extends Component {
                 if (this.state.user.userId === feedback.userId) {
                     icons = (
                         <span>
-                            <Icon name="edit" />
-                            <Icon name="delete" />
+                            <Icon
+                                name="edit"
+                                onClick={() =>
+                                    this.openModelWithComment(
+                                        'isEditFeedbackOpen',
+                                        false,
+                                        feedback.commentId,
+                                        feedback.feedback,
+                                        feedback.grade
+                                    )
+                                }
+                            />
+                            <Icon
+                                name="delete"
+                                onClick={() =>
+                                    this.openModelWithComment(
+                                        'isDeleteFeedbackOpen',
+                                        false,
+                                        feedback.commentId,
+                                        feedback.feedback,
+                                        feedback.grade
+                                    )
+                                }
+                            />
                         </span>
                     );
                 }
@@ -216,6 +273,15 @@ export class Project extends Component {
         ];
     };
 
+    // Accordion
+    handleAccordionClick = (titleProps) => {
+        const index = titleProps.index;
+        const activeIndex = this.state.accordionActiveIndex;
+        const newIndex = activeIndex === index ? -1 : index;
+
+        this.setState({ accordionActiveIndex: newIndex });
+    };
+
     getPaneElements = () => {
         let newCommentButton = null;
         if (this.state.projectGroup.canUserComment) {
@@ -225,7 +291,7 @@ export class Project extends Component {
                     labelPosition="right"
                     icon="edit"
                     primary
-                    onClick={() => this.openModal('isGiveFeedbackModelOpen')}
+                    onClick={() => this.openModal('isGiveFeedbackOpen', false)}
                 />
             );
         }
@@ -266,26 +332,105 @@ export class Project extends Component {
         ];
     };
 
-    // Models
-    openModal = (modelType) => {
+    onCurrentFeedbackTextChange = (e) => {
+        e.preventDefault();
         this.setState({
-            [modelType]: true,
+            currentFeedbackText: e.target.value,
         });
     };
 
-    closeModal = (modelType) => {
+    onCurrentFeedbackGradeChange = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackGrade: e.target.value,
+        });
+    };
+
+    // Models
+    openModal = (modelType, isFeedbackSRS) => {
+        if (isFeedbackSRS) {
+            this.setState({
+                isFeedbackSRS: true,
+            });
+        } else {
+            this.setState({
+                isFeedbackSRS: false,
+            });
+        }
+
+        if (modelType) {
+            this.setState({
+                [modelType]: true,
+                currentFeedbackGrade: 10,
+                currentFeedbackFile: 'empty',
+                currentFeedbackText: '',
+            });
+        }
+    };
+
+    openModelWithComment = (modelType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
+        if (isFeedbackSRS) {
+            this.setState({
+                isFeedbackSRS: true,
+            });
+        } else {
+            this.setState({
+                isFeedbackSRS: false,
+            });
+        }
+
+        if (modelType) {
+            this.setState({
+                currentFeedbackId: commentId,
+                [modelType]: true,
+                currentFeedbackText: commentText,
+                currentFeedbackGrade: commentGrade,
+                currentFeedbackFile: commentFile,
+            });
+        }
+    };
+
+    closeModal = (modelType, isSuccess) => {
         this.setState({
             [modelType]: false,
         });
     };
 
-    // Accordion
-    handleAccordionClick = (titleProps) => {
-        const index = titleProps.index;
-        const activeIndex = this.state.accordionActiveIndex;
-        const newIndex = activeIndex === index ? -1 : index;
-
-        this.setState({ accordionActiveIndex: newIndex });
+    // Modals
+    getModals = () => {
+        console.log(this.state.currentFeedbackText);
+        return (
+            <>
+                <NewCommentModal
+                    isOpen={this.state.isGiveFeedbackOpen}
+                    closeModal={(isSuccess) => this.closeModal('isGiveFeedbackOpen', isSuccess)}
+                    projectName={this.state.projectGroup.name}
+                    isTitleSRS={this.state.isFeedbackSRS}
+                    text={this.state.currentFeedbackText}
+                    grade={this.state.currentFeedbackGrade}
+                    onTextChange={(e) => this.onCurrentFeedbackTextChange(e)}
+                    onGradeChange={(e) => this.onCurrentFeedbackGradeChange(e)}
+                />
+                <EditCommentModal
+                    isOpen={this.state.isEditFeedbackOpen}
+                    closeModal={(isSuccess) => this.closeModal('isEditFeedbackOpen', isSuccess)}
+                    projectName={this.state.projectGroup.name}
+                    isTitleSRS={this.state.isFeedbackSRS}
+                    text={this.state.currentFeedbackText}
+                    grade={this.state.currentFeedbackGrade}
+                    onTextChange={(e) => this.onCurrentFeedbackTextChange(e)}
+                    onGradeChange={(e) => this.onCurrentFeedbackGradeChange(e)}
+                />
+                <DeleteCommentModal
+                    isOpen={this.state.isDeleteFeedbackOpen}
+                    closeModal={(isSuccess) => this.closeModal('isDeleteFeedbackOpen', isSuccess)}
+                    projectName={this.state.projectGroup.name}
+                    isTitleSRS={this.state.isFeedbackSRS}
+                    text={this.state.currentFeedbackText}
+                    grade={this.state.currentFeedbackGrade}
+                />
+            </>
+        );
     };
 
     render() {
@@ -346,6 +491,7 @@ export class Project extends Component {
         }
 
         const paneElements = this.getPaneElements();
+        const modals = this.getModals();
 
         return (
             <div className={'FloatingPageDiv'}>
@@ -363,24 +509,7 @@ export class Project extends Component {
                 <div className={'FloatingCenterDiv'}>
                     <Tab panes={paneElements} />
                 </div>
-                <Modal
-                    isOpen={this.state.isGiveFeedbackModelOpen}
-                    closeModal={() => {
-                        this.closeModal('isGiveFeedbackModelOpen');
-                    }}
-                />
-                <Modal
-                    isOpen={this.state.isAddSRARGradeModelOpen}
-                    closeModal={() => this.closeModal('isAddSRARGradeModelOpen')}
-                />
-                <Modal
-                    isOpen={this.state.isDeletingCommentModelOpen}
-                    closeModal={() => this.closeModal('isDeletingCommentModelOpen')}
-                />
-                <Modal
-                    isOpen={this.state.isEditingCommentModelOpen}
-                    closeModal={() => this.closeModal('isEditingCommentModelOpen')}
-                />
+                {modals}
             </div>
         );
     }
@@ -487,13 +616,14 @@ const dummyGrades = {
 };
 
 const dummyFeedbacks = {
-    // SRSResult: {
-    //     name: 'Elgun Jabrayilzade',
-    //     feedback: 'Please download the complete feedback file',
-    //     file: 'dummyFile',
-    //     date: '11 March 2021',
-    //     grade: 9.5,
-    // },
+    SRSResult: {
+        name: 'Elgun Jabrayilzade',
+        feedback: 'Please download the complete feedback file',
+        file: 'dummyFile',
+        date: '11 March 2021',
+        commentId: 1,
+        grade: 9.5,
+    },
     InstructorComments: [
         {
             name: 'Eray Tüzün',
@@ -501,6 +631,7 @@ const dummyFeedbacks = {
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
+            commentId: 3,
             userId: 1,
         },
         {
@@ -520,6 +651,7 @@ const dummyFeedbacks = {
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
+            commentId: 4,
             userId: 1,
         },
         {
@@ -539,6 +671,7 @@ const dummyFeedbacks = {
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
+            commentId: 5,
             userId: 1,
         },
         {

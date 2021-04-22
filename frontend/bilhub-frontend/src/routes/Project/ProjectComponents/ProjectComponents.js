@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card } from 'semantic-ui-react';
+import { Card, Button, Icon, TextArea, LabelGroup } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
-import { Table, Accordion } from '../../../commonComponents';
+import { Table, Accordion, Modal } from '../../../commonComponents';
 
 export const InformationSection = (props) => {
     return (
@@ -57,5 +57,86 @@ export const FeedbackPane = (props) => {
             />
             {props.newCommentButton}
         </>
+    );
+};
+
+export const NewCommentModal = (props) => {
+    let title = props.isTitleSRS ? 'SRS - ' : '';
+    title = title + 'Feedback to ' + props.projectName + "'s Analysis Report";
+    const actions = (
+        <Button
+            content="Give Feedback"
+            labelPosition="right"
+            icon="checkmark"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="info" />
+                    Please write your feedback below
+                </div>
+                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <input type="file" />
+                <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} />
+            </>
+        </Modal>
+    );
+};
+
+export const EditCommentModal = (props) => {
+    let title = props.isTitleSRS ? 'SRS - ' : '';
+    title = title + 'Edit Feedback to ' + props.projectName + "'s Analysis Report";
+    const actions = (
+        <Button
+            content="Edit Feedback"
+            labelPosition="right"
+            icon="edit"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="info" />
+                    Please edit your feedback below
+                </div>
+                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <input type="file" />
+                <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} />
+            </>
+        </Modal>
+    );
+};
+
+export const DeleteCommentModal = (props) => {
+    let title = props.isTitleSRS ? 'SRS - ' : '';
+    title = title + 'Delete Feedback to ' + props.projectName + "'s Analysis Report";
+    const actions = (
+        <Button
+            content="Delete Feedback"
+            labelPosition="right"
+            icon="checkmark"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="warning" />
+                    Please edit your feedback below
+                </div>
+                <TextArea disabled value={props.text} />
+                <input type="file" />
+                <input disabled type="number" value={props.grade} />
+            </>
+        </Modal>
     );
 };

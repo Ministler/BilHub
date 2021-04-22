@@ -11,7 +11,7 @@ export const MyAccordion = (props) => {
         return (
             <>
                 <Accordion.Title active={activeIndex === index} index={index} onClick={props.handleClick}>
-                    <Icon name="dropwdown" />
+                    <Icon name="dropdown" />
                     {element.title}
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === index}>{element.content}</Accordion.Content>

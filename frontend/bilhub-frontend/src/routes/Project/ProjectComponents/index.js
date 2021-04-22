@@ -1,1 +1,10 @@
-export { MemberElement, InformationSection, AssignmentPane, GradePane, FeedbackPane } from './ProjectComponents';
+export {
+    MemberElement,
+    InformationSection,
+    AssignmentPane,
+    GradePane,
+    FeedbackPane,
+    NewCommentModal,
+    EditCommentModal,
+    DeleteCommentModal,
+} from './ProjectComponents';
