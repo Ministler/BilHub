@@ -20,24 +20,26 @@ const Navbar = (props) => {
                 <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
                     <Icon name="bell" size="large" />
                 </Menu.Item>
-                <Dropdown
-                    as={Menu.Item}
-                    icon={{ name: 'user circle outline', size: 'big' }}
-                    className="ProfileNav"
-                    simple
-                    item
-                    closeOnChange={true}>
+                <Dropdown icon={{ name: 'user circle outline', size: 'big' }} simple item closeOnChange={true}>
                     <Dropdown.Menu direction="left">
                         <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
-                        <Dropdown.Divider />
-                        <Dropdown.Item
-                            as={NavLink}
-                            to="/create-new-course"
-                            icon="star outline"
-                            text="Create New Course"
-                        />
-                        <Dropdown.Divider />
+
+                        {props.userType === 'instructor' ? (
+                            <>
+                                <Dropdown.Divider />
+                                <Dropdown.Item
+                                    as={NavLink}
+                                    to="/create-new-course"
+                                    icon="star outline"
+                                    text="Create New Course"
+                                />
+                                <Dropdown.Divider />
+                            </>
+                        ) : (
+                            <Dropdown.Divider />
+                        )}
+
                         <Dropdown.Item as={NavLink} to="/settings" icon="settings" text="Settings" />
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={props.logout} icon="sign out" text="Sign Out" />
@@ -49,10 +51,16 @@ const Navbar = (props) => {
     );
 };
 
+const mapStateToProps = (state) => {
+    return {
+        userType: state.userType,
+    };
+};
+
 const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => dispatch(actions.logout()),
     };
 };
 
-export default connect(null, mapDispatchToProps)(Navbar);
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

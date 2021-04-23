@@ -13,6 +13,7 @@ import {
     DeleteCommentModal,
 } from './ProjectComponents';
 import { Tab, FeedbackCardElement, AssignmentCardElement } from '../../commonComponents';
+import { ProjectAssignment } from './ProjectAssignment';
 
 export class Project extends Component {
     constructor(props) {
@@ -58,7 +59,7 @@ export class Project extends Component {
         });
     }
 
-    // Logic Regardin Left Side
+    // Logic Regarding Left Side
     onCourseClicked = (courseId) => {
         this.props.history.push('/course/' + courseId);
     };
@@ -394,7 +395,6 @@ export class Project extends Component {
         this.setState({
             [modelType]: false,
         });
-        console.log('asd');
         if (!isSuccess) return;
 
         if (this.state.isFeedbackSRS) {
@@ -540,7 +540,16 @@ export class Project extends Component {
                     />
                 </div>
                 <div className={'FloatingCenterDiv'}>
-                    <Tab panes={paneElements} />
+                    {!this.props.match.params.assignmentId ? (
+                        <Tab panes={paneElements} />
+                    ) : (
+                        <ProjectAssignment
+                            projectName={this.state.projectGroup.name}
+                            projectId={this.props.match.params.projectId}
+                            userId={this.state.user?.userId}
+                            id={this.props.match.params.assignmentId}
+                        />
+                    )}
                 </div>
                 {modals}
             </div>
@@ -550,7 +559,6 @@ export class Project extends Component {
 
 const dummyUser = {
     name: 'Aybala Karakaya',
-    userType: 'student',
     userId: 1,
 };
 

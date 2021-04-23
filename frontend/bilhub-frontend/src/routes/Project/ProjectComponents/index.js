@@ -7,4 +7,8 @@ export {
     NewCommentModal,
     EditCommentModal,
     DeleteCommentModal,
+    SubmissionPane,
+    NewSubmissionModal,
+    EditSubmissionModal,
+    DeleteSubmissionModal,
 } from './ProjectComponents';

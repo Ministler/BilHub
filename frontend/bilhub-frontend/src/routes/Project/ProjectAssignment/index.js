@@ -1,1 +1,3 @@
-export { ProjectAssignment } from './ProjectAssignment';
+import ProjectAssignment from './ProjectAssignment';
+
+export { ProjectAssignment };

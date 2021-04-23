@@ -27,6 +27,7 @@ class App extends Component {
 
     render() {
         if (this.props.appLoading) {
+            console.log('asd');
             return <>Loading...</>;
         }
 
@@ -42,8 +43,8 @@ class App extends Component {
             <AppLayout>
                 <Switch>
                     <Route exact path={'/notifications'} component={Notifications} />
-                    <Route exact path={'/project/:id/assignment/:id'} component={ProjectAssignment} />
-                    <Route exact path={'/project/:id'} component={Project} />
+                    <Route exact path={'/project/:projectId/assignment/:assignmentId'} component={Project} />
+                    <Route exact path={'/project/:projectId'} component={Project} />
                     <Route exact path={'/profile'} component={Profile} />
                     <Route exact path={'/profile/:id'} component={Profile} />
                     <Route exact path={'/course/:id'} component={Course} />
@@ -61,6 +62,7 @@ class App extends Component {
             </AppLayout>
         );
 
+        console.log(this.props.token);
         return this.props.token ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }

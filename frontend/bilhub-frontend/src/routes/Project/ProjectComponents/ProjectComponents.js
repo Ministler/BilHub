@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Button, Icon, TextArea } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
-import { Table, Accordion, Modal } from '../../../commonComponents';
+import { Table, Accordion, Modal, AssignmentCardElement } from '../../../commonComponents';
 
 export const InformationSection = (props) => {
     return (
@@ -95,6 +95,81 @@ export const NewCommentModal = (props) => {
     );
 };
 
+export const NewSubmissionModal = (props) => {
+    const title = 'Add Submission for ' + props.assignmentName;
+    const actions = (
+        <Button
+            content="Add Submission"
+            labelPosition="right"
+            icon="checkmark"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="info" />
+                    {props.instructions}
+                </div>
+                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <input type="file" />
+            </>
+        </Modal>
+    );
+};
+
+export const EditSubmissionModal = (props) => {
+    const title = 'Edit Submission for ' + props.assignmentName;
+    const actions = (
+        <Button
+            content="Edit Submission"
+            labelPosition="right"
+            icon="edit"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="info" />
+                    {props.instructions}
+                </div>
+                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <input type="file" />
+            </>
+        </Modal>
+    );
+};
+
+export const DeleteSubmissionModal = (props) => {
+    const title = 'Delete Submission of ' + props.assignmentName;
+    const actions = (
+        <Button
+            content="Delete Feedback"
+            labelPosition="right"
+            icon="checkmark"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="warning" />
+                    "You are about the delete your file."
+                </div>
+                <TextArea disabled value={props.text} />
+                <input type="file" />
+            </>
+        </Modal>
+    );
+};
+
 export const EditCommentModal = (props) => {
     let title = props.isTitleSRS ? 'SRS - ' : '';
     title = title + 'Edit Feedback to ' + props.projectName + "'s Analysis Report";
@@ -146,5 +221,35 @@ export const DeleteCommentModal = (props) => {
                 <input disabled type="number" value={props.grade} />
             </>
         </Modal>
+    );
+};
+
+export const SubmissionPane = (props) => {
+    console.log(props);
+    return (
+        <div>
+            <AssignmentCardElement
+                title={props.assignment.title}
+                file={props.assignment.file}
+                fileClicked={props.onAssignmentfileClicked}
+                status={props.assignment.status}
+                date={props.assignment.date}
+                publisher={props.assignment.publisher}>
+                {props.assignment.caption}
+            </AssignmentCardElement>
+            <hr />
+            {props.submission ? (
+                <AssignmentCardElement
+                    title={'Submission'}
+                    file={props.submission.file}
+                    fileClicked={props.onSubmissionFileClicked}
+                    date={props.submission.date}>
+                    {props.submission.caption}
+                </AssignmentCardElement>
+            ) : (
+                <div>No Submission Yet</div>
+            )}
+            {props.buttons}
+        </div>
     );
 };

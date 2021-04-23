@@ -156,7 +156,7 @@ export class Home extends Component {
         ) : null;
 
         return (
-            <Grid className={'FloatingPageDiv'}>
+            <Grid>
                 <GridColumn width={4}>
                     <div className={'HomeDivLeft'}>
                         <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
@@ -165,11 +165,11 @@ export class Home extends Component {
                     </div>
                 </GridColumn>
                 <GridColumn width={1} />
-                <GridColumn width={6} className={'HomeDivMiddle'}>
+                <GridColumn width={6}>
                     <Card.Group>{this.convertFeedsToFeedList(this.state.feeds)}</Card.Group>
                 </GridColumn>
                 <GridColumn width={1} />
-                <GridColumn width={4} className={'HomeDivRight'}>
+                <GridColumn width={4}>
                     <div className={'HomeDivRight'}>
                         <BriefList title="Upcoming">
                             {this.convertUpcomingEventsToBriefList(this.state.upcomingAssignments)}
