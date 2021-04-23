@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Form, Grid, Icon, Segment } from 'semantic-ui-react';
+import { Form, Icon, Segment } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+
 import './Settings.css';
 
 const ProfilePrompt = (props) => {
@@ -8,9 +10,9 @@ const ProfilePrompt = (props) => {
             <span className={'ProfileSpan'}>
                 <Icon name="user circle" size="huge" />
             </span>
-            <a style={{ fontSize: '24px' }} href="/profile">
+            <Link style={{ fontSize: '24px' }} to="/profile">
                 {props.name}
-            </a>
+            </Link>
         </div>
     );
 };
