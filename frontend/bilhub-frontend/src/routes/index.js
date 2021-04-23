@@ -3,5 +3,5 @@ export { Course, CourseAssignment, CourseSettings, CourseCreation } from './Cour
 export { Home } from './Home';
 export { Notifications } from './Notifications';
 export { Profile } from './Profile';
-export { Project, ProjectAssignment } from './Project';
+export { Project } from './Project';
 export { Settings } from './Settings';

@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { Icon, Card, Sticky, Rail, Ref, Segment, Grid, GridColumn } from 'semantic-ui-react';
+import { Icon, Card, Grid, GridColumn } from 'semantic-ui-react';
 
 import './Home.css';
 import { AssignmentCardElement } from '../../commonComponents';
@@ -65,8 +65,8 @@ export class Home extends Component {
         });
     };
 
-    onFeedClicked = (projectId, projectAssignmentId) => {
-        this.props.history.push('project/' + projectId + '/assignment/' + projectAssignmentId);
+    onFeedClicked = (projectId, submissionPageId) => {
+        this.props.history.push('project/' + projectId + '/submission/' + submissionPageId);
     };
 
     onFeedFileClicked = () => {
@@ -83,7 +83,7 @@ export class Home extends Component {
             return (
                 <AssignmentCardElement
                     title={feed.title}
-                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.projectAssignmentId)}
+                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.submissionPageId)}
                     file={feed.file}
                     fileClicked={this.onFeedFileClicked}
                     status={feed.status}
@@ -98,8 +98,8 @@ export class Home extends Component {
         });
     };
 
-    onUpcomingEventClicked = (projectId, projectAssignmentId) => {
-        this.props.history.push('project/' + projectId + '/assignment/' + projectAssignmentId);
+    onUpcomingEventClicked = (projectId, submissionPageId) => {
+        this.props.history.push('project/' + projectId + '/submission/' + submissionPageId);
     };
 
     convertUpcomingEventsToBriefList = (upcomingAssignments) => {
@@ -109,14 +109,14 @@ export class Home extends Component {
                 <TitledDatedBriefElement
                     title={title}
                     date={assignment.dueDate}
-                    onClick={() => this.onUpcomingEventClicked(assignment.projectId, assignment.projectAssignmentId)}
+                    onClick={() => this.onUpcomingEventClicked(assignment.projectId, assignment.submissionPageId)}
                 />
             );
         });
     };
 
-    onNotGradedAssignmentClicked = (courseId, courseAssignmentId) => {
-        this.props.history.push('course/' + courseId + '/assignment/' + courseAssignmentId);
+    onNotGradedAssignmentClicked = (courseId, assignmentPageId) => {
+        this.props.history.push('course/' + courseId + '/assignment/' + assignmentPageId);
     };
 
     convertNotGradedAssignmentsToBriefList = (notGradedAssignments) => {
@@ -126,9 +126,7 @@ export class Home extends Component {
                 <TitledDatedBriefElement
                     title={title}
                     date={assignment.dueDate}
-                    onClick={() =>
-                        this.onNotGradedAssignmentClicked(assignment.courseId, assignment.courseAssignmentId)
-                    }
+                    onClick={() => this.onNotGradedAssignmentClicked(assignment.courseId, assignment.asignmentId)}
                 />
             );
         });
@@ -137,6 +135,7 @@ export class Home extends Component {
     onProfilePromptClicked = () => {
         this.props.history.push('profile');
     };
+
     contextRef = createRef();
     render() {
         let myProjects = this.state.myProjects ? (
@@ -237,7 +236,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 1,
-        projectAssignmentId: 1,
+        submissionPageId: 1,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -249,7 +248,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
-        projectAssignmentId: 2,
+        submissionPageId: 2,
         file: 'asd',
     },
     {
@@ -262,7 +261,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -274,7 +273,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 1,
-        projectAssignmentId: 1,
+        submissionPageId: 1,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -286,7 +285,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
-        projectAssignmentId: 2,
+        submissionPageId: 2,
         file: 'asd',
     },
     {
@@ -299,7 +298,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
 ];
 
@@ -309,21 +308,21 @@ const dummyUpcomingAssignmentsList = [
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         projectId: 1,
-        projectAssignmentId: 1,
+        submissionPageId: 1,
     },
     {
         courseCode: 'CS102-2021Spring',
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         projectId: 2,
-        projectAssignmentId: 2,
+        submissionPageId: 2,
     },
     {
         courseCode: 'CS102-2021Spring',
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
 ];
 
@@ -333,13 +332,13 @@ const dummyNotGradedAssignmentsList = [
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         courseId: 1,
-        courseAssignmentId: 1,
+        assignmentPageId: 1,
     },
     {
         courseCode: 'CS102-2021Spring',
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         courseId: 2,
-        courseAssignmentId: 2,
+        assignmentPageId: 2,
     },
 ];

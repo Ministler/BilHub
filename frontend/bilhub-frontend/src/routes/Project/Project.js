@@ -13,7 +13,7 @@ import {
     DeleteCommentModal,
 } from './ProjectComponents';
 import { Tab, FeedbackCardElement, AssignmentCardElement } from '../../commonComponents';
-import { ProjectAssignment } from './ProjectAssignment';
+import { ProjectSubmission } from './ProjectSubmission';
 
 export class Project extends Component {
     constructor(props) {
@@ -108,8 +108,8 @@ export class Project extends Component {
     };
 
     // For logic regarding Assignments
-    onFeedClicked = (projectId, projectAssignmentId) => {
-        this.props.history.push('/project/' + projectId + '/assignment/' + projectAssignmentId);
+    onFeedClicked = (projectId, submissionPageId) => {
+        this.props.history.push('/project/' + projectId + '/submission/' + submissionPageId);
     };
 
     onFeedFileClicked = () => {
@@ -126,7 +126,7 @@ export class Project extends Component {
             return (
                 <AssignmentCardElement
                     title={feed.title}
-                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.projectAssignmentId)}
+                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.submissionPageId)}
                     file={feed.file}
                     fileClicked={this.onFeedFileClicked}
                     status={feed.status}
@@ -540,14 +540,14 @@ export class Project extends Component {
                     />
                 </div>
                 <div className={'FloatingCenterDiv'}>
-                    {!this.props.match.params.assignmentId ? (
+                    {!this.props.match.params.submissionPageId ? (
                         <Tab panes={paneElements} />
                     ) : (
-                        <ProjectAssignment
-                            projectName={this.state.projectGroup.name}
+                        <ProjectSubmission
+                            projectName={this.state.projectGroup?.name}
                             projectId={this.props.match.params.projectId}
+                            submissionPageId={this.props.match.params.submissionPageId}
                             userId={this.state.user?.userId}
-                            id={this.props.match.params.assignmentId}
                         />
                     )}
                 </div>
@@ -593,8 +593,7 @@ const dummyAssignmentsList = [
         publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
-        projectId: 1,
-        projectAssignmentId: 1,
+        submissionPageId: 1,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -606,7 +605,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
-        projectAssignmentId: 2,
+        submissionPageId: 2,
         file: 'dummyFile',
     },
     {
@@ -619,7 +618,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -631,7 +630,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -643,7 +642,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -655,7 +654,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -667,7 +666,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        projectAssignmentId: 3,
+        submissionPageId: 3,
     },
 ];
 

@@ -225,7 +225,24 @@ export const DeleteCommentModal = (props) => {
 };
 
 export const SubmissionPane = (props) => {
-    console.log(props);
+    let submissionCard;
+
+    if (!props.submission) {
+        submissionCard = <div>Not submitted yet</div>;
+    } else if (props.submission === 'anonim') {
+        submissionCard = <div>This assignment is anonim</div>;
+    } else {
+        submissionCard = (
+            <AssignmentCardElement
+                title={'Submission'}
+                file={props.submission.file}
+                fileClicked={props.onSubmissionFileClicked}
+                date={props.submission.date}>
+                {props.submission.caption}
+            </AssignmentCardElement>
+        );
+    }
+
     return (
         <div>
             <AssignmentCardElement
@@ -238,17 +255,7 @@ export const SubmissionPane = (props) => {
                 {props.assignment.caption}
             </AssignmentCardElement>
             <hr />
-            {props.submission ? (
-                <AssignmentCardElement
-                    title={'Submission'}
-                    file={props.submission.file}
-                    fileClicked={props.onSubmissionFileClicked}
-                    date={props.submission.date}>
-                    {props.submission.caption}
-                </AssignmentCardElement>
-            ) : (
-                <div>No Submission Yet</div>
-            )}
+            {submissionCard}
             {props.buttons}
         </div>
     );

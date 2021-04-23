@@ -12,7 +12,6 @@ import {
     CourseSettings,
     Home,
     Project,
-    ProjectAssignment,
     Profile,
     Settings,
     Notifications,
@@ -43,12 +42,12 @@ class App extends Component {
             <AppLayout>
                 <Switch>
                     <Route exact path={'/notifications'} component={Notifications} />
-                    <Route exact path={'/project/:projectId/assignment/:assignmentId'} component={Project} />
+                    <Route exact path={'/project/:projectId/submission/:submissionPageId'} component={Project} />
                     <Route exact path={'/project/:projectId'} component={Project} />
                     <Route exact path={'/profile'} component={Profile} />
                     <Route exact path={'/profile/:id'} component={Profile} />
-                    <Route exact path={'/course/:id'} component={Course} />
-                    <Route exact path={'/course/:id/assignment/:id'} component={CourseAssignment} />
+                    <Route exact path={'/course/:courseId'} component={Course} />
+                    <Route exact path={'/course/:courseId/assignment/:assignmentId'} component={CourseAssignment} />
                     <Route exact path={'/settings'} component={Settings} />
                     {this.props.userType === 'instructor' ? (
                         <Route exact path={'/create-new-course'} component={CourseCreation} />

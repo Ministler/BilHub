@@ -21,7 +21,8 @@ class ProjectAssignment extends Component {
         super(props);
         this.state = {
             assignment: {},
-            submission: {},
+            submissionPage: {},
+            submission: null,
             grades: null,
             feedbacks: [],
 
@@ -53,6 +54,7 @@ class ProjectAssignment extends Component {
             grades: dummyGrades,
             feedbacks: dummyFeedbacks,
             submission: dummySubmission,
+            submissionPage: dummySubmissionPage,
         });
     }
 
@@ -63,7 +65,7 @@ class ProjectAssignment extends Component {
     getSRSFeedbackContent = (SRSResult) => {
         if (SRSResult) {
             let icons = null;
-            if (this.state.assignment.isTAorInstructor) {
+            if (this.state.submissionPage.isTAorInstructor) {
                 icons = (
                     <span>
                         <Icon
@@ -104,7 +106,7 @@ class ProjectAssignment extends Component {
                     icons={icons}
                 />
             );
-        } else if (this.state.assignment?.isTAorInstructor) {
+        } else if (this.state.submissionPage?.isTAorInstructor) {
             return <Button onClick={() => this.openModal('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
         } else {
             return <div>No Feedback</div>;
@@ -209,8 +211,8 @@ class ProjectAssignment extends Component {
     };
 
     getSubmissionButtons = () => {
-        if (this.state.submission?.isInGroup) {
-            if (this.state.submission.noSubmissionYet) {
+        if (this.state.submissionPage?.isInGroup) {
+            if (!this.state.submissionPage.hasSubmission) {
                 return (
                     <Button onClick={() => this.openSubmissionModel('isAddSubmissionOpen')}>Add New Submission</Button>
                 );
@@ -247,7 +249,7 @@ class ProjectAssignment extends Component {
 
     getPaneElements = () => {
         let newCommentButton = null;
-        if (this.state.assignment?.canUserComment) {
+        if (this.state.submissionPage?.canUserComment) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -265,21 +267,37 @@ class ProjectAssignment extends Component {
         };
 
         const submissionButtons = this.getSubmissionButtons();
-        let submissionPane = (
-            <SubmissionPane
-                assignment={assignment}
-                submission={this.state.submission}
-                onAssignmentFileClicked={this.onAssignmentFileClicked}
-                onSubmissionFileClicked={this.onSubmissionFileClicked}
-                buttons={submissionButtons}
-            />
-        );
 
-        if (this.state.submission?.noSubmissionYet) {
+        let submissionPane;
+        if (this.state.submissionPage?.hasSubmission) {
+            if (
+                this.state.submissionPage.isSubmissionAnonim &&
+                !this.state.submissionPage.isTAorInstructor &&
+                !this.state.submissionPage.isInGroup
+            ) {
+                submissionPane = (
+                    <SubmissionPane
+                        assignment={assignment}
+                        submission={'anonim'}
+                        onAssignmentFileClicked={this.onAssignmentFileClicked}
+                        buttons={submissionButtons}
+                    />
+                );
+            } else {
+                submissionPane = (
+                    <SubmissionPane
+                        assignment={assignment}
+                        submission={this.state.submission}
+                        onAssignmentFileClicked={this.onAssignmentFileClicked}
+                        onSubmissionFileClicked={this.onSubmissionFileClicked}
+                        buttons={submissionButtons}
+                    />
+                );
+            }
+        } else {
             submissionPane = (
                 <SubmissionPane
                     assignment={assignment}
-                    submission={null}
                     onAssignmentFileClicked={this.onAssignmentFileClicked}
                     buttons={submissionButtons}
                 />
@@ -289,8 +307,7 @@ class ProjectAssignment extends Component {
         return [
             {
                 title: 'Submission',
-                content:
-                    this.state.assignment && this.state.submission ? submissionPane : <div>No Such Assignment</div>,
+                content: this.state.submissionPage ? submissionPane : <div>No Such Assignment</div>,
             },
             {
                 title: 'Grades',
@@ -410,6 +427,13 @@ class ProjectAssignment extends Component {
         }
     };
 
+    closeSubmissionModal = (modelType, isSuccess) => {
+        this.setState({
+            [modelType]: false,
+        });
+        if (!isSuccess) return;
+    };
+
     closeModal = (modelType, isSuccess) => {
         this.setState({
             [modelType]: false,
@@ -457,21 +481,21 @@ class ProjectAssignment extends Component {
             <>
                 <NewSubmissionModal
                     isOpen={this.state.isAddSubmissionOpen}
-                    closeModal={(isSuccess) => this.closeModal('isAddSubmissionOpen', isSuccess)}
+                    closeModal={(isSuccess) => this.closeSubmissionModal('isAddSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
                     onTextChange={(e) => this.onSubmissionCaptionChange(e)}
                 />
                 <EditSubmissionModal
                     isOpen={this.state.isEditSubmissionOpen}
-                    closeModal={(isSuccess) => this.closeModal('isEditSubmissionOpen', isSuccess)}
+                    closeModal={(isSuccess) => this.closeSubmissionModal('isEditSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
                     onTextChange={(e) => this.onSubmissionCaptionChange(e)}
                 />
                 <DeleteSubmissionModal
                     isOpen={this.state.isDeleteSubmissionOpen}
-                    closeModal={(isSuccess) => this.closeModal('isDeleteSubmissionOpen', isSuccess)}
+                    closeModal={(isSuccess) => this.closeSubmissionModal('isDeleteSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
                 />
@@ -539,22 +563,19 @@ const dummyAssignment = {
     submissionInfo: 'Please name your submission file as: surname_name_id_section.pdf',
 };
 
-const dummySubmission2 = {
-    isInGroup: true,
-    noSubmissionYet: true,
-    isTAorInstructor: true,
+const dummySubmissionPage = {
+    isSubmissionAnonim: true,
+    isInGroup: false,
+    isTAorInstructor: false,
+    canUserComment: true,
+    hasSubmission: false,
 };
 
 const dummySubmission = {
-    isAnonoym: true,
-    isTAorInstructor: true,
-    canUserComment: true,
     caption:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident dicta dignissimos dolore quo iure, et ipsam corporis accusamus ad eligendi, inventore consequatur, repellendus laboriosam vitae sed quam fugit. Omnis dignissimos eos libero facilis quisquam quidem. Labore veritatis eaque non vero asperiores, soluta, qui nisi adipisci, fugit corrupti praesentium voluptatem enim?',
-    isInGroup: true,
     file: 'file',
     date: '16 April 2025, 12:31',
-    projectId: 1,
     submissionId: 1,
 };
 
