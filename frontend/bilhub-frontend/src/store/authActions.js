@@ -8,37 +8,44 @@ const loginStart = () => {
     };
 };
 
-const loginSuccess = (token, userId, name, userType) => {
+const loginSuccess = (token, userId, email, name, userType) => {
     return {
         type: actionTypes.LOGIN_SUCCESS,
         token: token,
         userId: userId,
+        email: email,
         name: name,
         userType: userType,
     };
 };
 
-const loginFail = (loginError) => {
+const loginFail = (error) => {
     return {
         type: actionTypes.LOGIN_FAIL,
-        loginError: loginError,
+        error: error,
     };
 };
 
-const checkAuthSuccess = (token, userId, name, userType) => {
+const checkAuthStart = () => {
+    return {
+        type: actionTypes.CHECK_AUTH_START,
+    };
+};
+
+const checkAuthSuccess = (token, userId, email, name, userType) => {
     return {
         type: actionTypes.CHECK_AUTH_SUCCESS,
         token: token,
         userId: userId,
+        email: email,
         name: name,
         userType: userType,
     };
 };
 
-const checkAuthFail = (checkAuthError) => {
+const checkAuthFail = () => {
     return {
         type: actionTypes.CHECK_AUTH_FAIL,
-        checkAuthError: checkAuthError,
     };
 };
 
@@ -61,26 +68,39 @@ const signupFail = (signupError) => {
     };
 };
 
+export const resetSignupSucceed = () => {
+    return {
+        type: actionTypes.RESET_SIGNUP_SUCCEED,
+    };
+};
+
+export const logout = () => {
+    localStorage.removeItem('token');
+    return {
+        type: actionTypes.LOGOUT,
+    };
+};
+
 export const login = (email, password) => {
     return (dispatch) => {
         dispatch(loginStart());
 
         loginRequest(email, password)
             .then((response) => {
-                console.log(response.data);
-                localStorage.setItem('token', response.data.idToken);
-                //dispatch(loginSuccess(response.data.idToken, response.data.localId));
+                const userData = response.data;
+                localStorage.setItem('token', userData.idToken);
+                dispatch(loginSuccess(userData.idToken, userData.localId, userData.email, userData.displayName));
             })
             .catch((error) => {
-                console.log(error.data);
-                dispatch(loginFail(error.response.data.error));
+                dispatch(loginFail(error.response.data.error.message));
             });
     };
 };
 
-export const checkAuth = () => {
+export const checkAuth = (token) => {
     return (dispatch) => {
-        const token = localStorage.getItem('token');
+        dispatch(checkAuthStart());
+
         if (!token) {
             dispatch(checkAuthFail());
             dispatch(logout());
@@ -89,31 +109,27 @@ export const checkAuth = () => {
 
         checkAuthRequest(token)
             .then((response) => {
-                console.log(response);
+                const userData = response.data.users[0];
+                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'student'));
             })
             .catch((error) => {
-                dispatch(checkAuthFail(error.response.data.error));
+                alert('Your Authenticantion Expired. Please Login!');
+                dispatch(checkAuthFail());
+                dispatch(logout());
             });
     };
 };
 
-export const signup = (firstName, lastName, email, password) => {
+export const signup = (email, password, name) => {
     return (dispatch) => {
         dispatch(signupStart());
 
-        singupRequest(firstName, lastName, email, password)
+        singupRequest(email, password, name)
             .then(() => {
                 dispatch(signupSuccess());
             })
             .catch((error) => {
-                dispatch(signupFail(error.response.data.error));
+                dispatch(signupFail(error.response.data.error.message));
             });
     };
-};
-
-export const logout = (dispatch) => {
-    localStorage.removeItem('token');
-    dispatch({
-        type: actionTypes.LOGOUT,
-    });
 };

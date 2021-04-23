@@ -1,10 +1,12 @@
 import React from 'react';
 import { Search, Menu, Image, Icon, Dropdown } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import './Navbar.css';
+import * as actions from '../../store';
 
-const Navbar = () => {
+const Navbar = (props) => {
     return (
         <Menu className="NavMenu" fixed="top" inverted size="small">
             <Menu.Item as={NavLink} to="/" exact>
@@ -28,7 +30,7 @@ const Navbar = () => {
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/settings" icon="settings" text="Settings" />
                         <Dropdown.Divider />
-                        <Dropdown.Item as={NavLink} to="/logout" icon="sign out" text="Sign Out" />
+                        <Dropdown.Item onClick={props.logout} icon="sign out" text="Sign Out" />
                         <div className="MyDivider" />
                     </Dropdown.Menu>
                 </Dropdown>
@@ -37,4 +39,10 @@ const Navbar = () => {
     );
 };
 
-export { Navbar };
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logout: () => dispatch(actions.logout()),
+    };
+};
+
+export default connect(null, mapDispatchToProps)(Navbar);

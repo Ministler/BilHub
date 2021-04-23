@@ -1,92 +1,95 @@
-import React from 'react';
-import { Form, Button, Grid, Segment } from 'semantic-ui-react';
-import { SignupForm } from './useSignupForm';
-import './Signup.css';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-const SignupUI = ({ form: { onChange, form, onSubmit, error, pepe } }) => {
-    return (
-        <div>
-            <Grid centered>
-                <Grid.Column style={{ maxWidth: 400, marginTop: 5 }}>
-                    <h2 className="ui center aligned icon header">
-                        <i className="circular users icon"></i>
-                        Create account
-                    </h2>
-                    {error && (
-                        <div className="ui negative message" style={{ fontSize: '12px' }}>
-                            <i className="close icon" onClick={pepe}></i>
-                            {error}
-                        </div>
-                    )}
-                    <Segment>
-                        <Form className="Sign in form">
-                            <div className="field">
-                                <label style={{ fontSize: '12px' }}>First name</label>
-                                <Form.Input
-                                    type="text"
-                                    name="firstName"
-                                    value={form.firstName || ''}
-                                    onChange={onChange}
-                                />
-                            </div>
-                            <div className="field">
-                                <label style={{ fontSize: '12px' }}>Last name</label>
-                                <Form.Input
-                                    type="text"
-                                    name="lastName"
-                                    value={form.lastName || ''}
-                                    onChange={onChange}
-                                />
-                            </div>
-                            <div className="field">
-                                <label style={{ fontSize: '12px' }}>Bilkent email adress</label>
-                                <Form.Input type="email" name="email" value={form.email || ''} onChange={onChange} />
-                            </div>
-                            <div className="field">
-                                <label style={{ fontSize: '12px' }}>Password</label>
-                                <Form.Input
-                                    type="password"
-                                    name="password"
-                                    value={form.password || ''}
-                                    onChange={onChange}
-                                />
-                            </div>
-                            <div className="field">
-                                <label style={{ fontSize: '12px' }}>Re-enter password</label>
-                                <Form.Input
-                                    type="password"
-                                    name="passwordRe"
-                                    value={form.passwordRe || ''}
-                                    onChange={onChange}
-                                />
-                            </div>
-                            <Button onClick={onSubmit} fluid positive className="Sign in button" type="submit">
-                                Create your BilHub account
-                            </Button>
-                        </Form>
-                    </Segment>
-                    <div className="ui center aligned segment">
-                        <p
-                            style={{
-                                display: 'inline',
-                                fontSize: '12px',
-                            }}>
-                            Already have an account? &nbsp;
-                        </p>
-                        <a
-                            style={{
-                                fontSize: '12px',
-                            }}
-                            href="/login">
-                            Login here.
-                        </a>
-                    </div>
-                </Grid.Column>
-            </Grid>
-        </div>
-    );
+import * as actions from '../../store';
+import { SignupUI } from './SignupUI';
+
+export class Signup extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            form: {},
+            clientError: null,
+        };
+    }
+
+    setForm = (form) => {
+        this.setState({
+            form: form,
+        });
+    };
+
+    setError = (error) => {
+        this.setState({ clientError: error });
+    };
+
+    onChange = (name, value) => {
+        this.setForm({ ...this.state.form, [name]: value });
+    };
+
+    onSubmit = () => {
+        if (
+            !this.state.form.firstName?.length ||
+            !this.state.form.lastName?.length ||
+            !this.state.form.email?.length ||
+            !this.state.form.password?.length ||
+            !this.state.form.passwordRe?.length
+        ) {
+            this.setError('Please fill the every blank');
+            return;
+        }
+
+        for (var i = 0; i < this.state.form.email.length; i++)
+            if (
+                this.state.form.email[i] === '@' &&
+                i + 1 < this.state.form.email.length &&
+                this.state.form.email.indexOf('bilkent', i + 1) === -1
+            ) {
+                this.setError('Please use your bilkent email');
+                return;
+            }
+
+        if (this.state.form.password !== this.state.form.passwordRe) {
+            this.setError('Passwords dont match');
+            return;
+        }
+
+        this.props.onSignup(
+            this.state.form.email,
+            this.state.form.password,
+            this.state.form.firstName + this.state.form.lastName
+        );
+    };
+
+    render() {
+        if (this.props.requestFullfilled) {
+            this.props.history.push('/login');
+        }
+
+        return (
+            <SignupUI
+                onSubmit={this.onSubmit}
+                onChange={(e, { name, value }) => this.onChange(name, value)}
+                form={this.state.form}
+                error={this.state.clientError || this.props.serverError}
+            />
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        serverError: state.signupError,
+        loading: state.singupLoading,
+        requestFullfilled: state.signupRequestSucceed,
+    };
 };
 
-export const Signup = (props) => {
-    return <SignupUI form={SignupForm(props)} />;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onSignup: (email, password, name) => dispatch(actions.signup(email, password, name)),
+    };
 };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import { AppLayout } from './commonComponents';
 import {
-    Logout,
     Login,
     Signup,
     Course,
@@ -17,12 +17,18 @@ import {
     Settings,
     Notifications,
 } from './routes';
+import * as actions from './store';
 
 class App extends Component {
+    componentDidMount() {
+        const token = localStorage.getItem('token');
+        this.props.onCheckAuth(token);
+    }
+
     render() {
-        const user_info = JSON.parse(localStorage.getItem('user-info'));
-        //const user_token = user_info ? user_info.token : null;
-        const user_type = user_info ? user_info.user_type : null;
+        if (this.props.appLoading) {
+            return <>Loading...</>;
+        }
 
         const unauthenticatedRoutes = (
             <Switch>
@@ -43,8 +49,7 @@ class App extends Component {
                     <Route exact path={'/course/:id'} component={Course} />
                     <Route exact path={'/course/:id/assignment/:id'} component={CourseAssignment} />
                     <Route exact path={'/settings'} component={Settings} />
-                    <Route exact path={'/logout'} component={Logout} />
-                    {user_type === 'instructor' ? (
+                    {this.props.userType === 'instructor' ? (
                         <>
                             <Route exact path={'/create-new-course'} component={CourseCreation} />
                             <Route exact path={'/course/:id/settings'} component={CourseSettings} />
@@ -56,8 +61,22 @@ class App extends Component {
             </AppLayout>
         );
 
-        return false ? authenticatedRoutes : unauthenticatedRoutes;
+        return this.props.token ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        userType: state.userType,
+        appLoading: state.appLoading,
+        token: state.token,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onCheckAuth: (token) => dispatch(actions.checkAuth(token)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

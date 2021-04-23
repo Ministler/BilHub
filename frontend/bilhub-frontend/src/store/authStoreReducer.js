@@ -6,22 +6,28 @@ const initialState = {
     userId: null,
     name: null,
     userType: null,
+    email: null,
+
     loginError: null,
-    signupError: null,
-    signupSuccess: null,
-    checkAuthError: null,
     loginLoading: false,
+    redirectedFromSignup: null,
+
+    signupError: null,
     signupLoading: false,
+    signupRequestSucceed: false,
+
+    appLoading: false,
 };
 
 const loginStart = (state, action) => {
-    return updateObject(state, { loginError: null, loginLoading: true, signupSuccess: null });
+    return updateObject(state, { loginError: null, loginLoading: true, redirectedFromSignup: false });
 };
 
 const loginSuccess = (state, action) => {
     return updateObject(state, {
-        token: action.idToken,
+        token: action.token,
         userId: action.userId,
+        email: action.email,
         name: action.name,
         userType: action.userType,
         loginError: null,
@@ -36,31 +42,45 @@ const loginFail = (state, action) => {
     });
 };
 
+const checkAuthStart = (state, action) => {
+    return updateObject(state, {
+        appLoading: true,
+    });
+};
+
 const checkAuthSuccess = (state, action) => {
     return updateObject(state, {
         token: action.token,
         userId: action.userId,
+        email: action.email,
         name: action.name,
         userType: action.userType,
         checkAuthError: null,
+        appLoading: false,
     });
 };
 
-const checkAuthFail = (state, checkAuthError) => {
+const checkAuthFail = (state, action) => {
     return updateObject(state, {
-        checkAuthError: checkAuthError,
+        appLoading: false,
     });
 };
 
 const signupStart = (state, action) => {
-    return updateObject(state, { signUpError: null, signupLoading: true, signupSuccess: null });
+    return updateObject(state, {
+        signUpError: null,
+        signupLoading: true,
+        signupSuccess: false,
+        redirectedFromSignup: false,
+    });
 };
 
 const signupSuccess = (state, action) => {
     return updateObject(state, {
         signUpError: null,
         signupLoading: false,
-        signupSuccess: true,
+        redirectedFromSignup: true,
+        signupRequestSucceed: true,
     });
 };
 
@@ -69,11 +89,18 @@ const signupFail = (state, action) => {
         signupError: action.signupError,
         signupLoading: false,
         signupSuccess: false,
+        redirectedFromSignup: false,
     });
 };
 
 const logout = (state, action) => {
     return initialState;
+};
+
+const resetSignupSucceed = (state, action) => {
+    return updateObject(state, {
+        signupRequestSucceed: false,
+    });
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -84,6 +111,8 @@ export const authReducer = (state = initialState, action) => {
             return loginSuccess(state, action);
         case actionTypes.LOGIN_FAIL:
             return loginFail(state, action);
+        case actionTypes.CHECK_AUTH_START:
+            return checkAuthStart(state, action);
         case actionTypes.CHECK_AUTH_SUCCESS:
             return checkAuthSuccess(state, action);
         case actionTypes.CHECK_AUTH_FAIL:
@@ -96,6 +125,8 @@ export const authReducer = (state = initialState, action) => {
             return signupFail(state, action);
         case actionTypes.LOGOUT:
             return logout(state, action);
+        case actionTypes.RESET_SIGNUP_SUCCEED:
+            return resetSignupSucceed(state, action);
         default:
             return state;
     }
