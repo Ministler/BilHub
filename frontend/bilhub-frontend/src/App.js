@@ -50,10 +50,10 @@ class App extends Component {
                     <Route exact path={'/course/:id/assignment/:id'} component={CourseAssignment} />
                     <Route exact path={'/settings'} component={Settings} />
                     {this.props.userType === 'instructor' ? (
-                        <>
-                            <Route exact path={'/create-new-course'} component={CourseCreation} />
-                            <Route exact path={'/course/:id/settings'} component={CourseSettings} />
-                        </>
+                        <Route exact path={'/create-new-course'} component={CourseCreation} />
+                    ) : null}
+                    {this.props.userType === 'instructor' ? (
+                        <Route exact path={'/course/:id/settings'} component={CourseSettings} />
                     ) : null}
                     <Route exact path={'/'} component={Home} />
                     <Redirect to={'/'} />

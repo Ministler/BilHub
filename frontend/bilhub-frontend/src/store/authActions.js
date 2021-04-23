@@ -110,7 +110,7 @@ export const checkAuth = (token) => {
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];
-                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'student'));
+                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor'));
             })
             .catch((error) => {
                 alert('Your Authenticantion Expired. Please Login!');
