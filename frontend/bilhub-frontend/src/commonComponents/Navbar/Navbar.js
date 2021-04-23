@@ -30,7 +30,12 @@ const Navbar = (props) => {
                         <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
                         <Dropdown.Divider />
-                        <Dropdown.Item as={NavLink} to="/profile" icon="star outline" text="Create New Class" />
+                        <Dropdown.Item
+                            as={NavLink}
+                            to="/create-new-course"
+                            icon="star outline"
+                            text="Create New Course"
+                        />
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/settings" icon="settings" text="Settings" />
                         <Dropdown.Divider />
