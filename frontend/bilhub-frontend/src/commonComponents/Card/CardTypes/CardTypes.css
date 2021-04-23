@@ -2,16 +2,23 @@
     width: 100% !important;
 }
 
-.clickable:hover {
-    cursor: pointer;
-    color: blue;
-}
-
-.clickable {
-    transition: 0.25s;
-}
-
 .docFile i {
     margin: 5px;
     float: right;
+}
+
+.FeedbackCardExtra {
+    display: flex;
+}
+
+.FeedbackCardElement > .content > .header {
+    margin-top: 5px !important;
+}
+
+.FeedbackDate {
+    margin-left: auto;
+}
+
+.FeedbackCardElement {
+    width: 95% !important;
 }

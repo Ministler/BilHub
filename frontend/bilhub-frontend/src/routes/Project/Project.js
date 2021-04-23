@@ -470,6 +470,7 @@ export class Project extends Component {
         if (this.state.projectGroup.isNameChangeable && this.state.projectGroup.isInGroup) {
             nameEditIcon = this.state.nameEditMode ? (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.changeGroupName(this.state.newName);
                         this.toggleEditMode('nameEditMode');
@@ -478,6 +479,7 @@ export class Project extends Component {
                 />
             ) : (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.toggleEditMode('nameEditMode');
                     }}
@@ -496,6 +498,7 @@ export class Project extends Component {
         if (this.state.projectGroup.isProjectActive && this.state.projectGroup.isInGroup) {
             informationEditIcon = this.state.informationEditMode ? (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.changeGroupInformation(this.state.newInformation);
                         this.toggleEditMode('informationEditMode');
@@ -504,6 +507,7 @@ export class Project extends Component {
                 />
             ) : (
                 <Icon
+                    className="clickableChangeColor"
                     onClick={() => {
                         this.toggleEditMode('informationEditMode');
                     }}
@@ -596,6 +600,54 @@ const dummyAssignmentsList = [
         projectId: 2,
         projectAssignmentId: 2,
         file: 'dummyFile',
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
+    },
+    {
+        title: 'CS319-2021Spring / Desing Report Assignment',
+        status: 'submitted',
+        caption:
+            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+        publisher: 'Erdem Tuna',
+        publisherId: 1,
+        publishmentDate: '13 March 2023 12:00',
+        dueDate: '16 April 2025, 23:59',
+        projectId: 3,
+        projectAssignmentId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -715,6 +767,40 @@ const dummyFeedbacks = {
             userId: 2,
             userGroupName: 'ProjectManager',
             userGroupId: 4,
+        },
+        {
+            name: 'Eray Tüzün',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: '11 March 2021',
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: '11 March 2021',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+        {
+            name: 'Eray Tüzün',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: '11 March 2021',
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: '11 March 2021',
+            feedback:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
         },
     ],
 };

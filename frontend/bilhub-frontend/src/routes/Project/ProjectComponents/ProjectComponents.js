@@ -7,18 +7,26 @@ import { Table, Accordion, Modal } from '../../../commonComponents';
 export const InformationSection = (props) => {
     return (
         <div>
-            <div onClick={props.onCourseClicked}>{props.courseName}</div>
-            <div>
-                {props.groupNameElement}
-                {props.nameEditIcon}
+            <div className="clickableChangeColor" onClick={props.onCourseClicked}>
+                <h1>{props.courseName}</h1>
             </div>
             <div>
-                <div>Members</div>
+                <h1>
+                    {props.groupNameElement}
+                    <span className="GroupNameEdit"> {props.nameEditIcon} </span>
+                </h1>
+            </div>
+            <div className="MembersBlock">
+                <div>
+                    <h3>Members</h3>
+                </div>
                 {props.memberElements}
             </div>
-            <div>
-                <div>Information</div>
-                {props.informationElement}
+            <div className="InformationBlock">
+                <div>
+                    <h3>Information</h3>
+                </div>
+                <p className="InformationText">{props.informationElement}</p>
                 {props.informationEditIcon}
             </div>
         </div>
@@ -27,14 +35,14 @@ export const InformationSection = (props) => {
 
 export const MemberElement = (props) => {
     return (
-        <div onClick={props.onClick}>
+        <div className="clickableHighlightBack" onClick={props.onClick}>
             {props.member.name} - {props.member.information}
         </div>
     );
 };
 
 export const AssignmentPane = (props) => {
-    return <Card.Group>{props.feedList}</Card.Group>;
+    return <Card.Group className="AssignmentCardGroup">{props.feedList}</Card.Group>;
 };
 
 export const GradePane = (props) => {

@@ -20,13 +20,23 @@ const Navbar = (props) => {
                 <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
                     <Icon name="bell" size="large" />
                 </Menu.Item>
-                <Dropdown icon={{ name: 'user circle outline', size: 'big' }} className="ProfileNav" simple item>
+                <Dropdown
+                    as={Menu.Item}
+                    icon={{ name: 'user circle outline', size: 'big' }}
+                    className="ProfileNav"
+                    simple
+                    item
+                    closeOnChange={true}>
                     <Dropdown.Menu direction="left">
                         <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
-
                         <Dropdown.Divider />
-                        <Dropdown.Item as={NavLink} to="/profile" icon="star outline" text="Create New Class" />
+                        <Dropdown.Item
+                            as={NavLink}
+                            to="/create-new-course"
+                            icon="star outline"
+                            text="Create New Course"
+                        />
                         <Dropdown.Divider />
                         <Dropdown.Item as={NavLink} to="/settings" icon="settings" text="Settings" />
                         <Dropdown.Divider />

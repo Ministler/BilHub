@@ -12,3 +12,23 @@ body {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+.clickableChangeColor:hover {
+    cursor: pointer;
+    color: blue;
+}
+
+.clickableChangeColor {
+    transition: 0.25s;
+}
+
+.clickableHighlightBack:hover {
+    background: local;
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.clickableHighlightBack {
+    transition: 0.2s;
+    border-radius: 6px;
+}
