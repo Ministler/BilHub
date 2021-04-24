@@ -29,6 +29,7 @@ namespace BilHub.Data.Auth
             {
                 response.Success = false;
                 response.Message = "User not found.";
+                return response;
             }
             string randomPassword = GenerateRandomPassword();
             Utility.CreatePasswordWithSalt(randomPassword, user.PasswordSalt, out byte[] passwordHash);
@@ -37,6 +38,7 @@ namespace BilHub.Data.Auth
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             response.Data = "A recovery password has been sent to your mail, We recommend you to change it as soon as you receive it. By the meantime you can safely use your old password if you somehow you remember it.";
+            response.Message = "A recovery password has been sent to your mail, We recommend you to change it as soon as you receive it. By the meantime you can safely use your old password if you somehow you remember it.";
 
             return response;
         }
@@ -64,13 +66,33 @@ namespace BilHub.Data.Auth
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
                 response.Data = "You password has succesfully been changed, you will be logged out.";
+                response.Message = "You password has succesfully been changed, you will be logged out.";
             }
             return response;
         }
 
         private string GenerateRandomPassword()
         {
-            return "asdasdasd";
+            string ret = "";
+            Random random = new Random();
+            int len = random.Next()%8 + 9;
+            for ( int i = 0 ; i < len ; i++ ) {
+                char tmp = (char)('a' + (random.Next() % 26));
+                char tmp2 = (char)('1' + (random.Next() % 9));
+                char tmp3 = '_';
+                char tmp4 = 'a';
+                int tmp5 = random.Next() % 4;
+                if ( tmp5 == 0  )
+                    tmp4 = tmp;
+                if ( tmp5 == 1 )
+                    tmp4 = tmp2;
+                if ( tmp5 == 2 )
+                    tmp4 = tmp3;
+                if (  tmp5 == 3 )
+                    tmp4 = (char)('A' + tmp - 'a');
+                ret = ret + tmp4.ToString();
+            }
+            return ret;
         }
 
         public async Task<ServiceResponse<string>> Login(string email, string password)
