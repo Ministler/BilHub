@@ -75,20 +75,21 @@ namespace BilHub.Data.Auth
         {
             string ret = "";
             Random random = new Random();
-            int len = random.Next()%8 + 9;
-            for ( int i = 0 ; i < len ; i++ ) {
+            int len = random.Next() % 8 + 9;
+            for (int i = 0; i < len; i++)
+            {
                 char tmp = (char)('a' + (random.Next() % 26));
                 char tmp2 = (char)('1' + (random.Next() % 9));
                 char tmp3 = '_';
                 char tmp4 = 'a';
                 int tmp5 = random.Next() % 4;
-                if ( tmp5 == 0  )
+                if (tmp5 == 0)
                     tmp4 = tmp;
-                if ( tmp5 == 1 )
+                if (tmp5 == 1)
                     tmp4 = tmp2;
-                if ( tmp5 == 2 )
+                if (tmp5 == 2)
                     tmp4 = tmp3;
-                if (  tmp5 == 3 )
+                if (tmp5 == 3)
                     tmp4 = (char)('A' + tmp - 'a');
                 ret = ret + tmp4.ToString();
             }
