@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using backend.Dtos.User;
 using BilHub.Data.Auth;
 using BilHub.Dtos;
 using BilHub.Dtos.User;
@@ -34,6 +35,30 @@ namespace BilHub.Controllers
         {
             ServiceResponse<string> response = await _authRepo.Login(
                 request.Email, request.Password
+            );
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            ServiceResponse<string> response = await _authRepo.ForgotMyPassword(email);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(UserChangeDto request)
+        {
+            ServiceResponse<string> response = await _authRepo.ChangePassword(
+                request.Email, request.Password, request.newPassword
             );
             if (!response.Success)
             {

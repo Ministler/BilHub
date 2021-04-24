@@ -7,6 +7,8 @@ namespace BilHub.Data.Auth
     {
         Task<ServiceResponse<int>> Register(User user, string password);
         Task<ServiceResponse<string>> Login(string username, string password);
+        Task<ServiceResponse<string>> ForgotMyPassword(string email);
+        Task<ServiceResponse<string>> ChangePassword(string username, string password, string newPassword);
         Task<bool> UserExists(string username);
     }
 }

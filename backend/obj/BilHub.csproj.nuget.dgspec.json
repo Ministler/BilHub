@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ASUS\\Desktop\\incase\\BilHub.csproj": {}
+    "C:\\Users\\ASUS\\Desktop\\bilhub\\backend\\BilHub.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ASUS\\Desktop\\incase\\BilHub.csproj": {
+    "C:\\Users\\ASUS\\Desktop\\bilhub\\backend\\BilHub.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\incase\\BilHub.csproj",
+        "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\bilhub\\backend\\BilHub.csproj",
         "projectName": "BilHub",
-        "projectPath": "C:\\Users\\ASUS\\Desktop\\incase\\BilHub.csproj",
+        "projectPath": "C:\\Users\\ASUS\\Desktop\\bilhub\\backend\\BilHub.csproj",
         "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ASUS\\Desktop\\incase\\obj\\",
+        "outputPath": "C:\\Users\\ASUS\\Desktop\\bilhub\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",

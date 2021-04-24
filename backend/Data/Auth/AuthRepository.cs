@@ -21,6 +21,58 @@ namespace BilHub.Data.Auth
             _context = context;
         }
 
+        public async Task<ServiceResponse<string>> ForgotMyPassword(string email)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+            }
+            string randomPassword = GenerateRandomPassword();
+            Utility.CreatePasswordWithSalt(randomPassword, user.PasswordSalt, out byte[] passwordHash);
+            user.SecondPasswordHash = passwordHash;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            response.Data = "A recovery password has been sent to your mail, We recommend you to change it as soon as you receive it. By the meantime you can safely use your old password if you somehow you remember it.";
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> ChangePassword(string email, string password, string newPassword)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+            }
+            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt) && !VerifyPasswordHash(password, user.SecondPasswordHash, user.PasswordSalt))
+            {
+                response.Success = false;
+                response.Message = "Wrong password";
+            }
+            else
+            {
+                Utility.CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                user.PasswordHash = passwordHash;
+                user.SecondPasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                response.Data = "You password has succesfully been changed, you will be logged out.";
+            }
+            return response;
+        }
+
+        private string GenerateRandomPassword()
+        {
+            return "asdasdasd";
+        }
+
         public async Task<ServiceResponse<string>> Login(string email, string password)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -30,7 +82,7 @@ namespace BilHub.Data.Auth
                 response.Success = false;
                 response.Message = "User not found.";
             }
-            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt) && !VerifyPasswordHash(password, user.SecondPasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
                 response.Message = "Wrong password";
@@ -56,6 +108,7 @@ namespace BilHub.Data.Auth
             Utility.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
             user.PasswordHash = passwordHash;
+            user.SecondPasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
             await _context.Users.AddAsync(user);

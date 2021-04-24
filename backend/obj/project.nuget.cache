@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5hg+dZSPltW+nWQyz0U0DP3aqDvqvS15mcPSPbLoB47DluET6k61cZA2g8eg5mgrmk9vzfI1PQkI7O30Qh/g4Q==",
+  "dgSpecHash": "U+eCnx2rcuAhfznZkon2fsPGiKjSdzLBWACmGuc7vqFW48zLPH8pcru7v/+Ly0T9T0ztLXIN/efyhquBbVtCzQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\ASUS\\Desktop\\incase\\BilHub.csproj",
+  "projectFilePath": "C:\\Users\\ASUS\\Desktop\\bilhub\\backend\\BilHub.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ASUS\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.1.1\\automapper.extensions.microsoft.dependencyinjection.8.1.1.nupkg.sha512",
