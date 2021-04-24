@@ -566,7 +566,7 @@ const dummyAssignment = {
 const dummySubmissionPage = {
     isSubmissionAnonim: true,
     isInGroup: false,
-    isTAorInstructor: false,
+    isTAorInstructor: true,
     canUserComment: true,
     hasSubmission: false,
 };

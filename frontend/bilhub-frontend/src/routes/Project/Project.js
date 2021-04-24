@@ -542,18 +542,18 @@ export class Project extends Component {
                             />
                         </Segment>
                     </div>
-                </div>
-                <div class="twelve wide column">
-                    {!this.props.match.params.submissionPageId ? (
-                        <Tab panes={paneElements} />
-                    ) : (
-                        <ProjectSubmission
-                            projectName={this.state.projectGroup?.name}
-                            projectId={this.props.match.params.projectId}
-                            submissionPageId={this.props.match.params.submissionPageId}
-                            userId={this.state.user?.userId}
-                        />
-                    )}
+                    <div class="twelve wide column">
+                        {!this.props.match.params.submissionPageId ? (
+                            <Tab panes={paneElements} />
+                        ) : (
+                            <ProjectSubmission
+                                projectName={this.state.projectGroup?.name}
+                                projectId={this.props.match.params.projectId}
+                                submissionPageId={this.props.match.params.submissionPageId}
+                                userId={this.state.user?.userId}
+                            />
+                        )}
+                    </div>
                 </div>
                 {modals}
             </div>
