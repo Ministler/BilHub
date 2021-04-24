@@ -1,5 +1,3 @@
-// using MimeKit;
-
 // namespace backend.Services.Email
 // {
 //     public class Message

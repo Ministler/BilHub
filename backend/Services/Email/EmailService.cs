@@ -1,9 +1,16 @@
+// using MailKit.Net.Smtp;
+// using MailKit.Security;
 // using Microsoft.Extensions.Options;
 // using MimeKit;
-// using System.Net.Mail;
+// using MimeKit.Text;
 
 // namespace backend.Services.Email
 // {
+//     public interface IEmailService
+//     {
+//         void Send(string from, string to, string subject, string html);
+//     }
+
 //     public class EmailService : IEmailService
 //     {
 //         private readonly EmailConfiguration _emailConfiguration;
@@ -12,33 +19,22 @@
 //         {
 //             _emailConfiguration = emailConfiguration;
 //         }
-//         public void Send(Message message)
-//         {
-//             var emailMessage = CreateEmailMessage(message);
-//         }
 
-//         private MimeMessage CreateEmailMessage(Message message)
+//         public void Send(string from, string to, string subject, string html)
 //         {
-//             var emailMessage = new MimeMessage();
-//             emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From));
-//             emailMessage.To.Add(message.To);
-//             emailMessage.Subject = message.Subject;
-//             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content};
-//             return emailMessage;
+//             // create message
+//             var email = new MimeMessage();
+//             email.From.Add(MailboxAddress.Parse(from));
+//             email.To.Add(MailboxAddress.Parse(to));
+//             email.Subject = subject;
+//             email.Body = new TextPart(TextFormat.Plain) { Text = html };
 
-//         }
-//         private void SendMail(MimeMessage mimeMessage) {
-//             using (var client = new SmtpClient() )
-//             {
-//                 try {
-//                     client.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, true);
-//                     client.Send(mimeMessage);
-//                 }
-//                 catch
-//                 {
-//                     throw;
-//                 }
-//             }
+//             // send email
+//             using var smtp = new SmtpClient();
+//             smtp.Connect(_emailConfiguration.SmtpServer, _emailConfiguration.Port, SecureSocketOptions.StartTls);
+//             smtp.Authenticate(_emailConfiguration.UserName, _emailConfiguration.Password);
+//             smtp.Send(email);
+//             smtp.Disconnect(true);
 //         }
 //     }
 // }
