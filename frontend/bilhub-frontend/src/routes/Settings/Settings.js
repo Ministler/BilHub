@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Icon, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-
 import './Settings.css';
 
 const ProfilePrompt = (props) => {

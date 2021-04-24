@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea, Button, Card } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Button, Card, Segment } from 'semantic-ui-react';
 
 import './Project.css';
 import {
@@ -527,19 +527,23 @@ export class Project extends Component {
         const modals = this.getModals();
 
         return (
-            <div className={'FloatingPageDiv'}>
-                <div className={'FloatingLeftDiv'}>
-                    <InformationSection
-                        onCourseClicked={() => this.onCourseClicked(this.state.projectGroup.courseId)}
-                        courseName={this.state.projectGroup.courseName}
-                        groupNameElement={groupNameElement}
-                        nameEditIcon={nameEditIcon}
-                        memberElements={memberElements}
-                        informationElement={groupInformationElement}
-                        informationEditIcon={informationEditIcon}
-                    />
+            <div class="ui centered grid">
+                <div class="row">
+                    <div class="four wide column">
+                        <Segment>
+                            <InformationSection
+                                onCourseClicked={() => this.onCourseClicked(this.state.projectGroup.courseId)}
+                                courseName={this.state.projectGroup.courseName}
+                                groupNameElement={groupNameElement}
+                                nameEditIcon={nameEditIcon}
+                                memberElements={memberElements}
+                                informationElement={groupInformationElement}
+                                informationEditIcon={informationEditIcon}
+                            />
+                        </Segment>
+                    </div>
                 </div>
-                <div className={'FloatingCenterDiv'}>
+                <div class="twelve wide column">
                     {!this.props.match.params.submissionPageId ? (
                         <Tab panes={paneElements} />
                     ) : (

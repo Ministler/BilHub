@@ -1,44 +1,53 @@
 import React, { Component } from 'react';
-import { Segment, Tab } from 'semantic-ui-react';
+import { Grid, Segment, Tab, Icon } from 'semantic-ui-react';
 import './Profile.css';
 
 export class Profile extends Component {
     panes = [
         {
-            menuItem: 'Tab 1',
-            render: () => <Tab.Pane attached={false}>Tab 1 Content</Tab.Pane>,
+            menuItem: 'Projects',
+            render: () => (
+                <Tab.Pane as="div" attached={false}>
+                    Projects
+                </Tab.Pane>
+            ),
         },
         {
-            menuItem: 'Tab 2',
-            render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane>,
-        },
-        {
-            menuItem: 'Tab 3',
-            render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane>,
+            menuItem: 'Instructed Courses',
+            render: () => (
+                <Tab.Pane as="div" attached={false}>
+                    Instructed Courses
+                </Tab.Pane>
+            ),
         },
     ];
 
     TabExampleSecondaryPointing = () => (
-        <Tab menu={{ secondary: true, pointing: true, borderRadius: '0px' }} panes={this.panes} />
+        <Tab menu={{ secondary: true, pointing: true, color: 'red' }} style={{ width: '75%' }} panes={this.panes} />
     );
 
     render() {
         return (
             <div class="ui centered grid">
                 <div class="row">
-                    <div class="three wide column">
+                    <div class="four wide column">
                         <Segment>
+                            <h2 className="ui center aligned icon header">
+                                <Icon circular name="user" size="Massive" />
+                                Yusuf Uyar
+                            </h2>
+                            <p align="center">yusuf.uyar@ug.bilkent.edu.tr</p>
+                            <h4 style={{ marginLeft: '20px' }}>Bio</h4>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate possimus nulla rem,
-                                commodi, cum accusantium sapiente eos fuga maiores iste harum explicabo voluptatum
-                                similique? Asperiores repellat hic quidem vero mollitia laborum fugit, nihil inventore
-                                aliquam perspiciatis sequi alias corporis autem reiciendis iure, totam provident tenetur
-                                at commodi, dolorum rem dicta!
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus id aspernatur ea sit
+                                animi, ab qui! Ea beatae dolorum inventore cum quibusdam placeat quisquam itaque, odio
+                                quasi numquam maiores quidem illum odit commodi dicta animi voluptas tempora? Adipisci
+                                maiores inventore minus provident quas minima itaque saepe et labore, ut sequi!
                             </p>
                         </Segment>
                     </div>
                     <div class="eight wide column">
-                        <Segment></Segment>
+                        <this.TabExampleSecondaryPointing></this.TabExampleSecondaryPointing>
                     </div>
                 </div>
             </div>
