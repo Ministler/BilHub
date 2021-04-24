@@ -1,0 +1,13 @@
+.HomeDivLeft {
+    padding-right: 100px;
+    width: 25%;
+}
+
+.HomeDivRight {
+    padding-left: 100px;
+    width: 25%;
+}
+
+.HomeDivMiddle {
+    width: 50%;
+}
