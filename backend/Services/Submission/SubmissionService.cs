@@ -2,13 +2,12 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using BilHub.Data;
-using BilHub.Dtos.Submission;
-using BilHub.Models;
+using backend.Data;
+using backend.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace BilHub.Services.Submission
+namespace backend.Services.Submission
 {
     public class SubmissionService : ISubmissionService
     {

@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using BilHub.Dtos.Submission;
-using BilHub.Models;
-using BilHub.Services.Submission;
+using backend.Models;
+using backend.Services.Submission;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

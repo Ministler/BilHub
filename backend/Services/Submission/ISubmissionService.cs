@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using BilHub.Dtos.Submission;
-using BilHub.Models;
+using backend.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace BilHub.Services.Submission
+namespace backend.Services.Submission
 {
     public interface ISubmissionService
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class Comment
     {

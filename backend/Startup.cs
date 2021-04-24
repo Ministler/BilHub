@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using backend.Data;
+using backend.Data.Auth;
+using backend.Services.Submission;
 // using backend.Services.Email;
-using BilHub.Data;
-using BilHub.Data.Auth;
-using BilHub.Services.Submission;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace BilHub
+namespace backend
 {
     public class Startup
     {

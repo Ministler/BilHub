@@ -4,7 +4,7 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 
-namespace BilHub.Data
+namespace backend.Data
 {
     public static class Utility
     {
@@ -25,6 +25,8 @@ namespace BilHub.Data
         }
         public static string GenerateRandomPassword()
         {
+            //todo
+            //b=alfanumerik olsun sadece obur turlu iki tikla kopyalanmio
             string ret = "";
             Random random = new Random();
             int len = random.Next() % 8 + 9;
@@ -47,20 +49,38 @@ namespace BilHub.Data
             }
             return ret;
         }
-        public static void SendMail(string mailaddress, string content)
+        public static string GenerateRandomCode()
         {
+            string ret = "431274";
+            //Todo
+            //sadece rakam olsun
+            return ret;
+        }
+        public static void SendMail(string mailaddress, string content, bool recovery)
+        {
+            string subject = recovery ? "BilHub Password Recovery" : "BilHub Email Verification";
+            //Etheral.mail diye bi site, 1 2saat dayaniyo patlarsa yenisini alin
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse("bilhubapp@gmail.com"));
+            email.From.Add(MailboxAddress.Parse("joel.koelpin66@ethereal.email"));
             email.To.Add(MailboxAddress.Parse(mailaddress));
-            email.Subject = "BilHub Password Recovery";
+            email.Subject = subject;
             email.Body = new TextPart(TextFormat.Plain) { Text = content };
 
             // send email
             SmtpClient smtp = new SmtpClient();
-            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate("bilhubapp@gmail.com", "[PASSWORD]");
+            smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("joel.koelpin66@ethereal.email", "TfywjSmqBrrFJ8ae5e");
             smtp.Send(email);
             smtp.Disconnect(true);
+        }
+
+        public static bool CheckIfInstructorEmail(string email)
+        {
+            //TODO
+            //bunu sorted json file yapcaz binaray searchle aricak 
+            if (email.Equals("instructor@bilkent.edu.tr"))
+                return true;
+            return false;
         }
     }
 }

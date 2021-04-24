@@ -1,8 +1,8 @@
-using BilHub.Models;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace BilHub.Data
+namespace backend.Data
 {
     public class DataContext : DbContext
     {

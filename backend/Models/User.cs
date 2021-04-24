@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class User
     {
@@ -18,6 +18,7 @@ namespace BilHub.Models
         public int Id { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
+        public string VerificationCode { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] SecondPasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }

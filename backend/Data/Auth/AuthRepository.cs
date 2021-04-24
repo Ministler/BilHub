@@ -4,27 +4,49 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using BilHub.Models;
+using backend.Models;
+using backend.Dtos.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BilHub.Data.Auth
+namespace backend.Data.Auth
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+
         public AuthRepository(DataContext context, IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
         }
 
-        public async Task<ServiceResponse<string>> ForgotMyPassword(string email)
+        public async Task<ServiceResponse<string>> Verify(UserVerifyDto userVerifyDto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email == userVerifyDto.Email);
+            if (!user.VerificationCode.Equals(userVerifyDto.Code))
+            {
+                response.Success = false;
+                response.Message = "Code is not correct.";
+                return response;
+            }
+            user.VerifiedStatus = true;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            response.Data = "Your account has been activated.";
+            response.Message = "Your account has been activated.";
+
+            return response;
+        }
+        public async Task<ServiceResponse<string>> ForgotMyPassword(UserForgotDto userForgotDto)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(userForgotDto.Email.ToLower()));
             if (user == null)
             {
                 response.Success = false;
@@ -34,7 +56,7 @@ namespace BilHub.Data.Auth
             string randomPassword = Utility.GenerateRandomPassword();
             Utility.CreatePasswordWithSalt(randomPassword, user.PasswordSalt, out byte[] passwordHash);
             user.SecondPasswordHash = passwordHash;
-            Utility.SendMail(user.Email, randomPassword);
+            Utility.SendMail(user.Email, randomPassword, true);
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
@@ -45,23 +67,23 @@ namespace BilHub.Data.Auth
             return response;
         }
 
-        public async Task<ServiceResponse<string>> ChangePassword(string email, string password, string newPassword)
+        public async Task<ServiceResponse<string>> ChangePassword(UserChangeDto userChangeDto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(userChangeDto.Email.ToLower()));
             if (user == null)
             {
                 response.Success = false;
                 response.Message = "User not found.";
             }
-            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt) && !VerifyPasswordHash(password, user.SecondPasswordHash, user.PasswordSalt))
+            else if (!VerifyPasswordHash(userChangeDto.Password, user.PasswordHash, user.PasswordSalt) && !VerifyPasswordHash(userChangeDto.Password, user.SecondPasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
                 response.Message = "Wrong password";
             }
             else
             {
-                Utility.CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                Utility.CreatePasswordHash(userChangeDto.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
                 user.PasswordHash = passwordHash;
                 user.SecondPasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
@@ -73,19 +95,24 @@ namespace BilHub.Data.Auth
             return response;
         }
 
-        public async Task<ServiceResponse<string>> Login(string email, string password)
+        public async Task<ServiceResponse<string>> Login(UserLoginDto userLoginDto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(userLoginDto.Email.ToLower()));
             if (user == null)
             {
                 response.Success = false;
                 response.Message = "User not found.";
             }
-            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt) && !VerifyPasswordHash(password, user.SecondPasswordHash, user.PasswordSalt))
+            else if (!VerifyPasswordHash(userLoginDto.Password, user.PasswordHash, user.PasswordSalt) && !VerifyPasswordHash(userLoginDto.Password, user.SecondPasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
                 response.Message = "Wrong password";
+            }
+            else if (!user.VerifiedStatus)
+            {
+                response.Success = false;
+                response.Message = "Please verify your account";
             }
             else
             {
@@ -95,25 +122,44 @@ namespace BilHub.Data.Auth
             return response;
         }
 
-        public async Task<ServiceResponse<int>> Register(User user, string password)
+        public async Task<ServiceResponse<int>> Register(UserRegisterDto userDto)
         {
             ServiceResponse<int> response = new ServiceResponse<int>();
-            if (await UserExists(user.Email))
+            User newUser = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(userDto.Email.ToLower()));
+            if (newUser != null)
             {
-                response.Success = false;
-                response.Message = "User already exists.";
-                return response;
+                if (newUser.VerifiedStatus)
+                {
+                    response.Success = false;
+                    response.Message = "User already exists.";
+                    return response;
+                }
+            }
+            if (newUser != null)
+                _context.Users.Remove(newUser);
+            newUser = new User { Email = userDto.Email };
+
+            if (Utility.CheckIfInstructorEmail(userDto.Email))
+            {
+                newUser.UserType = 2;
+            }
+            else
+            {
+                newUser.UserType = 1;
             }
 
-            Utility.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            Utility.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            user.PasswordHash = passwordHash;
-            user.SecondPasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            newUser.PasswordHash = passwordHash;
+            newUser.SecondPasswordHash = passwordHash;
+            newUser.PasswordSalt = passwordSalt;
 
-            await _context.Users.AddAsync(user);
+            string code = Utility.GenerateRandomCode();
+            Utility.SendMail(newUser.Email, code, false);
+            newUser.VerificationCode = code;
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
-            response.Data = user.Id;
+            response.Data = newUser.Id;
             return response;
         }
 
