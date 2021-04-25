@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace backend.Data
 {
@@ -78,10 +82,25 @@ namespace backend.Data
 
         public static bool CheckIfInstructorEmail(string email)
         {
-            //TODO
-            //bunu sorted json file yapcaz binaray searchle aricak 
-            if (email.Equals("instructor@bilkent.edu.tr"))
+            var array = Instructors.instrs;
+            if (binarySearch(array, email, array.Length))
                 return true;
+            return false;
+        }
+        private static bool binarySearch(string[] arr, string x, int n)
+        {
+            int l = 0;
+            int r = n - 1;
+            while (l <= r)
+            {
+                int m = l + (r - l) / 2;
+                if (x.Equals(arr[m]))
+                    return true;
+                if (string.Compare(x, arr[m]) > 1)
+                    l = m + 1;
+                else
+                    r = m - 1;
+            }
             return false;
         }
     }
