@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Icon, TextArea } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
-import { Modal, AssignmentCardElement } from '../../../commonComponents';
+import { Modal, AssignmentCardElement } from '../../../components';
 
 export const InformationSection = (props) => {
     return (

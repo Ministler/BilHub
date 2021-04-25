@@ -3,7 +3,7 @@ import { Grid, GridColumn } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Notifications.css';
-import { ProfilePrompt, BriefList } from '../../commonComponents';
+import { ProfilePrompt, BriefList } from '../../components';
 
 class Notifications extends Component {
     constructor(props) {

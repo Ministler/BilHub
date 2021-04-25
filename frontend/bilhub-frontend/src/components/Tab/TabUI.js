@@ -25,18 +25,10 @@ export const FeedbacksPane = (props) => {
 
 export const GradePane = (props) => {
     return (
-        <div>
+        <>
             {props.tables}
             {props.finalGrade ? <div>Final Grade: {props.finalGrade}</div> : null}
-        </div>
-    );
-};
-
-export const AssignmentPane = (props) => {
-    return (
-        <Card.Group as="div" className="AssignmentCardGroup">
-            {props.feedList}
-        </Card.Group>
+        </>
     );
 };
 
@@ -53,9 +45,8 @@ export const SubmissionPane = (props) => {
                 title={'Submission'}
                 file={props.submission.file}
                 fileClicked={props.onSubmissionFileClicked}
-                date={props.submission.date}>
-                {props.submission.caption}
-            </AssignmentCardElement>
+                date={props.submission.date}
+                caption={props.assignment.caption}></AssignmentCardElement>
         );
     }
 
@@ -67,9 +58,8 @@ export const SubmissionPane = (props) => {
                 fileClicked={props.onAssignmentfileClicked}
                 status={props.assignment.status}
                 date={props.assignment.date}
-                publisher={props.assignment.publisher}>
-                {props.assignment.caption}
-            </AssignmentCardElement>
+                publisher={props.assignment.publisher}
+                caption={props.assignment.caption}></AssignmentCardElement>
             <hr />
             {submissionCard}
             {props.buttons}

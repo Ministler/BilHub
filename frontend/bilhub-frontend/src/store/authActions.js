@@ -93,7 +93,6 @@ export const checkAuth = (token) => {
             dispatch(logout());
             return;
         }
-
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];

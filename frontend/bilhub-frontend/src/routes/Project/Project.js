@@ -9,10 +9,9 @@ import {
     getGradeTable,
     GradePane,
     getFeedbacksAsAccordion,
-    AssignmentPane,
     convertMembersToMemberElement,
     FeedbacksPane,
-} from '../../commonComponents';
+} from '../../components';
 import { ProjectSubmission } from './ProjectSubmission';
 
 export class Project extends Component {
@@ -279,20 +278,18 @@ export class Project extends Component {
         return {
             title: 'Assignments',
             content: this.state.assignments ? (
-                <AssignmentPane
-                    feedList={convertAssignmentsToAssignmentList(
-                        this.state.assignments,
-                        this.onAssignmentClicked,
-                        this.onAssignmentFileClicked
-                    )}
-                />
+                convertAssignmentsToAssignmentList(
+                    this.state.assignments,
+                    this.onAssignmentClicked,
+                    this.onAssignmentFileClicked
+                )
             ) : (
                 <div>No Assignments</div>
             ),
         };
     };
 
-    getGradePane = () => {
+    getGradesPane = () => {
         return {
             title: 'Grades',
             content: this.state.grades ? (
@@ -300,8 +297,8 @@ export class Project extends Component {
                     tables={getGradeTable(
                         this.state.grades,
                         this.state.grades?.projectAverage,
-                        this.state.grades.courseAverage,
-                        this.state.projectGroup.name
+                        this.state.grades?.courseAverage,
+                        this.state.projectGroup?.name
                     )}
                     finalGrade={this.state.grades.finalGrade}
                 />
@@ -313,7 +310,7 @@ export class Project extends Component {
 
     getNewCommentButton = () => {
         let newCommentButton = null;
-        if (this.state.projectGroup.canUserComment) {
+        if (this.state.projectGroup?.canUserComment) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -334,7 +331,7 @@ export class Project extends Component {
             <FeedbacksPane
                 feedbacksAccordion={getFeedbacksAsAccordion(
                     this.state.feedbacks,
-                    this.state.projectGroup.isTAorInstructor,
+                    this.state.projectGroup?.isTAorInstructor,
                     this.onModalOpenedWithComment,
                     this.onAuthorClicked,
                     this.props.userId,
@@ -351,7 +348,7 @@ export class Project extends Component {
     };
 
     getPaneElements = () => {
-        return [this.getAssignmentPane(), this.getGradePane(), this.getFeedbacksPane()];
+        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
     };
 
     // Modals

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { AppLayout } from './commonComponents';
+import { AppLayout } from './components';
 import {
     Login,
     Signup,

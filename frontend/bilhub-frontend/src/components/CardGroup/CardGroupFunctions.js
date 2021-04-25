@@ -31,7 +31,11 @@ export const convertAssignmentsToAssignmentList = (assignments, onAssignmentClic
         );
     });
 
-    return <Card.Group>{assignmentCardElements}</Card.Group>;
+    return (
+        <Card.Group as="div" className="AssignmentCardGroup">
+            {assignmentCardElements}
+        </Card.Group>
+    );
 };
 
 export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorClicked, userId) => {

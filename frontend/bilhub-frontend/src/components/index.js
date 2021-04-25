@@ -7,7 +7,7 @@ export {
     convertFeedbacksToFeedbackList,
     convertSRSFeedbackToSRSCardElement,
 } from './CardGroup';
-export { Tab, GradePane, FeedbacksPane, AssignmentPane, SubmissionPane } from './Tab';
+export { Tab, GradePane, FeedbacksPane, SubmissionPane } from './Tab';
 export { Table, getGradeTable } from './Table';
 export { Modal } from './Modal';
 export { getFeedbacksAsAccordion } from './Accordion';

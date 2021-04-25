@@ -9,7 +9,7 @@ import {
     convertUpcomingAssignmentsToBriefList,
     convertNotGradedAssignmentsToBriefList,
     convertAssignmentsToAssignmentList,
-} from '../../commonComponents';
+} from '../../components';
 
 export class Home extends Component {
     constructor(props) {
