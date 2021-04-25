@@ -39,6 +39,15 @@ namespace BilHub.Data
                 .WithMany(g => g.IncomingMergeRequest)
                 .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<JoinRequest>().HasOne(jr => jr.RequestingStudent)
+                .WithMany(u => u.OutgoingJoinRequests)
+                .HasForeignKey(jr => jr.UserId);
+            
+            modelBuilder.Entity<JoinRequest>().HasOne(jr => jr.RequestedGroup)
+                .WithMany(g => g.IncomingJoinRequests)
+                .HasForeignKey(jr => jr.ProjectGroupId).OnDelete(DeleteBehavior.Restrict);
+            
+
             // Utility.CreatePasswordHash("123456", out byte[] passwordHash, out byte[] passwordSalt);
 
             // modelBuilder.Entity<User>().HasData(

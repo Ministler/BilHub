@@ -483,7 +483,7 @@ namespace BilHub.Migrations
                     b.HasOne("BilHub.Models.ProjectGroup", "RequestedGroup")
                         .WithMany("IncomingJoinRequests")
                         .HasForeignKey("ProjectGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BilHub.Models.User", "RequestingStudent")
