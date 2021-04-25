@@ -11,6 +11,8 @@ using System.IO.Compression;
 using System.Linq;
 using System;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace backend.Controllers
 {
@@ -21,15 +23,18 @@ namespace backend.Controllers
     {
         private readonly ISubmissionService _submissionService;
 
-        public SubmissionController(ISubmissionService submissionService)
+        private IWebHostEnvironment _hostingEnvironment;
+        public SubmissionController(ISubmissionService submissionService, IWebHostEnvironment hostingEnvironment)
         {
             _submissionService = submissionService;
+
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet]
         [Route("{courseId}/{sectionId}/{assignmentId}")]
         //istedigim gibi calismiyor
-        public async Task<IActionResult> GetAllSubmissions(int courseId, int sectionId, int assignmentId)
+        public async Task<ActionResult> GetAllSubmissions(int courseId, int sectionId, int assignmentId)
         {
             GetSubmissionsFileDto dto = new GetSubmissionsFileDto { CourseId = courseId, SectionId = sectionId, AssignmentId = assignmentId };
             ServiceResponse<string> response = await _submissionService.DownloadAllSubmissions(dto);
@@ -52,23 +57,44 @@ namespace backend.Controllers
                     stack.Push(d);
             }
 
-            using (var memoryStream = new MemoryStream())
+            var webRoot = _hostingEnvironment.ContentRootPath;
+            var fileName = "Submissions.zip";
+            var tempOutput = webRoot + "/Submissions/" + fileName;
+            using (ZipOutputStream zipOutputStream = new ZipOutputStream(System.IO.File.Create(tempOutput)))
             {
-                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                zipOutputStream.SetLevel(9);
+                byte[] buffer = new byte[4096];
+                for (int i = 0; i < files.Count; i++)
                 {
-                    files.ForEach(file =>
+                    ZipEntry zipEntry = new ZipEntry(Path.GetFileName(files[i]));
+                    zipEntry.DateTime = DateTime.Now;
+                    zipEntry.IsUnicodeText = true;
+                    zipOutputStream.PutNextEntry(zipEntry);
+                    using (FileStream fileStream = System.IO.File.OpenRead(files[i]))
                     {
-                        int i = 0;
-                        var theFile = archive.CreateEntry("" + (++i));
-                        using (var streamWriter = new StreamWriter(theFile.Open()))
+                        int sourceBytes;
+                        do
                         {
-                            streamWriter.Write(System.IO.File.ReadAllBytes(file));
-                        }
-
-                    });
+                            sourceBytes = fileStream.Read(buffer, 0, buffer.Length);
+                            zipOutputStream.Write(buffer, 0, sourceBytes);
+                        } while (sourceBytes > 0);
+                    }
                 }
 
-                return File(memoryStream.ToArray(), "application/zip", "Submissions.zip");
+                zipOutputStream.Finish();
+                zipOutputStream.Flush();
+                zipOutputStream.Close();
+
+                byte[] finalResult = System.IO.File.ReadAllBytes(tempOutput);
+                if (System.IO.File.Exists(tempOutput))
+                {
+                    System.IO.File.Delete(tempOutput);
+                }
+                if (finalResult == null || !finalResult.Any())
+                {
+                    return BadRequest(response);
+                }
+                return File(finalResult, "application/zip", fileName);
             }
         }
 
