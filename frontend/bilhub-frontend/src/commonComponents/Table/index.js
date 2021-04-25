@@ -1,1 +1,2 @@
-export { MyTable as Table } from './Table';
+export { MyTable as Table } from './TableUI';
+export { getGradeTable } from './TableFunctions';

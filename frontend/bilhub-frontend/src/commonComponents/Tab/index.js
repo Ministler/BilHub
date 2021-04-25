@@ -1,1 +1,1 @@
-export { MyTab as Tab } from './Tab';
+export { MyTab as Tab, GradePane, FeedbacksPane, AssignmentPane, SubmissionPane } from './TabUI';

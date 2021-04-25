@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea, Button, Card, Segment } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Segment, Button } from 'semantic-ui-react';
 
 import './Project.css';
+import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal } from './ProjectComponents';
 import {
-    InformationSection,
-    MemberElement,
-    AssignmentPane,
+    Tab,
+    convertAssignmentsToAssignmentList,
+    getGradeTable,
     GradePane,
-    FeedbackPane,
-    NewCommentModal,
-    EditCommentModal,
-    DeleteCommentModal,
-} from './ProjectComponents';
-import { Tab, FeedbackCardElement, AssignmentCardElement } from '../../commonComponents';
+    getFeedbacksAsAccordion,
+    AssignmentPane,
+    convertMembersToMemberElement,
+    FeedbacksPane,
+} from '../../commonComponents';
 import { ProjectSubmission } from './ProjectSubmission';
 
 export class Project extends Component {
@@ -59,7 +59,7 @@ export class Project extends Component {
         });
     }
 
-    // Logic Regarding Left Side
+    // LEFT SIDE LOGIC
     onCourseClicked = (courseId) => {
         this.props.history.push('/course/' + courseId);
     };
@@ -68,21 +68,22 @@ export class Project extends Component {
         this.props.history.push('/profile/' + userId);
     };
 
-    convertMembersToMemberElement(members) {
-        return members.map((member) => {
-            return <MemberElement onClick={() => this.onMemberClicked(member.userId)} member={member} />;
-        });
-    }
-
-    onInputChange = (e, stateName) => {
+    onInputChanged = (e, stateName) => {
         e.preventDefault();
         this.setState({
             [stateName]: e.target.value,
         });
     };
 
+    onEditModeToggled = (editMode) => {
+        this.setState((prevState) => {
+            return {
+                [editMode]: !prevState[editMode],
+            };
+        });
+    };
+
     changeGroupName = (newName) => {
-        // DATAYI BACKENDE GÖNDERİCEZ ŞİMDİLİK BÖYLE
         let projectGroup = { ...this.state.projectGroup };
         projectGroup.name = newName;
         this.setState({
@@ -91,7 +92,6 @@ export class Project extends Component {
     };
 
     changeGroupInformation = (newInformation) => {
-        // DATAYI BACKENDE GÖNDERİCEZ ŞİMDİLİK BÖYLE
         let projectGroup = { ...this.state.projectGroup };
         projectGroup.information = newInformation;
         this.setState({
@@ -99,183 +99,21 @@ export class Project extends Component {
         });
     };
 
-    toggleEditMode = (editMode) => {
-        this.setState((prevState) => {
-            return {
-                [editMode]: !prevState[editMode],
-            };
-        });
+    // RIGHT SIDE LOGIC
+    onAssignmentClicked = (submissionPageId) => {
+        this.props.history.push('/project/' + this.props.match.params.projectId + '/submission/' + submissionPageId);
     };
 
-    // For logic regarding Assignments
-    onFeedClicked = (projectId, submissionPageId) => {
-        this.props.history.push('/project/' + projectId + '/submission/' + submissionPageId);
-    };
-
-    onFeedFileClicked = () => {
+    onAssignmentFileClicked = () => {
         console.log('FILE');
     };
 
-    onFeedPublisherClicked = (userId) => {
+    onAuthorClicked = (userId) => {
         this.props.history.push('/profile/' + userId);
     };
 
-    convertFeedsToFeedList = (feeds) => {
-        return feeds.map((feed) => {
-            const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
-            return (
-                <AssignmentCardElement
-                    title={feed.title}
-                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.submissionPageId)}
-                    file={feed.file}
-                    fileClicked={this.onFeedFileClicked}
-                    status={feed.status}
-                    date={date}
-                    publisher={feed.publisher}
-                    publisherClicked={() => {
-                        this.onFeedPublisherClicked(feed.publisherId);
-                    }}>
-                    {feed.caption}
-                </AssignmentCardElement>
-            );
-        });
-    };
-
-    // For logic regarding grades
-    getTableBodyRowsData = (grades) => {
-        const persons = grades.persons;
-
-        const personsData = persons.map((person) => {
-            return [person.type, person.name, person.grade];
-        });
-
-        if (grades.studentsAverage) {
-            personsData.push(['Students Average', '', grades.studentsAverage]);
-        }
-
-        return personsData;
-    };
-
-    getSRSFeedbackContent = (SRSResult) => {
-        if (SRSResult) {
-            let icons = null;
-            if (this.state.projectGroup.isTAorInstructor) {
-                icons = (
-                    <span>
-                        <Icon
-                            name="edit"
-                            onClick={() =>
-                                this.openModelWithComment(
-                                    'isEditFeedbackOpen',
-                                    true,
-                                    SRSResult.commentId,
-                                    SRSResult.feedback,
-                                    SRSResult.grade
-                                )
-                            }
-                        />
-                        <Icon
-                            name="delete"
-                            onClick={() =>
-                                this.openModelWithComment(
-                                    'isDeleteFeedbackOpen',
-                                    true,
-                                    SRSResult.commentId,
-                                    SRSResult.feedback,
-                                    SRSResult.grade
-                                )
-                            }
-                        />
-                    </span>
-                );
-            }
-
-            return (
-                <FeedbackCardElement
-                    feedback={SRSResult.feedback}
-                    grade={SRSResult.grade}
-                    totalGrade={10}
-                    author={SRSResult.name}
-                    date={SRSResult.date}
-                    icons={icons}
-                />
-            );
-        } else if (this.state.projectGroup?.isTAorInstructor) {
-            return <Button onClick={() => this.openModal('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
-        } else {
-            return <div>No Feedback</div>;
-        }
-    };
-
-    getFeedbacksContent = (feedbacks) => {
-        if (feedbacks) {
-            const feedbackFeedElements = feedbacks.map((feedback) => {
-                let icons = null;
-                if (this.state.user.userId === feedback.userId) {
-                    icons = (
-                        <span>
-                            <Icon
-                                name="edit"
-                                onClick={() =>
-                                    this.openModelWithComment(
-                                        'isEditFeedbackOpen',
-                                        false,
-                                        feedback.commentId,
-                                        feedback.feedback,
-                                        feedback.grade
-                                    )
-                                }
-                            />
-                            <Icon
-                                name="delete"
-                                onClick={() =>
-                                    this.openModelWithComment(
-                                        'isDeleteFeedbackOpen',
-                                        false,
-                                        feedback.commentId,
-                                        feedback.feedback,
-                                        feedback.grade
-                                    )
-                                }
-                            />
-                        </span>
-                    );
-                }
-
-                return (
-                    <FeedbackCardElement
-                        feedback={feedback.feedback}
-                        grade={feedback.grade}
-                        totalGrade={10}
-                        author={feedback.name}
-                        date={feedback.date}
-                        icons={icons}
-                    />
-                );
-            });
-
-            return <Card.Group>{feedbackFeedElements}</Card.Group>;
-        } else {
-            return <div>No Feedback</div>;
-        }
-    };
-
-    getCommentsAsAccordionElements = () => {
-        const feedbacks = this.state.feedbacks;
-
-        return [
-            { title: 'SRS Feedback', content: this.getSRSFeedbackContent(feedbacks.SRSResult) },
-            {
-                title: 'Instructor Feedbacks',
-                content: this.getFeedbacksContent(feedbacks.InstructorComments),
-            },
-            { title: 'TA Feedbacks', content: this.getFeedbacksContent(feedbacks.TAComments) },
-            { title: 'Student Feedbacks', content: this.getFeedbacksContent(feedbacks.StudentComments) },
-        ];
-    };
-
-    // Accordion
-    handleAccordionClick = (titleProps) => {
+    onAccordionClicked = (e, titleProps) => {
+        console.log(titleProps);
         const index = titleProps.index;
         const activeIndex = this.state.accordionActiveIndex;
         const newIndex = activeIndex === index ? -1 : index;
@@ -283,72 +121,22 @@ export class Project extends Component {
         this.setState({ accordionActiveIndex: newIndex });
     };
 
-    getPaneElements = () => {
-        let newCommentButton = null;
-        if (this.state.projectGroup.canUserComment) {
-            newCommentButton = (
-                <Button
-                    content="Give Feedback"
-                    labelPosition="right"
-                    icon="edit"
-                    primary
-                    onClick={() => this.openModal('isGiveFeedbackOpen', false)}
-                />
-            );
-        }
-
-        return [
-            {
-                title: 'Assignments',
-                content: this.state.assignments ? (
-                    <AssignmentPane feedList={this.convertFeedsToFeedList(this.state.assignments)} />
-                ) : (
-                    <div>No Assignments</div>
-                ),
-            },
-            {
-                title: 'Grades',
-                content: this.state.grades ? (
-                    <GradePane
-                        firstBodyRowsData={this.getTableBodyRowsData(this.state.grades)}
-                        firstHeaderNames={['User', 'Person', 'Grade']}
-                        secondBodyRowsData={[[this.state.grades.projectAverage, this.state.grades.courseAverage]]}
-                        secondHeaderNames={[this.state.projectGroup.name + ' Avarage', 'Course Average']}
-                        finalGrade={this.state.grades.finalGrade}
-                    />
-                ) : (
-                    <div>No Grades</div>
-                ),
-            },
-            {
-                title: 'Feedbacks',
-                content: (
-                    <FeedbackPane
-                        handleClick={(titleProps) => this.handleAccordionClick(titleProps)}
-                        activeIndex={this.state.accordionActiveIndex}
-                        newCommentButton={newCommentButton}
-                        accordionElements={this.getCommentsAsAccordionElements()}></FeedbackPane>
-                ),
-            },
-        ];
-    };
-
-    onCurrentFeedbackTextChange = (e) => {
+    // MODAL LOGIC
+    onCurrentFeedbackTextChanged = (e) => {
         e.preventDefault();
         this.setState({
             currentFeedbackText: e.target.value,
         });
     };
 
-    onCurrentFeedbackGradeChange = (e) => {
+    onCurrentFeedbackGradeChanged = (e) => {
         e.preventDefault();
         this.setState({
             currentFeedbackGrade: e.target.value,
         });
     };
 
-    // Models
-    openModal = (modelType, isFeedbackSRS) => {
+    onModalOpened = (modelType, isFeedbackSRS) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
@@ -369,7 +157,7 @@ export class Project extends Component {
         }
     };
 
-    openModelWithComment = (modelType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
+    onModalOpenedWithComment = (modelType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
@@ -391,68 +179,208 @@ export class Project extends Component {
         }
     };
 
-    closeModal = (modelType, isSuccess) => {
+    onModalClosed = (modelType, isSuccess) => {
         this.setState({
             [modelType]: false,
         });
         if (!isSuccess) return;
+    };
 
-        if (this.state.isFeedbackSRS) {
-            let feed = { ...this.state.feedbacks.SRSResult };
-            if (this.state.isEditFeedbackOpen) {
-                feed.feedback = this.state.currentFeedbackText;
-                feed.grade = this.state.currentFeedbackGrade;
-            } else if (this.state.isGiveFeedbackOpen) {
-                feed.feedback = this.state.currentFeedbackText;
-                feed.grade = this.state.currentFeedbackGrade;
-            } else if (this.state.isDeleteFeedbackOpen) {
-                feed = null;
-            }
-            this.setState({
-                feedbacks: {
-                    ...this.state.feedbacks,
-                    SRSResult: feed,
-                },
-            });
-            return;
+    getInformationPart = () => {
+        return (
+            <InformationSection
+                onCourseClicked={() => this.onCourseClicked(this.state.projectGroup.courseId)}
+                courseName={this.state.projectGroup.courseName}
+                groupNameElement={this.getGroupNameElement()}
+                nameEditIcon={this.getNameEditIcon()}
+                memberElements={convertMembersToMemberElement(this.state.projectGroup.members, this.onMemberClicked)}
+                informationElement={this.getGroupInformationItem()}
+                informationEditIcon={this.getInformationEditIcon()}
+            />
+        );
+    };
+
+    getGroupNameElement = () => {
+        let groupNameElement = this.state.projectGroup.name;
+        if (this.state.nameEditMode) {
+            groupNameElement = <Input onChange={(e) => this.onInputChanged(e, 'newName')} value={this.state.newName} />;
         }
 
-        if (this.state.isEditFeedbackOpen) {
-        } else if (this.state.isGiveFeedbackOpen) {
-        } else if (this.state.isDeleteFeedbackOpen) {
+        return groupNameElement;
+    };
+
+    getNameEditIcon = () => {
+        // EDITING GROUP NAME ELEMENTS
+        let nameEditIcon = null;
+        if (this.state.projectGroup.isNameChangeable && this.state.projectGroup.isInGroup) {
+            nameEditIcon = this.state.nameEditMode ? (
+                <Icon
+                    className="clickableChangeColor"
+                    onClick={() => {
+                        this.changeGroupName(this.state.newName);
+                        this.onEditModeToggled('nameEditMode');
+                    }}
+                    name={'check'}
+                />
+            ) : (
+                <Icon
+                    className="clickableChangeColor"
+                    onClick={() => {
+                        this.onEditModeToggled('nameEditMode');
+                    }}
+                    name={'edit'}
+                />
+            );
+        }
+        return nameEditIcon;
+    };
+
+    getGroupInformationItem = () => {
+        let groupInformationElement = this.state.projectGroup.information;
+        if (this.state.informationEditMode) {
+            groupInformationElement = (
+                <TextArea
+                    onChange={(e) => this.onInputChanged(e, 'newInformation')}
+                    value={this.state.newInformation}
+                />
+            );
+        }
+        return groupInformationElement;
+    };
+
+    getInformationEditIcon = () => {
+        // EDITING GROUP INFORMATION ELEMENTS
+        let informationEditIcon = null;
+        if (this.state.projectGroup.isProjectActive && this.state.projectGroup.isInGroup) {
+            informationEditIcon = this.state.informationEditMode ? (
+                <Icon
+                    className="clickableChangeColor"
+                    onClick={() => {
+                        this.changeGroupInformation(this.state.newInformation);
+                        this.onEditModeToggled('informationEditMode');
+                    }}
+                    name={'check'}
+                />
+            ) : (
+                <Icon
+                    className="clickableChangeColor"
+                    onClick={() => {
+                        this.onEditModeToggled('informationEditMode');
+                    }}
+                    name={'edit'}
+                />
+            );
         }
 
-        // POST
+        return informationEditIcon;
+    };
+
+    getAssignmentPane = () => {
+        return {
+            title: 'Assignments',
+            content: this.state.assignments ? (
+                <AssignmentPane
+                    feedList={convertAssignmentsToAssignmentList(
+                        this.state.assignments,
+                        this.onAssignmentClicked,
+                        this.onAssignmentFileClicked
+                    )}
+                />
+            ) : (
+                <div>No Assignments</div>
+            ),
+        };
+    };
+
+    getGradePane = () => {
+        return {
+            title: 'Grades',
+            content: this.state.grades ? (
+                <GradePane
+                    tables={getGradeTable(
+                        this.state.grades,
+                        this.state.grades?.projectAverage,
+                        this.state.grades.courseAverage,
+                        this.state.projectGroup.name
+                    )}
+                    finalGrade={this.state.grades.finalGrade}
+                />
+            ) : (
+                <div>No Grades</div>
+            ),
+        };
+    };
+
+    getNewCommentButton = () => {
+        let newCommentButton = null;
+        if (this.state.projectGroup.canUserComment) {
+            newCommentButton = (
+                <Button
+                    content="Give Feedback"
+                    labelPosition="right"
+                    icon="edit"
+                    primary
+                    onClick={() => this.onModalOpened('isGiveFeedbackOpen', false)}
+                />
+            );
+        }
+
+        return newCommentButton;
+    };
+
+    getFeedbacksPane = () => {
+        const newCommentButton = this.getNewCommentButton();
+        const content = (
+            <FeedbacksPane
+                feedbacksAccordion={getFeedbacksAsAccordion(
+                    this.state.feedbacks,
+                    this.state.projectGroup.isTAorInstructor,
+                    this.onModalOpenedWithComment,
+                    this.onAuthorClicked,
+                    this.props.userId,
+                    this.onAccordionClicked,
+                    this.state.accordionActiveIndex
+                )}
+                newCommentButton={newCommentButton}
+            />
+        );
+        return {
+            title: 'Feedbacks',
+            content: content,
+        };
+    };
+
+    getPaneElements = () => {
+        return [this.getAssignmentPane(), this.getGradePane(), this.getFeedbacksPane()];
     };
 
     // Modals
     getModals = () => {
-        console.log(this.state.currentFeedbackText);
         return (
             <>
                 <NewCommentModal
                     isOpen={this.state.isGiveFeedbackOpen}
-                    closeModal={(isSuccess) => this.closeModal('isGiveFeedbackOpen', isSuccess)}
+                    closeModal={(isSuccess) => this.onModalClosed('isGiveFeedbackOpen', isSuccess)}
                     projectName={this.state.projectGroup.name}
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
-                    onTextChange={(e) => this.onCurrentFeedbackTextChange(e)}
-                    onGradeChange={(e) => this.onCurrentFeedbackGradeChange(e)}
+                    onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
+                    onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
                 />
                 <EditCommentModal
                     isOpen={this.state.isEditFeedbackOpen}
-                    closeModal={(isSuccess) => this.closeModal('isEditFeedbackOpen', isSuccess)}
+                    closeModal={(isSuccess) => this.onModalClosed('isEditFeedbackOpen', isSuccess)}
                     projectName={this.state.projectGroup.name}
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
-                    onTextChange={(e) => this.onCurrentFeedbackTextChange(e)}
-                    onGradeChange={(e) => this.onCurrentFeedbackGradeChange(e)}
+                    onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
+                    onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
                 />
                 <DeleteCommentModal
                     isOpen={this.state.isDeleteFeedbackOpen}
-                    closeModal={(isSuccess) => this.closeModal('isDeleteFeedbackOpen', isSuccess)}
+                    closeModal={(isSuccess) => this.onModalClosed('isDeleteFeedbackOpen', isSuccess)}
                     projectName={this.state.projectGroup.name}
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
@@ -463,88 +391,15 @@ export class Project extends Component {
     };
 
     render() {
-        const memberElements = this.convertMembersToMemberElement(this.state.projectGroup.members);
-
-        // EDITING GROUP NAME ELEMENTS
-        let nameEditIcon = null;
-        if (this.state.projectGroup.isNameChangeable && this.state.projectGroup.isInGroup) {
-            nameEditIcon = this.state.nameEditMode ? (
-                <Icon
-                    className="clickableChangeColor"
-                    onClick={() => {
-                        this.changeGroupName(this.state.newName);
-                        this.toggleEditMode('nameEditMode');
-                    }}
-                    name={'check'}
-                />
-            ) : (
-                <Icon
-                    className="clickableChangeColor"
-                    onClick={() => {
-                        this.toggleEditMode('nameEditMode');
-                    }}
-                    name={'edit'}
-                />
-            );
-        }
-
-        let groupNameElement = this.state.projectGroup.name;
-        if (this.state.nameEditMode) {
-            groupNameElement = <Input onChange={(e) => this.onInputChange(e, 'newName')} value={this.state.newName} />;
-        }
-
-        // EDITING GROUP INFORMATION ELEMENTS
-        let informationEditIcon = null;
-        if (this.state.projectGroup.isProjectActive && this.state.projectGroup.isInGroup) {
-            informationEditIcon = this.state.informationEditMode ? (
-                <Icon
-                    className="clickableChangeColor"
-                    onClick={() => {
-                        this.changeGroupInformation(this.state.newInformation);
-                        this.toggleEditMode('informationEditMode');
-                    }}
-                    name={'check'}
-                />
-            ) : (
-                <Icon
-                    className="clickableChangeColor"
-                    onClick={() => {
-                        this.toggleEditMode('informationEditMode');
-                    }}
-                    name={'edit'}
-                />
-            );
-        }
-
-        let groupInformationElement = this.state.projectGroup.information;
-        if (this.state.informationEditMode) {
-            groupInformationElement = (
-                <TextArea onChange={(e) => this.onInputChange(e, 'newInformation')} value={this.state.newInformation} />
-            );
-        }
-
-        const paneElements = this.getPaneElements();
-        const modals = this.getModals();
-
         return (
             <div class="ui centered grid">
                 <div class="row">
                     <div class="four wide column">
-                        <Segment>
-                            <InformationSection
-                                onCourseClicked={() => this.onCourseClicked(this.state.projectGroup.courseId)}
-                                courseName={this.state.projectGroup.courseName}
-                                groupNameElement={groupNameElement}
-                                nameEditIcon={nameEditIcon}
-                                memberElements={memberElements}
-                                informationElement={groupInformationElement}
-                                informationEditIcon={informationEditIcon}
-                            />
-                        </Segment>
+                        <Segment>{this.getInformationPart()}</Segment>
                     </div>
                     <div class="twelve wide column">
                         {!this.props.match.params.submissionPageId ? (
-                            <Tab panes={paneElements} />
+                            <Tab tabPanes={this.getPaneElements()} />
                         ) : (
                             <ProjectSubmission
                                 projectName={this.state.projectGroup?.name}
@@ -555,7 +410,7 @@ export class Project extends Component {
                         )}
                     </div>
                 </div>
-                {modals}
+                {this.getModals()}
             </div>
         );
     }
@@ -710,7 +565,7 @@ const dummyGrades = {
 const dummyFeedbacks = {
     SRSResult: {
         name: 'Elgun Jabrayilzade',
-        feedback: 'Please download the complete feedback file',
+        caption: 'Please download the complete feedback file',
         file: 'dummyFile',
         date: '11 March 2021',
         commentId: 1,
@@ -719,7 +574,7 @@ const dummyFeedbacks = {
     InstructorComments: [
         {
             name: 'Eray Tüzün',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
@@ -729,7 +584,7 @@ const dummyFeedbacks = {
         {
             name: 'Alper Sarıkan',
             date: '11 March 2021',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',
@@ -739,7 +594,7 @@ const dummyFeedbacks = {
     TAComments: [
         {
             name: 'Eray Tüzün',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
@@ -749,7 +604,7 @@ const dummyFeedbacks = {
         {
             name: 'Alper Sarıkan',
             date: '11 March 2021',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',
@@ -759,8 +614,8 @@ const dummyFeedbacks = {
     StudentComments: [
         {
             name: 'Eray Tüzün',
-            feedback:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            caption:
+                'Lcaptionorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
             commentId: 5,
@@ -771,7 +626,7 @@ const dummyFeedbacks = {
         {
             name: 'Alper Sarıkan',
             date: '11 March 2021',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',
@@ -781,7 +636,7 @@ const dummyFeedbacks = {
         },
         {
             name: 'Eray Tüzün',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
@@ -790,7 +645,7 @@ const dummyFeedbacks = {
         {
             name: 'Alper Sarıkan',
             date: '11 March 2021',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',
@@ -798,7 +653,7 @@ const dummyFeedbacks = {
         },
         {
             name: 'Eray Tüzün',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
             date: '11 March 2021',
@@ -807,7 +662,7 @@ const dummyFeedbacks = {
         {
             name: 'Alper Sarıkan',
             date: '11 March 2021',
-            feedback:
+            caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',

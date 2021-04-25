@@ -1,18 +1,6 @@
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
 
-import './HomeComponents.css';
-
-export const ProfilePrompt = (props) => {
-    return (
-        <div className={'ProfilePrompt'} onClick={props.onClick}>
-            <span className={'ProfileSpan'}>
-                <Icon name="user circle" size="huge" />
-            </span>
-            <span>{props.name}</span>
-        </div>
-    );
-};
+import './BriefListUI.css';
 
 export const BriefList = (props) => {
     return (
@@ -45,6 +33,14 @@ export const TitledDatedBriefElement = (props) => {
                     {props.date}
                 </div>
             </span>
+        </div>
+    );
+};
+
+export const MemberBriefElement = (props) => {
+    return (
+        <div className="clickableHighlightBack" onClick={props.onClick}>
+            {props.member.name} - {props.member.information}
         </div>
     );
 };

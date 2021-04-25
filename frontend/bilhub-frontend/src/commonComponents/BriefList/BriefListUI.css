@@ -1,13 +1,3 @@
-.ProfilePrompt {
-    width: 120%;
-    height: auto;
-    margin-left: -35px;
-}
-
-.ProfilePrompt span {
-    display: inline-block;
-}
-
 .BriefList {
     width: 100%;
     padding: 0.25cm;

@@ -1,9 +1,15 @@
-import React, { Component, createRef } from 'react';
-import { Icon, Card, Grid, GridColumn } from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Grid, GridColumn } from 'semantic-ui-react';
 
 import './Home.css';
-import { AssignmentCardElement } from '../../commonComponents';
-import { BriefList, TitledIconedBriefElement, TitledDatedBriefElement, ProfilePrompt } from './HomeComponents';
+import {
+    ProfilePrompt,
+    convertMyProjectsToBriefList,
+    convertInstructedCoursesToBriefList,
+    convertUpcomingAssignmentsToBriefList,
+    convertNotGradedAssignmentsToBriefList,
+    convertAssignmentsToAssignmentList,
+} from '../../commonComponents';
 
 export class Home extends Component {
     constructor(props) {
@@ -29,40 +35,24 @@ export class Home extends Component {
         });
     }
 
+    // ON CLICK LISTENERS
+    onProfilePromptClicked = () => {
+        this.props.history.push('profile');
+    };
+
     onProjectClicked = (projectId) => {
         this.props.history.push('project/' + projectId);
     };
-
-    convertProjectsToBriefList = (projects) => {
-        return projects.map((project) => {
-            const icon = project.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
-            const title = project.courseCode + '/' + project.projectName;
-            return (
-                <TitledIconedBriefElement
-                    icon={icon}
-                    title={title}
-                    onClick={() => this.onProjectClicked(project.projectId)}
-                />
-            );
-        });
-    };
-
     onInsturctedCourseClicked = (courseId) => {
         this.props.history.push('course/' + courseId);
     };
 
-    convertInstructedCoursesToBriefList = (instructedCourses) => {
-        return instructedCourses.map((course) => {
-            const icon = course.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
-            const title = course.courseCode;
-            return (
-                <TitledIconedBriefElement
-                    icon={icon}
-                    title={title}
-                    onClick={() => this.onInsturctedCourseClicked(course.courseId)}
-                />
-            );
-        });
+    onUpcomingAssignmentClicked = (projectId, submissionPageId) => {
+        this.props.history.push('project/' + projectId + '/submission/' + submissionPageId);
+    };
+
+    onNotGradedAssignmentClicked = (courseId, assignmentPageId) => {
+        this.props.history.push('course/' + courseId + '/assignment/' + assignmentPageId);
     };
 
     onFeedClicked = (projectId, submissionPageId) => {
@@ -70,110 +60,49 @@ export class Home extends Component {
     };
 
     onFeedFileClicked = () => {
-        console.log('FILE');
+        console.log('FEED FILE CLICKED');
     };
 
-    onFeedPublisherClicked = (userId) => {
-        this.props.history.push('profile/' + userId);
-    };
-
-    convertFeedsToFeedList = (feeds) => {
-        return feeds.map((feed) => {
-            const date = 'Publishment Date: ' + feed.publishmentDate + ' / Due Date: ' + feed.dueDate;
-            return (
-                <AssignmentCardElement
-                    title={feed.title}
-                    titleClicked={() => this.onFeedClicked(feed.projectId, feed.submissionPageId)}
-                    file={feed.file}
-                    fileClicked={this.onFeedFileClicked}
-                    status={feed.status}
-                    date={date}
-                    publisher={feed.publisher}
-                    publisherClicked={() => {
-                        this.onFeedPublisherClicked(feed.publisherId);
-                    }}>
-                    {feed.caption}
-                </AssignmentCardElement>
-            );
-        });
-    };
-
-    onUpcomingEventClicked = (projectId, submissionPageId) => {
-        this.props.history.push('project/' + projectId + '/submission/' + submissionPageId);
-    };
-
-    convertUpcomingEventsToBriefList = (upcomingAssignments) => {
-        return upcomingAssignments.map((assignment) => {
-            const title = assignment.courseCode + '/' + assignment.assignmentName;
-            return (
-                <TitledDatedBriefElement
-                    title={title}
-                    date={assignment.dueDate}
-                    onClick={() => this.onUpcomingEventClicked(assignment.projectId, assignment.submissionPageId)}
-                />
-            );
-        });
-    };
-
-    onNotGradedAssignmentClicked = (courseId, assignmentPageId) => {
-        this.props.history.push('course/' + courseId + '/assignment/' + assignmentPageId);
-    };
-
-    convertNotGradedAssignmentsToBriefList = (notGradedAssignments) => {
-        return notGradedAssignments.map((assignment) => {
-            const title = assignment.courseCode + '/' + assignment.assignmentName;
-            return (
-                <TitledDatedBriefElement
-                    title={title}
-                    date={assignment.dueDate}
-                    onClick={() => this.onNotGradedAssignmentClicked(assignment.courseId, assignment.asignmentId)}
-                />
-            );
-        });
-    };
-
-    onProfilePromptClicked = () => {
-        this.props.history.push('profile');
-    };
-
-    contextRef = createRef();
     render() {
-        let myProjects = this.state.myProjects ? (
-            <BriefList title="My Projects">{this.convertProjectsToBriefList(this.state.myProjects)}</BriefList>
-        ) : null;
+        const myProjectsComponent = this.state.myProjects
+            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked)
+            : null;
 
-        const instructedCourses = this.state.instructedCourses ? (
-            <BriefList title="Insturcted Courses">
-                {this.convertInstructedCoursesToBriefList(this.state.instructedCourses)}
-            </BriefList>
-        ) : null;
+        const instructedCoursesComponent = this.state.instructedCourses
+            ? convertInstructedCoursesToBriefList(this.state.instructedCourses, this.onInsturctedCourseClicked)
+            : null;
 
-        const notGradedAssignments = this.state.notGradedAssignments ? (
-            <BriefList title="Not Graded">
-                {this.convertNotGradedAssignmentsToBriefList(this.state.notGradedAssignments)}
-            </BriefList>
-        ) : null;
+        const upcomingAssignmentsComponent = convertUpcomingAssignmentsToBriefList(
+            this.state.upcomingAssignments,
+            this.onUpcomingAssignmentClicked
+        );
+
+        const notGradedAssignmentsComponent = this.state.notGradedAssignments
+            ? convertNotGradedAssignmentsToBriefList(this.state.notGradedAssignments, this.onNotGradedAssignmentClicked)
+            : null;
+
+        const feedsComponent = this.state.feeds ? (
+            convertAssignmentsToAssignmentList(this.state.feeds, this.onFeedClicked, this.onFeedFileClicked)
+        ) : (
+            <div>You Dont Have Any New Feed</div>
+        );
 
         return (
             <Grid>
                 <GridColumn width={4}>
                     <div className={'HomeDivLeft'}>
                         <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
-                        {myProjects}
-                        {instructedCourses}
+                        {myProjectsComponent}
+                        {instructedCoursesComponent}
                     </div>
                 </GridColumn>
                 <GridColumn width={1} />
-                <GridColumn width={6}>
-                    <Card.Group>{this.convertFeedsToFeedList(this.state.feeds)}</Card.Group>
-                </GridColumn>
+                <GridColumn width={6}>{feedsComponent}</GridColumn>
                 <GridColumn width={1} />
                 <GridColumn width={4}>
                     <div className={'HomeDivRight'}>
-                        <BriefList title="Upcoming">
-                            {this.convertUpcomingEventsToBriefList(this.state.upcomingAssignments)}
-                        </BriefList>
-                        {notGradedAssignments}
+                        {upcomingAssignmentsComponent}
+                        {notGradedAssignmentsComponent}
                     </div>
                 </GridColumn>
             </Grid>

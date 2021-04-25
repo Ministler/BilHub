@@ -1,1 +1,3 @@
-export { Notifications } from './Notifications';
+import Notifications from './Notifications';
+
+export { Notifications };

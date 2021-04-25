@@ -1,1 +1,1 @@
-export { MyAccordion as Accordion } from './Accordion';
+export { getFeedbacksAsAccordion } from './AccordionFunctions';

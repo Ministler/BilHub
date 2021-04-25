@@ -4,17 +4,14 @@ import { Icon, Button, Card } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 
 import {
-    GradePane,
-    FeedbackPane,
     NewCommentModal,
     EditCommentModal,
     DeleteCommentModal,
-    SubmissionPane,
     NewSubmissionModal,
     EditSubmissionModal,
     DeleteSubmissionModal,
 } from '../ProjectComponents';
-import { Tab, FeedbackCardElement } from '../../../commonComponents';
+import { Tab, FeedbackCardElement, GradePane, FeedbacksPane, SubmissionPane } from '../../../commonComponents';
 
 class ProjectAssignment extends Component {
     constructor(props) {
@@ -326,7 +323,7 @@ class ProjectAssignment extends Component {
             {
                 title: 'Feedbacks',
                 content: (
-                    <FeedbackPane
+                    <FeedbacksPane
                         handleClick={(titleProps) => this.handleAccordionClick(titleProps)}
                         activeIndex={this.state.accordionActiveIndex}
                         newCommentButton={newCommentButton}
@@ -335,7 +332,7 @@ class ProjectAssignment extends Component {
                             this.getFeedbacksContent(this.state.feedbacks.InstructorComments),
                             this.getFeedbacksContent(this.state.feedbacks.TAComments),
                             this.getFeedbacksContent(this.state.feedbacks.StudentComments)
-                        )}></FeedbackPane>
+                        )}></FeedbacksPane>
                 ),
             },
         ];

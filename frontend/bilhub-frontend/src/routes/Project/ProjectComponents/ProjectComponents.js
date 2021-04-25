@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card, Button, Icon, TextArea } from 'semantic-ui-react';
+import { Button, Icon, TextArea } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
-import { Table, Accordion, Modal, AssignmentCardElement } from '../../../commonComponents';
+import { Modal, AssignmentCardElement } from '../../../commonComponents';
 
 export const InformationSection = (props) => {
     return (
@@ -30,45 +30,6 @@ export const InformationSection = (props) => {
                 {props.informationEditIcon}
             </div>
         </div>
-    );
-};
-
-export const MemberElement = (props) => {
-    return (
-        <div className="clickableHighlightBack" onClick={props.onClick}>
-            {props.member.name} - {props.member.information}
-        </div>
-    );
-};
-
-export const AssignmentPane = (props) => {
-    return (
-        <Card.Group as="div" className="AssignmentCardGroup">
-            {props.feedList}
-        </Card.Group>
-    );
-};
-
-export const GradePane = (props) => {
-    return (
-        <div>
-            <Table bodyRowsData={props.firstBodyRowsData} headerNames={props.firstHeaderNames} />
-            <Table bodyRowsData={props.secondBodyRowsData} headerNames={props.secondHeaderNames} />
-            {props.finalGrade ? <div>Final Grade: {props.finalGrade}</div> : null}
-        </div>
-    );
-};
-
-export const FeedbackPane = (props) => {
-    return (
-        <>
-            <Accordion
-                activeIndex={props.activeIndex}
-                handleClick={(e, titleProps) => props.handleClick(titleProps)}
-                accordionElements={props.accordionElements}
-            />
-            {props.newCommentButton}
-        </>
     );
 };
 
@@ -225,42 +186,5 @@ export const DeleteCommentModal = (props) => {
                 <input disabled type="number" value={props.grade} />
             </>
         </Modal>
-    );
-};
-
-export const SubmissionPane = (props) => {
-    let submissionCard;
-
-    if (!props.submission) {
-        submissionCard = <div>Not submitted yet</div>;
-    } else if (props.submission === 'anonim') {
-        submissionCard = <div>This assignment is anonim</div>;
-    } else {
-        submissionCard = (
-            <AssignmentCardElement
-                title={'Submission'}
-                file={props.submission.file}
-                fileClicked={props.onSubmissionFileClicked}
-                date={props.submission.date}>
-                {props.submission.caption}
-            </AssignmentCardElement>
-        );
-    }
-
-    return (
-        <div>
-            <AssignmentCardElement
-                title={props.assignment.title}
-                file={props.assignment.file}
-                fileClicked={props.onAssignmentfileClicked}
-                status={props.assignment.status}
-                date={props.assignment.date}
-                publisher={props.assignment.publisher}>
-                {props.assignment.caption}
-            </AssignmentCardElement>
-            <hr />
-            {submissionCard}
-            {props.buttons}
-        </div>
     );
 };
