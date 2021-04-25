@@ -18,7 +18,7 @@ namespace backend.Data.Auth
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
 
-        public AuthRepository(DataContext context, IConfiguration configuration )
+        public AuthRepository(DataContext context, IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
@@ -29,6 +29,12 @@ namespace backend.Data.Auth
             ServiceResponse<string> response = new ServiceResponse<string>();
 
             User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userVerifyDto.Email));
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+                return response;
+            }
             if (!user.VerificationCode.Equals(userVerifyDto.Code))
             {
                 response.Success = false;
