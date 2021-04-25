@@ -65,6 +65,9 @@ namespace BilHub.Migrations
                     b.Property<bool>("CanBeGradedByStudents")
                         .HasColumnType("bit");
 
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -328,6 +331,9 @@ namespace BilHub.Migrations
                     b.Property<int>("ConfirmedUserNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<int>("GroupSize")
                         .HasColumnType("int");
 
@@ -338,6 +344,8 @@ namespace BilHub.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
 
                     b.HasIndex("SectionId");
 
@@ -351,7 +359,7 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CourseId")
+                    b.Property<int?>("AffiliatedCourseId")
                         .HasColumnType("int");
 
                     b.Property<int>("SectionNo")
@@ -362,7 +370,7 @@ namespace BilHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("AffiliatedCourseId");
 
                     b.ToTable("Sections");
                 });
@@ -377,11 +385,11 @@ namespace BilHub.Migrations
                     b.Property<int?>("AffiliatedAssignmentId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AffiliatedGroupId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProjectGroupId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -390,7 +398,7 @@ namespace BilHub.Migrations
 
                     b.HasIndex("AffiliatedAssignmentId");
 
-                    b.HasIndex("ProjectGroupId");
+                    b.HasIndex("AffiliatedGroupId");
 
                     b.ToTable("Submissions");
                 });
@@ -604,20 +612,30 @@ namespace BilHub.Migrations
 
             modelBuilder.Entity("backend.Models.ProjectGroup", b =>
                 {
+                    b.HasOne("backend.Models.Course", "AffiliatedCourse")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.Section", "AffiliatedSection")
                         .WithMany("ProjectGroups")
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("AffiliatedCourse");
+
                     b.Navigation("AffiliatedSection");
                 });
 
             modelBuilder.Entity("backend.Models.Section", b =>
                 {
-                    b.HasOne("backend.Models.Course", null)
+                    b.HasOne("backend.Models.Course", "AffiliatedCourse")
                         .WithMany("Sections")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("AffiliatedCourseId");
+
+                    b.Navigation("AffiliatedCourse");
                 });
 
             modelBuilder.Entity("backend.Models.Submission", b =>
@@ -628,9 +646,7 @@ namespace BilHub.Migrations
 
                     b.HasOne("backend.Models.ProjectGroup", "AffiliatedGroup")
                         .WithMany("Submissions")
-                        .HasForeignKey("ProjectGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AffiliatedGroupId");
 
                     b.Navigation("AffiliatedAssignment");
 

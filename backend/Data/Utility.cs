@@ -67,7 +67,7 @@ namespace backend.Data
             string subject = recovery ? "BilHub Password Recovery" : "BilHub Email Verification";
             //Etheral.mail diye bi site, 1 2saat dayaniyo patlarsa yenisini alin
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse("joel.koelpin66@ethereal.email"));
+            email.From.Add(MailboxAddress.Parse("johnathan.schuppe73@ethereal.email"));
             email.To.Add(MailboxAddress.Parse(mailaddress));
             email.Subject = subject;
             email.Body = new TextPart(TextFormat.Plain) { Text = content };
@@ -75,7 +75,7 @@ namespace backend.Data
             // send email
             SmtpClient smtp = new SmtpClient();
             smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate("joel.koelpin66@ethereal.email", "TfywjSmqBrrFJ8ae5e");
+            smtp.Authenticate("johnathan.schuppe73@ethereal.email", "y1p4kZBr312UCjC2Vt");
             smtp.Send(email);
             smtp.Disconnect(true);
         }

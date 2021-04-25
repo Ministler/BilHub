@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Data;
 using backend.Data.Auth;
-using backend.Services.Submission;
+using backend.Services.SubmissionServices;
 // using backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -85,7 +85,7 @@ namespace backend
                     ValidateAudience = false
                 };
             });
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor> ();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

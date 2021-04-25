@@ -13,7 +13,6 @@ namespace backend.Models
         public int Id { get; set; }
         public Assignment AffiliatedAssignment { get; set; }
         public ProjectGroup AffiliatedGroup { get; set; }
-        public int ProjectGroupId { get; set; }
         public string FilePath { get; set; }
         public string Status { get; set; }
         public ICollection<Comment> Comments { get; set; }

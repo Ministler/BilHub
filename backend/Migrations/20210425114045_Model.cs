@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BilHub.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Model : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -72,14 +72,14 @@ namespace BilHub.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SectionlessState = table.Column<bool>(type: "bit", nullable: false),
                     SectionNo = table.Column<int>(type: "int", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: true)
+                    AffiliatedCourseId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sections_Courses_CourseId",
-                        column: x => x.CourseId,
+                        name: "FK_Sections_Courses_AffiliatedCourseId",
+                        column: x => x.AffiliatedCourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -92,6 +92,7 @@ namespace BilHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SectionId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
                     AssignmentDescriptionFile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AcceptedTypes = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -117,6 +118,7 @@ namespace BilHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SectionId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
                     ConfirmationState = table.Column<bool>(type: "bit", nullable: false),
                     ConfirmedUserNumber = table.Column<int>(type: "int", nullable: false),
                     GroupSize = table.Column<int>(type: "int", nullable: false),
@@ -125,6 +127,12 @@ namespace BilHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectGroups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectGroups_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProjectGroups_Sections_SectionId",
                         column: x => x.SectionId,
@@ -196,7 +204,7 @@ namespace BilHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AffiliatedAssignmentId = table.Column<int>(type: "int", nullable: true),
-                    ProjectGroupId = table.Column<int>(type: "int", nullable: false),
+                    AffiliatedGroupId = table.Column<int>(type: "int", nullable: true),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -210,11 +218,11 @@ namespace BilHub.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Submissions_ProjectGroups_ProjectGroupId",
-                        column: x => x.ProjectGroupId,
+                        name: "FK_Submissions_ProjectGroups_AffiliatedGroupId",
+                        column: x => x.AffiliatedGroupId,
                         principalTable: "ProjectGroups",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -468,6 +476,11 @@ namespace BilHub.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectGroups_CourseId",
+                table: "ProjectGroups",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectGroups_SectionId",
                 table: "ProjectGroups",
                 column: "SectionId");
@@ -478,9 +491,9 @@ namespace BilHub.Migrations
                 column: "ProjectGroupsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sections_CourseId",
+                name: "IX_Sections_AffiliatedCourseId",
                 table: "Sections",
-                column: "CourseId");
+                column: "AffiliatedCourseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Submissions_AffiliatedAssignmentId",
@@ -488,9 +501,9 @@ namespace BilHub.Migrations
                 column: "AffiliatedAssignmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Submissions_ProjectGroupId",
+                name: "IX_Submissions_AffiliatedGroupId",
                 table: "Submissions",
-                column: "ProjectGroupId");
+                column: "AffiliatedGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_SectionId",

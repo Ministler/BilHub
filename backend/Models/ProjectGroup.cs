@@ -18,6 +18,8 @@ namespace backend.Models
         public int Id { get; set; }
         public Section AffiliatedSection { get; set; }
         public int SectionId { get; set; }
+        public Course AffiliatedCourse { get; set; }
+        public int CourseId { get; set; }
         public bool ConfirmationState { get; set; }
         public int ConfirmedUserNumber { get; set; }
         public int GroupSize { get; set; }

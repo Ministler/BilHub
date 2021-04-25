@@ -16,6 +16,7 @@ namespace backend.Models
         public bool SectionlessState { get; set; }
         public int SectionNo { get; set; }
         public ICollection<ProjectGroup> ProjectGroups { get; set; }
+        public Course AffiliatedCourse { get; set; }
         public ICollection<User> Students { get; set; }
         // public ICollection<JoinRequest> JoinRequests { get; set; }
         // public ICollection<MergeRequest> MergeRequests { get; set; }
