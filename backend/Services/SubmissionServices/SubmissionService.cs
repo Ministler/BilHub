@@ -62,7 +62,7 @@ namespace backend.Services.SubmissionServices
             ServiceResponse<string> response = new ServiceResponse<string>();
             ProjectGroup projectGroup = await _context.ProjectGroups.FirstOrDefaultAsync(pg => pg.Id == dto.ProjectGroupId);
             Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
-            if (projectGroup == null || assignment == null || projectGroup.SectionId != assignment.SectionId)
+            if (projectGroup == null || assignment == null || projectGroup.AffiliatedSectionId != assignment.AffiliatedSectionId)
             {
                 response.Data = null;
                 response.Message = "There is a mistake in project and assignment ids you entered";
@@ -99,7 +99,7 @@ namespace backend.Services.SubmissionServices
             User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGroup projectGroup = user.ProjectGroups.FirstOrDefault(pg => pg.Id == dto.ProjectGroupId);
             Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
-            if (projectGroup == null || assignment == null || projectGroup.SectionId != assignment.SectionId)
+            if (projectGroup == null || assignment == null || projectGroup.AffiliatedSectionId != assignment.AffiliatedSectionId)
             {
                 response.Data = "Not allowed";
                 response.Message = "You are not allowed to post submission for this group";
@@ -109,7 +109,7 @@ namespace backend.Services.SubmissionServices
             Submission submission = new Submission { AffiliatedAssignment = assignment, AffiliatedGroup = projectGroup };
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
                 "Submissions", assignment.CourseId,
-                projectGroup.SectionId, dto.AssignmentId, dto.ProjectGroupId));
+                projectGroup.AffiliatedSectionId, dto.AssignmentId, dto.ProjectGroupId));
 
             Directory.CreateDirectory(target);
             if (dto.File.Length <= 0) response.Success = false;

@@ -59,6 +59,9 @@ namespace BilHub.Migrations
                     b.Property<string>("AcceptedTypes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("AffiliatedSectionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("AssignmentDescriptionFile")
                         .HasColumnType("nvarchar(max)");
 
@@ -68,13 +71,16 @@ namespace BilHub.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("MaxFileSizeInBytes")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("SectionId")
+                    b.Property<bool>("IsItGraded")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxFileSizeInBytes")
                         .HasColumnType("int");
 
                     b.Property<bool>("VisibilityOfSubmission")
@@ -82,7 +88,7 @@ namespace BilHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SectionId");
+                    b.HasIndex("AffiliatedSectionId");
 
                     b.ToTable("Assignments");
                 });
@@ -97,8 +103,14 @@ namespace BilHub.Migrations
                     b.Property<string>("CommentText")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CommentedUserId")
+                    b.Property<int?>("CommentedSubmissionId")
                         .HasColumnType("int");
+
+                    b.Property<int>("CommentedUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("FileAttachmentAvailability")
                         .HasColumnType("bit");
@@ -106,23 +118,17 @@ namespace BilHub.Migrations
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Grade")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Grade")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("GradeStatus")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("MaxGrade")
-                        .HasColumnType("float");
-
-                    b.Property<int>("SubmissionId")
-                        .HasColumnType("int");
+                    b.Property<decimal>("MaxGrade")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentedUserId");
+                    b.HasIndex("CommentedSubmissionId");
 
-                    b.HasIndex("SubmissionId");
+                    b.HasIndex("CommentedUserId");
 
                     b.ToTable("Comments");
                 });
@@ -140,11 +146,17 @@ namespace BilHub.Migrations
                     b.Property<string>("CourseSemester")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("LockDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -158,7 +170,7 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("AffiliatedCourseId")
                         .HasColumnType("int");
 
                     b.Property<int>("Size")
@@ -166,7 +178,7 @@ namespace BilHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("AffiliatedCourseId");
 
                     b.ToTable("GroupSizes");
                 });
@@ -178,26 +190,32 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("AcceptedNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProjectGroupId")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RequestedGroupId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RejectedNumber")
+                    b.Property<int>("RequestingStudentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<bool>("Resolved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("VotedStudents")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectGroupId");
+                    b.HasIndex("RequestedGroupId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RequestingStudentId");
 
                     b.ToTable("JoinRequests");
                 });
@@ -209,8 +227,17 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ReceiverGroupId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Resolved")
+                        .HasColumnType("bit");
 
                     b.Property<int>("SenderGroupId")
                         .HasColumnType("int");
@@ -234,14 +261,20 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AdditionalComment")
+                    b.Property<int>("AffiliatedSectionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Grade")
-                        .HasColumnType("float");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<double>("MaxGrade")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Grade")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MaxGrade")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("ProjectGroupId")
                         .HasColumnType("int");
@@ -254,11 +287,9 @@ namespace BilHub.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AffiliatedSectionID");
+
                     b.HasIndex("ProjectGroupId");
-
-                    b.HasIndex("RevieweeId");
-
-                    b.HasIndex("ReviewerId");
 
                     b.ToTable("PeerGrades");
                 });
@@ -294,26 +325,29 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AdditionalComment")
+                    b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Grade")
-                        .HasColumnType("float");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<double>("MaxGrade")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Grade")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProjectGroupID")
+                    b.Property<int>("GradedProjectGroupID")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("GradingUserId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("MaxGrade")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectGroupID");
+                    b.HasIndex("GradedProjectGroupID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("GradingUserId");
 
                     b.ToTable("ProjectGrades");
                 });
@@ -325,29 +359,26 @@ namespace BilHub.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AffiliatedCourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AffiliatedSectionId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("ConfirmationState")
                         .HasColumnType("bit");
 
                     b.Property<int>("ConfirmedUserNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GroupSize")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProjectInformation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("AffiliatedCourseId");
 
-                    b.HasIndex("SectionId");
+                    b.HasIndex("AffiliatedSectionId");
 
                     b.ToTable("ProjectGroups");
                 });
@@ -388,11 +419,20 @@ namespace BilHub.Migrations
                     b.Property<int?>("AffiliatedGroupId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("HasSubmission")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -415,9 +455,6 @@ namespace BilHub.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("LoginStatus")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -484,7 +521,7 @@ namespace BilHub.Migrations
                 {
                     b.HasOne("backend.Models.Section", "AffiliatedSection")
                         .WithMany()
-                        .HasForeignKey("SectionId")
+                        .HasForeignKey("AffiliatedSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -493,13 +530,13 @@ namespace BilHub.Migrations
 
             modelBuilder.Entity("backend.Models.Comment", b =>
                 {
-                    b.HasOne("backend.Models.User", "CommentedUser")
-                        .WithMany("OutgoingComments")
-                        .HasForeignKey("CommentedUserId");
-
                     b.HasOne("backend.Models.Submission", "CommentedSubmission")
                         .WithMany("Comments")
-                        .HasForeignKey("SubmissionId")
+                        .HasForeignKey("CommentedSubmissionId");
+
+                    b.HasOne("backend.Models.User", "CommentedUser")
+                        .WithMany("OutgoingComments")
+                        .HasForeignKey("CommentedUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -512,7 +549,7 @@ namespace BilHub.Migrations
                 {
                     b.HasOne("backend.Models.Course", "AffiliatedCourse")
                         .WithMany("GroupSizes")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("AffiliatedCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -523,13 +560,13 @@ namespace BilHub.Migrations
                 {
                     b.HasOne("backend.Models.ProjectGroup", "RequestedGroup")
                         .WithMany("IncomingJoinRequests")
-                        .HasForeignKey("ProjectGroupId")
+                        .HasForeignKey("RequestedGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Models.User", "RequestingStudent")
                         .WithMany("OutgoingJoinRequests")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("RequestingStudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -559,25 +596,17 @@ namespace BilHub.Migrations
 
             modelBuilder.Entity("backend.Models.PeerGrade", b =>
                 {
+                    b.HasOne("backend.Models.Section", "AffiliatedSection")
+                        .WithMany()
+                        .HasForeignKey("AffiliatedSectionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.ProjectGroup", null)
                         .WithMany("PeerGrades")
                         .HasForeignKey("ProjectGroupId");
 
-                    b.HasOne("backend.Models.User", "Reviewee")
-                        .WithMany("IncomingPeerGrades")
-                        .HasForeignKey("RevieweeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.User", "Reviewer")
-                        .WithMany("OutgoingPeerGrades")
-                        .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reviewee");
-
-                    b.Navigation("Reviewer");
+                    b.Navigation("AffiliatedSection");
                 });
 
             modelBuilder.Entity("backend.Models.PeerGradeAssignment", b =>
@@ -594,14 +623,14 @@ namespace BilHub.Migrations
             modelBuilder.Entity("backend.Models.ProjectGrade", b =>
                 {
                     b.HasOne("backend.Models.ProjectGroup", "GradedProjectGroup")
-                        .WithMany("ProjectGradings")
-                        .HasForeignKey("ProjectGroupID")
+                        .WithMany("ProjectGrades")
+                        .HasForeignKey("GradedProjectGroupID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Models.User", "GradingUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("GradingUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -614,13 +643,13 @@ namespace BilHub.Migrations
                 {
                     b.HasOne("backend.Models.Course", "AffiliatedCourse")
                         .WithMany()
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("AffiliatedCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Models.Section", "AffiliatedSection")
                         .WithMany("ProjectGroups")
-                        .HasForeignKey("SectionId")
+                        .HasForeignKey("AffiliatedSectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -684,7 +713,7 @@ namespace BilHub.Migrations
 
                     b.Navigation("PeerGrades");
 
-                    b.Navigation("ProjectGradings");
+                    b.Navigation("ProjectGrades");
 
                     b.Navigation("Submissions");
                 });
@@ -703,13 +732,9 @@ namespace BilHub.Migrations
 
             modelBuilder.Entity("backend.Models.User", b =>
                 {
-                    b.Navigation("IncomingPeerGrades");
-
                     b.Navigation("OutgoingComments");
 
                     b.Navigation("OutgoingJoinRequests");
-
-                    b.Navigation("OutgoingPeerGrades");
                 });
 #pragma warning restore 612, 618
         }

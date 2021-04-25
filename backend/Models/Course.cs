@@ -19,6 +19,8 @@ namespace backend.Models
         public string Name { get; set; }
         public string CourseInformation { get; set; }
         public DateTime LockDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string CourseSemester { get; set; }
         public PeerGradeAssignment PeerGradeAssignment { get; set; }
         public ICollection<GroupSize> GroupSizes { get; set; }

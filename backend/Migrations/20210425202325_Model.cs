@@ -16,6 +16,8 @@ namespace BilHub.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CourseInformation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LockDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CourseSemester = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -30,14 +32,14 @@ namespace BilHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Size = table.Column<int>(type: "int", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false)
+                    AffiliatedCourseId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GroupSizes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroupSizes_Courses_CourseId",
-                        column: x => x.CourseId,
+                        name: "FK_GroupSizes_Courses_AffiliatedCourseId",
+                        column: x => x.AffiliatedCourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -91,21 +93,23 @@ namespace BilHub.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SectionId = table.Column<int>(type: "int", nullable: false),
+                    AffiliatedSectionId = table.Column<int>(type: "int", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: false),
                     AssignmentDescriptionFile = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AcceptedTypes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MaxFileSizeInBytes = table.Column<int>(type: "int", nullable: false),
                     VisibilityOfSubmission = table.Column<bool>(type: "bit", nullable: false),
-                    CanBeGradedByStudents = table.Column<bool>(type: "bit", nullable: false)
+                    CanBeGradedByStudents = table.Column<bool>(type: "bit", nullable: false),
+                    IsItGraded = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Assignments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Assignments_Sections_SectionId",
-                        column: x => x.SectionId,
+                        name: "FK_Assignments_Sections_AffiliatedSectionId",
+                        column: x => x.AffiliatedSectionId,
                         principalTable: "Sections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -117,25 +121,24 @@ namespace BilHub.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SectionId = table.Column<int>(type: "int", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    AffiliatedSectionId = table.Column<int>(type: "int", nullable: false),
+                    AffiliatedCourseId = table.Column<int>(type: "int", nullable: false),
                     ConfirmationState = table.Column<bool>(type: "bit", nullable: false),
                     ConfirmedUserNumber = table.Column<int>(type: "int", nullable: false),
-                    GroupSize = table.Column<int>(type: "int", nullable: false),
                     ProjectInformation = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectGroups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectGroups_Courses_CourseId",
-                        column: x => x.CourseId,
+                        name: "FK_ProjectGroups_Courses_AffiliatedCourseId",
+                        column: x => x.AffiliatedCourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectGroups_Sections_SectionId",
-                        column: x => x.SectionId,
+                        name: "FK_ProjectGroups_Sections_AffiliatedSectionId",
+                        column: x => x.AffiliatedSectionId,
                         principalTable: "Sections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -154,7 +157,6 @@ namespace BilHub.Migrations
                     SecondPasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     VerifiedStatus = table.Column<bool>(type: "bit", nullable: false),
-                    LoginStatus = table.Column<bool>(type: "bit", nullable: false),
                     DarkModeStatus = table.Column<bool>(type: "bit", nullable: false),
                     UserType = table.Column<int>(type: "int", nullable: false),
                     SectionId = table.Column<int>(type: "int", nullable: true)
@@ -178,7 +180,10 @@ namespace BilHub.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SenderGroupId = table.Column<int>(type: "int", nullable: false),
                     ReceiverGroupId = table.Column<int>(type: "int", nullable: false),
-                    VotedStudents = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    VotedStudents = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Accepted = table.Column<bool>(type: "bit", nullable: false),
+                    Resolved = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,6 +203,38 @@ namespace BilHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PeerGrades",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AffiliatedSectionID = table.Column<int>(type: "int", nullable: false),
+                    ReviewerId = table.Column<int>(type: "int", nullable: false),
+                    RevieweeId = table.Column<int>(type: "int", nullable: false),
+                    ProjectGroupId = table.Column<int>(type: "int", nullable: true),
+                    MaxGrade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Grade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PeerGrades", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PeerGrades_ProjectGroups_ProjectGroupId",
+                        column: x => x.ProjectGroupId,
+                        principalTable: "ProjectGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PeerGrades_Sections_AffiliatedSectionID",
+                        column: x => x.AffiliatedSectionID,
+                        principalTable: "Sections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Submissions",
                 columns: table => new
                 {
@@ -205,8 +242,11 @@ namespace BilHub.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AffiliatedAssignmentId = table.Column<int>(type: "int", nullable: true),
                     AffiliatedGroupId = table.Column<int>(type: "int", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    HasSubmission = table.Column<bool>(type: "bit", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    SectionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -255,60 +295,26 @@ namespace BilHub.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ProjectGroupId = table.Column<int>(type: "int", nullable: false),
+                    RequestingStudentId = table.Column<int>(type: "int", nullable: false),
+                    RequestedGroupId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AcceptedNumber = table.Column<int>(type: "int", nullable: false),
-                    RejectedNumber = table.Column<int>(type: "int", nullable: false),
+                    Accepted = table.Column<bool>(type: "bit", nullable: false),
+                    Resolved = table.Column<bool>(type: "bit", nullable: false),
                     VotedStudents = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JoinRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JoinRequests_ProjectGroups_ProjectGroupId",
-                        column: x => x.ProjectGroupId,
+                        name: "FK_JoinRequests_ProjectGroups_RequestedGroupId",
+                        column: x => x.RequestedGroupId,
                         principalTable: "ProjectGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_JoinRequests_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PeerGrades",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ReviewerId = table.Column<int>(type: "int", nullable: false),
-                    RevieweeId = table.Column<int>(type: "int", nullable: false),
-                    ProjectGroupId = table.Column<int>(type: "int", nullable: true),
-                    MaxGrade = table.Column<double>(type: "float", nullable: false),
-                    Grade = table.Column<double>(type: "float", nullable: false),
-                    AdditionalComment = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PeerGrades", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PeerGrades_ProjectGroups_ProjectGroupId",
-                        column: x => x.ProjectGroupId,
-                        principalTable: "ProjectGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PeerGrades_Users_RevieweeId",
-                        column: x => x.RevieweeId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PeerGrades_Users_ReviewerId",
-                        column: x => x.ReviewerId,
+                        name: "FK_JoinRequests_Users_RequestingStudentId",
+                        column: x => x.RequestingStudentId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -320,24 +326,25 @@ namespace BilHub.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ProjectGroupID = table.Column<int>(type: "int", nullable: false),
-                    MaxGrade = table.Column<double>(type: "float", nullable: false),
-                    Grade = table.Column<double>(type: "float", nullable: false),
-                    AdditionalComment = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    GradingUserId = table.Column<int>(type: "int", nullable: false),
+                    GradedProjectGroupID = table.Column<int>(type: "int", nullable: false),
+                    MaxGrade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Grade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectGrades", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectGrades_ProjectGroups_ProjectGroupID",
-                        column: x => x.ProjectGroupID,
+                        name: "FK_ProjectGrades_ProjectGroups_GradedProjectGroupID",
+                        column: x => x.GradedProjectGroupID,
                         principalTable: "ProjectGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectGrades_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_ProjectGrades_Users_GradingUserId",
+                        column: x => x.GradingUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -373,12 +380,12 @@ namespace BilHub.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CommentedUserId = table.Column<int>(type: "int", nullable: true),
-                    SubmissionId = table.Column<int>(type: "int", nullable: false),
+                    CommentedUserId = table.Column<int>(type: "int", nullable: false),
+                    CommentedSubmissionId = table.Column<int>(type: "int", nullable: true),
                     CommentText = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GradeStatus = table.Column<bool>(type: "bit", nullable: false),
-                    MaxGrade = table.Column<double>(type: "float", nullable: false),
-                    Grade = table.Column<double>(type: "float", nullable: false),
+                    MaxGrade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Grade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FileAttachmentAvailability = table.Column<bool>(type: "bit", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -386,23 +393,28 @@ namespace BilHub.Migrations
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Submissions_SubmissionId",
-                        column: x => x.SubmissionId,
+                        name: "FK_Comments_Submissions_CommentedSubmissionId",
+                        column: x => x.CommentedSubmissionId,
                         principalTable: "Submissions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Comments_Users_CommentedUserId",
                         column: x => x.CommentedUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Assignments_SectionId",
+                name: "IX_Assignments_AffiliatedSectionId",
                 table: "Assignments",
-                column: "SectionId");
+                column: "AffiliatedSectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_CommentedSubmissionId",
+                table: "Comments",
+                column: "CommentedSubmissionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_CommentedUserId",
@@ -410,29 +422,24 @@ namespace BilHub.Migrations
                 column: "CommentedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_SubmissionId",
-                table: "Comments",
-                column: "SubmissionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CourseUser_InstructorsId",
                 table: "CourseUser",
                 column: "InstructorsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupSizes_CourseId",
+                name: "IX_GroupSizes_AffiliatedCourseId",
                 table: "GroupSizes",
-                column: "CourseId");
+                column: "AffiliatedCourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JoinRequests_ProjectGroupId",
+                name: "IX_JoinRequests_RequestedGroupId",
                 table: "JoinRequests",
-                column: "ProjectGroupId");
+                column: "RequestedGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JoinRequests_UserId",
+                name: "IX_JoinRequests_RequestingStudentId",
                 table: "JoinRequests",
-                column: "UserId");
+                column: "RequestingStudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MergeRequests_ReceiverGroupId",
@@ -451,39 +458,34 @@ namespace BilHub.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PeerGrades_AffiliatedSectionID",
+                table: "PeerGrades",
+                column: "AffiliatedSectionID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PeerGrades_ProjectGroupId",
                 table: "PeerGrades",
                 column: "ProjectGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PeerGrades_RevieweeId",
-                table: "PeerGrades",
-                column: "RevieweeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PeerGrades_ReviewerId",
-                table: "PeerGrades",
-                column: "ReviewerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectGrades_ProjectGroupID",
+                name: "IX_ProjectGrades_GradedProjectGroupID",
                 table: "ProjectGrades",
-                column: "ProjectGroupID");
+                column: "GradedProjectGroupID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectGrades_UserId",
+                name: "IX_ProjectGrades_GradingUserId",
                 table: "ProjectGrades",
-                column: "UserId");
+                column: "GradingUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectGroups_CourseId",
+                name: "IX_ProjectGroups_AffiliatedCourseId",
                 table: "ProjectGroups",
-                column: "CourseId");
+                column: "AffiliatedCourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectGroups_SectionId",
+                name: "IX_ProjectGroups_AffiliatedSectionId",
                 table: "ProjectGroups",
-                column: "SectionId");
+                column: "AffiliatedSectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectGroupUser_ProjectGroupsId",

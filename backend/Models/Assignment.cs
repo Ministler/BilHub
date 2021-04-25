@@ -12,14 +12,16 @@ namespace backend.Models
         }
         public int Id { get; set; }
         public Section AffiliatedSection { get; set; }
-        public int SectionId { get; set; }
+        public int AffiliatedSectionId { get; set; }
         public int CourseId { get; set; }
         public string AssignmentDescriptionFile { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime DueDate { get; set; }
+        public DateTime CreatedAt { get; set; }
         public string AcceptedTypes { get; set; }
         public int MaxFileSizeInBytes { get; set; }
         public bool VisibilityOfSubmission { get; set; }
         public bool CanBeGradedByStudents { get; set; }
+        public bool IsItGraded { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         // public User PublishedUser { get; set; }
         // public int UserId { get; set; }

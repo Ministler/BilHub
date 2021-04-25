@@ -5,6 +5,6 @@ namespace backend.Models
         public int Id { get; set; }
         public int Size { get; set; }
         public Course AffiliatedCourse { get; set; }
-        public int CourseId { get; set; }
+        public int AffiliatedCourseId { get; set; }
     }
 }

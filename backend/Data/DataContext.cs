@@ -23,14 +23,6 @@ namespace backend.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<PeerGrade>().HasOne(pg => pg.Reviewer)
-                .WithMany(s => s.OutgoingPeerGrades)
-                .HasForeignKey(mr => mr.ReviewerId);
-
-            modelBuilder.Entity<PeerGrade>().HasOne(pg => pg.Reviewee)
-                .WithMany(s => s.IncomingPeerGrades)
-                .HasForeignKey(mr => mr.RevieweeId).OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.SenderGroup)
                 .WithMany(g => g.OutgoingMergeRequest)
                 .HasForeignKey(mr => mr.SenderGroupId);

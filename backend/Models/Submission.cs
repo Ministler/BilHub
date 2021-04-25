@@ -13,10 +13,12 @@ namespace backend.Models
         public int Id { get; set; }
         public Assignment AffiliatedAssignment { get; set; }
         public ProjectGroup AffiliatedGroup { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public string FilePath { get; set; }
-        public string Status { get; set; }
+        public bool HasSubmission { get; set; }
         public ICollection<Comment> Comments { get; set; }
-        // public Course AffiliatedCourse { get; set; }
-        // public int CourseId { get; set; }
+        //public Course AffiliatedCourse { get; set; }
+        public int CourseId { get; set; }
+        public int SectionId { get; set; }
     }
 }
