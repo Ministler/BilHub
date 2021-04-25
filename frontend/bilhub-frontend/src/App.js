@@ -26,7 +26,6 @@ class App extends Component {
 
     render() {
         if (this.props.appLoading) {
-            console.log('asd');
             return <>Loading...</>;
         }
 
@@ -60,8 +59,6 @@ class App extends Component {
                 </Switch>
             </AppLayout>
         );
-
-        console.log(this.props.token);
         return this.props.token ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }

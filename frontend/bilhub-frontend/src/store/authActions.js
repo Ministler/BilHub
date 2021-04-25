@@ -26,12 +26,6 @@ const loginFail = (error) => {
     };
 };
 
-const checkAuthStart = () => {
-    return {
-        type: actionTypes.CHECK_AUTH_START,
-    };
-};
-
 const checkAuthSuccess = (token, userId, email, name, userType) => {
     return {
         type: actionTypes.CHECK_AUTH_SUCCESS,
@@ -40,12 +34,6 @@ const checkAuthSuccess = (token, userId, email, name, userType) => {
         email: email,
         name: name,
         userType: userType,
-    };
-};
-
-const checkAuthFail = () => {
-    return {
-        type: actionTypes.CHECK_AUTH_FAIL,
     };
 };
 
@@ -89,7 +77,9 @@ export const login = (email, password) => {
             .then((response) => {
                 const userData = response.data;
                 localStorage.setItem('token', userData.idToken);
-                dispatch(loginSuccess(userData.idToken, userData.localId, userData.email, userData.displayName));
+                dispatch(
+                    loginSuccess(userData.idToken, userData.localId, userData.email, userData.displayName, 'student')
+                );
             })
             .catch((error) => {
                 dispatch(loginFail(error.response.data.error.message));
@@ -99,10 +89,7 @@ export const login = (email, password) => {
 
 export const checkAuth = (token) => {
     return (dispatch) => {
-        dispatch(checkAuthStart());
-
         if (!token) {
-            dispatch(checkAuthFail());
             dispatch(logout());
             return;
         }
@@ -110,11 +97,10 @@ export const checkAuth = (token) => {
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];
-                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor'));
+                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'student'));
             })
             .catch((error) => {
                 alert('Your Authenticantion Expired. Please Login!');
-                dispatch(checkAuthFail());
                 dispatch(logout());
             });
     };

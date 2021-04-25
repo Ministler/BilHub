@@ -16,7 +16,7 @@ const initialState = {
     signupLoading: false,
     signupRequestSucceed: false,
 
-    appLoading: false,
+    appLoading: true,
 };
 
 const loginStart = (state, action) => {
@@ -42,12 +42,6 @@ const loginFail = (state, action) => {
     });
 };
 
-const checkAuthStart = (state, action) => {
-    return updateObject(state, {
-        appLoading: true,
-    });
-};
-
 const checkAuthSuccess = (state, action) => {
     return updateObject(state, {
         token: action.token,
@@ -56,12 +50,6 @@ const checkAuthSuccess = (state, action) => {
         name: action.name,
         userType: action.userType,
         checkAuthError: null,
-        appLoading: false,
-    });
-};
-
-const checkAuthFail = (state, action) => {
-    return updateObject(state, {
         appLoading: false,
     });
 };
@@ -94,7 +82,7 @@ const signupFail = (state, action) => {
 };
 
 const logout = (state, action) => {
-    return initialState;
+    return { ...initialState, appLoading: false };
 };
 
 const resetSignupSucceed = (state, action) => {
@@ -111,12 +99,8 @@ export const authReducer = (state = initialState, action) => {
             return loginSuccess(state, action);
         case actionTypes.LOGIN_FAIL:
             return loginFail(state, action);
-        case actionTypes.CHECK_AUTH_START:
-            return checkAuthStart(state, action);
         case actionTypes.CHECK_AUTH_SUCCESS:
             return checkAuthSuccess(state, action);
-        case actionTypes.CHECK_AUTH_FAIL:
-            return checkAuthFail(state, action);
         case actionTypes.SIGNUP_START:
             return signupStart(state, action);
         case actionTypes.SIGNUP_SUCCESS:
