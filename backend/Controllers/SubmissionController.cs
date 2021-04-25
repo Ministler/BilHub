@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using backend.Models;
 using backend.Services.Submission;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

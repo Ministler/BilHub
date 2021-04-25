@@ -18,7 +18,7 @@ namespace backend.Data.Auth
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
 
-        public AuthRepository(DataContext context, IConfiguration configuration)
+        public AuthRepository(DataContext context, IConfiguration configuration )
         {
             _configuration = configuration;
             _context = context;
@@ -28,7 +28,7 @@ namespace backend.Data.Auth
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
 
-            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email == userVerifyDto.Email);
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(userVerifyDto.Email));
             if (!user.VerificationCode.Equals(userVerifyDto.Code))
             {
                 response.Success = false;
@@ -137,15 +137,15 @@ namespace backend.Data.Auth
             }
             if (newUser != null)
                 _context.Users.Remove(newUser);
-            newUser = new User { Email = userDto.Email };
+            newUser = new User { Email = userDto.Email, Name = userDto.Name };
 
             if (Utility.CheckIfInstructorEmail(userDto.Email))
             {
-                newUser.UserType = 2;
+                newUser.UserType = UserTypeClass.Instructor;
             }
             else
             {
-                newUser.UserType = 1;
+                newUser.UserType = UserTypeClass.Student;
             }
 
             Utility.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -165,7 +165,7 @@ namespace backend.Data.Auth
 
         public async Task<bool> UserExists(string username)
         {
-            if (await _context.Users.AnyAsync(x => x.Email.ToLower() == username.ToLower()))
+            if (await _context.Users.AnyAsync(x => x.Email.ToLower().Equals(username.ToLower())))
             {
                 return true;
             }

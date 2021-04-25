@@ -25,8 +25,6 @@ namespace backend.Data
         }
         public static string GenerateRandomPassword()
         {
-            //todo
-            //b=alfanumerik olsun sadece obur turlu iki tikla kopyalanmio
             string ret = "";
             Random random = new Random();
             int len = random.Next() % 8 + 9;
@@ -34,7 +32,6 @@ namespace backend.Data
             {
                 char tmp = (char)('a' + (random.Next() % 26));
                 char tmp2 = (char)('1' + (random.Next() % 9));
-                char tmp3 = '_';
                 char tmp4 = 'a';
                 int tmp5 = random.Next() % 4;
                 if (tmp5 == 0)
@@ -42,7 +39,7 @@ namespace backend.Data
                 if (tmp5 == 1)
                     tmp4 = tmp2;
                 if (tmp5 == 2)
-                    tmp4 = tmp3;
+                    tmp4 = tmp;
                 if (tmp5 == 3)
                     tmp4 = (char)('A' + tmp - 'a');
                 ret = ret + tmp4.ToString();
@@ -51,9 +48,14 @@ namespace backend.Data
         }
         public static string GenerateRandomCode()
         {
-            string ret = "431274";
-            //Todo
-            //sadece rakam olsun
+            string ret = "";
+            Random random = new Random();
+            int len = 12;
+            for (int i = 0; i < len; i++)
+            {
+                char tmp = (char)('1' + (random.Next() % 9));
+                ret = ret + tmp.ToString();
+            }
             return ret;
         }
         public static void SendMail(string mailaddress, string content, bool recovery)
