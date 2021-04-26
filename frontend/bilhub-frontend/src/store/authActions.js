@@ -78,7 +78,7 @@ export const login = (email, password) => {
                 const userData = response.data;
                 localStorage.setItem('token', userData.idToken);
                 dispatch(
-                    loginSuccess(userData.idToken, userData.localId, userData.email, userData.displayName, 'student')
+                    loginSuccess(userData.idToken, userData.localId, userData.email, userData.displayName, 'instructor')
                 );
             })
             .catch((error) => {
@@ -96,7 +96,7 @@ export const checkAuth = (token) => {
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];
-                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'student'));
+                dispatch(checkAuthSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor'));
             })
             .catch((error) => {
                 alert('Your Authenticantion Expired. Please Login!');
