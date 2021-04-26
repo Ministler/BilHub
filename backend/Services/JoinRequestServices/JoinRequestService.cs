@@ -109,6 +109,7 @@ namespace backend.Services.JoinRequestServices
                 response.Success = false;
                 return response;
             }
+
             if( requestedGroup.GroupMembers.Count >= requestedGroup.ConfirmedUserNumber )
             {
                 response.Data = null;
@@ -201,75 +202,6 @@ namespace backend.Services.JoinRequestServices
             ProjectGroup requestedGroup = await _context.ProjectGroups
                                             .FirstOrDefaultAsync( rg =>  rg.Id == joinRequest.RequestedGroupId);
             
-/*          
-
-            if( user == null )
-            {
-                response.Data = "Not allowed";
-                response.Message = "There is no user with this Id";
-                response.Success = false;
-                return response;
-            }
-
-            if( requestedGroup == null )
-            {
-                response.Data = "Not allowed";
-                response.Message = "There is no group with this Id";
-                response.Success = false;
-                return response;
-            }
-            
-            if( requestedGroup == null )
-            {
-                response.Data = "Not allowed";
-                response.Message = "There is no group with this Id";
-                response.Success = false;
-                return response;
-            }
-*/
-            /*
-            bool groupHasJr = false;
-
-            foreach( JoinRequest jr in requestedGroup.IncomingJoinRequests )
-            {
-                if( jr.Id == joinRequestDto.Id )
-                {
-                    requestedGroup.IncomingJoinRequests.Contains(jr);
-                    groupHasJr = true;
-                }
-            }     
-
-            if( !groupHasJr )
-            {
-                response.Data = "Not allowed";
-                response.Message = "Group does not have such join request";
-                response.Success = false;
-                return response;
-            }
-
-            bool userHasJr = false;
-
-            foreach( JoinRequest jr in user.OutgoingJoinRequests )
-            {
-                if( jr.Id == joinRequestDto.Id )
-                {
-                    user.OutgoingJoinRequests.Contains(jr);
-                    userHasJr = true;
-                }
-            }     
-
-            if( !userHasJr )
-            {
-                response.Data = "Not allowed";
-                response.Message = "User does not have such join request";
-                response.Success = false;
-                return response;
-            }
-            
-            _context.ProjectGroups.Update(requestedGroup);
-            await _context.SaveChangesAsync();
-            */
-
 
             _context.JoinRequests.Remove( joinRequest );
             await _context.SaveChangesAsync();
@@ -293,8 +225,6 @@ namespace backend.Services.JoinRequestServices
             return response;
         }
 
-        // bugli durum: user oyladi cikti gruptan accepted number yuksek kaldi
-        // grupta sifir kisi kaldi gecmis olsun
         public async Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto)
         {
             ServiceResponse<JoinRequestInfoDto> response = new ServiceResponse<JoinRequestInfoDto>();
@@ -335,7 +265,17 @@ namespace backend.Services.JoinRequestServices
                 return response;
             }
 
-            if( joinRequest.VotedStudents != "")
+            if( joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count)
+            {
+                response.Data = null;
+                response.Message = "The join request is accepted already";
+                response.Success = false;
+                return response;
+            }
+
+            bool voteChanged = false;
+
+            if( joinRequest.VotedStudents != "" )
             {
                 string[] voters = joinRequest.VotedStudents.Split(' ');
 
@@ -347,10 +287,18 @@ namespace backend.Services.JoinRequestServices
                 {
                     if( string.Compare( idString, s) == 0 )
                     {
-                        response.Data = new JoinRequestInfoDto {Id = joinRequestDto.Id, Accepted = joinRequest.Accepted, Resolved = joinRequest.Resolved, VotedStudents = joinRequest.VotedStudents};
-                        response.Message = "You have already voted";
-                        response.Success = false;
-                        return response;
+                        if( joinRequestDto.accept )
+                        {
+                            response.Data = new JoinRequestInfoDto {Id = joinRequestDto.Id, Accepted = joinRequest.Accepted, Resolved = joinRequest.Resolved, AcceptedNumber = joinRequest.AcceptedNumber, VotedStudents = joinRequest.VotedStudents};
+                            response.Message = "You have already voted";
+                            response.Success = false;
+                            return response;
+                        }
+                        else
+                        {
+                            joinRequest.AcceptedNumber--;
+                            voteChanged = true;
+                        }
                     }
                 }       
             }
@@ -360,6 +308,10 @@ namespace backend.Services.JoinRequestServices
                 if( joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count )
                 {
                     joinRequest.Accepted = true;    
+                    if( joinRequest.RequestedGroup.GroupMembers.Count + 1 >= joinRequest.RequestedGroup.ConfirmedUserNumber )
+                    {
+                        await DeleteAllJoinRequests( new DeleteAllJoinRequestsDto { projectGroupId =  joinRequest.RequestedGroupId } );
+                    }
                 }
             }
             else
@@ -370,19 +322,74 @@ namespace backend.Services.JoinRequestServices
             
             // call ozconun metodu
 
-            joinRequest.VotedStudents = joinRequest.VotedStudents + user.Id + ' ';
-            response.Data = new JoinRequestInfoDto {Id = joinRequestDto.Id, Accepted = joinRequest.Accepted, Resolved = joinRequest.Resolved, VotedStudents = joinRequest.VotedStudents};
-            response.Message = "You succesfully voted" + joinRequestDto.accept;
+            if( !voteChanged )
+            {
+                joinRequest.VotedStudents = joinRequest.VotedStudents + user.Id + ' ';
+            }
+            response.Data = new JoinRequestInfoDto {Id = joinRequestDto.Id, Accepted = joinRequest.Accepted, Resolved = joinRequest.Resolved, AcceptedNumber = joinRequest.AcceptedNumber, VotedStudents = joinRequest.VotedStudents};
+            response.Message = "You succesfully voted" ;
             response.Success = true;
 
             
+            
             _context.JoinRequests.Update( joinRequest );
             await _context.SaveChangesAsync();
+            
 
             return response;
         } 
         
-        
+        public async Task<ServiceResponse<string>> DeleteAllJoinRequests(DeleteAllJoinRequestsDto deleteAllJoinRequestsDto) 
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users
+                                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include( g => g.GroupMembers).Include( g => g.IncomingJoinRequests )
+                                            .FirstOrDefaultAsync( jr => jr.Id == deleteAllJoinRequestsDto.projectGroupId );
+                                    
+            if( projectGroup == null )
+            {
+                response.Data = "Not allowed";
+                response.Message = "There is no group with this Id";
+                response.Success = false;
+                return response;
+            }
+
+            if( projectGroup.IncomingJoinRequests.Count == 0 )
+            {
+                response.Data = "Not allowed";
+                response.Message = "There is no incoming join requests";
+                response.Success = false;
+                return response;
+            }
+
+            /* bu olmaz gibi cunku user tetiklemiyo bunu
+            if( !projectGroup.GroupMembers.Contains(user) )
+            {
+                response.Data = "Not allowed";
+                response.Message = "You are not in this group";
+                response.Success = false;
+                return response;
+            }
+            */
+
+            foreach( JoinRequest jr in projectGroup.IncomingJoinRequests )
+            {
+                if( !jr.Accepted && !jr.Resolved )
+                    _context.JoinRequests.Remove( jr );
+            }
+
+            
+            await _context.SaveChangesAsync();
+
+            response.Data = "Successful";
+            response.Message = "Join requests are successfully deleted";
+            response.Success = true;
+
+            return response;
+        }
+       
         // bi sekilde grupta 0 insan kalmasi durumu
         // rejectlenirse unvotedlarda gorunmeyec -- resolved
         // method : cancelAllRequests

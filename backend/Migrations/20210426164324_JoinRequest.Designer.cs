@@ -10,8 +10,8 @@ using backend.Data;
 namespace BilHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210426022144_Model")]
-    partial class Model
+    [Migration("20210426164324_JoinRequest")]
+    partial class JoinRequest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

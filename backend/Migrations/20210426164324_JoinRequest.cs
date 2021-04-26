@@ -2,7 +2,7 @@
 
 namespace BilHub.Migrations
 {
-    public partial class JoinRequestSend4 : Migration
+    public partial class JoinRequest : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
