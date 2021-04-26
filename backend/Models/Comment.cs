@@ -8,6 +8,7 @@ namespace backend.Models
         public User CommentedUser { get; set; }
         public int CommentedUserId { get; set; }
         public Submission CommentedSubmission { get; set; }
+        public int CommentedSubmissionId { get; set; }
         public string CommentText { get; set; }
         public decimal MaxGrade { get; set; }
         public decimal Grade { get; set; }

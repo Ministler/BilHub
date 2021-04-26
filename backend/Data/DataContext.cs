@@ -24,6 +24,16 @@ namespace backend.Data
         public DbSet<ProjectGroupUser> ProjectGroupUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Submission>()
+                .HasOne(s => s.AffiliatedAssignment)
+                .WithMany(a => a.Submissions)
+                .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Submission>()
+                .HasOne(s => s.AffiliatedGroup)
+                .WithMany(a => a.Submissions)
+                .HasForeignKey(s => s.AffiliatedGroupId).OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<ProjectGroup>()
                 .HasOne(pg => pg.AffiliatedSection)
                 .WithMany(s => s.ProjectGroups)
@@ -59,6 +69,60 @@ namespace backend.Data
 
             byte[] hash, salt;
             Utility.CreatePasswordHash("31", out hash, out salt);
+            modelBuilder.Entity<Assignment>().HasData(
+                new Assignment
+                {
+                    Id = 3,
+                    AffiliatedSectionId = 1,
+                    CourseId = 1,
+                    AssignmentDescriptionFile = "Odev iteration 1",
+                    DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
+                    CreatedAt = DateTime.Now,
+                    AcceptedTypes = "pdf-doc-docx",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true
+                }, new Assignment
+                {
+                    Id = 4,
+                    AffiliatedSectionId = 1,
+                    CourseId = 1,
+                    AssignmentDescriptionFile = "Odev iteration 2",
+                    DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
+                    CreatedAt = DateTime.Now,
+                    AcceptedTypes = "pdf-doc-docx",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true
+                }
+            );
+            modelBuilder.Entity<Submission>().HasData(
+                new Submission
+                {
+                    Id = 1,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 1,
+                    UpdatedAt = DateTime.Now,
+                    HasSubmission = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }
+            );
+            modelBuilder.Entity<Comment>().HasData(
+                new Comment
+                {
+                    Id = 1,
+                    CommentedUserId = 2,
+                    CommentedSubmissionId = 1,
+                    CommentText = "nays",
+                    MaxGrade = 10.0M,
+                    Grade = 9.4M,
+                    CreatedAt = DateTime.Now,
+                    FileAttachmentAvailability = true
+                }
+            );
             modelBuilder.Entity<User>().HasData(
                 new User
                 {

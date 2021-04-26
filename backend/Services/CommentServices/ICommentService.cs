@@ -9,6 +9,7 @@ namespace backend.Services.CommentServices
         Task<ServiceResponse<string>> SubmitCommentFile(AddCommentFileDto file);
         Task<ServiceResponse<string>> DownloadCommentFile(GetCommentFileDto dto);
         Task<ServiceResponse<string>> DownloadAllCommentFiles(GetAllCommentFilesDto dto);
+        Task<ServiceResponse<string>> DeleteFile(DeleteCommentFileDto dto);
 
     }
 }

@@ -12,7 +12,9 @@ namespace backend.Models
         }
         public int Id { get; set; }
         public Assignment AffiliatedAssignment { get; set; }
+        public int AffiliatedAssignmentId { get; set; }
         public ProjectGroup AffiliatedGroup { get; set; }
+        public int AffiliatedGroupId { get; set; }
         public DateTime UpdatedAt { get; set; }
         public string FilePath { get; set; }
         public bool HasSubmission { get; set; }
