@@ -3,17 +3,22 @@ import { convertMembersToMemberElement } from '../BriefList';
 
 import { AssignmentCardElement, FeedbackCardElement, RequestCardElement } from './CardGroupUI';
 
-export const convertAssignmentsToAssignmentList = (assignments, onAssignmentClicked, onAssignmentFileClicked) => {
+export const convertAssignmentsToAssignmentList = (
+    assignments,
+    onAssignmentClicked,
+    onAssignmentFileClicked,
+    assignmentIcons
+) => {
     const assignmentCardElements = assignments.map((assignment) => {
         const date = 'Publishment Date: ' + assignment.publishmentDate + ' / Due Date: ' + assignment.dueDate;
 
-        let titleIcon = null;
+        let statusIcon = null;
         if (assignment.status === 'graded') {
-            titleIcon = <Icon name="check circle outline" />;
+            statusIcon = <Icon name="check circle outline" />;
         } else if (assignment.status === 'submitted') {
-            titleIcon = <Icon name="clock outline" />;
+            statusIcon = <Icon name="clock outline" />;
         } else if (assignment.status === 'notsubmitted') {
-            titleIcon = <Icon name="remove circle" />;
+            statusIcon = <Icon name="remove circle" />;
         }
 
         const fileIcon = assignment.file ? <Icon name="file" size="big" /> : null;
@@ -21,7 +26,7 @@ export const convertAssignmentsToAssignmentList = (assignments, onAssignmentClic
         return (
             <AssignmentCardElement
                 title={assignment.title}
-                titleIcon={titleIcon}
+                titleIcon={statusIcon || assignmentIcons}
                 titleClicked={() => onAssignmentClicked(assignment.submissionPageId)}
                 caption={assignment.caption}
                 fileIcon={fileIcon}

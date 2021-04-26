@@ -1,0 +1,1 @@
+export { InformationSection } from './CourseComponents';

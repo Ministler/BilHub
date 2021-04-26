@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button, Card } from 'semantic-ui-react';
+import { Icon, Button } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import {
     NewCommentModal,

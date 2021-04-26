@@ -31,7 +31,7 @@ class Notifications extends Component {
             myProjects: dummyMyProjectsList,
             instructedCourses: dummyInstructedCoursesList,
 
-            incomingRequests: null,
+            incomingRequests: dummyIncomingRequests,
             outgoingRequests: dummyOutgoingRequests,
             newFeedbacks: dummyNewFeedbacks,
         });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tab, Card } from 'semantic-ui-react';
+import { Tab } from 'semantic-ui-react';
 
 import { AssignmentCardElement } from '../CardGroup';
 
