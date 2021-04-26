@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class ProjectGroup
     {
@@ -9,7 +9,7 @@ namespace BilHub.Models
         {
             GroupMembers = new Collection<User>();
             Submissions = new Collection<Submission>();
-            ProjectGradings = new Collection<ProjectGrade>();
+            ProjectGrades = new Collection<ProjectGrade>();
             PeerGrades = new Collection<PeerGrade>();
             IncomingJoinRequests = new Collection<JoinRequest>();
             OutgoingMergeRequest = new Collection<MergeRequest>();
@@ -17,13 +17,14 @@ namespace BilHub.Models
         }
         public int Id { get; set; }
         public Section AffiliatedSection { get; set; }
-        public int SectionId { get; set; }
+        public int AffiliatedSectionId { get; set; }
+        public Course AffiliatedCourse { get; set; }
+        public int AffiliatedCourseId { get; set; }
         public bool ConfirmationState { get; set; }
         public int ConfirmedUserNumber { get; set; }
-        public int GroupSize { get; set; }
         public string ProjectInformation { get; set; }
         public ICollection<User> GroupMembers { get; set; }
-        public ICollection<ProjectGrade> ProjectGradings { get; set; }
+        public ICollection<ProjectGrade> ProjectGrades { get; set; }
         public ICollection<PeerGrade> PeerGrades { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         public ICollection<JoinRequest> IncomingJoinRequests { get; set; }

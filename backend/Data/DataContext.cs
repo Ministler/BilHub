@@ -1,8 +1,8 @@
-using BilHub.Models;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace BilHub.Data
+namespace backend.Data
 {
     public class DataContext : DbContext
     {
@@ -23,14 +23,6 @@ namespace BilHub.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<PeerGrade>().HasOne(pg => pg.Reviewer)
-                .WithMany(s => s.OutgoingPeerGrades)
-                .HasForeignKey(mr => mr.ReviewerId);
-
-            modelBuilder.Entity<PeerGrade>().HasOne(pg => pg.Reviewee)
-                .WithMany(s => s.IncomingPeerGrades)
-                .HasForeignKey(mr => mr.RevieweeId).OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.SenderGroup)
                 .WithMany(g => g.OutgoingMergeRequest)
                 .HasForeignKey(mr => mr.SenderGroupId);
@@ -40,13 +32,13 @@ namespace BilHub.Data
                 .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<JoinRequest>().HasOne(jr => jr.RequestingStudent)
-                .WithMany(u => u.OutgoingJoinRequests)
-                .HasForeignKey(jr => jr.UserId);
-            
+                .WithMany(g => g.OutgoingJoinRequests)
+                .HasForeignKey(jr => jr.RequestingStudentId);
+
             modelBuilder.Entity<JoinRequest>().HasOne(jr => jr.RequestedGroup)
                 .WithMany(g => g.IncomingJoinRequests)
-                .HasForeignKey(jr => jr.ProjectGroupId).OnDelete(DeleteBehavior.Restrict);
-            
+                .HasForeignKey(jr => jr.RequestedGroupId).OnDelete(DeleteBehavior.Restrict);
+
 
             // Utility.CreatePasswordHash("123456", out byte[] passwordHash, out byte[] passwordSalt);
 

@@ -1,4 +1,4 @@
-namespace BilHub.Models
+namespace backend.Models
 {
     public class ServiceResponse<T>
     {

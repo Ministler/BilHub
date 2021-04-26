@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class JoinRequest
     {
@@ -11,11 +12,13 @@ namespace BilHub.Models
         }
         public int Id { get; set; }
         public User RequestingStudent { get; set; }
-        public int UserId { get; set; }
+        public int RequestingStudentId { get; set; }
         public ProjectGroup RequestedGroup { get; set; }
-        public int ProjectGroupId { get; set; }
+        public int RequestedGroupId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public int AcceptedNumber { get; set; }
-        public int RejectedNumber { get; set; }
+        public bool Accepted { get; set; }
+        public bool Resolved { get; set; }
         public string VotedStudents { get; set; }
         // public Course AffiliatedCourse { get; set; }
         // public int CourseId { get; set; }

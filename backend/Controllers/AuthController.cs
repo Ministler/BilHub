@@ -1,11 +1,9 @@
 using System.Threading.Tasks;
+using backend.Data.Auth;
 using backend.Dtos.User;
-using BilHub.Data.Auth;
-using BilHub.Dtos;
-using BilHub.Dtos.User;
-using BilHub.Models;
+using backend.Models;
 using Microsoft.AspNetCore.Mvc;
-namespace BilHub.Controllers
+namespace backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -20,9 +18,7 @@ namespace BilHub.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(UserRegisterDto request)
         {
-            ServiceResponse<int> response = await _authRepo.Register(
-                new User { Email = request.Email }, request.Password
-            );
+            ServiceResponse<int> response = await _authRepo.Register(request);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -33,9 +29,7 @@ namespace BilHub.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDto request)
         {
-            ServiceResponse<string> response = await _authRepo.Login(
-                request.Email, request.Password
-            );
+            ServiceResponse<string> response = await _authRepo.Login(request);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -44,9 +38,20 @@ namespace BilHub.Controllers
         }
 
         [HttpPost("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(UserForgotDto request)
         {
-            ServiceResponse<string> response = await _authRepo.ForgotMyPassword(email);
+            ServiceResponse<string> response = await _authRepo.ForgotMyPassword(request);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost("Verify")]
+        public async Task<IActionResult> Verify(UserVerifyDto request)
+        {
+            ServiceResponse<string> response = await _authRepo.Verify(request);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -57,9 +62,7 @@ namespace BilHub.Controllers
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(UserChangeDto request)
         {
-            ServiceResponse<string> response = await _authRepo.ChangePassword(
-                request.Email, request.Password, request.newPassword
-            );
+            ServiceResponse<string> response = await _authRepo.ChangePassword(request);
             if (!response.Success)
             {
                 return BadRequest(response);

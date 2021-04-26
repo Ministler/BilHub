@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class Submission
     {
@@ -13,11 +13,12 @@ namespace BilHub.Models
         public int Id { get; set; }
         public Assignment AffiliatedAssignment { get; set; }
         public ProjectGroup AffiliatedGroup { get; set; }
-        public int ProjectGroupId { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public string FilePath { get; set; }
-        public string Status { get; set; }
+        public bool HasSubmission { get; set; }
         public ICollection<Comment> Comments { get; set; }
-        // public Course AffiliatedCourse { get; set; }
-        // public int CourseId { get; set; }
+        //public Course AffiliatedCourse { get; set; }
+        public int CourseId { get; set; }
+        public int SectionId { get; set; }
     }
 }

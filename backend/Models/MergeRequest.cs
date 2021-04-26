@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class MergeRequest
     {
@@ -15,6 +16,9 @@ namespace BilHub.Models
         public ProjectGroup ReceiverGroup { get; set; }
         public int ReceiverGroupId { get; set; }
         public string VotedStudents { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool Accepted { get; set; }
+        public bool Resolved { get; set; }
 
         // public Course AffiliatedCourse { get; set; }
         // public int CourseId { get; set; }

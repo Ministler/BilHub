@@ -1,13 +1,15 @@
 using System.Collections.Generic;
-using BilHub.Models;
+using backend.Models;
 using System.Threading.Tasks;
-using BilHub.Dtos.JoinRequest;
+using backend.Dtos.JoinRequest;
 
 namespace backend.Services.JoinRequestServices
 {
     public interface IJoinRequestService
     {
-        Task<ServiceResponse<string>> SendJoinRequest(AddJoinRequestDto newJoinRequest);
-
+        Task<ServiceResponse<AddJoinRequestDto>> SendJoinRequest(AddJoinRequestDto newJoinRequestDto);
+        Task<ServiceResponse<string>> CancelJoinRequest(CancelJoinRequestDto joinRequestDto); 
+        Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto);
+    
     }
 }

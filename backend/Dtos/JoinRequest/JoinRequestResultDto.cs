@@ -1,4 +1,4 @@
-namespace BilHub.Dtos.JoinRequest
+namespace backend.Dtos.JoinRequest
 {
     public class JoinRequestResultDto
     {

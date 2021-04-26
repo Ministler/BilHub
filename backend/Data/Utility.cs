@@ -1,4 +1,14 @@
-﻿namespace BilHub.Data
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using MimeKit.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace backend.Data
 {
     public static class Utility
     {
@@ -16,6 +26,82 @@
             {
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+        public static string GenerateRandomPassword()
+        {
+            string ret = "";
+            Random random = new Random();
+            int len = random.Next() % 8 + 9;
+            for (int i = 0; i < len; i++)
+            {
+                char tmp = (char)('a' + (random.Next() % 26));
+                char tmp2 = (char)('1' + (random.Next() % 9));
+                char tmp4 = 'a';
+                int tmp5 = random.Next() % 4;
+                if (tmp5 == 0)
+                    tmp4 = tmp;
+                if (tmp5 == 1)
+                    tmp4 = tmp2;
+                if (tmp5 == 2)
+                    tmp4 = tmp;
+                if (tmp5 == 3)
+                    tmp4 = (char)('A' + tmp - 'a');
+                ret = ret + tmp4.ToString();
+            }
+            return ret;
+        }
+        public static string GenerateRandomCode()
+        {
+            string ret = "";
+            Random random = new Random();
+            int len = 12;
+            for (int i = 0; i < len; i++)
+            {
+                char tmp = (char)('1' + (random.Next() % 9));
+                ret = ret + tmp.ToString();
+            }
+            return ret;
+        }
+        public static void SendMail(string mailaddress, string content, bool recovery)
+        {
+            string subject = recovery ? "BilHub Password Recovery" : "BilHub Email Verification";
+            //Etheral.mail diye bi site, 1 2saat dayaniyo patlarsa yenisini alin
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse("johnathan.schuppe73@ethereal.email"));
+            email.To.Add(MailboxAddress.Parse(mailaddress));
+            email.Subject = subject;
+            email.Body = new TextPart(TextFormat.Plain) { Text = content };
+
+            // send email
+            SmtpClient smtp = new SmtpClient();
+            smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("johnathan.schuppe73@ethereal.email", "y1p4kZBr312UCjC2Vt");
+            smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+
+        public static bool CheckIfInstructorEmail(string email)
+        {
+            var array = Instructors.instrs;
+            if (binarySearch(array, email, array.Length))
+                return true;
+            return false;
+        }
+        private static bool binarySearch(string[] arr, string x, int n)
+        {
+            int l = 0;
+            int r = n - 1;
+            while (l <= r)
+            {
+                int m = l + (r - l) / 2;
+                if (x.Equals(arr[m]))
+                    return true;
+                if (string.Compare(x, arr[m]) > 1)
+                    l = m + 1;
+                else
+                    r = m - 1;
+            }
+            return false;
         }
     }
 }

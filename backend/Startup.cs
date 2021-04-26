@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BilHub.Data;
-using BilHub.Data.Auth;
+using backend.Data;
+using backend.Data.Auth;
+using backend.Services.SubmissionServices;
+using backend.Services.JoinRequestServices;
+// using backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
-namespace BilHub
+namespace backend
 {
     public class Startup
     {
@@ -32,8 +38,13 @@ namespace BilHub
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+            // services.AddSingleton(emailConfig);
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -66,6 +77,9 @@ namespace BilHub
 
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<ISubmissionService, SubmissionService>();
+            services.AddScoped<IJoinRequestService, JoinRequestService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -77,7 +91,6 @@ namespace BilHub
                     ValidateAudience = false
                 };
             });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

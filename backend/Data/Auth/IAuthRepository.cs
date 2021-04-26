@@ -1,14 +1,16 @@
 using System.Threading.Tasks;
-using BilHub.Models;
+using backend.Dtos.User;
+using backend.Models;
 
-namespace BilHub.Data.Auth
+namespace backend.Data.Auth
 {
     public interface IAuthRepository
     {
-        Task<ServiceResponse<int>> Register(User user, string password);
-        Task<ServiceResponse<string>> Login(string username, string password);
-        Task<ServiceResponse<string>> ForgotMyPassword(string email);
-        Task<ServiceResponse<string>> ChangePassword(string username, string password, string newPassword);
+        Task<ServiceResponse<int>> Register(UserRegisterDto userDto);
+        Task<ServiceResponse<string>> Login(UserLoginDto userLoginDto);
+        Task<ServiceResponse<string>> ForgotMyPassword(UserForgotDto userForgotDto);
+        Task<ServiceResponse<string>> ChangePassword(UserChangeDto userChangeDto);
+        Task<ServiceResponse<string>> Verify(UserVerifyDto userVerifyDto);
         Task<bool> UserExists(string username);
     }
 }

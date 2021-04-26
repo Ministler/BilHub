@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace BilHub.Models
+namespace backend.Models
 {
     public class Section
     {
@@ -16,6 +16,7 @@ namespace BilHub.Models
         public bool SectionlessState { get; set; }
         public int SectionNo { get; set; }
         public ICollection<ProjectGroup> ProjectGroups { get; set; }
+        public Course AffiliatedCourse { get; set; }
         public ICollection<User> Students { get; set; }
         // public ICollection<JoinRequest> JoinRequests { get; set; }
         // public ICollection<MergeRequest> MergeRequests { get; set; }
