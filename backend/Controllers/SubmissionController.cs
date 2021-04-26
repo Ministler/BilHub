@@ -32,7 +32,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        [Route("{courseId}/{sectionId}/{assignmentId}")]
+        [Route("File/{courseId}/{sectionId}/{assignmentId}")]
         public async Task<ActionResult> GetAllSubmissions(int courseId, int sectionId, int assignmentId)
         {
             GetSubmissionsFileDto dto = new GetSubmissionsFileDto { CourseId = courseId, SectionId = sectionId, AssignmentId = assignmentId };
@@ -98,10 +98,10 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Route("{assignmentId}/{groupId}")]
-        public async Task<IActionResult> Submit(IFormFile file, int assignmentId, int groupId)
+        [Route("File/{submissionId}")]
+        public async Task<IActionResult> Submit(IFormFile file, int submissionId)
         {
-            AddSubmissionFileDto dto = new AddSubmissionFileDto { File = file, AssignmentId = assignmentId, ProjectGroupId = groupId };
+            AddSubmissionFileDto dto = new AddSubmissionFileDto { File = file, SubmissionId = submissionId };
             ServiceResponse<string> response = await _submissionService.SubmitAssignment(dto);
             if (response.Success)
             {
@@ -112,30 +112,51 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        [Route("{assignmentId}/{groupId}")]
-        public async Task<IActionResult> GetSubmission(int assignmentId, int groupId)
+        [Route("File/{submissionId}")]
+        public async Task<IActionResult> GetSubmission(int submissionId)
         {
-            GetSubmissionFileDto dto = new GetSubmissionFileDto { AssignmentId = assignmentId, ProjectGroupId = groupId };
+            GetSubmissionFileDto dto = new GetSubmissionFileDto { SubmissionId = submissionId };
             ServiceResponse<string> response = await _submissionService.DownloadSubmission(dto);
             if (!response.Success)
             {
                 return BadRequest(response);
             }
             string path = response.Data;
+            string type = GetContentType(path);
+            if (type == null)
+                return BadRequest("this file type is not supported");
             var memory = new MemoryStream();
             using (var stream = new FileStream(path, FileMode.Open))
             {
                 await stream.CopyToAsync(memory);
             }
             memory.Position = 0;
-            return File(memory, GetContentType(path), Path.GetFileName(path));
+            return File(memory, type, Path.GetFileName(path));
 
         }
+
+        [HttpDelete]
+        [Route("File/{submissionId}")]
+        public async Task<IActionResult> DeleteSubmission(int submissionId)
+        {
+            DeleteSubmissionFIleDto dto = new DeleteSubmissionFIleDto { SubmissionId = submissionId };
+            ServiceResponse<string> response = await _submissionService.DeleteSubmssion(dto);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+
+        }
+
+
         private string GetContentType(string path)
         {
             var types = GetMimeTypes();
             var ext = Path.GetExtension(path).ToLowerInvariant();
-            return types[ext];
+            if (types.ContainsKey(ext))
+                return types[ext];
+            return null;
         }
 
         private Dictionary<string, string> GetMimeTypes()
@@ -151,6 +172,7 @@ namespace backend.Controllers
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
                 {".gif", "image/gif"},
+                {".zip", "application/zip"},
                 {".csv", "text/csv"}
             };
         }

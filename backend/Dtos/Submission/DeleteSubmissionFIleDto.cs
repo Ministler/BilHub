@@ -1,6 +1,6 @@
 namespace backend.Dtos.Submission
 {
-    public class GetSubmissionFileDto
+    public class DeleteSubmissionFIleDto
     {
         public int SubmissionId { get; set; }
     }

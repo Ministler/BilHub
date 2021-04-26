@@ -1,6 +1,6 @@
 namespace backend.Dtos.Comment
 {
-    public class GetCommentFileDto
+    public class DeleteCommentFileDto
     {
         public int CommentId { get; set; }
     }
