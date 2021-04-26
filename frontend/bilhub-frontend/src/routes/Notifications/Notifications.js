@@ -7,7 +7,9 @@ import {
     ProfilePrompt,
     convertMyProjectsToBriefList,
     convertInstructedCoursesToBriefList,
-    convertRequestsToRequestsList,
+    getRequestsAsAccordion,
+    Tab,
+    getNewFeedbacksAsAccordion,
 } from '../../components';
 
 class Notifications extends Component {
@@ -29,7 +31,7 @@ class Notifications extends Component {
             myProjects: dummyMyProjectsList,
             instructedCourses: dummyInstructedCoursesList,
 
-            incomingRequests: dummyIncomingRequests,
+            incomingRequests: null,
             outgoingRequests: dummyOutgoingRequests,
             newFeedbacks: dummyNewFeedbacks,
         });
@@ -55,6 +57,51 @@ class Notifications extends Component {
         this.props.history.push('/project/' + projectId + '/submission/' + submissionId);
     };
 
+    getIncomingRequestsPane = () => {
+        return {
+            title: 'Incoming Requests',
+            content: getRequestsAsAccordion(
+                this.state.incomingRequests,
+                'incoming',
+                this.onUserClicked,
+                this.onCourseClicked,
+                this.onRequestApproved,
+                this.onRequestDisapproved
+            ),
+        };
+    };
+
+    getOutgoingRequestsPane = () => {
+        return {
+            title: 'Outgoing Requests',
+            content: getRequestsAsAccordion(
+                this.state.outgoingRequests,
+                'outgoing',
+                this.onUserClicked,
+                this.onCourseClicked,
+                this.onRequestApproved,
+                this.onRequestDisapproved
+            ),
+        };
+    };
+
+    getNewFeedbacksPane = () => {
+        return {
+            title: 'New Feedbacks',
+            content: getNewFeedbacksAsAccordion(
+                this.state.newFeedbacks,
+                this.onUserClicked,
+                this.onSubmissionClicked,
+                this.onProjectClicked,
+                this.onCourseClicked
+            ),
+        };
+    };
+
+    getPaneElements = () => {
+        return [this.getIncomingRequestsPane(), this.getOutgoingRequestsPane(), this.getNewFeedbacksPane()];
+    };
+
     render() {
         const myProjectsComponent = this.state.myProjects
             ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked)
@@ -73,15 +120,10 @@ class Notifications extends Component {
                     </div>
                 </GridColumn>
                 <GridColumn width={12}>
+                    <Tab tabPanes={this.getPaneElements()} />
                     <div>
-                        {convertRequestsToRequestsList(
-                            this.state.incomingRequests?.pending,
-                            'pending',
-                            this.onUserClicked,
-                            this.onCourseClicked,
-                            this.onRequestApproved,
-                            this.onRequestDisapproved
-                        )}
+                        {}
+                        {}
                     </div>
                 </GridColumn>
             </Grid>
@@ -162,8 +204,7 @@ const dummyIncomingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
         {
             type: 'Merge',
@@ -193,8 +234,7 @@ const dummyIncomingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
     ],
     unresolved: [
@@ -219,8 +259,7 @@ const dummyIncomingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
         {
             type: 'Merge',
@@ -250,8 +289,7 @@ const dummyIncomingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
     ],
     resolved: [
@@ -369,11 +407,11 @@ const dummyOutgoingRequests = {
                 {
                     name: 'Hasan Kaya',
                     userId: 1,
+                    requestOwner: true,
                 },
                 {
                     name: 'Ayşe Kaya',
                     userId: 2,
-                    requestOwner: true,
                 },
             ],
             otherGroup: [
@@ -390,8 +428,7 @@ const dummyOutgoingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
     ],
     unresolved: [
@@ -412,8 +449,7 @@ const dummyOutgoingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
         {
             type: 'Merge',
@@ -423,6 +459,7 @@ const dummyOutgoingRequests = {
                 {
                     name: 'Hasan Kaya',
                     userId: 1,
+                    requestOwner: false,
                 },
                 {
                     name: 'Ayşe Kaya',
@@ -443,8 +480,7 @@ const dummyOutgoingRequests = {
             courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
-            numberOfApprovals: 2,
-            requiredNumberOfApprovals: 5,
+            voteStatus: '2/5',
         },
     ],
     resolved: [
@@ -479,7 +515,7 @@ const dummyOutgoingRequests = {
                 {
                     name: 'Ayşe Kaya',
                     userId: 2,
-                    isRequestOwner: true,
+                    requestOwner: true,
                 },
             ],
             otherGroup: [

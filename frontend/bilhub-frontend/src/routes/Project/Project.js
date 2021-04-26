@@ -39,9 +39,6 @@ export class Project extends Component {
             currentFeedbackFile: null,
             currentFeedbackGrade: 10,
             currentFeedbackId: 0,
-
-            // States regarding accordion
-            accordionActiveIndex: 0,
         };
     }
 
@@ -109,15 +106,6 @@ export class Project extends Component {
 
     onAuthorClicked = (userId) => {
         this.props.history.push('/profile/' + userId);
-    };
-
-    onAccordionClicked = (e, titleProps) => {
-        console.log(titleProps);
-        const index = titleProps.index;
-        const activeIndex = this.state.accordionActiveIndex;
-        const newIndex = activeIndex === index ? -1 : index;
-
-        this.setState({ accordionActiveIndex: newIndex });
     };
 
     // MODAL LOGIC
@@ -334,9 +322,7 @@ export class Project extends Component {
                     this.state.projectGroup?.isTAorInstructor,
                     this.onModalOpenedWithComment,
                     this.onAuthorClicked,
-                    this.props.userId,
-                    this.onAccordionClicked,
-                    this.state.accordionActiveIndex
+                    this.props.userId
                 )}
                 newCommentButton={newCommentButton}
             />

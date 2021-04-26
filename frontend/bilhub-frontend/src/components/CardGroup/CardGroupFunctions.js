@@ -39,6 +39,72 @@ export const convertAssignmentsToAssignmentList = (assignments, onAssignmentClic
     );
 };
 
+export const convertNewFeedbacksToFeedbackList = (
+    newFeedbacks,
+    onUserClicked,
+    onSubmissionClicked,
+    onProjectClicked,
+    onCourseClicked
+) => {
+    const newFeedbackCardElements = newFeedbacks ? (
+        newFeedbacks.map((feedback) => {
+            let titleElement;
+            if (feedback.submission) {
+                titleElement = (
+                    <>
+                        <span onClick={() => onUserClicked(feedback.user?.userId)}> {feedback.user?.name} </span>
+                        Commented to Your
+                        <span
+                            onClick={() =>
+                                onSubmissionClicked(
+                                    feedback.submission?.projectId,
+                                    feedback.submission?.submissionPageId
+                                )
+                            }>
+                            {' '}
+                            {feedback.submission?.assignmentName}{' '}
+                        </span>
+                        Submission in
+                        <span onClick={() => onCourseClicked(feedback.course?.courseId)}>
+                            {' '}
+                            {feedback.course?.courseName}{' '}
+                        </span>
+                    </>
+                );
+            } else if (feedback.project) {
+                titleElement = (
+                    <>
+                        <span onClick={() => onUserClicked(feedback.user?.userId)}> {feedback.user?.name} </span>
+                        Commented to Your
+                        <span onClick={() => onProjectClicked(feedback.project?.projectId)}>
+                            {' '}
+                            {feedback.project?.projectName}{' '}
+                        </span>
+                        Project in
+                        <span onClick={() => onCourseClicked(feedback.course?.courseId)}>
+                            {' '}
+                            {feedback.course?.courseName}{' '}
+                        </span>
+                    </>
+                );
+            }
+            return (
+                <FeedbackCardElement
+                    titleElement={titleElement}
+                    caption={feedback.feedback?.caption}
+                    grade={feedback.feedback?.grade}
+                    date={feedback.date}
+                    onAuthorClicked={() => onUserClicked(feedback.user?.userId)}
+                />
+            );
+        })
+    ) : (
+        <div>No Comments Yet</div>
+    );
+
+    return newFeedbackCardElements;
+};
+
 export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorClicked, userId) => {
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
@@ -151,6 +217,7 @@ export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, 
 
 export const convertRequestsToRequestsList = (
     requests,
+    requestsType,
     requestStatus,
     onUserClicked,
     onCourseClicked,
@@ -159,78 +226,131 @@ export const convertRequestsToRequestsList = (
 ) => {
     return (
         <Card.Group as="div" className="AssignmentCardGroup">
-            {requests?.map((request) => {
-                let yourGroup = null;
-                if (request.yourGroup) {
-                    yourGroup = convertMembersToMemberElement(request.yourGroup, onUserClicked);
-                }
+            {requests ? (
+                requests.map((request) => {
+                    let yourGroup = null;
+                    if (request.yourGroup) {
+                        yourGroup = convertMembersToMemberElement(request.yourGroup, onUserClicked);
+                    }
 
-                let otherGroup = null;
-                if (request.otherGroup) {
-                    yourGroup = convertMembersToMemberElement(request.otherGroup, onUserClicked);
-                }
+                    let otherGroup = null;
+                    if (request.otherGroup) {
+                        otherGroup = convertMembersToMemberElement(request.otherGroup, onUserClicked);
+                    }
 
-                let titleStart, titleMid, userName, userId;
-                let voteIcons = null;
+                    let titleStart, titleMid, userName, userId;
+                    let voteIcons = null;
 
-                if (request.type === 'Join') {
-                    userName = request.user?.name;
-                    userId = request.user?.Id;
-                }
+                    if (requestsType === 'incoming') {
+                        if (request.type === 'Join') {
+                            userName = request.user?.name;
+                            userId = request.user?.Id;
+                        }
 
-                if (request.type === 'Merge') {
-                    const requestOwner = request.otherGroup?.find((user) => {
-                        return user.requestOwner;
-                    });
+                        if (request.type === 'Merge') {
+                            const requestOwner = request.otherGroup?.find((user) => {
+                                return user.requestOwner;
+                            });
 
-                    userName = requestOwner?.name;
-                    userId = requestOwner?.Id;
-                }
+                            userName = requestOwner?.name;
+                            userId = requestOwner?.Id;
+                        }
 
-                if (requestStatus === 'pending') {
-                    titleMid = ' wants to ' + request.type + ' Unformed Group in ';
+                        if (requestStatus === 'pending') {
+                            titleMid = ' created a ' + request.type + ' request to Your Unformed Group in ';
 
-                    voteIcons = (
-                        <>
-                            <Icon onClick={onRequestApproved} name="checkmark" />
-                            <Icon onClick={onRequestDisapproved} name="x" />
-                        </>
+                            voteIcons = (
+                                <>
+                                    <Icon onClick={onRequestApproved} name="checkmark" />
+                                    <Icon onClick={onRequestDisapproved} name="x" />
+                                </>
+                            );
+                        }
+
+                        if (requestStatus === 'unresolved') {
+                            titleStart = 'Your Approved ';
+                            titleMid = request.type + ' request to your Unformed Group in ';
+
+                            voteIcons = (
+                                <>
+                                    <Icon name="checkmark" />
+                                </>
+                            );
+                        }
+
+                        if (requestStatus === 'resolved') {
+                            titleMid =
+                                "'s " + request.type + ' request ' + request.status + ' by your Unformed Group in ';
+                        }
+                    } else if (requestsType === 'outgoing') {
+                        if (request.type === 'Join') {
+                            userName = 'Your ';
+                        }
+
+                        if (request.type === 'Merge') {
+                            if (request.isRequestOwner) {
+                                userName = 'You ';
+                            } else {
+                                const requestOwner = request.yourGroup?.find((user) => {
+                                    return user.requestOwner;
+                                });
+                                console.log();
+                                userName = requestOwner?.name;
+                                userId = requestOwner?.Id;
+                            }
+                        }
+
+                        if (requestStatus === 'pending') {
+                            titleMid = ' created a ' + request.type + ' request to an Unformed Group in ';
+
+                            voteIcons = (
+                                <>
+                                    <Icon onClick={onRequestApproved} name="checkmark" />
+                                    <Icon onClick={onRequestDisapproved} name="x" />
+                                </>
+                            );
+                        }
+
+                        if (requestStatus === 'unresolved') {
+                            titleMid = ' created a ' + request.type + ' request to an Unformed Group in ';
+
+                            voteIcons = (
+                                <>
+                                    <Icon name="checkmark" />
+                                </>
+                            );
+                        }
+
+                        if (requestStatus === 'resolved') {
+                            titleMid =
+                                ' ' + request.type + ' request ' + request.status + ' by your Unformed Group in ';
+                        }
+                    }
+
+                    return (
+                        <RequestCardElement
+                            titleStart={titleStart}
+                            titleMid={titleMid}
+                            userName={userName}
+                            courseName={request.course}
+                            yourGroup={yourGroup}
+                            otherGroup={otherGroup}
+                            voteStatus={request.voteStatus}
+                            voteIcons={voteIcons}
+                            requestDate={request.requestDate}
+                            formationDate={request.formationDate}
+                            approvalDate={request.approvalDate}
+                            disapprovalDate={request.disapprovalDate}
+                            onUserClicked={() => onUserClicked(userId)}
+                            onCourseClicked={() => onCourseClicked(request.courseId)}
+                        />
                     );
-                }
-
-                if (requestStatus === 'unresolved') {
-                    titleStart = 'Your Approved ';
-                    titleMid = request.type + ' request to your Unformed Group in ';
-
-                    voteIcons = (
-                        <>
-                            <Icon name="checkmark" />
-                        </>
-                    );
-                }
-
-                if (requestStatus === 'resolved') {
-                    titleMid = "'s " + request.type + ' request ' + request.status + ' by your Unformed Group in ';
-                }
-                return (
-                    <RequestCardElement
-                        titleStart={titleStart}
-                        titleMid={titleMid}
-                        userName={userName}
-                        courseName={request.course}
-                        yourGroup={yourGroup}
-                        otherGroup={otherGroup}
-                        voteStatus={request.voteStatus}
-                        voteIcons={voteIcons}
-                        requestDate={request.requestDate}
-                        formationDate={request.formationDate}
-                        approvalDate={request.approvalDate}
-                        disapprovalDate={request.disapprovalDate}
-                        onUserClicked={() => onUserClicked(userId)}
-                        onCourseClicked={() => onCourseClicked(request.courseId)}
-                    />
-                );
-            })}
+                })
+            ) : (
+                <div>
+                    You Dont have any {requestsType} {requestStatus} requests
+                </div>
+            )}
         </Card.Group>
     );
 };

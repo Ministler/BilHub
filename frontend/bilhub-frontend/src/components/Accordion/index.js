@@ -1,1 +1,1 @@
-export { getFeedbacksAsAccordion } from './AccordionFunctions';
+export { getFeedbacksAsAccordion, getRequestsAsAccordion, getNewFeedbacksAsAccordion } from './AccordionFunctions';

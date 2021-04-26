@@ -33,7 +33,11 @@ export const FeedbackCardElement = (props) => {
         <Card className="FeedbackCardElement">
             <Card.Content>
                 <Card.Header>
-                    <div onClick={props.onAuthorClicked}>{props.author}</div>
+                    {props.author ? (
+                        <div onClick={props.onAuthorClicked}>{props.author}</div>
+                    ) : (
+                        <div>{props.titleElement}</div>
+                    )}
                 </Card.Header>
                 <Card.Description>
                     {props.caption}
@@ -66,7 +70,7 @@ export const RequestCardElement = (props) => {
                     {props.otherGroup ? (
                         <>
                             <h2>Other Group</h2>
-                            {props.yourGroup}
+                            {props.otherGroup}
                         </>
                     ) : null}
                 </Card.Description>

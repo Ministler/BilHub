@@ -45,9 +45,6 @@ class ProjectAssignment extends Component {
             currentFeedbackFile: null,
             currentFeedbackGrade: 10,
             currentFeedbackId: 0,
-
-            // States regarding accordion
-            accordionActiveIndex: 0,
         };
     }
 
@@ -99,16 +96,6 @@ class ProjectAssignment extends Component {
         });
         if (!isSuccess) return;
     };
-
-    // Accordion
-    onAccordionClicked = (e, titleProps) => {
-        const index = titleProps.index;
-        const activeIndex = this.state.accordionActiveIndex;
-        const newIndex = activeIndex === index ? -1 : index;
-
-        this.setState({ accordionActiveIndex: newIndex });
-    };
-
     onCurrentFeedbackTextChanged = (e) => {
         e.preventDefault();
         this.setState({
@@ -276,9 +263,7 @@ class ProjectAssignment extends Component {
                     this.state.submissionPage?.isTAorInstructor,
                     this.onModelOpenedWithCommentOpened,
                     this.onAuthorClicked,
-                    this.props.userId,
-                    this.onAccordionClicked,
-                    this.state.accordionActiveIndex
+                    this.props.userId
                 )}
                 newCommentButton={newCommentButton}
             />
