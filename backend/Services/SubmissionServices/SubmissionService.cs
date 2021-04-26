@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System;
 
 namespace backend.Services.SubmissionServices
 {
@@ -48,13 +49,13 @@ namespace backend.Services.SubmissionServices
             }
             if (dto.SectionId == -1)
                 response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}",
-                "Submissions", dto.CourseId));
+                "StaticFiles/Submissions", dto.CourseId));
             else if (dto.AssignmentId == -1)
                 response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/",
-                "Submissions", dto.CourseId, dto.SectionId));
+                "StaticFiles/Submissions", dto.CourseId, dto.SectionId));
             else
                 response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}",
-                "Submissions", dto.CourseId, dto.SectionId, dto.AssignmentId));
+                "StaticFiles/Submissions", dto.CourseId, dto.SectionId, dto.AssignmentId));
             return response;
         }
         public async Task<ServiceResponse<string>> DownloadSubmission(GetSubmissionFileDto dto)
@@ -96,8 +97,8 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<string>> SubmitAssignment(AddSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup projectGroup = user.ProjectGroups.FirstOrDefault(pg => pg.Id == dto.ProjectGroupId);
+            User user = await _context.Users.Include(u => u.ProjectGroups).ThenInclude(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGroup projectGroup = _context.ProjectGroups.Include(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).FirstOrDefault(pg => pg.Id == dto.ProjectGroupId);
             Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
             if (projectGroup == null || assignment == null || projectGroup.AffiliatedSectionId != assignment.AffiliatedSectionId)
             {
@@ -106,17 +107,31 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            Submission submission = new Submission { AffiliatedAssignment = assignment, AffiliatedGroup = projectGroup };
+            Submission submission = projectGroup.Submissions.FirstOrDefault(s => s.AffiliatedAssignment.Id == dto.AssignmentId);
+            if (submission == null)
+            {
+                response.Data = "Bad request";
+                response.Message = "there is no submission to attach file";
+                response.Success = false;
+                return response;
+            }
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "Submissions", assignment.CourseId,
+                "StaticFiles/Submissions", assignment.CourseId,
                 projectGroup.AffiliatedSectionId, dto.AssignmentId, dto.ProjectGroupId));
 
             Directory.CreateDirectory(target);
             if (dto.File.Length <= 0) response.Success = false;
             else
             {
+                string oldfile = Directory.GetFiles(target)[0];
                 var filePath = Path.Combine(target, dto.File.FileName);
                 submission.FilePath = filePath;
+                submission.UpdatedAt = DateTime.Now;
+                submission.HasSubmission = true;
+                if (File.Exists(oldfile))
+                {
+                    File.Delete(oldfile);
+                }
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await dto.File.CopyToAsync(stream);
@@ -124,7 +139,7 @@ namespace backend.Services.SubmissionServices
                 response.Data = target;
                 response.Message = "file succesfully saved.";
             }
-            _context.Submissions.Add(submission);
+            _context.Submissions.Update(submission);
             await _context.SaveChangesAsync();
 
             return response;
