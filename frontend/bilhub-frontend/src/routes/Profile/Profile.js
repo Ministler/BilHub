@@ -27,11 +27,31 @@ class Profile extends Component {
         });
     }
 
-    onNewInformationChange = (e) => {
+    onNewInformationChanged = (e) => {
         e.preventDefault();
         this.setState({
             newInformation: e.target.value,
         });
+    };
+
+    onInformationEditModeToggled = () => {
+        this.setState((prevState) => {
+            return {
+                informationEditMode: !prevState['informationEditMode'],
+            };
+        });
+    };
+
+    onMemberClicked = (userId) => {
+        this.props.history.push('/profile/' + userId);
+    };
+
+    onProjectTitleClicked = (projectId) => {
+        this.props.history.push('/project/' + projectId);
+    };
+
+    onCourseTitleClicked = (courseId) => {
+        this.props.history.push('/course/' + courseId);
     };
 
     changeUserInformation = (newInformation) => {
@@ -41,19 +61,11 @@ class Profile extends Component {
         });
     };
 
-    toggleInformationEditMode = () => {
-        this.setState((prevState) => {
-            return {
-                informationEditMode: !prevState['informationEditMode'],
-            };
-        });
-    };
-
     getInformationElement = () => {
         let groupInformationElement = <p>{this.state.user?.information}</p>;
         if (this.state.informationEditMode) {
             groupInformationElement = (
-                <TextArea onChange={(e) => this.onNewInformationChange(e)} value={this.state.newInformation} />
+                <TextArea onChange={(e) => this.onNewInformationChanged(e)} value={this.state.newInformation} />
             );
         }
         return groupInformationElement;
@@ -67,7 +79,7 @@ class Profile extends Component {
                     className="clickableChangeColor"
                     onClick={() => {
                         this.changeUserInformation(this.state.newInformation);
-                        this.toggleInformationEditMode();
+                        this.onInformationEditModeToggled();
                     }}
                     name={'check'}
                 />
@@ -75,25 +87,13 @@ class Profile extends Component {
                 <Icon
                     className="clickableChangeColor"
                     onClick={() => {
-                        this.toggleInformationEditMode();
+                        this.onInformationEditModeToggled();
                     }}
                     name={'edit'}
                 />
             );
         }
         return informationEditIcon;
-    };
-
-    onMemberClicked = (userId) => {
-        this.props.history.push('/profile/' + userId);
-    };
-
-    onProjectTitleClicked = (projectId) => {
-        this.props.history.push('/project/' + projectId);
-    };
-
-    onCourseTitleClicked = (courseId) => {
-        this.props.history.push('/course/' + courseId);
     };
 
     render() {

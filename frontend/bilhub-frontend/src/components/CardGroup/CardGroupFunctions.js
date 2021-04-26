@@ -1,6 +1,7 @@
 import { Card, Icon, Button } from 'semantic-ui-react';
+import { convertMembersToMemberElement } from '../BriefList';
 
-import { AssignmentCardElement, FeedbackCardElement } from './CardGroupUI';
+import { AssignmentCardElement, FeedbackCardElement, RequestCardElement } from './CardGroupUI';
 
 export const convertAssignmentsToAssignmentList = (assignments, onAssignmentClicked, onAssignmentFileClicked) => {
     const assignmentCardElements = assignments.map((assignment) => {
@@ -88,7 +89,11 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorC
         <div>No Comments Yet</div>
     );
 
-    return <Card.Group>{feedbackCardElements}</Card.Group>;
+    return (
+        <Card.Group as="div" className="AssignmentCardGroup">
+            {feedbackCardElements}
+        </Card.Group>
+    );
 };
 
 export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, onOpenModal, onAuthorClicked) => {
@@ -126,7 +131,7 @@ export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, 
         }
 
         return (
-            <Card.Group>
+            <Card.Group as="div" className="AssignmentCardGroup">
                 <FeedbackCardElement
                     author={SRSResult.name}
                     onAuthorClicked={() => onAuthorClicked(SRSResult.userId)}
@@ -142,4 +147,90 @@ export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, 
     } else {
         return <div>No SRS Feedback</div>;
     }
+};
+
+export const convertRequestsToRequestsList = (
+    requests,
+    requestStatus,
+    onUserClicked,
+    onCourseClicked,
+    onRequestApproved,
+    onRequestDisapproved
+) => {
+    return (
+        <Card.Group as="div" className="AssignmentCardGroup">
+            {requests?.map((request) => {
+                let yourGroup = null;
+                if (request.yourGroup) {
+                    yourGroup = convertMembersToMemberElement(request.yourGroup, onUserClicked);
+                }
+
+                let otherGroup = null;
+                if (request.otherGroup) {
+                    yourGroup = convertMembersToMemberElement(request.otherGroup, onUserClicked);
+                }
+
+                let titleStart, titleMid, userName, userId;
+                let voteIcons = null;
+
+                if (request.type === 'Join') {
+                    userName = request.user?.name;
+                    userId = request.user?.Id;
+                }
+
+                if (request.type === 'Merge') {
+                    const requestOwner = request.otherGroup?.find((user) => {
+                        return user.requestOwner;
+                    });
+
+                    userName = requestOwner?.name;
+                    userId = requestOwner?.Id;
+                }
+
+                if (requestStatus === 'pending') {
+                    titleMid = ' wants to ' + request.type + ' Unformed Group in ';
+
+                    voteIcons = (
+                        <>
+                            <Icon onClick={onRequestApproved} name="checkmark" />
+                            <Icon onClick={onRequestDisapproved} name="x" />
+                        </>
+                    );
+                }
+
+                if (requestStatus === 'unresolved') {
+                    titleStart = 'Your Approved ';
+                    titleMid = request.type + ' request to your Unformed Group in ';
+
+                    voteIcons = (
+                        <>
+                            <Icon name="checkmark" />
+                        </>
+                    );
+                }
+
+                if (requestStatus === 'resolved') {
+                    titleMid = "'s " + request.type + ' request ' + request.status + ' by your Unformed Group in ';
+                }
+                return (
+                    <RequestCardElement
+                        titleStart={titleStart}
+                        titleMid={titleMid}
+                        userName={userName}
+                        courseName={request.course}
+                        yourGroup={yourGroup}
+                        otherGroup={otherGroup}
+                        voteStatus={request.voteStatus}
+                        voteIcons={voteIcons}
+                        requestDate={request.requestDate}
+                        formationDate={request.formationDate}
+                        approvalDate={request.approvalDate}
+                        disapprovalDate={request.disapprovalDate}
+                        onUserClicked={() => onUserClicked(userId)}
+                        onCourseClicked={() => onCourseClicked(request.courseId)}
+                    />
+                );
+            })}
+        </Card.Group>
+    );
 };

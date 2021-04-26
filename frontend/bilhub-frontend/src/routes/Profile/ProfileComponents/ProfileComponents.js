@@ -1,5 +1,7 @@
 import React from 'react';
-import { Segment, Tab, Icon, Card } from 'semantic-ui-react';
+import { Segment, Icon, Card } from 'semantic-ui-react';
+
+import { convertMembersToMemberElement, Tab } from '../../../components';
 
 export const ProfilePrompt = (props) => {
     return (
@@ -19,58 +21,49 @@ export const ProfilePrompt = (props) => {
 export const TabExampleSecondaryPointing = (props) => {
     const panes = [
         {
-            menuItem: 'Instructed Courses',
-            render: () => (
-                <Tab.Pane as="div" attached={false}>
-                    {props.courses ? (
-                        props.courses.map((course) => {
-                            console.log(course);
-                            return (
-                                <CourseCardElement
-                                    title={course.courseName}
-                                    TAs={course.TAs}
-                                    instructors={course.instructors}
-                                    onMemberClicked={(userId) => props.onMemberClicked(userId)}
-                                    onCourseTitleClicked={() => props.onCourseTitleClicked(course.courseId)}
-                                />
-                            );
-                        })
-                    ) : (
-                        <div>No Instructed Courses</div>
-                    )}
-                </Tab.Pane>
+            title: 'Instructed Courses',
+            content: props.courses ? (
+                props.courses.map((course) => {
+                    return (
+                        <CourseCardElement
+                            title={course.courseName}
+                            TAs={course.TAs}
+                            instructors={course.instructors}
+                            onMemberClicked={(userId) => props.onMemberClicked(userId)}
+                            onCourseTitleClicked={() => props.onCourseTitleClicked(course.courseId)}
+                        />
+                    );
+                })
+            ) : (
+                <div>No Instructed Courses</div>
             ),
         },
     ];
 
     if (props.userType !== 'instructor') {
         panes.unshift({
-            menuItem: 'Projects',
-            render: () => (
-                <Tab.Pane as="div" attached={false}>
-                    {props.projects ? (
-                        props.projects.map((project) => {
-                            return (
-                                <ProjectCardElement
-                                    title={project.courseName + ' / ' + project.groupName}
-                                    members={project.groupMembers}
-                                    peerGrade={project.peerGrade}
-                                    projectGrade={project.projectGrade}
-                                    instructor={project.instructor}
-                                    onMemberClicked={(userId) => props.onMemberClicked(userId)}
-                                    onProjectTitleClicked={() => props.onProjectTitleClicked(project.projectId)}
-                                />
-                            );
-                        })
-                    ) : (
-                        <div>No Projects Yet</div>
-                    )}
-                </Tab.Pane>
+            title: 'Projects',
+            content: props.projects ? (
+                props.projects.map((project) => {
+                    return (
+                        <ProjectCardElement
+                            title={project.courseName + ' / ' + project.groupName}
+                            members={project.groupMembers}
+                            peerGrade={project.peerGrade}
+                            projectGrade={project.projectGrade}
+                            instructor={project.instructor}
+                            onMemberClicked={(userId) => props.onMemberClicked(userId)}
+                            onProjectTitleClicked={() => props.onProjectTitleClicked(project.projectId)}
+                        />
+                    );
+                })
+            ) : (
+                <div>No Projects Yet</div>
             ),
         });
     }
 
-    return <Tab menu={{ secondary: true, pointing: true, color: 'red' }} style={{ width: '75%' }} panes={panes} />;
+    return <Tab tabPanes={panes} />;
 };
 
 export const ProjectCardElement = (props) => {
@@ -111,18 +104,4 @@ export const CourseCardElement = (props) => {
             </Card.Content>
         </Card>
     );
-};
-
-export const MemberElement = (props) => {
-    return (
-        <div className="clickableHighlightBack" onClick={props.onClick}>
-            {props.member.name} - {props.member.information}
-        </div>
-    );
-};
-
-const convertMembersToMemberElement = (members, onMemberClicked) => {
-    return members?.map((member) => {
-        return <MemberElement onClick={() => onMemberClicked(member.userId)} member={member} />;
-    });
 };

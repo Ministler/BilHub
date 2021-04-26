@@ -8,10 +8,14 @@ export const MyTab = (props) => {
     tabPanes = tabPanes?.map((pane) => {
         return {
             menuItem: pane.title,
-            render: () => <Tab.Pane>{pane.content}</Tab.Pane>,
+            render: () => (
+                <Tab.Pane as="div" attached={false}>
+                    {pane.content}
+                </Tab.Pane>
+            ),
         };
     });
-    return <Tab panes={tabPanes} />;
+    return <Tab menu={{ secondary: true, pointing: true, color: 'red' }} style={{ width: '75%' }} panes={tabPanes} />;
 };
 
 export const FeedbacksPane = (props) => {

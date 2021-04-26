@@ -13,7 +13,12 @@ export const getFeedbacksAsAccordion = (
     const accordionElements = [
         {
             title: 'SRS Feedback',
-            content: convertSRSFeedbackToSRSCardElement(feedbacks?.SRSResult, isTAorInstructor, onOpenModal),
+            content: convertSRSFeedbackToSRSCardElement(
+                feedbacks?.SRSResult,
+                isTAorInstructor,
+                onOpenModal,
+                onAuthorClicked
+            ),
         },
         {
             title: 'Instructor Feedbacks',

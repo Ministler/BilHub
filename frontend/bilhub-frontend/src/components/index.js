@@ -6,6 +6,7 @@ export {
     FeedbackCardElement,
     convertFeedbacksToFeedbackList,
     convertSRSFeedbackToSRSCardElement,
+    convertRequestsToRequestsList,
 } from './CardGroup';
 export { Tab, GradePane, FeedbacksPane, SubmissionPane } from './Tab';
 export { Table, getGradeTable } from './Table';

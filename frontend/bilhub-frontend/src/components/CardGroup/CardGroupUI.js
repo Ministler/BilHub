@@ -47,3 +47,43 @@ export const FeedbackCardElement = (props) => {
         </Card>
     );
 };
+
+export const RequestCardElement = (props) => {
+    return (
+        <Card className="FeedbackCardElement">
+            <Card.Content>
+                <Card.Header>
+                    {props.titleStart} <span onClick={props.onUserClicked}>{props.userName}</span> {props.titleMid}{' '}
+                    <span onClick={props.onCourseClicked}>{props.courseName}</span>
+                </Card.Header>
+                <Card.Description>
+                    {props.yourGroup ? (
+                        <>
+                            <h2>Your Group</h2>
+                            {props.yourGroup}
+                        </>
+                    ) : null}
+                    {props.otherGroup ? (
+                        <>
+                            <h2>Other Group</h2>
+                            {props.yourGroup}
+                        </>
+                    ) : null}
+                </Card.Description>
+            </Card.Content>
+            <Card.Content className="FeedbackCardExtra">
+                <span>
+                    {props.voteStatus}
+                    {props.voteIcons}
+                </span>
+                {props.requestDate ? (
+                    <span>
+                        Request Date: {props.requestDate} / Formation Date: {props.formationDate}
+                    </span>
+                ) : null}
+                {props.approvalDate ? <span>Approval Date: {props.approvalDate}</span> : null}
+                {props.disapprovalDate ? <span>Dispproval Date: {props.disapprovalDate}</span> : null}
+            </Card.Content>
+        </Card>
+    );
+};
