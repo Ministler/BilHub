@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System;
 
 namespace backend.Services.SubmissionServices
 {
@@ -39,7 +40,7 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            if (course.Instructors.FirstOrDefault(i => i.Id == user.Id) == null && user.UserType == UserTypeClass.Student)
+            if (course.Instructors.FirstOrDefault(i => i.UserId == user.Id) == null && user.UserType == UserTypeClass.Student)
             {
                 response.Data = null;
                 response.Message = "You are not authorized for this endpoint";
@@ -48,41 +49,36 @@ namespace backend.Services.SubmissionServices
             }
             if (dto.SectionId == -1)
                 response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}",
-                "Submissions", dto.CourseId));
+                "StaticFiles/Submissions", dto.CourseId));
             else if (dto.AssignmentId == -1)
                 response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/",
-                "Submissions", dto.CourseId, dto.SectionId));
+                "StaticFiles/Submissions", dto.CourseId, dto.SectionId));
             else
                 response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}",
-                "Submissions", dto.CourseId, dto.SectionId, dto.AssignmentId));
+                "StaticFiles/Submissions", dto.CourseId, dto.SectionId, dto.AssignmentId));
             return response;
         }
         public async Task<ServiceResponse<string>> DownloadSubmission(GetSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            ProjectGroup projectGroup = await _context.ProjectGroups.FirstOrDefaultAsync(pg => pg.Id == dto.ProjectGroupId);
-            Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
-            if (projectGroup == null || assignment == null || projectGroup.AffiliatedSectionId != assignment.AffiliatedSectionId)
-            {
-                response.Data = null;
-                response.Message = "There is a mistake in project and assignment ids you entered";
-                response.Success = false;
-                return response;
-            }
-            Submission submission = await _context.Submissions
-            .Include(s => s.AffiliatedAssignment)
-            .Include(s => s.AffiliatedGroup)
-            .FirstOrDefaultAsync(s => s.AffiliatedAssignment.Id == dto.AssignmentId && s.AffiliatedGroup.Id == dto.ProjectGroupId);
-
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
             if (submission == null)
             {
                 response.Data = null;
-                response.Message = "This group has not yet submitted their work this assigment";
+                response.Message = "There is no such submission";
                 response.Success = false;
                 return response;
             }
-            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            if (!assignment.VisibilityOfSubmission && user.ProjectGroups.Any(pg => pg.Id != dto.ProjectGroupId) && user.UserType == UserTypeClass.Student)
+            if (!submission.HasSubmission)
+            {
+                response.Data = null;
+                response.Message = "This group has not yet submitted their file for this assigment";
+                response.Success = false;
+                return response;
+            }
+            User user = await _context.Users.Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup).FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGroup projectGroup = user.ProjectGroups.FirstOrDefault(pgu => pgu.ProjectGroupId == submission.AffiliatedGroupId).ProjectGroup;
+            if (!submission.AffiliatedAssignment.VisibilityOfSubmission && projectGroup == null && user.UserType == UserTypeClass.Student)
             {
                 response.Data = null;
                 response.Message = "You are not authorized to see this submission";
@@ -93,43 +89,98 @@ namespace backend.Services.SubmissionServices
             response.Success = true;
             return response;
         }
+
         public async Task<ServiceResponse<string>> SubmitAssignment(AddSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup projectGroup = user.ProjectGroups.FirstOrDefault(pg => pg.Id == dto.ProjectGroupId);
-            Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
-            if (projectGroup == null || assignment == null || projectGroup.AffiliatedSectionId != assignment.AffiliatedSectionId)
+            Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
+            if (submission == null)
             {
-                response.Data = "Not allowed";
-                response.Message = "You are not allowed to post submission for this group";
+                response.Data = "Bad Request";
+                response.Message = "There is no submission with this Id";
                 response.Success = false;
                 return response;
             }
-            Submission submission = new Submission { AffiliatedAssignment = assignment, AffiliatedGroup = projectGroup };
+            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(ss => ss.Id == GetUserId());
+            if (!user.ProjectGroups.Any(pgu => pgu.ProjectGroupId == submission.AffiliatedGroupId))
+            {
+                response.Data = "Not allowed";
+                response.Message = "You are not allowed to submit file to this assignment";
+                response.Success = false;
+                return response;
+            }
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "Submissions", assignment.CourseId,
-                projectGroup.AffiliatedSectionId, dto.AssignmentId, dto.ProjectGroupId));
+                "StaticFiles/Submissions", submission.CourseId,
+                submission.SectionId, submission.AffiliatedAssignmentId, submission.AffiliatedGroupId));
 
             Directory.CreateDirectory(target);
             if (dto.File.Length <= 0) response.Success = false;
             else
             {
-                var filePath = Path.Combine(target, dto.File.FileName);
+                string oldfile = Directory.GetFiles(target).FirstOrDefault();
+                string extension = Path.GetExtension(dto.File.FileName);
+                var filePath = Path.Combine(target, string.Format("Course{0}-Section{1}-Group{2}-Assignment{3}"
+                    , submission.CourseId, submission.SectionId, submission.AffiliatedGroupId, submission.AffiliatedAssignmentId) + extension);
                 submission.FilePath = filePath;
+                submission.UpdatedAt = DateTime.Now;
+                submission.HasSubmission = true;
+                if (File.Exists(oldfile))
+                {
+                    File.Delete(oldfile);
+                }
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await dto.File.CopyToAsync(stream);
                 }
                 response.Data = target;
                 response.Message = "file succesfully saved.";
+                _context.Submissions.Update(submission);
+                await _context.SaveChangesAsync();
             }
-            _context.Submissions.Add(submission);
-            await _context.SaveChangesAsync();
 
             return response;
         }
 
+        public async Task<ServiceResponse<string>> DeleteSubmssion(DeleteSubmissionFIleDto dto)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
+            if (submission == null)
+            {
+                response.Data = "Bad Request";
+                response.Message = "There is no submission with this Id";
+                response.Success = false;
+                return response;
+            }
+            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(ss => ss.Id == GetUserId());
+            if (!user.ProjectGroups.Any(pgu => pgu.ProjectGroupId == submission.AffiliatedGroupId))
+            {
+                response.Data = "Not allowed";
+                response.Message = "You are not allowed to delete file for this submission";
+                response.Success = false;
+                return response;
+            }
+            if (!submission.HasSubmission)
+            {
+                response.Data = "Not found";
+                response.Message = "There is no submission file for this submission";
+                response.Success = false;
+                return response;
+            }
 
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
+                "StaticFiles/Submissions", submission.CourseId,
+                submission.SectionId, submission.CourseId, submission.AffiliatedAssignmentId));
+            var filePath = Directory.GetFiles(target).FirstOrDefault();
+            submission.FilePath = null;
+            submission.HasSubmission = false;
+            File.Delete(filePath);
+            response.Data = target;
+            response.Message = "file succesfully deleted.";
+            submission.UpdatedAt = DateTime.Now;
+            _context.Submissions.Update(submission);
+            await _context.SaveChangesAsync();
+            return response;
+        }
     }
 }

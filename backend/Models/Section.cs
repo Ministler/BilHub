@@ -8,7 +8,6 @@ namespace backend.Models
         public Section()
         {
             ProjectGroups = new Collection<ProjectGroup>();
-            Students = new Collection<User>();
             // JoinRequests = new Collection<JoinRequest>();
             // MergeRequests = new Collection<MergeRequest>();
         }
@@ -17,7 +16,7 @@ namespace backend.Models
         public int SectionNo { get; set; }
         public ICollection<ProjectGroup> ProjectGroups { get; set; }
         public Course AffiliatedCourse { get; set; }
-        public ICollection<User> Students { get; set; }
+        public int AffiliatedCourseId { get; set; }
         // public ICollection<JoinRequest> JoinRequests { get; set; }
         // public ICollection<MergeRequest> MergeRequests { get; set; }
 

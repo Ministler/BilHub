@@ -22,8 +22,8 @@ namespace backend.Services.JoinRequestServices
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebHostEnvironment _hostingEnvironment;
-        
-        public JoinRequestService( IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment ) 
+
+        public JoinRequestService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;
@@ -33,111 +33,122 @@ namespace backend.Services.JoinRequestServices
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        public async Task<ServiceResponse<AddJoinRequestDto>> SendJoinRequest(AddJoinRequestDto newJoinRequest) 
+        public async Task<ServiceResponse<AddJoinRequestDto>> SendJoinRequest(AddJoinRequestDto newJoinRequest)
         {
             ServiceResponse<AddJoinRequestDto> response = new ServiceResponse<AddJoinRequestDto>();
             User user = await _context.Users.Include(u => u.ProjectGroups)
-                                .ThenInclude( g => g.AffiliatedSection)
-                                .Include( u => u.OutgoingJoinRequests )
+                                .ThenInclude(g => g.ProjectGroup)
+                                .ThenInclude(g => g.AffiliatedSection)
+                                .Include(u => u.OutgoingJoinRequests)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup requestedGroup = await _context.ProjectGroups.Include( g => g.AffiliatedSection)
-                                            .Include( g => g.GroupMembers).Include( g => g.IncomingJoinRequests )
-                                            .FirstOrDefaultAsync( rg =>  rg.Id == newJoinRequest.RequestedGroupId);
-            
-            if( requestedGroup == null )
+            ProjectGroup requestedGroup = await _context.ProjectGroups.Include(g => g.AffiliatedSection)
+                                            .Include(g => g.GroupMembers).Include(g => g.IncomingJoinRequests)
+                                            .FirstOrDefaultAsync(rg => rg.Id == newJoinRequest.RequestedGroupId);
+
+            if (requestedGroup == null)
             {
                 response.Data = null;
                 response.Message = "There is no group with this id";
                 response.Success = false;
                 return response;
             }
-            
-            Section section = await _context.Sections.Include(s => s.Students).FirstOrDefaultAsync(s => ( s.Id == requestedGroup.AffiliatedSection.Id ));
 
-            if( user == null )
+            Section section = await _context.Sections.FirstOrDefaultAsync(s => (s.Id == requestedGroup.AffiliatedSection.Id));
+
+            if (user == null)
             {
                 response.Data = null;
                 response.Message = "There is no user with this Id";
                 response.Success = false;
                 return response;
             }
-            if( section == null )
+            if (section == null)
             {
                 response.Data = null;
                 response.Message = "There is no section with this Id ";
                 response.Success = false;
                 return response;
             }
-            
 
-            ProjectGroup userGroup = new ProjectGroup{AffiliatedSectionId=-1};
 
-            foreach( ProjectGroup pg in user.ProjectGroups )
+            ProjectGroup userGroup = new ProjectGroup { AffiliatedSectionId = -1 };
+
+            foreach (ProjectGroupUser pgu in user.ProjectGroups)
             {
-                if( pg.AffiliatedCourseId == requestedGroup.AffiliatedCourseId && pg.AffiliatedSectionId == requestedGroup.AffiliatedSection.Id  )
+                if (pgu.ProjectGroup.AffiliatedCourseId == requestedGroup.AffiliatedCourseId && pgu.ProjectGroup.AffiliatedSectionId == requestedGroup.AffiliatedSectionId)
                 {
-                    userGroup = pg;
+                    userGroup = pgu.ProjectGroup;
                     break;
                 }
-            }            
-            if( userGroup.AffiliatedSectionId == -1 ) 
-            { 
+            }
+            if (userGroup.AffiliatedSectionId == -1)
+            {
                 response.Data = null;
                 response.Message = "You are not in the same section with this group";
                 response.Success = false;
                 return response;
             }
-            if( userGroup.Id == requestedGroup.Id)
+            if (userGroup.Id == requestedGroup.Id)
             {
                 response.Data = null;
                 response.Message = "You are already in this group";
                 response.Success = false;
                 return response;
             }
-            
-            if( userGroup.ConfirmationState == true )
+
+            if (userGroup.ConfirmationState == true)
             {
                 response.Data = null;
                 response.Message = "Your group is finalized.";
                 response.Success = false;
                 return response;
             }
-            if( requestedGroup.ConfirmationState == true )
+            if (requestedGroup.ConfirmationState == true)
             {
                 response.Data = null;
                 response.Message = "The group you want to join is finalized.";
                 response.Success = false;
                 return response;
             }
-
-            if( requestedGroup.GroupMembers.Count >= requestedGroup.ConfirmedUserNumber )
+            if (requestedGroup.GroupMembers.Count >= _context.Courses.FirstOrDefault(c => c.Id == userGroup.AffiliatedCourseId).MaxGroupSize)
             {
                 response.Data = null;
                 response.Message = "The group you want to join is full.";
                 response.Success = false;
                 return response;
             }
-            if( requestedGroup.GroupMembers.Count == 0 )
+            if (requestedGroup.GroupMembers.Count == 0)
             {
                 response.Data = null;
                 response.Message = "The group is empty";
                 response.Success = false;
                 return response;
             }
-            
-            
-            foreach( JoinRequest jr in requestedGroup.IncomingJoinRequests )
+
+
+            foreach (JoinRequest jr in requestedGroup.IncomingJoinRequests)
             {
-                if( jr.RequestingStudentId == GetUserId() && !jr.Resolved )
+                if (jr.RequestingStudentId == GetUserId() && !jr.Resolved)
                 {
                     response.Data = null;
                     response.Message = "You already sent a join request to this group that is not resolved yet.";
                     response.Success = false;
                     return response;
                 }
-            }     
+            }
 
-            JoinRequest createdJoinRequest = new JoinRequest{RequestingStudent = user, RequestingStudentId = user.Id, RequestedGroup = requestedGroup, RequestedGroupId = requestedGroup.Id, CreatedAt = newJoinRequest.CreatedAt, AcceptedNumber = 0, Accepted = false, Resolved = false, VotedStudents = "" };
+            JoinRequest createdJoinRequest = new JoinRequest
+            {
+                RequestingStudent = user,
+                RequestingStudentId = user.Id,
+                RequestedGroup = requestedGroup,
+                RequestedGroupId = requestedGroup.Id,
+                CreatedAt = newJoinRequest.CreatedAt,
+                AcceptedNumber = 0,
+                Accepted = false,
+                Resolved = false,
+                VotedStudents = ""
+            };
 
             requestedGroup.IncomingJoinRequests.Add(createdJoinRequest);
             user.OutgoingJoinRequests.Add(createdJoinRequest);
@@ -156,16 +167,16 @@ namespace backend.Services.JoinRequestServices
             return response;
         }
 
-        public async Task<ServiceResponse<string>> CancelJoinRequest(CancelJoinRequestDto joinRequestDto) 
+        public async Task<ServiceResponse<string>> CancelJoinRequest(CancelJoinRequestDto joinRequestDto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            
+
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             JoinRequest joinRequest = await _context.JoinRequests
-                                            .FirstOrDefaultAsync( jr => jr.Id == joinRequestDto.Id );
-                                    
-            if( joinRequest == null )
+                                            .FirstOrDefaultAsync(jr => jr.Id == joinRequestDto.Id);
+
+            if (joinRequest == null)
             {
                 response.Data = "Not allowed";
                 response.Message = "There is no such join request with this Id";
@@ -173,8 +184,8 @@ namespace backend.Services.JoinRequestServices
                 return response;
             }
 
-              
-            if( user != null && joinRequest.RequestingStudentId != GetUserId() )
+
+            if (user != null && joinRequest.RequestingStudentId != GetUserId())
             {
                 response.Data = "Not allowed";
                 response.Message = "You are not authorized to cancel this join request";
@@ -182,7 +193,7 @@ namespace backend.Services.JoinRequestServices
                 return response;
             }
 
-            if( joinRequest.Accepted )
+            if (joinRequest.Accepted)
             {
                 response.Data = "Not allowed";
                 response.Message = "The join request is already accepted. So you can't cancel it";
@@ -190,7 +201,7 @@ namespace backend.Services.JoinRequestServices
                 return response;
             }
 
-            if( joinRequest.Resolved )
+            if (joinRequest.Resolved)
             {
                 response.Data = "Not allowed";
                 response.Message = "The join request is already resolved. So you can't cancel it";
@@ -225,46 +236,38 @@ namespace backend.Services.JoinRequestServices
             return response;
         }
 
+        // bugli durum: user oyladi cikti gruptan accepted number yuksek kaldi
+        // grupta sifir kisi kaldi gecmis olsun
         public async Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto)
         {
             ServiceResponse<JoinRequestInfoDto> response = new ServiceResponse<JoinRequestInfoDto>();
-            JoinRequest joinRequest = await _context.JoinRequests.Include( jr => jr.RequestedGroup )
-                                    .ThenInclude( pg => pg.GroupMembers )
+            JoinRequest joinRequest = await _context.JoinRequests.Include(jr => jr.RequestedGroup)
+                                    .ThenInclude(pg => pg.GroupMembers)
                                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestDto.Id);
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
 
-            if( joinRequest == null )
+            if (joinRequest == null)
             {
                 response.Data = null;
                 response.Message = "There is no such join request";
                 response.Success = false;
                 return response;
             }
-            if( joinRequest.Resolved  ) 
+            if (joinRequest.Resolved)
             {
-                response.Data = new JoinRequestInfoDto {Id = joinRequestDto.Id, Accepted = joinRequest.Accepted, Resolved = joinRequest.Resolved, VotedStudents = joinRequest.VotedStudents};
+                response.Data = new JoinRequestInfoDto { Id = joinRequestDto.Id, Accepted = joinRequest.Accepted, Resolved = joinRequest.Resolved, VotedStudents = joinRequest.VotedStudents };
                 response.Message = "You cannot vote because the join request is resolved already";
                 response.Success = false;
                 return response;
             }
-            if( !joinRequest.RequestedGroup.GroupMembers.Contains(user) )
+            if (!joinRequest.RequestedGroup.GroupMembers.Any(pgu => pgu.UserId == GetUserId()))
             {
                 response.Data = null;
                 response.Message = "You cannot vote because you are not in this group";
                 response.Success = false;
                 return response;
             }
-            
-            
-            if( !joinRequest.RequestedGroup.GroupMembers.Contains(user) )
-            {
-                response.Data = null;
-                response.Message = "You cannot vote because you are not in this group";
-                response.Success = false;
-                return response;
-            }
-
             if( joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count)
             {
                 response.Data = null;

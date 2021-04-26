@@ -7,7 +7,7 @@ namespace backend.Models
     {
         public ProjectGroup()
         {
-            GroupMembers = new Collection<User>();
+            GroupMembers = new Collection<ProjectGroupUser>();
             Submissions = new Collection<Submission>();
             ProjectGrades = new Collection<ProjectGrade>();
             PeerGrades = new Collection<PeerGrade>();
@@ -23,7 +23,8 @@ namespace backend.Models
         public bool ConfirmationState { get; set; }
         public int ConfirmedUserNumber { get; set; }
         public string ProjectInformation { get; set; }
-        public ICollection<User> GroupMembers { get; set; }
+        public ICollection<ProjectGroupUser> GroupMembers { get; set; }
+        public string ConfirmedGroupMembers { get; set; }
         public ICollection<ProjectGrade> ProjectGrades { get; set; }
         public ICollection<PeerGrade> PeerGrades { get; set; }
         public ICollection<Submission> Submissions { get; set; }

@@ -10,5 +10,6 @@ namespace backend.Services.SubmissionServices
         Task<ServiceResponse<string>> SubmitAssignment(AddSubmissionFileDto file);
         Task<ServiceResponse<string>> DownloadSubmission(GetSubmissionFileDto dto);
         Task<ServiceResponse<string>> DownloadAllSubmissions(GetSubmissionsFileDto dto);
+        Task<ServiceResponse<string>> DeleteSubmssion(DeleteSubmissionFIleDto dto);
     }
 }

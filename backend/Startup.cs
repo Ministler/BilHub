@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Data;
 using backend.Data.Auth;
+using backend.Services.CommentServices;
+using backend.Services.JoinRequestServices;
 using backend.Services.SubmissionServices;
 using backend.Services.JoinRequestServices;
 // using backend.Services.Email;
@@ -78,6 +80,7 @@ namespace backend
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<ISubmissionService, SubmissionService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IJoinRequestService, JoinRequestService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
