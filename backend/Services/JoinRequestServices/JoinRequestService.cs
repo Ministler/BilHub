@@ -75,7 +75,7 @@ namespace backend.Services.JoinRequestServices
 
             foreach (ProjectGroupUser pgu in user.ProjectGroups)
             {
-                if (pgu.ProjectGroupId == requestedGroup.AffiliatedCourseId && pgu.ProjectGroup.AffiliatedSectionId == requestedGroup.AffiliatedSection.Id)
+                if (pgu.ProjectGroup.AffiliatedCourseId == requestedGroup.AffiliatedCourseId && pgu.ProjectGroup.AffiliatedSectionId == requestedGroup.AffiliatedSectionId)
                 {
                     userGroup = pgu.ProjectGroup;
                     break;
