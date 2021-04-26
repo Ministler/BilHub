@@ -33,7 +33,6 @@ namespace backend.Controllers
 
         [HttpGet]
         [Route("{courseId}/{sectionId}/{assignmentId}")]
-        //istedigim gibi calismiyor
         public async Task<ActionResult> GetAllSubmissions(int courseId, int sectionId, int assignmentId)
         {
             GetSubmissionsFileDto dto = new GetSubmissionsFileDto { CourseId = courseId, SectionId = sectionId, AssignmentId = assignmentId };
@@ -59,7 +58,7 @@ namespace backend.Controllers
 
             var webRoot = _hostingEnvironment.ContentRootPath;
             var fileName = "Submissions.zip";
-            var tempOutput = webRoot + "/Submissions/" + fileName;
+            var tempOutput = webRoot + "/StaticFiles/Submissions/" + fileName;
             using (ZipOutputStream zipOutputStream = new ZipOutputStream(System.IO.File.Create(tempOutput)))
             {
                 zipOutputStream.SetLevel(9);

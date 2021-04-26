@@ -1,3 +1,4 @@
+using System;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -10,7 +11,6 @@ namespace backend.Data
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<GroupSize> GroupSizes { get; set; }
         public DbSet<JoinRequest> JoinRequests { get; set; }
         public DbSet<MergeRequest> MergeRequests { get; set; }
         public DbSet<PeerGrade> PeerGrades { get; set; }
@@ -20,8 +20,29 @@ namespace backend.Data
         public DbSet<Section> Sections { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<CourseUser> CourseUsers { get; set; }
+        public DbSet<ProjectGroupUser> ProjectGroupUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CourseUser>().HasKey(cu => new { cu.UserId, cu.CourseId });
+            modelBuilder.Entity<CourseUser>()
+            .HasOne(bc => bc.Course)
+                .WithMany(b => b.Instructors)
+                .HasForeignKey(bc => bc.CourseId);
+            modelBuilder.Entity<CourseUser>()
+                .HasOne(bc => bc.User)
+                .WithMany(c => c.InstructedCourses)
+                .HasForeignKey(bc => bc.UserId);
+
+            modelBuilder.Entity<ProjectGroupUser>().HasKey(cu => new { cu.UserId, cu.ProjectGroupId });
+            modelBuilder.Entity<ProjectGroupUser>()
+            .HasOne(bc => bc.ProjectGroup)
+                .WithMany(b => b.GroupMembers)
+                .HasForeignKey(bc => bc.ProjectGroupId);
+            modelBuilder.Entity<ProjectGroupUser>()
+                .HasOne(bc => bc.User)
+                .WithMany(c => c.ProjectGroups)
+                .HasForeignKey(bc => bc.UserId);
 
             modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.SenderGroup)
                 .WithMany(g => g.OutgoingMergeRequest)
@@ -31,38 +52,417 @@ namespace backend.Data
                 .WithMany(g => g.IncomingMergeRequest)
                 .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.Restrict);
 
-            // Utility.CreatePasswordHash("123456", out byte[] passwordHash, out byte[] passwordSalt);
-
-            // modelBuilder.Entity<User>().HasData(
-            //     new User { Id = 1, PasswordHash = passwordHash, SecondPasswordHash = passwordHash, PasswordSalt = passwordSalt, Email = "User1@gmail.com", UserType = 1 },
-            //     new User { Id = 2, PasswordHash = passwordHash, SecondPasswordHash = passwordHash, PasswordSalt = passwordSalt, Email = "User2@gmail.com", UserType = 1 }
-            // );
-
-            // modelBuilder.Entity<InstructorCourse>().HasKey(ic => new { ic.InstructorId, ic.CourseId });
-            // modelBuilder.Entity<StudentJoinRequest>().HasKey(sjr => new { sjr.StudentId, sjr.JoinRequestId });
-
-            // modelBuilder.Entity<ProjectGroup>().HasMany(pg => pg.OutgoingMergeRequest)
-            //     .WithOne(mr => mr.SenderGroup)
-            //     .HasForeignKey(mr => mr.SenderGroupId);
-
-            // modelBuilder.Entity<ProjectGroup>().HasMany(pg => pg.IncomingMergeRequest)
-            //     .WithOne(mr => mr.ReceiverGroup)
-            //     .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.Restrict);
-
-            // modelBuilder.Entity<Course>().HasMany(c => c.Instructors)
-            //     .WithOne(i => i.Course).HasForeignKey(ic => ic.CourseId);
-
-            // modelBuilder.Entity<User>().HasMany(i => i.InstructedCourses)
-            //     .WithOne(ic => ic.Instructor).HasForeignKey(ic => ic.InstructorId);
-
-            // modelBuilder.Entity<JoinRequest>().HasOne(jr => jr.RequestingStudent)
-            //     .WithMany(s => s.OutgoingJoinRequests).HasForeignKey(s => s.UserId);
-
-            // modelBuilder.Entity<User>().HasMany(i => i.UnvotedJoinRequests)
-            //     .WithOne(sjr => sjr.Student).HasForeignKey(sjr => sjr.StudentId);
-
-            // modelBuilder.Entity<Section>().HasMany(s => s.MergeRequests)
-            //     .WithOne(mr => mr.AffiliatedSection).HasForeignKey(mr => mr.SectionId).OnDelete(false);
+            byte[] hash, salt;
+            Utility.CreatePasswordHash("31", out hash, out salt);
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Name = "Cagri Durgut",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = 0,
+                    Email = "cagri@durgut",
+                    VerificationCode = "31"
+                },
+                new User
+                {
+                    Id = 2,
+                    Name = "Eray Tuzun",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "eray@tuzun",
+                    VerificationCode = "31"
+                },
+                new User
+                {
+                    Id = 3,
+                    Name = "Baris Ogun",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "baris@ogun",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 4,
+                    Name = "Ozgur Chadoglu",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ozgur@demir",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 5,
+                    Name = "Yusuf Uyar",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "yusuf@kawai",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 6,
+                    Name = "Aybala karakaya",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "aybala@karakaya",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 7,
+                    Name = "oguzhan ozcelik",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "oguzhan@ozcelik",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 8,
+                    Name = "HOCAM SIMDI BIZ SOYLE BI SISTEM DUSUNDUK DE",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "berke@ceran",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 9,
+                    Name = "Funda Tan",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "funda@tan",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 10,
+                    Name = "Hami Mert",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "hami@mert",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 11,
+                    Name = "Cagri Eren",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "cagri@eren",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 12,
+                    Name = "Guven Gerger",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "guven@gerger",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 13,
+                    Name = "Onur Korkmaz",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "onur@korkmaz",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 14,
+                    Name = "Fuat Schwarzengger",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "fuat@schwarzenegger",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 15,
+                    Name = "Aynur Dayanik",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "aynur@dayanik",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 16,
+                    Name = "Erdem Tuna",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "erdem@Tuna",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 17,
+                    Name = "Elgun TA",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "elgun@ta",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 18,
+                    Name = "Irem Reis",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "irem@reis",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 19,
+                    Name = "Fazli Can",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "fazli@can",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 20,
+                    Name = "Can Alkan",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "can@alkan",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 21,
+                    Name = "Ercument Cicek",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "ercument@cicek",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 22,
+                    Name = "Alper Sarikan",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "alper@karel",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 23,
+                    Name = "Altay Guvenir",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "altay@guvenir",
+                    VerificationCode = "31"
+                }, new User
+                {
+                    Id = 24,
+                    Name = "Tuna Derbeder",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "tuna@derbeder",
+                    VerificationCode = "31"
+                }
+            );
+            modelBuilder.Entity<Course>().HasData(
+                new Course
+                {
+                    Id = 1,
+                    Name = "CS 319",
+                    CourseInformation = "Object Oriented Software Engineering",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CourseSemester = "spring",
+                    MinGroupSize = 5,
+                    MaxGroupSize = 6
+                }, new Course
+                {
+                    Id = 2,
+                    Name = "CS 315",
+                    CourseInformation = "Programming Languages",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CourseSemester = "spring",
+                    MinGroupSize = 2,
+                    MaxGroupSize = 3
+                }, new Course
+                {
+                    Id = 3,
+                    Name = "CS 202",
+                    CourseInformation = "Data Structures and Algorithms",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CourseSemester = "spring",
+                    MinGroupSize = 1,
+                    MaxGroupSize = 1
+                }, new Course
+                {
+                    Id = 4,
+                    Name = "CS 224",
+                    CourseInformation = "Computer Organization and Architecture",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CourseSemester = "spring",
+                    MinGroupSize = 2,
+                    MaxGroupSize = 3
+                }, new Course
+                {
+                    Id = 5,
+                    Name = "Hist 200",
+                    CourseInformation = "History",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CourseSemester = "spring",
+                    MinGroupSize = 4,
+                    MaxGroupSize = 5
+                }, new Course
+                {
+                    Id = 6,
+                    Name = "Math 101",
+                    CourseInformation = "Calculus",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CourseSemester = "spring",
+                    MinGroupSize = 1,
+                    MaxGroupSize = 1
+                }
+            );
+            modelBuilder.Entity<CourseUser>().HasData(
+                new CourseUser
+                {
+                    UserId = 2,
+                    CourseId = 1
+                }, new CourseUser
+                {
+                    UserId = 16,
+                    CourseId = 1
+                }, new CourseUser
+                {
+                    UserId = 17,
+                    CourseId = 1
+                }, new CourseUser
+                {
+                    UserId = 18,
+                    CourseId = 2
+                }, new CourseUser
+                {
+                    UserId = 15,
+                    CourseId = 3
+                }, new CourseUser
+                {
+                    UserId = 21,
+                    CourseId = 3
+                }, new CourseUser
+                {
+                    UserId = 19,
+                    CourseId = 4
+                }, new CourseUser
+                {
+                    UserId = 22,
+                    CourseId = 4
+                }, new CourseUser
+                {
+                    UserId = 23,
+                    CourseId = 2
+                }, new CourseUser
+                {
+                    UserId = 20,
+                    CourseId = 6
+                }, new CourseUser
+                {
+                    UserId = 15,
+                    CourseId = 5
+                }
+            );
 
         }
     }

@@ -8,8 +8,8 @@ namespace backend.Models
     {
         public User()
         {
-            InstructedCourses = new Collection<Course>();
-            ProjectGroups = new Collection<ProjectGroup>();
+            InstructedCourses = new Collection<CourseUser>();
+            ProjectGroups = new Collection<ProjectGroupUser>();
             OutgoingJoinRequests = new Collection<JoinRequest>();
             OutgoingComments = new Collection<Comment>();
         }
@@ -22,8 +22,8 @@ namespace backend.Models
         public byte[] PasswordSalt { get; set; }
         public bool VerifiedStatus { get; set; }
         public bool DarkModeStatus { get; set; }
-        public ICollection<Course> InstructedCourses { get; set; }
-        public ICollection<ProjectGroup> ProjectGroups { get; set; }
+        public ICollection<CourseUser> InstructedCourses { get; set; }
+        public ICollection<ProjectGroupUser> ProjectGroups { get; set; }
         public ICollection<JoinRequest> OutgoingJoinRequests { get; set; }
         public ICollection<Comment> OutgoingComments { get; set; }
         [Required]

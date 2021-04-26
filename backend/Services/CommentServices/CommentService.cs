@@ -48,7 +48,7 @@ namespace backend.Services.CommentServices
                 .FirstOrDefault(c => c.Id == submission.CourseId);
 
             if (submission == null || course == null || (user.UserType == UserTypeClass.Student &&
-                course.Instructors.FirstOrDefault(i => i.Id == GetUserId()) == null))
+                course.Instructors.FirstOrDefault(i => i.UserId == GetUserId()) == null))
             {
                 response.Data = "Not allowed";
                 response.Message = "You are not allowed to post comment for this group";

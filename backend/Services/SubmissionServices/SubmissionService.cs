@@ -40,7 +40,7 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            if (course.Instructors.FirstOrDefault(i => i.Id == user.Id) == null && user.UserType == UserTypeClass.Student)
+            if (course.Instructors.FirstOrDefault(i => i.UserId == user.Id) == null && user.UserType == UserTypeClass.Student)
             {
                 response.Data = null;
                 response.Message = "You are not authorized for this endpoint";
@@ -83,7 +83,7 @@ namespace backend.Services.SubmissionServices
                 return response;
             }
             User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            if (!assignment.VisibilityOfSubmission && user.ProjectGroups.Any(pg => pg.Id != dto.ProjectGroupId) && user.UserType == UserTypeClass.Student)
+            if (!assignment.VisibilityOfSubmission && user.ProjectGroups.Any(pg => pg.ProjectGroupId != dto.ProjectGroupId) && user.UserType == UserTypeClass.Student)
             {
                 response.Data = null;
                 response.Message = "You are not authorized to see this submission";
@@ -97,7 +97,7 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<string>> SubmitAssignment(AddSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.Include(u => u.ProjectGroups).ThenInclude(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).FirstOrDefaultAsync(u => u.Id == GetUserId());
+            User user = await _context.Users.Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup).ThenInclude(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGroup projectGroup = _context.ProjectGroups.Include(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).FirstOrDefault(pg => pg.Id == dto.ProjectGroupId);
             Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
             if (projectGroup == null || assignment == null || projectGroup.AffiliatedSectionId != assignment.AffiliatedSectionId)

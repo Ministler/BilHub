@@ -9,8 +9,7 @@ namespace backend.Models
         public Course()
         {
             Sections = new Collection<Section>();
-            Instructors = new Collection<User>();
-            GroupSizes = new Collection<GroupSize>();
+            Instructors = new Collection<CourseUser>();
             // ProjectGrades = new Collection<ProjectGrade>();
             // ProjectGroups = new Collection<ProjectGroup>();
             // Assignments = new Collection<Assignment>();
@@ -23,9 +22,10 @@ namespace backend.Models
         public DateTime EndDate { get; set; }
         public string CourseSemester { get; set; }
         public PeerGradeAssignment PeerGradeAssignment { get; set; }
-        public ICollection<GroupSize> GroupSizes { get; set; }
+        public int MinGroupSize { get; set; }
+        public int MaxGroupSize { get; set; }
         public ICollection<Section> Sections { get; set; }
-        public ICollection<User> Instructors { get; set; }
+        public ICollection<CourseUser> Instructors { get; set; }
         // public ICollection<Assignment> Assignments { get; set; }
         // public ICollection<ProjectGroup> ProjectGroups { get; set; }
 
