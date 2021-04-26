@@ -123,7 +123,7 @@ namespace backend.Services.SubmissionServices
             if (dto.File.Length <= 0) response.Success = false;
             else
             {
-                string oldfile = Directory.GetFiles(target)[0];
+                string oldfile = Directory.GetFiles(target).FirstOrDefault();
                 var filePath = Path.Combine(target, dto.File.FileName);
                 submission.FilePath = filePath;
                 submission.UpdatedAt = DateTime.Now;

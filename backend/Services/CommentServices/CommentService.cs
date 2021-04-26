@@ -44,10 +44,17 @@ namespace backend.Services.CommentServices
             ServiceResponse<string> response = new ServiceResponse<string>();
             User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
             Submission submission = await _context.Submissions.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == file.SubmissionId);
+            if (submission == null)
+            {
+                response.Data = "No submission";
+                response.Message = "There is no submission under this name";
+                response.Success = false;
+                return response;
+            }
             Course course = _context.Courses.Include(c => c.Instructors)
                 .FirstOrDefault(c => c.Id == submission.CourseId);
 
-            if (submission == null || course == null || (user.UserType == UserTypeClass.Student &&
+            if (course == null || (user.UserType == UserTypeClass.Student &&
                 course.Instructors.FirstOrDefault(i => i.UserId == GetUserId()) == null))
             {
                 response.Data = "Not allowed";

@@ -24,6 +24,11 @@ namespace backend.Data
         public DbSet<ProjectGroupUser> ProjectGroupUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ProjectGroup>()
+                .HasOne(pg => pg.AffiliatedSection)
+                .WithMany(s => s.ProjectGroups)
+                .HasForeignKey(pg => pg.AffiliatedSectionId)
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<CourseUser>().HasKey(cu => new { cu.UserId, cu.CourseId });
             modelBuilder.Entity<CourseUser>()
             .HasOne(bc => bc.Course)
@@ -345,6 +350,18 @@ namespace backend.Data
                     UserType = UserTypeClass.Student,
                     Email = "tuna@derbeder",
                     VerificationCode = "31"
+                }, new User
+                {
+                    Id = 25,
+                    Name = "Abdul Razak",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "abdul@razak",
+                    VerificationCode = "31"
                 }
             );
             modelBuilder.Entity<Course>().HasData(
@@ -461,6 +478,219 @@ namespace backend.Data
                 {
                     UserId = 15,
                     CourseId = 5
+                }
+            );
+            modelBuilder.Entity<Section>().HasData(
+                new Section
+                {
+                    Id = 1,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 1,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 2,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 1,
+                    SectionNo = 2
+                },
+                new Section
+                {
+                    Id = 3,
+                    SectionlessState = true,
+                    AffiliatedCourseId = 2,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 4,
+                    SectionlessState = true,
+                    AffiliatedCourseId = 2,
+                    SectionNo = 2
+                },
+                new Section
+                {
+                    Id = 5,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 3,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 6,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 4,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 7,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 4,
+                    SectionNo = 2
+                },
+                new Section
+                {
+                    Id = 8,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 5,
+                    SectionNo = 2
+                },
+                new Section
+                {
+                    Id = 9,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 6,
+                    SectionNo = 1
+                }
+            );
+            modelBuilder.Entity<ProjectGroup>().HasData(
+                new ProjectGroup
+                {
+                    Id = 1,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "BilHub Class Helper",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 5,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Abduls Class Helper",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 2,
+                    AffiliatedSectionId = 2,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Classrom Helper",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 3,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 2,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "AGA Language",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 4,
+                    AffiliatedSectionId = 2,
+                    AffiliatedCourseId = 2,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Satis Language",
+                    ConfirmedGroupMembers = ""
+                }
+            );
+            modelBuilder.Entity<ProjectGroupUser>().HasData(
+                new ProjectGroupUser
+                {
+                    UserId = 1,
+                    ProjectGroupId = 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 3,
+                    ProjectGroupId = 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 4,
+                    ProjectGroupId = 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 5,
+                    ProjectGroupId = 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 6,
+                    ProjectGroupId = 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 7,
+                    ProjectGroupId = 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 11,
+                    ProjectGroupId = 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = 12,
+                    ProjectGroupId = 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = 13,
+                    ProjectGroupId = 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = 24,
+                    ProjectGroupId = 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = 25,
+                    ProjectGroupId = 5,
+                }, new ProjectGroupUser
+                {
+                    UserId = 1,
+                    ProjectGroupId = 3,
+                }, new ProjectGroupUser
+                {
+                    UserId = 3,
+                    ProjectGroupId = 3,
+                }, new ProjectGroupUser
+                {
+                    UserId = 4,
+                    ProjectGroupId = 3,
+                }, new ProjectGroupUser
+                {
+                    UserId = 5,
+                    ProjectGroupId = 4,
+                }, new ProjectGroupUser
+                {
+                    UserId = 6,
+                    ProjectGroupId = 4,
+                }, new ProjectGroupUser
+                {
+                    UserId = 7,
+                    ProjectGroupId = 4,
+                }
+            );
+            modelBuilder.Entity<Assignment>().HasData(
+                new Assignment
+                {
+                    Id = 1,
+                    AffiliatedSectionId = 1,
+                    CourseId = 1,
+                    AssignmentDescriptionFile = "Odev",
+                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CreatedAt = DateTime.Now,
+                    AcceptedTypes = "pdf,doc,docx",
+                    MaxFileSizeInBytes = 1024,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true,
+                }, new Assignment
+                {
+                    Id = 2,
+                    AffiliatedSectionId = 1,
+                    CourseId = 2,
+                    AssignmentDescriptionFile = "315 proje",
+                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CreatedAt = DateTime.Now,
+                    AcceptedTypes = "pdf,doc,docx",
+                    MaxFileSizeInBytes = 1024,
+                    VisibilityOfSubmission = false,
+                    CanBeGradedByStudents = false,
+                    IsItGraded = false,
                 }
             );
 
