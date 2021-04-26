@@ -8,7 +8,6 @@ using backend.Data.Auth;
 using backend.Services.CommentServices;
 using backend.Services.JoinRequestServices;
 using backend.Services.SubmissionServices;
-using backend.Services.JoinRequestServices;
 // using backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;

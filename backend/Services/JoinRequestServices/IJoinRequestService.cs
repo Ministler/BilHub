@@ -11,5 +11,6 @@ namespace backend.Services.JoinRequestServices
         Task<ServiceResponse<string>> CancelJoinRequest(CancelJoinRequestDto joinRequestDto); 
         Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto);
         Task<ServiceResponse<string>> DeleteAllJoinRequests(DeleteAllJoinRequestsDto deleteAllJoinRequestsDto);
+        Task<ServiceResponse<GetJoinRequestDto>> GetJoinRequestById(int Id);
     }
 }

@@ -71,5 +71,17 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpGet]
+        [Route("{joinRequestId}")]
+        public async Task<IActionResult> Get( int joinRequestId )
+        {
+            ServiceResponse<GetJoinRequestDto> response = await _joinRequestService.GetJoinRequestById(joinRequestId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
     }
 }

@@ -393,6 +393,69 @@ namespace backend.Services.JoinRequestServices
             return response;
         }
        
+        public async Task<ServiceResponse<GetJoinRequestDto>> GetJoinRequestById(int joinRequestId) {
+            ServiceResponse<GetJoinRequestDto> response = new ServiceResponse<GetJoinRequestDto>();
+            JoinRequest joinRequest = await _context.JoinRequests
+                .Include( jr => jr.RequestingStudent )
+                .Include( jr => jr.RequestedGroup )
+                .FirstOrDefaultAsync( jr => jr.Id == joinRequestId );
+            
+            if( joinRequest == null)
+            {
+                response.Data = null;
+                response.Message = "There is no join request with this id";
+                response.Success =false;
+                return response;
+            }
+            if( joinRequest.RequestingStudent == null)
+            {
+                response.Data = null;
+                response.Message = "There is no student with this id";
+                response.Success =false;
+                return response;
+            }
+            if( joinRequest.RequestedGroup == null)
+            {
+                response.Data = null;
+                response.Message = "There is no group with this id";
+                response.Success =false;
+                return response;
+            }
+            
+            GetJoinRequestDto dto = new GetJoinRequestDto
+            {
+                Id = joinRequestId,
+                RequestingStudent = new UserInJoinRequestDto
+                {
+                    Id = joinRequest.RequestingStudent.Id,
+                    email = joinRequest.RequestingStudent.Email,
+                    name = joinRequest.RequestingStudent.Name
+                },
+                RequestingStudentId = joinRequest.RequestingStudentId,
+                RequestedGroup = new ProjectGroupInJoinRequestDto
+                {
+                    Id = joinRequest.RequestedGroup.Id,
+                    AffiliatedSectionId = joinRequest.RequestedGroup.AffiliatedSectionId,
+                    AffiliatedCourseId = joinRequest.RequestedGroup.AffiliatedCourseId,
+                    ConfirmationState = joinRequest.RequestedGroup.ConfirmationState,
+                    ConfirmedUserNumber = joinRequest.RequestedGroup.ConfirmedUserNumber,
+                    ProjectInformation = joinRequest.RequestedGroup.ProjectInformation,
+                    ConfirmedGroupMembers = joinRequest.RequestedGroup.ConfirmedGroupMembers,
+                },
+                RequestedGroupId = joinRequest.RequestedGroupId,
+                CreatedAt = joinRequest.CreatedAt,
+                AcceptedNumber = joinRequest.AcceptedNumber,
+                Accepted = joinRequest.Accepted,
+                Resolved = joinRequest.Resolved,
+                VotedStudents = joinRequest.VotedStudents
+            };
+
+            response.Data = dto;
+            response.Message = "Success";
+            response.Success = true;
+
+            return response;
+        }
         // bi sekilde grupta 0 insan kalmasi durumu
         // rejectlenirse unvotedlarda gorunmeyec -- resolved
         // method : cancelAllRequests
