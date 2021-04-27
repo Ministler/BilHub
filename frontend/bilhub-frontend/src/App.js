@@ -14,6 +14,7 @@ import {
     Profile,
     Settings,
     Notifications,
+    NewPassword,
 } from './routes';
 import * as actions from './store';
 import { checkAuthRequest } from './API';
@@ -41,6 +42,7 @@ class App extends Component {
         const unauthenticatedRoutes = (
             <Switch>
                 <Route exact path={'/login'} component={Login} />
+                <Route exact path={'/newPassword'} component={NewPassword} />
                 <Route exact path={'/signup'} component={Signup} />
                 <Redirect to={'/login'} />
             </Switch>
