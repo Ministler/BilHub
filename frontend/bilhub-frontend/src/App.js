@@ -16,11 +16,20 @@ import {
     Notifications,
 } from './routes';
 import * as actions from './store';
+import { checkAuthRequest } from './API';
 
 class App extends Component {
     componentDidMount() {
         const token = localStorage.getItem('token');
-        this.props.onCheckAuth(token);
+
+        checkAuthRequest(token)
+            .then((response) => {
+                const userData = response.data.users[0];
+                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor');
+            })
+            .catch((error) => {
+                this.props.logout();
+            });
     }
 
     render() {
@@ -72,7 +81,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onCheckAuth: (token) => dispatch(actions.checkAuth(token)),
+        authSuccess: (token, userId, email, name, userType) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType)),
+        logout: () => dispatch(actions.logout()),
     };
 };
 

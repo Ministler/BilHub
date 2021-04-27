@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 
 import { LoginUI } from './LoginUI';
 import * as actions from '../../store';
+import { loginRequest } from '../../API';
 
 class Login extends Component {
     constructor(props) {
         super(props);
-        this.props.resetSignupSucceed();
         this.state = {
             form: {},
             clientError: null,
@@ -34,7 +34,18 @@ class Login extends Component {
             return;
         }
 
-        this.props.onLogin(this.state.form.email, this.state.form.password);
+        loginRequest(this.state.form.email, this.state.form.password).then((response) => {
+            const userData = response.data;
+
+            this.props.authSuccess(
+                true,
+                userData.idToken,
+                userData.localId,
+                userData.email,
+                userData.displayName,
+                'instructor'
+            );
+        });
     };
 
     render() {
@@ -50,19 +61,11 @@ class Login extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        serverError: state.loginError,
-        loadign: state.loginLoading,
-        redirectFromSignup: state.redirectFromSignup,
-    };
-};
-
 const mapDispatchToProps = (dispatch) => {
     return {
-        resetSignupSucceed: () => dispatch(actions.resetSignupSucceed()),
-        onLogin: (email, password) => dispatch(actions.login(email, password)),
+        authSuccess: (token, userId, email, name, userType) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType)),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

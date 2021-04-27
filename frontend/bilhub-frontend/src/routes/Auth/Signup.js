@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
-import * as actions from '../../store';
 import { SignupUI } from './SignupUI';
+import { singupRequest } from '../../API';
 
-export class Signup extends Component {
+export default class Signup extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             form: {},
-            clientError: null,
+            error: null,
         };
     }
 
@@ -21,7 +20,7 @@ export class Signup extends Component {
     };
 
     setError = (error) => {
-        this.setState({ clientError: error });
+        this.setState({ error: error });
     };
 
     onChange = (name, value) => {
@@ -55,11 +54,13 @@ export class Signup extends Component {
             return;
         }
 
-        this.props.onSignup(
+        singupRequest(
             this.state.form.email,
             this.state.form.password,
             this.state.form.firstName + this.state.form.lastName
-        );
+        ).then((response) => {
+            this.props.history.push('/login');
+        });
     };
 
     render() {
@@ -77,19 +78,3 @@ export class Signup extends Component {
         );
     }
 }
-
-const mapStateToProps = (state) => {
-    return {
-        serverError: state.signupError,
-        loading: state.singupLoading,
-        requestFullfilled: state.signupRequestSucceed,
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onSignup: (email, password, name) => dispatch(actions.signup(email, password, name)),
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Signup);
