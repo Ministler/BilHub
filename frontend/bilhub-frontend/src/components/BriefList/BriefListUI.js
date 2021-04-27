@@ -59,3 +59,13 @@ export const SubmissionBriefElement = (props) => {
         </div>
     );
 };
+
+export const GroupBriefElement = (props) => {
+    return (
+        <>
+            {props.group?.map((member) => {
+                return <p>{member}</p>;
+            })}
+        </>
+    );
+};

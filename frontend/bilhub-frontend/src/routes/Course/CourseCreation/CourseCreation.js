@@ -13,6 +13,7 @@ import {
     Form,
     Message,
     List,
+    Popup,
 } from 'semantic-ui-react';
 
 import './CourseCreation.css';
@@ -34,6 +35,20 @@ const semesterOptions = [
         value: 'Summer',
     },
 ];
+
+const groupFormationSettings = [
+    {
+        key: 'By Group Size',
+        text: 'By Group Size',
+        value: 'By Group Size',
+    },
+    {
+        key: 'By Group Number',
+        text: 'By Group Number',
+        value: 'By Group Number',
+    },
+];
+
 var code = '';
 var year = '';
 var semester = '';
@@ -57,6 +72,7 @@ export class CourseCreation extends Component {
             TAList: [],
             studentManualList: [],
             studentAutoList: [],
+            groupFormationType: '',
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -111,7 +127,12 @@ export class CourseCreation extends Component {
                 <Form.Group>
                     <Form.Field width={3}>
                         <label for="code">Code:</label>{' '}
-                        <Form.Input onChange={this.handleChange} name="code" style={{ width: '50%' }} />
+                        <Form.Input
+                            value={this.state.code}
+                            onChange={this.handleChange}
+                            name="code"
+                            style={{ width: '50%' }}
+                        />
                     </Form.Field>
                     <Form.Field width={3}>
                         <label for="year">Year:</label>
@@ -212,21 +233,56 @@ export class CourseCreation extends Component {
                     </Grid.Row>
                 </Grid>
                 <Divider />
-                <Grid columns={1}>
-                    <GridColumn>
-                        <Grid.Row>
-                            Group Formation Type:<Dropdown></Dropdown>
-                            <Icon name="info circle"></Icon>
-                        </Grid.Row>
-                        <Grid.Row>
-                            Min:<Input></Input> Max:<Input></Input>
-                        </Grid.Row>
-                        <Grid.Row>
-                            Group Formation Date
-                            <Input type="date"></Input>
-                        </Grid.Row>
-                    </GridColumn>
-                </Grid>
+                <Form.Group>
+                    <Form.Field>
+                        Group Formation Type:
+                        <Dropdown
+                            style={{ float: 'left' }}
+                            name="groupFormationType"
+                            onChange={this.handleChange}
+                            fluid
+                            selection
+                            options={groupFormationSettings}></Dropdown>
+                        {this.state.groupFormationType == '' && (
+                            <Popup
+                                style={{ float: 'left' }}
+                                content={'Select one of the group formations'}
+                                header={'Group Formation'}
+                                trigger={<Icon name="info circle"></Icon>}
+                            />
+                        )}
+                        {this.state.groupFormationType == 'By Group Size' && (
+                            <span>
+                                <Popup
+                                    style={{ float: 'left' }}
+                                    content={'Select one of the group formations'}
+                                    header={'Group Formation'}
+                                    trigger={<Icon name="info circle"></Icon>}
+                                />
+                                <div>
+                                    Min:<Input type="number"></Input> Max:<Input type="number"></Input>
+                                    Group Formation Date
+                                    <Input type="date"></Input>
+                                </div>
+                            </span>
+                        )}
+                        {this.state.groupFormationType == 'By Group Number' && (
+                            <span>
+                                <Popup
+                                    style={{ float: 'left' }}
+                                    content={'Select one of the group formations'}
+                                    header={'Group Formation'}
+                                    trigger={<Icon name="info circle"></Icon>}
+                                />
+                                <div>
+                                    Group Number:<Input type="number"></Input>
+                                    Group Formation Date
+                                    <Input type="date"></Input>
+                                </div>
+                            </span>
+                        )}
+                    </Form.Field>
+                </Form.Group>
                 <Divider />
                 <Button>Create New Course</Button>
             </Form>
