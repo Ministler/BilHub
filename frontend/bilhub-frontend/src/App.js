@@ -28,6 +28,7 @@ class App extends Component {
                 this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor');
             })
             .catch((error) => {
+                console.log(error.response);
                 this.props.logout();
             });
     }
