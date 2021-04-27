@@ -1,6 +1,12 @@
 import React from 'react';
 
-import { BriefList, TitledIconedBriefElement, TitledDatedBriefElement, MemberBriefElement } from './BriefListUI';
+import {
+    BriefList,
+    TitledIconedBriefElement,
+    TitledDatedBriefElement,
+    MemberBriefElement,
+    SubmissionBriefElement,
+} from './BriefListUI';
 import { Icon } from 'semantic-ui-react';
 
 export const convertMyProjectsToBriefList = (myProjects, onMyProjectClicked) => {
@@ -68,5 +74,22 @@ export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onN
 export const convertMembersToMemberElement = (members, onMemberClicked) => {
     return members?.map((member) => {
         return <MemberBriefElement onClick={() => onMemberClicked(member.userId)} member={member} />;
+    });
+};
+export const convertSubmissionsToSubmissionElement = (
+    submissions,
+    onSubmissionPageClicked,
+    onSubmissionFileClicked
+) => {
+    return submissions?.map((submission) => {
+        return (
+            <SubmissionBriefElement
+                submission={submission}
+                onSubmissionPageClicked={() =>
+                    onSubmissionPageClicked(submission.projectId, submission.submissionPageId)
+                }
+                onSubmissionFileClicked={() => onSubmissionFileClicked()}
+            />
+        );
     });
 };

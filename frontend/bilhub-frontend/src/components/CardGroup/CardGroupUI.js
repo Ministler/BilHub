@@ -10,8 +10,8 @@ export const AssignmentCardElement = (props) => {
                 <Card.Header>
                     <span className="clickableChangeColor" onClick={props.titleClicked}>
                         {props.title}
-                        {props.titleIcon}
                     </span>
+                    <span>{props.titleIcon}</span>
                 </Card.Header>
                 <Card.Description>
                     <div>{props.caption}</div>

@@ -1,1 +1,3 @@
-export { CourseAssignment } from './CourseAssignment';
+import CourseAssignment from './CourseAssignment';
+
+export { CourseAssignment };

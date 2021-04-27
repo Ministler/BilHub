@@ -7,7 +7,6 @@ import {
     Login,
     Signup,
     Course,
-    CourseAssignment,
     CourseCreation,
     CourseSettings,
     Home,
@@ -46,7 +45,7 @@ class App extends Component {
                     <Route exact path={'/profile'} component={Profile} />
                     <Route exact path={'/profile/:id'} component={Profile} />
                     <Route exact path={'/course/:courseId'} component={Course} />
-                    <Route exact path={'/course/:courseId/assignment/:assignmentId'} component={CourseAssignment} />
+                    <Route exact path={'/course/:courseId/assignment/:assignmentId'} component={Course} />
                     <Route exact path={'/settings'} component={Settings} />
                     {this.props.userType === 'instructor' ? (
                         <Route exact path={'/create-new-course'} component={CourseCreation} />

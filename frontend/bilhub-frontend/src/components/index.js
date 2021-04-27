@@ -11,7 +11,12 @@ export {
 export { Tab, GradePane, FeedbacksPane, SubmissionPane } from './Tab';
 export { Table, getGradeTable } from './Table';
 export { Modal } from './Modal';
-export { getFeedbacksAsAccordion, getRequestsAsAccordion, getNewFeedbacksAsAccordion } from './Accordion';
+export {
+    getFeedbacksAsAccordion,
+    getRequestsAsAccordion,
+    getNewFeedbacksAsAccordion,
+    getSubmissionsAsAccordion,
+} from './Accordion';
 export { ProfilePrompt } from './ProfilePrompt';
 export {
     convertMyProjectsToBriefList,

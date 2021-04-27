@@ -4,7 +4,6 @@ import './Course.css';
 
 export const GroupsTab = (props) => {
     const divGroupFormed = dummyGroupsFormed.map((group, index) => {
-        console.log(index);
         const contentGroup = group.map((content) => {
             return <p style={{ textAlign: 'center' }}>{content}</p>;
         });
@@ -83,7 +82,6 @@ export const GroupsTab = (props) => {
     });
 
     const divGroupUnformed = dummyGroupsUnformed.map((group, index) => {
-        console.log(index);
         const contentGroup = group.map((content) => {
             return <p style={{ textAlign: 'center' }}>{content}</p>;
         });

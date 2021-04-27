@@ -23,11 +23,13 @@ export const convertAssignmentsToAssignmentList = (
 
         const fileIcon = assignment.file ? <Icon name="file" size="big" /> : null;
 
+        let onAssignmentClickedId = assignment.submissionPageId ? assignment.submissionPageId : assignment.assignmentId;
+
         return (
             <AssignmentCardElement
                 title={assignment.title}
                 titleIcon={statusIcon || assignmentIcons}
-                titleClicked={() => onAssignmentClicked(assignment.submissionPageId)}
+                titleClicked={() => onAssignmentClicked(onAssignmentClickedId)}
                 caption={assignment.caption}
                 fileIcon={fileIcon}
                 fileClicked={onAssignmentFileClicked}
@@ -299,7 +301,6 @@ export const convertRequestsToRequestsList = (
                                 const requestOwner = request.yourGroup?.find((user) => {
                                     return user.requestOwner;
                                 });
-                                console.log();
                                 userName = requestOwner?.name;
                                 userId = requestOwner?.Id;
                             }

@@ -4,6 +4,7 @@ import {
     convertRequestsToRequestsList,
     convertNewFeedbacksToFeedbackList,
 } from '../CardGroup';
+import { convertSubmissionsToSubmissionElement } from '../BriefList';
 import { MyAccordion } from './AccordionUI';
 
 export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal, onAuthorClicked, userId) => {
@@ -131,6 +132,37 @@ export const getRequestsAsAccordion = (
                 'resolved',
                 onUserClicked,
                 onCourseClicked
+            ),
+        },
+    ];
+
+    return <MyAccordion accordionSections={accordionElements} />;
+};
+
+export const getSubmissionsAsAccordion = (submissions, onSubmissionPageClicked, onSubmissionFileClicked) => {
+    const accordionElements = [
+        {
+            title: 'Graded',
+            content: convertSubmissionsToSubmissionElement(
+                submissions.graded,
+                onSubmissionPageClicked,
+                onSubmissionFileClicked
+            ),
+        },
+        {
+            title: 'Submitted',
+            content: convertSubmissionsToSubmissionElement(
+                submissions.submitted,
+                onSubmissionPageClicked,
+                onSubmissionFileClicked
+            ),
+        },
+        {
+            title: 'Not Submitted',
+            content: convertSubmissionsToSubmissionElement(
+                submissions.notSubmitted,
+                onSubmissionPageClicked,
+                onSubmissionFileClicked
             ),
         },
     ];

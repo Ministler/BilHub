@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Segment, TextArea, Icon } from 'semantic-ui-react';
+import { Segment, TextArea, Icon, Button } from 'semantic-ui-react';
 
 import './Course.css';
 import { InformationSection } from './CourseComponents';
 import { GroupsTab } from './GroupsTab';
 import { Tab, convertAssignmentsToAssignmentList } from '../../components';
+import { CourseAssignment } from './CourseAssignment';
 
 export class Course extends Component {
     constructor(props) {
@@ -44,6 +45,14 @@ export class Course extends Component {
         });
     };
 
+    onAssignmentClicked = (assignmentId) => {
+        this.props.history.push('/course/' + this.props.match.params.courseId + '/assignment/' + assignmentId);
+    };
+
+    onAssignmentFileClicked = () => {
+        console.log('file');
+    };
+
     changeCourseInformation = (newInformation) => {
         let courseInformation = { ...this.state.courseInformation };
         courseInformation.information = newInformation;
@@ -67,7 +76,7 @@ export class Course extends Component {
 
     getInformationEditIcon = () => {
         let informationEditIcon = null;
-        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isUserInstructorOfCourse) {
+        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
             informationEditIcon = this.state.informationEditMode ? (
                 <Icon
                     className="clickableChangeColor"
@@ -97,7 +106,7 @@ export class Course extends Component {
 
     getCourseSettingsIcon = () => {
         let icon = null;
-        if (this.state.courseInformation?.isUserTAOfCourse) {
+        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
             icon = <Icon name="settings" onClick={this.onCourseSettingsClicked} />;
         }
         return icon;
@@ -132,26 +141,58 @@ export class Course extends Component {
         };
     };
 
+    getNewAssignmentButton = () => {
+        let button = null;
+        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
+            button = <Button content="New Assignment" labelPosition="right" icon="add" primary />;
+        }
+        return button;
+    };
+
     getAssignmentPane = () => {
         return {
             title: 'Assignments',
             content: this.state.assignments ? (
-                convertAssignmentsToAssignmentList(
-                    this.state.assignments,
-                    this.onAssignmentClicked,
-                    this.onAssignmentFileClicked,
-                    this.assignmentIcons
-                )
+                <>
+                    {convertAssignmentsToAssignmentList(
+                        this.state.assignments,
+                        this.onAssignmentClicked,
+                        this.onAssignmentFileClicked,
+                        this.getAssignmentControlIcons()
+                    )}
+                    {this.getNewAssignmentButton()}
+                </>
             ) : (
                 <div>No Assignments</div>
             ),
         };
     };
 
-    getAssignmentControlIcons = () => {};
+    getAssignmentControlIcons = () => {
+        let controlIcons = null;
+        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
+            controlIcons = (
+                <>
+                    <Icon name="edit" />
+                    <Icon name="close" />
+                </>
+            );
+        }
+
+        return controlIcons;
+    };
 
     getCoursePanes = () => {
         return [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()];
+    };
+
+    getAssignmentPage = () => {
+        return (
+            <CourseAssignment
+                isCourseActive={this.state.courseInformation?.isCourseActive}
+                courseName={this.state.courseInformation?.courseName}
+            />
+        );
     };
 
     render() {
@@ -162,7 +203,11 @@ export class Course extends Component {
                         <Segment>{this.getInformationSection()}</Segment>
                     </div>
                     <div class="twelve wide column">
-                        <Tab tabPanes={this.getCoursePanes()} />
+                        {this.props.match.params.assignmentId ? (
+                            this.getAssignmentPage()
+                        ) : (
+                            <Tab tabPanes={this.getCoursePanes()} />
+                        )}
                     </div>
                 </div>
             </div>
@@ -232,8 +277,7 @@ const dummyCourseInformation = {
     ],
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
-    isUserInstructorOfCourse: true,
-    isUserTAOfCourse: true,
+    isTAorInstructorOfCourse: true,
 };
 
 const dummyCourseAssignments = [
@@ -246,7 +290,6 @@ const dummyCourseAssignments = [
         file: 'file',
         publishmentDate: '12 March 2021 12:00',
         dueDate: '12 March 2021 12:00',
-        isUserAuthForAssignment: true,
     },
     {
         title: 'Design Report',
@@ -256,6 +299,5 @@ const dummyCourseAssignments = [
         publisher: 'Erdem Tuna',
         publishmentDate: '12 March 2021 12:00',
         dueDate: '12 April 2021 12:00',
-        isUserAuthForAssignment: false,
     },
 ];

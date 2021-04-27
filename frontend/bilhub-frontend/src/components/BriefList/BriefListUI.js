@@ -44,3 +44,18 @@ export const MemberBriefElement = (props) => {
         </div>
     );
 };
+
+export const SubmissionBriefElement = (props) => {
+    return (
+        <div>
+            <span className="clickableHighlightBack" onClick={props.onSubmissionPageClicked}>
+                {props.submission?.groupName}
+            </span>
+            <span className="clickableHighlightBack" onClick={props.onSubmissionFileClicked}>
+                {props.submission?.fileName}
+            </span>
+            {props.submission?.grade ? <span>Grade: {props.submission?.grade}</span> : null}
+            <span>{props.submission?.submissionDate}</span>
+        </div>
+    );
+};

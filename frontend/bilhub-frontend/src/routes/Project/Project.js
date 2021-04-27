@@ -303,7 +303,7 @@ export class Project extends Component {
                 <Button
                     content="Give Feedback"
                     labelPosition="right"
-                    icon="edit"
+                    icon="plus"
                     primary
                     onClick={() => this.onModalOpened('isGiveFeedbackOpen', false)}
                 />
