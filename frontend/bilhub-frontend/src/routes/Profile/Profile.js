@@ -9,21 +9,23 @@ class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: null,
+            userInformation: null,
             projects: null,
-            instructedCourse: null,
+            courses: null,
 
             informationEditMode: false,
             newInformation: '',
         };
+        console.log(this.props);
     }
 
     componentDidMount() {
         this.setState({
-            user: dummyUser,
+            userInformation: dummyUser.userInformation,
             projects: dummyProjects,
             courses: dummyInstructedCourses,
-            newInformation: dummyUser.information,
+
+            newInformation: dummyUser.userInformation,
         });
     }
 
@@ -42,27 +44,26 @@ class Profile extends Component {
         });
     };
 
-    onMemberClicked = (userId) => {
+    onUserClicked = (userId) => {
         this.props.history.push('/profile/' + userId);
     };
 
-    onProjectTitleClicked = (projectId) => {
+    onProjectClicked = (projectId) => {
         this.props.history.push('/project/' + projectId);
     };
 
-    onCourseTitleClicked = (courseId) => {
+    onCourseClicked = (courseId) => {
         this.props.history.push('/course/' + courseId);
     };
 
     changeUserInformation = (newInformation) => {
-        const user = { ...this.state.user, information: newInformation };
         this.setState({
-            user: user,
+            userInformation: newInformation,
         });
     };
 
     getInformationElement = () => {
-        let groupInformationElement = <p>{this.state.user?.information}</p>;
+        let groupInformationElement = <p>{this.state.userInformation}</p>;
         if (this.state.informationEditMode) {
             groupInformationElement = (
                 <TextArea onChange={(e) => this.onNewInformationChanged(e)} value={this.state.newInformation} />
@@ -113,9 +114,9 @@ class Profile extends Component {
                             userType={this.props.userType}
                             projects={this.state.projects}
                             courses={this.state.courses}
-                            onMemberClicked={(userId) => this.onMemberClicked(userId)}
-                            onProjectTitleClicked={(projectId) => this.onProjectTitleClicked(projectId)}
-                            onCourseTitleClicked={(courseId) => this.onCourseTitleClicked(courseId)}
+                            onUserClicked={(userId) => this.onUserClicked(userId)}
+                            onProjectClicked={(projectId) => this.onProjectClicked(projectId)}
+                            onCourseClicked={(courseId) => this.onCourseClicked(courseId)}
                         />
                     </div>
                 </div>
@@ -126,17 +127,17 @@ class Profile extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        userType: state.userType,
+        userId: state.userId,
         email: state.email,
         name: state.name,
-        userId: state.userId,
-        userType: state.userType,
     };
 };
 
 export default connect(mapStateToProps)(Profile);
 
 const dummyUser = {
-    information:
+    userInformation:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus id aspernatur ea sitanimi, ab qui! Ea beatae dolorum inventore cum quibusdam placeat quisquam itaque, odioquasi numquam maiores quidem illum odit commodi dicta animi voluptas tempora? Adipisci maiores inventore minus provident quas minima itaque saepe et labore, ut sequi!',
 };
 
@@ -230,17 +231,17 @@ const dummyInstructedCourses = [
             },
             {
                 name: 'Aybala Karakaya',
-                userId: 1,
+                userId: 2,
             },
         ],
         instructors: [
             {
                 name: 'Eray Tüzün',
-                userId: 1,
+                userId: 3,
             },
             {
                 name: 'Eray Tüzün',
-                userId: 1,
+                userId: 4,
             },
         ],
     },

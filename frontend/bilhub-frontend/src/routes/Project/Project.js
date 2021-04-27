@@ -60,7 +60,7 @@ export class Project extends Component {
         this.props.history.push('/course/' + courseId);
     };
 
-    onMemberClicked = (userId) => {
+    onUserClicked = (userId) => {
         this.props.history.push('/profile/' + userId);
     };
 
@@ -180,7 +180,7 @@ export class Project extends Component {
                 courseName={this.state.projectGroup.courseName}
                 groupNameElement={this.getGroupNameElement()}
                 nameEditIcon={this.getNameEditIcon()}
-                memberElements={convertMembersToMemberElement(this.state.projectGroup.members, this.onMemberClicked)}
+                memberElements={convertMembersToMemberElement(this.state.projectGroup.members, this.onUserClicked)}
                 informationElement={this.getGroupInformationItem()}
                 informationEditIcon={this.getInformationEditIcon()}
             />

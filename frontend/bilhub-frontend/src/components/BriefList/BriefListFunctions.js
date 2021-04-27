@@ -65,9 +65,9 @@ export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onA
     return <BriefList title={'Not Graded Assignments'}>{notGradedAssignmentsBriefElements}</BriefList>;
 };
 
-export const convertMembersToMemberElement = (members, onMemberClicked) => {
+export const convertMembersToMemberElement = (members, onUserClicked) => {
     return members?.map((member) => {
-        return <MemberBriefElement onClick={() => onMemberClicked(member.userId)} member={member} />;
+        return <MemberBriefElement onClick={() => onUserClicked(member.userId)} member={member} />;
     });
 };
 

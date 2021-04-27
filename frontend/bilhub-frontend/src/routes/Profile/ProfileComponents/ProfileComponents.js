@@ -29,8 +29,8 @@ export const TabExampleSecondaryPointing = (props) => {
                             title={course.courseName}
                             TAs={course.TAs}
                             instructors={course.instructors}
-                            onMemberClicked={(userId) => props.onMemberClicked(userId)}
-                            onCourseTitleClicked={() => props.onCourseTitleClicked(course.courseId)}
+                            onUserClicked={(userId) => props.onUserClicked(userId)}
+                            onCourseClicked={() => props.onCourseClicked(course.courseId)}
                         />
                     );
                 })
@@ -52,8 +52,8 @@ export const TabExampleSecondaryPointing = (props) => {
                             peerGrade={project.peerGrade}
                             projectGrade={project.projectGrade}
                             instructor={project.instructor}
-                            onMemberClicked={(userId) => props.onMemberClicked(userId)}
-                            onProjectTitleClicked={() => props.onProjectTitleClicked(project.projectId)}
+                            onUserClicked={(userId) => props.onUserClicked(userId)}
+                            onProjectClicked={() => props.onProjectClicked(project.projectId)}
                         />
                     );
                 })
@@ -71,11 +71,9 @@ export const ProjectCardElement = (props) => {
         <Card className="ProjectCardElement">
             <Card.Content>
                 <Card.Header>
-                    <div onClick={props.onProjectTitleClicked}>{props.title}</div>
+                    <div onClick={props.onProjectClicked}>{props.title}</div>
                 </Card.Header>
-                <Card.Description>
-                    {convertMembersToMemberElement(props.members, props.onMemberClicked)}
-                </Card.Description>
+                <Card.Description>{convertMembersToMemberElement(props.members, props.onUserClicked)}</Card.Description>
             </Card.Content>
             <Card.Content className="ProjectCardExtra">
                 <div className="ProjectGrade">
@@ -91,15 +89,15 @@ export const CourseCardElement = (props) => {
         <Card className="ProjectCardElement">
             <Card.Content>
                 <Card.Header>
-                    <div onClick={props.onCourseTitleClicked}>{props.title}</div>
+                    <div onClick={props.onCourseClicked}>{props.title}</div>
                 </Card.Header>
                 <Card.Description>
                     <h4>TAs</h4>
-                    {convertMembersToMemberElement(props.TAs, props.onMemberClicked)}
+                    {convertMembersToMemberElement(props.TAs, props.onUserClicked)}
                 </Card.Description>
                 <Card.Description>
                     <h4>Instructors</h4>
-                    {convertMembersToMemberElement(props.instructors, props.onMemberClicked)}
+                    {convertMembersToMemberElement(props.instructors, props.onUserClicked)}
                 </Card.Description>
             </Card.Content>
         </Card>
