@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Grid, GridColumn } from 'semantic-ui-react';
+import { connect } from 'react-redux';
 
 import './Home.css';
 import {
@@ -11,22 +12,20 @@ import {
     convertAssignmentsToAssignmentList,
 } from '../../components';
 
-export class Home extends Component {
+class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: null,
             myProjects: null,
             instructedCourses: null,
-            feeds: [],
-            upcomingAssignments: [],
+            feeds: null,
+            upcomingAssignments: null,
             notGradedAssignments: null,
         };
     }
 
     componentDidMount() {
         this.setState({
-            user: dummyUser,
             myProjects: dummyMyProjectsList,
             instructedCourses: dummyInstructedCoursesList,
             feeds: dummyFeedsList,
@@ -35,7 +34,6 @@ export class Home extends Component {
         });
     }
 
-    // ON CLICK LISTENERS
     onProfilePromptClicked = () => {
         this.props.history.push('profile');
     };
@@ -43,20 +41,17 @@ export class Home extends Component {
     onProjectClicked = (projectId) => {
         this.props.history.push('project/' + projectId);
     };
-    onInsturctedCourseClicked = (courseId) => {
+
+    onCourseClicked = (courseId) => {
         this.props.history.push('course/' + courseId);
     };
 
-    onUpcomingAssignmentClicked = (projectId, submissionPageId) => {
-        this.props.history.push('project/' + projectId + '/submission/' + submissionPageId);
+    onSubmissionClicked = (projectId, submissionId) => {
+        this.props.history.push('project/' + projectId + '/submission/' + submissionId);
     };
 
-    onNotGradedAssignmentClicked = (courseId, assignmentPageId) => {
-        this.props.history.push('course/' + courseId + '/assignment/' + assignmentPageId);
-    };
-
-    onFeedClicked = (projectId, submissionPageId) => {
-        this.props.history.push('project/' + projectId + '/submission/' + submissionPageId);
+    onAssignmentClicked = (courseId, assignmentId) => {
+        this.props.history.push('course/' + courseId + '/assignment/' + assignmentId);
     };
 
     onFeedFileClicked = () => {
@@ -69,29 +64,33 @@ export class Home extends Component {
             : null;
 
         const instructedCoursesComponent = this.state.instructedCourses
-            ? convertInstructedCoursesToBriefList(this.state.instructedCourses, this.onInsturctedCourseClicked)
+            ? convertInstructedCoursesToBriefList(this.state.instructedCourses, this.onCourseClicked)
             : null;
 
-        const upcomingAssignmentsComponent = convertUpcomingAssignmentsToBriefList(
-            this.state.upcomingAssignments,
-            this.onUpcomingAssignmentClicked
-        );
+        let upcomingAssignmentsComponent = null;
+        if (this.props.userType !== 'instructor') {
+            upcomingAssignmentsComponent = convertUpcomingAssignmentsToBriefList(
+                this.state.upcomingAssignments,
+                this.onAssignmentClicked
+            );
+        }
 
         const notGradedAssignmentsComponent = this.state.notGradedAssignments
-            ? convertNotGradedAssignmentsToBriefList(this.state.notGradedAssignments, this.onNotGradedAssignmentClicked)
+            ? convertNotGradedAssignmentsToBriefList(this.state.notGradedAssignments, this.onAssignmentClicked)
             : null;
 
-        const feedsComponent = this.state.feeds ? (
-            convertAssignmentsToAssignmentList(this.state.feeds, this.onFeedClicked, this.onFeedFileClicked)
-        ) : (
-            <div>You Dont Have Any New Feed</div>
+        const feedsComponent = convertAssignmentsToAssignmentList(
+            this.state.feeds,
+            this.onAssignmentClicked,
+            this.onSubmissionClicked,
+            this.onFeedFileClicked
         );
 
         return (
             <Grid>
                 <GridColumn width={4}>
                     <div className={'HomeDivLeft'}>
-                        <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
+                        <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
                         {myProjectsComponent}
                         {instructedCoursesComponent}
                     </div>
@@ -110,10 +109,14 @@ export class Home extends Component {
     }
 }
 
-const dummyUser = {
-    name: 'Aybala Karakaya',
-    userId: 1,
+const mapStateToProps = (state) => {
+    return {
+        userName: state.name,
+        userType: state.userType,
+    };
 };
+
+export default connect(mapStateToProps)(Home);
 
 const dummyMyProjectsList = [
     {
@@ -165,7 +168,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 1,
-        submissionPageId: 1,
+        submissionId: 1,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -176,8 +179,8 @@ const dummyFeedsList = [
         publisherId: 5,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
-        projectId: 2,
-        submissionPageId: 2,
+        courseId: 2,
+        assignmentId: 2,
         file: 'asd',
     },
     {
@@ -190,7 +193,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -202,7 +205,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 1,
-        submissionPageId: 1,
+        submissionId: 1,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -214,7 +217,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
-        submissionPageId: 2,
+        submissionId: 2,
         file: 'asd',
     },
     {
@@ -227,7 +230,7 @@ const dummyFeedsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
 ];
 
@@ -237,21 +240,21 @@ const dummyUpcomingAssignmentsList = [
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         projectId: 1,
-        submissionPageId: 1,
+        submissionId: 1,
     },
     {
         courseCode: 'CS102-2021Spring',
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         projectId: 2,
-        submissionPageId: 2,
+        submissionId: 2,
     },
     {
         courseCode: 'CS102-2021Spring',
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
 ];
 
@@ -261,13 +264,13 @@ const dummyNotGradedAssignmentsList = [
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         courseId: 1,
-        assignmentPageId: 1,
+        assignmentId: 1,
     },
     {
         courseCode: 'CS102-2021Spring',
         assignmentName: 'Analysis Report',
         dueDate: '16 March 2020, 23:59',
         courseId: 2,
-        assignmentPageId: 2,
+        assignmentId: 2,
     },
 ];

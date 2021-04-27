@@ -97,8 +97,8 @@ class CourseAssignment extends Component {
         return null;
     };
 
-    onSubmissionPageClicked = (projectId, submissionPageId) => {
-        this.props.history.push('/project/' + projectId + '/submission/' + submissionPageId);
+    onSubmissionPageClicked = (projectId, submissionId) => {
+        this.props.history.push('/project/' + projectId + '/submission/' + submissionId);
     };
 
     onSubmissionFileClicked = () => {
@@ -180,7 +180,7 @@ const dummyGroupSubmissions = [
                 grade: '7/10',
                 submissionDate: '15 March 2021',
                 projectId: 1,
-                submissionPageId: 1,
+                submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
@@ -189,7 +189,7 @@ const dummyGroupSubmissions = [
                 grade: '7/10',
                 submissionDate: '15 March 2021',
                 projectId: 2,
-                submissionPageId: 2,
+                submissionId: 2,
             },
         ],
         submitted: [
@@ -199,7 +199,7 @@ const dummyGroupSubmissions = [
                 file: 'file',
                 submissionDate: '15 March 2021',
                 projectId: 1,
-                submissionPageId: 1,
+                submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
@@ -207,19 +207,19 @@ const dummyGroupSubmissions = [
                 file: 'file',
                 submissionDate: '15 March 2021',
                 projectId: 2,
-                submissionPageId: 2,
+                submissionId: 2,
             },
         ],
         notSubmitted: [
             {
                 groupName: 'BilHub',
                 projectId: 1,
-                submissionPageId: 1,
+                submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 projectId: 2,
-                submissionPageId: 2,
+                submissionId: 2,
             },
         ],
     },
@@ -232,7 +232,7 @@ const dummyGroupSubmissions = [
                 grade: '7/10',
                 submissionDate: '15 March 2021',
                 projectId: 1,
-                submissionPageId: 1,
+                submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
@@ -241,7 +241,7 @@ const dummyGroupSubmissions = [
                 grade: '7/10',
                 submissionDate: '15 March 2021',
                 projectId: 2,
-                submissionPageId: 2,
+                submissionId: 2,
             },
         ],
         submitted: [
@@ -251,7 +251,7 @@ const dummyGroupSubmissions = [
                 file: 'file',
                 submissionDate: '15 March 2021',
                 projectId: 1,
-                submissionPageId: 1,
+                submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
@@ -259,19 +259,19 @@ const dummyGroupSubmissions = [
                 file: 'file',
                 submissionDate: '15 March 2021',
                 projectId: 2,
-                submissionPageId: 2,
+                submissionId: 2,
             },
         ],
         notSubmitted: [
             {
                 groupName: 'BilHub',
                 projectId: 1,
-                submissionPageId: 1,
+                submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 projectId: 2,
-                submissionPageId: 2,
+                submissionId: 2,
             },
         ],
     },

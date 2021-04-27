@@ -26,7 +26,7 @@ class App extends Component {
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];
-                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor');
+                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'student');
             })
             .catch((error) => {
                 console.log(error.response);
@@ -52,7 +52,7 @@ class App extends Component {
             <AppLayout>
                 <Switch>
                     <Route exact path={'/notifications'} component={Notifications} />
-                    <Route exact path={'/project/:projectId/submission/:submissionPageId'} component={Project} />
+                    <Route exact path={'/project/:projectId/submission/:submissionId'} component={Project} />
                     <Route exact path={'/project/:projectId'} component={Project} />
                     <Route exact path={'/profile'} component={Profile} />
                     <Route exact path={'/profile/:id'} component={Profile} />

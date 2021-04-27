@@ -6,10 +6,11 @@ import { AssignmentCardElement, FeedbackCardElement, RequestCardElement } from '
 export const convertAssignmentsToAssignmentList = (
     assignments,
     onAssignmentClicked,
+    onSubmissionClicked,
     onAssignmentFileClicked,
     assignmentIcons
 ) => {
-    const assignmentCardElements = assignments.map((assignment) => {
+    const assignmentCardElements = assignments?.map((assignment) => {
         const date = 'Publishment Date: ' + assignment.publishmentDate + ' / Due Date: ' + assignment.dueDate;
 
         let statusIcon = null;
@@ -23,13 +24,15 @@ export const convertAssignmentsToAssignmentList = (
 
         const fileIcon = assignment.file ? <Icon name="file" size="big" /> : null;
 
-        let onAssignmentClickedId = assignment.submissionPageId ? assignment.submissionPageId : assignment.assignmentId;
+        let onAssignmentClickedId = assignment.submissionId
+            ? () => onSubmissionClicked(assignment.projectId, assignment.submissionId)
+            : () => onAssignmentClicked(assignment.courseId, assignment.assignmentId);
 
         return (
             <AssignmentCardElement
                 title={assignment.title}
                 titleIcon={statusIcon || assignmentIcons}
-                titleClicked={() => onAssignmentClicked(onAssignmentClickedId)}
+                titleClicked={onAssignmentClickedId}
                 caption={assignment.caption}
                 fileIcon={fileIcon}
                 fileClicked={onAssignmentFileClicked}
@@ -38,6 +41,10 @@ export const convertAssignmentsToAssignmentList = (
             />
         );
     });
+
+    if (!assignmentCardElements) {
+        return <div>You Dont Have Any New Feed</div>;
+    }
 
     return (
         <Card.Group as="div" className="AssignmentCardGroup">
@@ -63,10 +70,7 @@ export const convertNewFeedbacksToFeedbackList = (
                         Commented to Your
                         <span
                             onClick={() =>
-                                onSubmissionClicked(
-                                    feedback.submission?.projectId,
-                                    feedback.submission?.submissionPageId
-                                )
+                                onSubmissionClicked(feedback.submission?.projectId, feedback.submission?.submissionId)
                             }>
                             {' '}
                             {feedback.submission?.assignmentName}{' '}

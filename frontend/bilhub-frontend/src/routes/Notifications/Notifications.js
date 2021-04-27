@@ -602,7 +602,7 @@ const dummyNewFeedbacks = {
             },
             submission: {
                 assignmentName: 'Analiz Report',
-                submissionPageId: 1,
+                submissionId: 1,
                 projectId: 1,
             },
         },
@@ -645,7 +645,7 @@ const dummyNewFeedbacks = {
             },
             submission: {
                 assignmentName: 'Analiz Report',
-                submissionPageId: 1,
+                submissionId: 1,
                 projectId: 1,
             },
         },
@@ -688,7 +688,7 @@ const dummyNewFeedbacks = {
             },
             submission: {
                 assignmentName: 'Analiz Report',
-                submissionPageId: 1,
+                submissionId: 1,
                 projectId: 1,
             },
         },
@@ -731,7 +731,7 @@ const dummyNewFeedbacks = {
             },
             submission: {
                 assignmentName: 'Analiz Report',
-                submissionPageId: 1,
+                submissionId: 1,
                 projectId: 1,
             },
         },

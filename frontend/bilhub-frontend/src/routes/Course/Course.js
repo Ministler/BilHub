@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Segment, TextArea, Icon, Button } from 'semantic-ui-react';
+import { connect } from 'react-redux';
 
 import './Course.css';
 import { InformationSection } from './CourseComponents';
@@ -7,7 +8,7 @@ import { GroupsTab } from './GroupsTab';
 import { Tab, convertAssignmentsToAssignmentList } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
 
-export class Course extends Component {
+class Course extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -157,6 +158,7 @@ export class Course extends Component {
                     {convertAssignmentsToAssignmentList(
                         this.state.assignments,
                         this.onAssignmentClicked,
+                        null,
                         this.onAssignmentFileClicked,
                         this.getAssignmentControlIcons()
                     )}
@@ -214,6 +216,17 @@ export class Course extends Component {
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        token: state.token,
+        userId: state.userId,
+        userName: state.name,
+        userType: state.userType,
+    };
+};
+
+export default connect(mapStateToProps)(Course);
 
 const dummyGroupsFormed = [
     ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],

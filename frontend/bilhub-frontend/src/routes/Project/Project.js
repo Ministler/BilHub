@@ -96,8 +96,8 @@ export class Project extends Component {
     };
 
     // RIGHT SIDE LOGIC
-    onAssignmentClicked = (submissionPageId) => {
-        this.props.history.push('/project/' + this.props.match.params.projectId + '/submission/' + submissionPageId);
+    onAssignmentClicked = (submissionId) => {
+        this.props.history.push('/project/' + this.props.match.params.projectId + '/submission/' + submissionId);
     };
 
     onAssignmentFileClicked = () => {
@@ -268,6 +268,7 @@ export class Project extends Component {
             content: this.state.assignments ? (
                 convertAssignmentsToAssignmentList(
                     this.state.assignments,
+                    null,
                     this.onAssignmentClicked,
                     this.onAssignmentFileClicked
                 )
@@ -381,13 +382,13 @@ export class Project extends Component {
                         <Segment>{this.getInformationPart()}</Segment>
                     </div>
                     <div class="twelve wide column">
-                        {!this.props.match.params.submissionPageId ? (
+                        {!this.props.match.params.submissionId ? (
                             <Tab tabPanes={this.getPaneElements()} />
                         ) : (
                             <ProjectSubmission
                                 projectName={this.state.projectGroup?.name}
                                 projectId={this.props.match.params.projectId}
-                                submissionPageId={this.props.match.params.submissionPageId}
+                                submissionId={this.props.match.params.submissionId}
                                 userId={this.state.user?.userId}
                             />
                         )}
@@ -435,7 +436,7 @@ const dummyAssignmentsList = [
         publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
-        submissionPageId: 1,
+        submissionId: 1,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -447,7 +448,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
-        submissionPageId: 2,
+        submissionId: 2,
         file: 'dummyFile',
     },
     {
@@ -460,7 +461,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -472,7 +473,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -484,7 +485,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -496,7 +497,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
@@ -508,7 +509,7 @@ const dummyAssignmentsList = [
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
-        submissionPageId: 3,
+        submissionId: 3,
     },
 ];
 

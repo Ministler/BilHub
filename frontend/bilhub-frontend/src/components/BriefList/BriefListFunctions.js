@@ -9,35 +9,29 @@ import {
     GroupBriefElement,
 } from './BriefListUI';
 import { Icon, Segment, Label } from 'semantic-ui-react';
-export const convertMyProjectsToBriefList = (myProjects, onMyProjectClicked) => {
+export const convertMyProjectsToBriefList = (myProjects, onProjectClicked) => {
     const myProjectBriefElements = myProjects.map((project) => {
         const icon = project.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
         const title = project.courseCode + '/' + project.projectName;
         return (
-            <TitledIconedBriefElement icon={icon} title={title} onClick={() => onMyProjectClicked(project.projectId)} />
+            <TitledIconedBriefElement icon={icon} title={title} onClick={() => onProjectClicked(project.projectId)} />
         );
     });
 
     return <BriefList title={'My Projects'}>{myProjectBriefElements}</BriefList>;
 };
 
-export const convertInstructedCoursesToBriefList = (instructedCourses, onInstructedCourseClicked) => {
+export const convertInstructedCoursesToBriefList = (instructedCourses, onCourseClicked) => {
     const instructedCourseBriefElements = instructedCourses.map((course) => {
         const icon = course.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
         const title = course.courseCode;
-        return (
-            <TitledIconedBriefElement
-                icon={icon}
-                title={title}
-                onClick={() => onInstructedCourseClicked(course.courseId)}
-            />
-        );
+        return <TitledIconedBriefElement icon={icon} title={title} onClick={() => onCourseClicked(course.courseId)} />;
     });
 
     return <BriefList title={'Instructed Courses'}>{instructedCourseBriefElements}</BriefList>;
 };
 
-export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onUpcomingAssignmentClicked) => {
+export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAssignmentClicked) => {
     const upcomingAssignmentsBriefElements = upcomingAssignments ? (
         upcomingAssignments.map((assignment) => {
             const title = assignment.courseCode + '/' + assignment.assignmentName;
@@ -45,7 +39,7 @@ export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onUpc
                 <TitledDatedBriefElement
                     title={title}
                     date={assignment.dueDate}
-                    onClick={() => onUpcomingAssignmentClicked(assignment.projectId, assignment.submissionPageId)}
+                    onClick={() => onAssignmentClicked(assignment.projectId, assignment.submissionId)}
                 />
             );
         })
@@ -56,14 +50,14 @@ export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onUpc
     return <BriefList title={'Upcoming Assignments'}>{upcomingAssignmentsBriefElements}</BriefList>;
 };
 
-export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onNotGradedAssignmentClicked) => {
+export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onAssignmentClicked) => {
     const notGradedAssignmentsBriefElements = notGradedAssignments.map((assignment) => {
         const title = assignment.courseCode + '/' + assignment.assignmentName;
         return (
             <TitledDatedBriefElement
                 title={title}
                 date={assignment.dueDate}
-                onClick={() => onNotGradedAssignmentClicked(assignment.courseId, assignment.asignmentId)}
+                onClick={() => onAssignmentClicked(assignment.courseId, assignment.assignmentId)}
             />
         );
     });
@@ -86,9 +80,7 @@ export const convertSubmissionsToSubmissionElement = (
         return (
             <SubmissionBriefElement
                 submission={submission}
-                onSubmissionPageClicked={() =>
-                    onSubmissionPageClicked(submission.projectId, submission.submissionPageId)
-                }
+                onSubmissionPageClicked={() => onSubmissionPageClicked(submission.projectId, submission.submissionId)}
                 onSubmissionFileClicked={() => onSubmissionFileClicked()}
             />
         );

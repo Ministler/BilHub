@@ -43,7 +43,7 @@ class Login extends Component {
                     userData.localId,
                     userData.email,
                     userData.displayName,
-                    'instructor'
+                    'student'
                 );
             })
             .catch(() => {
