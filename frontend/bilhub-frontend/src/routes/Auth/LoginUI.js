@@ -18,7 +18,7 @@ export const LoginUI = (props) => {
                             <i
                                 className="close icon"
                                 onClick={() => {
-                                    props.pepe();
+                                    props.onErrorClosed();
                                 }}></i>
                             {props.error}
                         </div>

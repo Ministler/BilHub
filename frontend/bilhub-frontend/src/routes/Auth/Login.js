@@ -8,9 +8,10 @@ import { loginRequest } from '../../API';
 class Login extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             form: {},
-            clientError: null,
+            error: null,
         };
     }
 
@@ -25,7 +26,7 @@ class Login extends Component {
     };
 
     setError = (error) => {
-        this.setState({ clientError: error });
+        this.setState({ error: error });
     };
 
     onSubmit = () => {
@@ -34,18 +35,21 @@ class Login extends Component {
             return;
         }
 
-        loginRequest(this.state.form.email, this.state.form.password).then((response) => {
-            const userData = response.data;
-
-            this.props.authSuccess(
-                true,
-                userData.idToken,
-                userData.localId,
-                userData.email,
-                userData.displayName,
-                'instructor'
-            );
-        });
+        loginRequest(this.state.form.email, this.state.form.password)
+            .then((response) => {
+                const userData = response.data;
+                this.props.authSuccess(
+                    true,
+                    userData.idToken,
+                    userData.localId,
+                    userData.email,
+                    userData.displayName,
+                    'instructor'
+                );
+            })
+            .catch(() => {
+                this.setError('Server Error');
+            });
     };
 
     render() {
@@ -54,8 +58,8 @@ class Login extends Component {
                 onSubmit={this.onSubmit}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
-                pepe={this.clearError}
-                error={this.state.clientError || this.props.serverError}
+                onErrorClosed={() => this.setError(null)}
+                error={this.state.error}
             />
         );
     }

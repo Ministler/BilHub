@@ -10,6 +10,7 @@ export default class Signup extends Component {
         this.state = {
             form: {},
             error: null,
+            activationMode: false,
         };
     }
 
@@ -58,23 +59,28 @@ export default class Signup extends Component {
             this.state.form.email,
             this.state.form.password,
             this.state.form.firstName + this.state.form.lastName
-        ).then((response) => {
-            this.props.history.push('/login');
-        });
+        )
+            .then((response) => {
+                this.setState({
+                    activationMode: true,
+                });
+            })
+            .catch(() => {
+                this.setError('Server Error');
+            });
     };
 
     render() {
-        if (this.props.requestFullfilled) {
-            this.props.history.push('/login');
-        }
-
-        return (
+        return !this.state.activationMode ? (
             <SignupUI
                 onSubmit={this.onSubmit}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
-                error={this.state.clientError || this.props.serverError}
+                error={this.state.error}
+                onErrorClosed={() => this.setError(null)}
             />
+        ) : (
+            <div>asd</div>
         );
     }
 }
