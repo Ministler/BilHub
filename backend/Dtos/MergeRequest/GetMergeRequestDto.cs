@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace backend.Dtos.JoinRequest
+namespace backend.Dtos.MergeRequest
 {
-    public class GetJoinRequestDto
+    public class GetMergeRequestDto
     {
         public int Id { get; set; }
-        public UserInJoinRequestDto RequestingStudent { get; set; }
-        public int RequestingStudentId { get; set; }
-        public ProjectGroupInJoinRequestDto RequestedGroup { get; set; }
-        public int RequestedGroupId { get; set; }
+        public ProjectGroupInMergeRequestDto SenderGroup { get; set; }
+        public int SenderGroupId { get; set; }
+        public ProjectGroupInMergeRequestDto ReceiverGroup { get; set; }
+        public int ReceiverGroupId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int AcceptedNumber { get; set; }
         public bool Accepted { get; set; }
         public bool Resolved { get; set; }
         public string VotedStudents { get; set; }
