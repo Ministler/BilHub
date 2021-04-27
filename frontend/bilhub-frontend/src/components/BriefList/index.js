@@ -4,4 +4,6 @@ export {
     convertUpcomingAssignmentsToBriefList,
     convertNotGradedAssignmentsToBriefList,
     convertMembersToMemberElement,
+    convertUnformedGroupsToBriefList,
+    convertFormedGroupsToBriefList,
 } from './BriefListFunctions';

@@ -1,7 +1,13 @@
 import React from 'react';
 
-import { BriefList, TitledIconedBriefElement, TitledDatedBriefElement, MemberBriefElement } from './BriefListUI';
-import { Icon } from 'semantic-ui-react';
+import {
+    BriefList,
+    TitledIconedBriefElement,
+    TitledDatedBriefElement,
+    MemberBriefElement,
+    GroupBriefElement,
+} from './BriefListUI';
+import { Icon, Segment, Label } from 'semantic-ui-react';
 
 export const convertMyProjectsToBriefList = (myProjects, onMyProjectClicked) => {
     const myProjectBriefElements = myProjects.map((project) => {
@@ -68,5 +74,28 @@ export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onN
 export const convertMembersToMemberElement = (members, onMemberClicked) => {
     return members?.map((member) => {
         return <MemberBriefElement onClick={() => onMemberClicked(member.userId)} member={member} />;
+    });
+};
+
+export const convertUnformedGroupsToBriefList = (groups) => {
+    return groups?.map((group) => {
+        return (
+            <Segment className="clickableHighlightBack" style={{ width: '15%', float: 'left', margin: '10px' }}>
+                <GroupBriefElement group={group.members} />
+            </Segment>
+        );
+    });
+};
+
+export const convertFormedGroupsToBriefList = (groups) => {
+    return groups?.map((group) => {
+        return (
+            <Segment className="clickableHighlightBack" style={{ width: '15%', float: 'left', margin: '10px' }}>
+                <Label style={{ textAlign: 'center' }} attached="top">
+                    {group.name}
+                </Label>
+                <GroupBriefElement group={group.members} />
+            </Segment>
+        );
     });
 };
