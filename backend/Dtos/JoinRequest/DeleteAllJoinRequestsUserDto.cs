@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 
 namespace backend.Dtos.JoinRequest
 {
-    public class DeleteAllJoinRequestsDto
+    public class DeleteAllJoinRequestsUserDto
     {
-        public int projectGroupId { get; set; }
+        public int userId { get; set; }
 
     }
 }

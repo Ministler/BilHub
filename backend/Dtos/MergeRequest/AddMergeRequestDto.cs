@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
  
-// why do we use time??
-
-namespace backend.Dtos.JoinRequest
+namespace backend.Dtos.MergeRequest
 {
-    public class AddJoinRequestDto
+    public class AddMergeRequestDto
     {
-        public int RequestedGroupId { get; set; }
+        public int ReceiverGroupId { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Description { get; set; }
     }
