@@ -10,7 +10,6 @@ namespace backend.Models
             GroupMembers = new Collection<ProjectGroupUser>();
             Submissions = new Collection<Submission>();
             ProjectGrades = new Collection<ProjectGrade>();
-            PeerGrades = new Collection<PeerGrade>();
             IncomingJoinRequests = new Collection<JoinRequest>();
             OutgoingMergeRequest = new Collection<MergeRequest>();
             IncomingMergeRequest = new Collection<MergeRequest>();
@@ -26,7 +25,6 @@ namespace backend.Models
         public ICollection<ProjectGroupUser> GroupMembers { get; set; }
         public string ConfirmedGroupMembers { get; set; }
         public ICollection<ProjectGrade> ProjectGrades { get; set; }
-        public ICollection<PeerGrade> PeerGrades { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         public ICollection<JoinRequest> IncomingJoinRequests { get; set; }
         public ICollection<MergeRequest> OutgoingMergeRequest { get; set; }
