@@ -309,7 +309,7 @@ namespace backend.Services.JoinRequestServices
                 }       
             }
 
-            int maxSize =  _context.Courses.FirstOrDefault(c => c.Id == joinRequest.RequestedGroup.AffiliatedCourseId).MaxGroupSize;
+            int maxSize =  (await _context.Courses.FirstOrDefaultAsync(c => c.Id == joinRequest.RequestedGroup.AffiliatedCourseId)).MaxGroupSize;
             if( joinRequestDto.accept ) 
             {
                 joinRequest.AcceptedNumber++;
