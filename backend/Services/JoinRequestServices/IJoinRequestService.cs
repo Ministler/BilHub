@@ -10,7 +10,9 @@ namespace backend.Services.JoinRequestServices
         Task<ServiceResponse<AddJoinRequestDto>> SendJoinRequest(AddJoinRequestDto newJoinRequestDto);
         Task<ServiceResponse<string>> CancelJoinRequest(CancelJoinRequestDto joinRequestDto); 
         Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto);
-        Task<ServiceResponse<string>> DeleteAllJoinRequests(DeleteAllJoinRequestsDto deleteAllJoinRequestsDto);
+        Task<ServiceResponse<string>> DeleteAllJoinRequestsOfGroup(DeleteAllJoinRequestsGroupDto deleteAllJoinRequestsGroupDto);
+        Task<ServiceResponse<string>> DeleteAllJoinRequestsOfUser(DeleteAllJoinRequestsUserDto deleteAllJoinRequestsUserDto);
+
         Task<ServiceResponse<GetJoinRequestDto>> GetJoinRequestById(int Id);
     }
 }
