@@ -113,7 +113,8 @@ namespace backend.Services.MergeRequestServices
                 response.Success = false;
                 return response;
             }
-            if (receiverGroup.GroupMembers.Count + senderGroup.GroupMembers.Count > _context.Courses.FirstOrDefault(c => c.Id == senderGroup.AffiliatedCourseId).MaxGroupSize)
+            int maxSize = _context.Courses.FirstOrDefault(c => c.Id == senderGroup.AffiliatedCourseId).MaxGroupSize;
+            if (receiverGroup.GroupMembers.Count + senderGroup.GroupMembers.Count > maxSize)
             {
                 response.Data = null;
                 response.Message = "You would exceed the max allowed group size if you merged.";
@@ -339,13 +340,15 @@ namespace backend.Services.MergeRequestServices
                     }
                 }       
             }
+
+            int maxSize = _context.Courses.FirstOrDefault(c => c.Id == mergeRequest.SenderGroup.AffiliatedCourseId).MaxGroupSize;
             if( mergeRequestDto.accept ) 
             {
                 acceptedNumber++;
                 if( acceptedNumber >= mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count )
                 {
                     mergeRequest.Accepted = true;    
-                    if( mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count >= mergeRequest.ReceiverGroup.ConfirmedUserNumber )
+                    if( mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count >= maxSize )
                     {
                         await DeleteAllMergeRequests( new DeleteAllMergeRequestsDto { projectGroupId =  mergeRequest.ReceiverGroupId } );
                         await DeleteAllMergeRequests( new DeleteAllMergeRequestsDto { projectGroupId =  mergeRequest.SenderGroupId } );

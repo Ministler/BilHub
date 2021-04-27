@@ -244,6 +244,8 @@ namespace backend.Services.JoinRequestServices
             ServiceResponse<JoinRequestInfoDto> response = new ServiceResponse<JoinRequestInfoDto>();
             JoinRequest joinRequest = await _context.JoinRequests.Include(jr => jr.RequestedGroup)
                                     .ThenInclude(pg => pg.GroupMembers)
+                                    .Include(jr => jr.RequestedGroup)
+                                    .ThenInclude(pg => pg.AffiliatedCourse)
                                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestDto.Id);
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
@@ -306,13 +308,15 @@ namespace backend.Services.JoinRequestServices
                     }
                 }       
             }
+
+            int maxSize =  _context.Courses.FirstOrDefault(c => c.Id == joinRequest.RequestedGroup.AffiliatedCourseId).MaxGroupSize;
             if( joinRequestDto.accept ) 
             {
                 joinRequest.AcceptedNumber++;
                 if( joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count )
                 {
                     joinRequest.Accepted = true;    
-                    if( joinRequest.RequestedGroup.GroupMembers.Count + 1 >= joinRequest.RequestedGroup.ConfirmedUserNumber )
+                    if( joinRequest.RequestedGroup.GroupMembers.Count + 1 >= maxSize )
                     {
                         await DeleteAllJoinRequestsOfGroup( new DeleteAllJoinRequestsGroupDto { projectGroupId =  joinRequest.RequestedGroupId } );
                     }
