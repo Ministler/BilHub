@@ -19,7 +19,8 @@ code {
 }
 
 .clickableChangeColor {
-    transition: 0.25s;
+    color: black;
+    transition: 0.15s;
 }
 
 .clickableHighlightBack:hover {

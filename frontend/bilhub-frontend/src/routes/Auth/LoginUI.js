@@ -18,7 +18,7 @@ export const LoginUI = (props) => {
                             <i
                                 className="close icon"
                                 onClick={() => {
-                                    props.pepe();
+                                    props.errorCloseButton();
                                 }}></i>
                             {props.error}
                         </div>
@@ -35,6 +35,14 @@ export const LoginUI = (props) => {
                                 />
                             </div>
                             <div className="field">
+                                <Link
+                                    style={{
+                                        fontSize: '12px',
+                                        float: 'right',
+                                    }}
+                                    to="/newPassword">
+                                    Forgot password?
+                                </Link>
                                 <label style={{ fontSize: '12px' }}>Password</label>
                                 <Form.Input
                                     type="password"

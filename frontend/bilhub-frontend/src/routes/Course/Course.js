@@ -172,11 +172,11 @@ export class Course extends Component {
 
 const dummyGroupsFormed = [
     ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
+    ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
     ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. Pepe'],
     ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
     ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
     ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'],
-    ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
     ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. Pepe'],
     ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
     ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
@@ -184,8 +184,11 @@ const dummyGroupsFormed = [
 ];
 
 const dummyGroupsUnformed = [
+    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
+    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
     ['Yusuf Uyar', 'Barış Ogün Yörük', 'Oğuzhan Özçelik'],
     ['Yusuf Uyar', 'Barış Ogün Yörük', 'Oğuzhan Özçelik'],
+    ['Keke. One', 'Keke. Three', 'Keke. Five'],
     ['Ahmet Demir', 'Muhammed Arshellov'],
     ['Ahmet Demir', 'Muhammed Arshellov'],
     ['Ahmet Demir', 'Muhammed Arshellov'],
@@ -193,9 +196,6 @@ const dummyGroupsUnformed = [
     ['Keke. Five'],
     ['Mr. One'],
     ['Mr. One'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Keke. One', 'Keke. Three', 'Keke. Five'],
     ['Mr. One'],
     ['Dummy. Two'],
     ['Dummy. Two'],
