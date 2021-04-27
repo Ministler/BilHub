@@ -10,6 +10,8 @@ namespace backend.Dtos.JoinRequest
         public int Id { get; set; }
         public bool Accepted { get; set; }
         public bool Resolved { get; set; }
+
+        public int AcceptedNumber {get; set; }
         public string VotedStudents { get; set; }
     }
 }
