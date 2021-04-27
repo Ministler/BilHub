@@ -117,7 +117,7 @@ namespace backend.Services.MergeRequestServices
                                             .Include(g => g.GroupMembers)
                                             .FirstOrDefaultAsync(rg => rg.Id == senderGroup.Id);
 
-            int maxSize = _context.Courses.FirstOrDefault(c => c.Id == senderGroup.AffiliatedCourseId).MaxGroupSize;
+            int maxSize = ( await _context.Courses.FirstOrDefaultAsync(c => c.Id == senderGroup.AffiliatedCourseId)).MaxGroupSize;
             if (receiverGroup.GroupMembers.Count + senderGroupOriginal.GroupMembers.Count > maxSize)
             {
                 response.Data = null;
@@ -345,7 +345,7 @@ namespace backend.Services.MergeRequestServices
                 }       
             }
 
-            int maxSize = _context.Courses.FirstOrDefault(c => c.Id == mergeRequest.SenderGroup.AffiliatedCourseId).MaxGroupSize;
+            int maxSize = ( await _context.Courses.FirstOrDefaultAsync(c => c.Id == mergeRequest.SenderGroup.AffiliatedCourseId) ).MaxGroupSize;
             if( mergeRequestDto.accept ) 
             {
                 acceptedNumber++;
