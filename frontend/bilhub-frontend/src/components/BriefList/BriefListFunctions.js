@@ -6,9 +6,9 @@ import {
     TitledDatedBriefElement,
     MemberBriefElement,
     SubmissionBriefElement,
+    GroupBriefElement,
 } from './BriefListUI';
-import { Icon } from 'semantic-ui-react';
-
+import { Icon, Segment, Label } from 'semantic-ui-react';
 export const convertMyProjectsToBriefList = (myProjects, onMyProjectClicked) => {
     const myProjectBriefElements = myProjects.map((project) => {
         const icon = project.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
@@ -76,6 +76,7 @@ export const convertMembersToMemberElement = (members, onMemberClicked) => {
         return <MemberBriefElement onClick={() => onMemberClicked(member.userId)} member={member} />;
     });
 };
+
 export const convertSubmissionsToSubmissionElement = (
     submissions,
     onSubmissionPageClicked,
@@ -90,6 +91,29 @@ export const convertSubmissionsToSubmissionElement = (
                 }
                 onSubmissionFileClicked={() => onSubmissionFileClicked()}
             />
+        );
+    });
+};
+
+export const convertUnformedGroupsToBriefList = (groups) => {
+    return groups?.map((group) => {
+        return (
+            <Segment className="clickableHighlightBack" style={{ width: '15%', float: 'left', margin: '10px' }}>
+                <GroupBriefElement group={group.members} />
+            </Segment>
+        );
+    });
+};
+
+export const convertFormedGroupsToBriefList = (groups) => {
+    return groups?.map((group) => {
+        return (
+            <Segment className="clickableHighlightBack" style={{ width: '15%', float: 'left', margin: '10px' }}>
+                <Label style={{ textAlign: 'center' }} attached="top">
+                    {group.name}
+                </Label>
+                <GroupBriefElement group={group.members} />
+            </Segment>
         );
     });
 };

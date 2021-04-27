@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
-import * as actions from '../../store';
 import { SignupUI } from './SignupUI';
+import { singupRequest } from '../../API';
 
-export class Signup extends Component {
+export default class Signup extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             form: {},
-            clientError: null,
+            error: null,
+            activationMode: false,
         };
     }
 
@@ -21,7 +21,7 @@ export class Signup extends Component {
     };
 
     setError = (error) => {
-        this.setState({ clientError: error });
+        this.setState({ error: error });
     };
 
     onChange = (name, value) => {
@@ -55,41 +55,32 @@ export class Signup extends Component {
             return;
         }
 
-        this.props.onSignup(
+        singupRequest(
             this.state.form.email,
             this.state.form.password,
             this.state.form.firstName + this.state.form.lastName
-        );
+        )
+            .then((response) => {
+                this.setState({
+                    activationMode: true,
+                });
+            })
+            .catch(() => {
+                this.setError('Server Error');
+            });
     };
 
     render() {
-        if (this.props.requestFullfilled) {
-            this.props.history.push('/login');
-        }
-
-        return (
+        return !this.state.activationMode ? (
             <SignupUI
                 onSubmit={this.onSubmit}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
-                error={this.state.clientError || this.props.serverError}
+                error={this.state.error}
+                onErrorClosed={() => this.setError(null)}
             />
+        ) : (
+            <div>asd</div>
         );
     }
 }
-
-const mapStateToProps = (state) => {
-    return {
-        serverError: state.signupError,
-        loading: state.singupLoading,
-        requestFullfilled: state.signupRequestSucceed,
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onSignup: (email, password, name) => dispatch(actions.signup(email, password, name)),
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Signup);

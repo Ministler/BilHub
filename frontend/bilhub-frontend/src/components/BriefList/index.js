@@ -5,4 +5,6 @@ export {
     convertNotGradedAssignmentsToBriefList,
     convertMembersToMemberElement,
     convertSubmissionsToSubmissionElement,
+    convertUnformedGroupsToBriefList,
+    convertFormedGroupsToBriefList,
 } from './BriefListFunctions';

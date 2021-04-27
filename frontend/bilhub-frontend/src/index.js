@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { createStore } from 'redux';
 
 import './styles/genericElement.css';
 import './styles/genericLayout.css';
@@ -12,7 +11,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { authReducer } from './store';
 
-const store = createStore(authReducer, applyMiddleware(thunk));
+const store = createStore(authReducer);
 
 const app = (
     <React.StrictMode>
