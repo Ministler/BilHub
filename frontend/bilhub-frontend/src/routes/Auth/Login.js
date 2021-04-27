@@ -43,7 +43,7 @@ class Login extends Component {
                 onSubmit={this.onSubmit}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
-                pepe={this.clearError}
+                errorCloseButton={this.clearError}
                 error={this.state.clientError || this.props.serverError}
             />
         );
