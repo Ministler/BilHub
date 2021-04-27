@@ -113,8 +113,12 @@ namespace backend.Services.MergeRequestServices
                 response.Success = false;
                 return response;
             }
+            ProjectGroup senderGroupOriginal = await _context.ProjectGroups
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == senderGroup.Id);
+
             int maxSize = _context.Courses.FirstOrDefault(c => c.Id == senderGroup.AffiliatedCourseId).MaxGroupSize;
-            if (receiverGroup.GroupMembers.Count + senderGroup.GroupMembers.Count > maxSize)
+            if (receiverGroup.GroupMembers.Count + senderGroupOriginal.GroupMembers.Count > maxSize)
             {
                 response.Data = null;
                 response.Message = "You would exceed the max allowed group size if you merged.";
@@ -176,7 +180,7 @@ namespace backend.Services.MergeRequestServices
             await _context.SaveChangesAsync();
 
             response.Data = newMergeRequest;
-            response.Message = "Merge request is successfully sent";
+            response.Message = "Merge request is successfully sent " +  receiverGroup.GroupMembers.Count + " " + receiverGroup.GroupMembers.Count  ;
             response.Success = true;
 
             return response;
