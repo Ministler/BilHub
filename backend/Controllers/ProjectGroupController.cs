@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ProjectGroupController : ControllerBase
@@ -40,6 +40,30 @@ namespace backend.Controllers
         public async Task<ActionResult> LeaveGroup ( int projectGroupId ) 
         {
             return Ok ( await _projectGroupService.LeaveGroup(projectGroupId) );
+        }
+
+        [HttpGet("ProjectGroupsOfSection")]
+        public async Task<ActionResult> GetProjectGroupsOfSection ( int sectionId ) 
+        {
+            return Ok ( await _projectGroupService.GetProjectGroupsOfSection (sectionId) );
+        }
+
+        [HttpDelete("SilmeDeneme")]
+        public async Task<ActionResult>  DeleteProjectGroup ( int projectGroupId )
+        {
+            return Ok ( await _projectGroupService.DeleteProjectGroup( projectGroupId ) );
+        }
+
+        [HttpPost("ForceCancelProjectGroup")]
+        public async Task<ActionResult>  ForceCancelProjectGroup ( int projectGroupId )
+        {
+            return Ok ( await _projectGroupService.ForceCancelGroup ( projectGroupId ) );
+        }
+
+        [HttpPost("KickStudentFromGroup")]
+        public async Task<ActionResult> KickStudentFromGroup ( int projectGroupId, int userId )
+        {  
+            return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId ) );
         }
     }
 }
