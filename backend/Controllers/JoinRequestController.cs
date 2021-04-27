@@ -33,9 +33,9 @@ namespace backend.Controllers
         
         [HttpPost]
         [Route("{requestedGroupId}")]
-        public async Task<IActionResult> Send(int requestedGroupId )
+        public async Task<IActionResult> Send(int requestedGroupId, string description )
         {            
-            AddJoinRequestDto dto = new AddJoinRequestDto {RequestedGroupId = requestedGroupId, CreatedAt = DateTime.Now};
+            AddJoinRequestDto dto = new AddJoinRequestDto {RequestedGroupId = requestedGroupId, CreatedAt = DateTime.Now, Description = description};
             ServiceResponse<AddJoinRequestDto> response = await _joinRequestService.SendJoinRequest(dto);
             if (response.Success)
             {

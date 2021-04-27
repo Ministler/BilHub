@@ -39,6 +39,7 @@ namespace backend.Data
                 .WithMany(s => s.ProjectGroups)
                 .HasForeignKey(pg => pg.AffiliatedSectionId)
                 .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<CourseUser>().HasKey(cu => new { cu.UserId, cu.CourseId });
             modelBuilder.Entity<CourseUser>()
             .HasOne(bc => bc.Course)

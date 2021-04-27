@@ -8,6 +8,7 @@ using backend.Data.Auth;
 using backend.Services.AssignmentServices;
 using backend.Services.CommentServices;
 using backend.Services.JoinRequestServices;
+using backend.Services.MergeRequestServices;
 using backend.Services.SubmissionServices;
 // using backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -83,6 +84,7 @@ namespace backend
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IJoinRequestService, JoinRequestService>();
             services.AddScoped<IAssignmentService, AssignmentService>();
+            services.AddScoped<IMergeRequestService, MergeRequestService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

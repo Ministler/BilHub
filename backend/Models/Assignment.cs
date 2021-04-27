@@ -11,6 +11,7 @@ namespace backend.Models
             Submissions = new Collection<Submission>();
         }
         public int Id { get; set; }
+        public string Title { get; set; }
         public Section AffiliatedSection { get; set; }
         public int AffiliatedSectionId { get; set; }
         public int CourseId { get; set; }

@@ -147,7 +147,8 @@ namespace backend.Services.JoinRequestServices
                 AcceptedNumber = 0,
                 Accepted = false,
                 Resolved = false,
-                VotedStudents = ""
+                VotedStudents = "",
+                Description = newJoinRequest.Description
             };
 
             requestedGroup.IncomingJoinRequests.Add(createdJoinRequest);
@@ -185,7 +186,7 @@ namespace backend.Services.JoinRequestServices
             }
 
 
-            if (user != null && joinRequest.RequestingStudentId != GetUserId())
+            if ( user == null || ( user != null && joinRequest.RequestingStudentId != GetUserId() ) )
             {
                 response.Data = "Not allowed";
                 response.Message = "You are not authorized to cancel this join request";
@@ -243,6 +244,8 @@ namespace backend.Services.JoinRequestServices
             ServiceResponse<JoinRequestInfoDto> response = new ServiceResponse<JoinRequestInfoDto>();
             JoinRequest joinRequest = await _context.JoinRequests.Include(jr => jr.RequestedGroup)
                                     .ThenInclude(pg => pg.GroupMembers)
+                                    .Include(jr => jr.RequestedGroup)
+                                    .ThenInclude(pg => pg.AffiliatedCourse)
                                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestDto.Id);
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
@@ -268,7 +271,7 @@ namespace backend.Services.JoinRequestServices
                 response.Success = false;
                 return response;
             }
-            if( joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count)
+            if( joinRequest.Accepted )
             {
                 response.Data = null;
                 response.Message = "The join request is accepted already";
@@ -305,16 +308,19 @@ namespace backend.Services.JoinRequestServices
                     }
                 }       
             }
+
+            int maxSize =  (await _context.Courses.FirstOrDefaultAsync(c => c.Id == joinRequest.RequestedGroup.AffiliatedCourseId)).MaxGroupSize;
             if( joinRequestDto.accept ) 
             {
                 joinRequest.AcceptedNumber++;
                 if( joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count )
                 {
                     joinRequest.Accepted = true;    
-                    if( joinRequest.RequestedGroup.GroupMembers.Count + 1 >= joinRequest.RequestedGroup.ConfirmedUserNumber )
+                    if( joinRequest.RequestedGroup.GroupMembers.Count + 1 >= maxSize )
                     {
-                        await DeleteAllJoinRequests( new DeleteAllJoinRequestsDto { projectGroupId =  joinRequest.RequestedGroupId } );
+                        await DeleteAllJoinRequestsOfGroup( new DeleteAllJoinRequestsGroupDto { projectGroupId =  joinRequest.RequestedGroupId } );
                     }
+                    await DeleteAllJoinRequestsOfUser( new DeleteAllJoinRequestsUserDto { userId =  joinRequest.RequestingStudentId } );
                 }
             }
             else
@@ -342,14 +348,14 @@ namespace backend.Services.JoinRequestServices
             return response;
         } 
         
-        public async Task<ServiceResponse<string>> DeleteAllJoinRequests(DeleteAllJoinRequestsDto deleteAllJoinRequestsDto) 
+        public async Task<ServiceResponse<string>> DeleteAllJoinRequestsOfGroup(DeleteAllJoinRequestsGroupDto deleteAllJoinRequestsGroupDto) 
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGroup projectGroup = await _context.ProjectGroups
                                             .Include( g => g.GroupMembers).Include( g => g.IncomingJoinRequests )
-                                            .FirstOrDefaultAsync( jr => jr.Id == deleteAllJoinRequestsDto.projectGroupId );
+                                            .FirstOrDefaultAsync( jr => jr.Id == deleteAllJoinRequestsGroupDto.projectGroupId );
                                     
             if( projectGroup == null )
             {
@@ -393,6 +399,43 @@ namespace backend.Services.JoinRequestServices
             return response;
         }
        
+        public async Task<ServiceResponse<string>> DeleteAllJoinRequestsOfUser(DeleteAllJoinRequestsUserDto deleteAllJoinRequestsUserDto) 
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.Include( u => u.OutgoingJoinRequests )
+                                            .FirstOrDefaultAsync( jr => jr.Id == deleteAllJoinRequestsUserDto.userId );
+                                    
+            if( user == null )
+            {
+                response.Data = "Not allowed";
+                response.Message = "There is no user with this Id";
+                response.Success = false;
+                return response;
+            }
+
+            if( user.OutgoingJoinRequests.Count == 0 )
+            {
+                response.Data = "Not allowed";
+                response.Message = "There is no outgoing join requests";
+                response.Success = false;
+                return response;
+            }
+
+            foreach( JoinRequest jr in user.OutgoingJoinRequests )
+            {
+                if( !jr.Accepted && !jr.Resolved )
+                    _context.JoinRequests.Remove( jr );
+            }
+
+            
+            await _context.SaveChangesAsync();
+
+            response.Data = "Successful";
+            response.Message = "Join requests are successfully deleted";
+            response.Success = true;
+
+            return response;
+        }
         public async Task<ServiceResponse<GetJoinRequestDto>> GetJoinRequestById(int joinRequestId) {
             ServiceResponse<GetJoinRequestDto> response = new ServiceResponse<GetJoinRequestDto>();
             JoinRequest joinRequest = await _context.JoinRequests
@@ -447,7 +490,8 @@ namespace backend.Services.JoinRequestServices
                 AcceptedNumber = joinRequest.AcceptedNumber,
                 Accepted = joinRequest.Accepted,
                 Resolved = joinRequest.Resolved,
-                VotedStudents = joinRequest.VotedStudents
+                VotedStudents = joinRequest.VotedStudents,
+                Description = joinRequest.Description
             };
 
             response.Data = dto;
@@ -456,6 +500,9 @@ namespace backend.Services.JoinRequestServices
 
             return response;
         }
+
+        
+       
         // bi sekilde grupta 0 insan kalmasi durumu
         // rejectlenirse unvotedlarda gorunmeyec -- resolved
         // method : cancelAllRequests
