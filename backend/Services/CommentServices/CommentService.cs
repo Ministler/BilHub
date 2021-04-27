@@ -145,7 +145,7 @@ namespace backend.Services.CommentServices
                 return response;
             }
             Comment comment = submission.Comments.FirstOrDefault(c => c.Id == file.CommentId);
-            if (comment == null || comment.Id != file.CommentId)
+            if (comment == null || comment.Id != file.CommentId || file.CommentFile == null)
             {
                 response.Data = "Bad Request";
                 response.Message = "There is no comment to attach any file or you are not authorized";
