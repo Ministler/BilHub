@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Grid, Modal, TextArea } from 'semantic-ui-react';
 
-function RequestJoinMerge() {
+function RequestJoin() {
     const [open, setOpen] = React.useState(false);
 
     return (
@@ -10,9 +10,9 @@ function RequestJoinMerge() {
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
             open={open}
-            trigger={<Button>Request Group Join & Merge</Button>}
+            trigger={<Button>Request Group Join</Button>}
             size={'mini'}>
-            <Modal.Header style={{ fontSize: '16px' }}>Request Group Join & Merge</Modal.Header>
+            <Modal.Header style={{ fontSize: '16px' }}>Request Group Join</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
                     <Grid centered>
