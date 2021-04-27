@@ -13,6 +13,7 @@ namespace backend.Models
         public int Id { get; set; }
         public User RequestingStudent { get; set; }
         public int RequestingStudentId { get; set; }
+        public string Description { get; set; }
         public ProjectGroup RequestedGroup { get; set; }
         public int RequestedGroupId { get; set; }
         public DateTime CreatedAt { get; set; }

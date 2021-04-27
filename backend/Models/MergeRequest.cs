@@ -13,6 +13,7 @@ namespace backend.Models
         public int Id { get; set; }
         public ProjectGroup SenderGroup { get; set; }
         public int SenderGroupId { get; set; }
+        public string Description { get; set; }
         public ProjectGroup ReceiverGroup { get; set; }
         public int ReceiverGroupId { get; set; }
         public string VotedStudents { get; set; }

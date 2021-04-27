@@ -57,7 +57,7 @@ namespace backend.Controllers
         public async Task<IActionResult> GetAssignmentFile(int assignmentId)
         {
             GetAssignmentFileDto dto = new GetAssignmentFileDto { AssignmentId = assignmentId };
-            ServiceResponse<string> response = await _assignmentService.DownloadCommentFile(dto);
+            ServiceResponse<string> response = await _assignmentService.DownloadAssignmentFile(dto);
             if (!response.Success)
             {
                 return BadRequest(response);
