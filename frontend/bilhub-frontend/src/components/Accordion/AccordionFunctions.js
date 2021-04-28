@@ -6,7 +6,8 @@ import {
 } from '../CardGroup';
 import { convertSubmissionsToSubmissionElement } from '../BriefList';
 import { MyAccordion } from './AccordionUI';
-import { GradesTabel } from '../Statistics';
+import { GradesTabel, GroupNoGradeGraph } from '../Statistics';
+import React from 'react';
 
 export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal, onAuthorClicked, userId) => {
     const accordionElements = [
@@ -160,11 +161,11 @@ export const getCourseStatistics = (props) => {
     const accordionElements = [
         {
             title: 'Table',
-            content: <>{GradesTabel(props)}</>,
+            content: <GradesTabel graders={props.graders} groups={props.groups} />,
         },
         {
             title: 'Groups vs Grade Graphic',
-            content: 'graph',
+            content: <GroupNoGradeGraph />,
         },
         {
             title: 'Grade vs Group Number Graphic',

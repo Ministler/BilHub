@@ -138,7 +138,7 @@ class Course extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getCourseStatistics(dummyCourseGrades)}</>,
+            content: <>{getCourseStatistics(dummyCourseGrades)} </>,
         };
     };
 
@@ -324,3 +324,14 @@ const dummyCourseGrades = {
         { name: 'Website', grades: [46, 87, 24, 10, 94] },
     ],
 };
+
+const dummyFinalGrades = [
+    { group: 'BilHub', grade: 90 },
+    { group: 'BilHub2', grade: 20 },
+    { group: 'BilHub3', grade: 80 },
+    { group: 'BilHubNot', grade: 78 },
+    { group: 'BildfgHub3', grade: 80 },
+    { group: 'BilHddfgdubNot', grade: 78 },
+    { group: 'BilHsdfsdfsdfsdfub3', grade: 80 },
+    { group: 'BilHusdfsdfsdfsdfsdfsdfbNot', grade: 78 },
+];
