@@ -9,7 +9,7 @@ import {
     GroupBriefElement,
 } from './BriefListUI';
 import { Icon, Segment, Label, Popup, Header, Grid, Button, Dropdown } from 'semantic-ui-react';
-export const convertMyProjectsToBriefList = (myProjects, onMyProjectClicked) => {
+export const convertMyProjectsToBriefList = (myProjects, onProjectClicked) => {
     const myProjectBriefElements = myProjects.map((project) => {
         const icon = project.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
         const title = project.courseCode + '/' + project.projectName;
