@@ -3,4 +3,6 @@ export {
     getRequestsAsAccordion,
     getNewFeedbacksAsAccordion,
     getSubmissionsAsAccordion,
+    getAssignmentStatistics,
+    getCourseStatistics,
 } from './AccordionFunctions';

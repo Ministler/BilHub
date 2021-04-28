@@ -4,7 +4,7 @@ import { Segment, TextArea, Icon, Button } from 'semantic-ui-react';
 import './Course.css';
 import { InformationSection } from './CourseComponents';
 import { GroupsTab } from './GroupsTab';
-import { Tab, convertAssignmentsToAssignmentList } from '../../components';
+import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
 
 export class Course extends Component {
@@ -137,7 +137,7 @@ export class Course extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <></>,
+            content: <>{getCourseStatistics()}</>,
         };
     };
 
