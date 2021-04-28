@@ -7,6 +7,7 @@ using backend.Data;
 using backend.Data.Auth;
 using backend.Services.CommentServices;
 using backend.Services.JoinRequestServices;
+using backend.Services.ProjectGroupServices;
 using backend.Services.MergeRequestServices;
 using backend.Services.SubmissionServices;
 // using backend.Services.Email;
@@ -82,6 +83,7 @@ namespace backend
             services.AddScoped<ISubmissionService, SubmissionService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IJoinRequestService, JoinRequestService>();
+            services.AddScoped<IProjectGroupService, ProjectGroupService>();
             services.AddScoped<IMergeRequestService, MergeRequestService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
