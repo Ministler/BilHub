@@ -141,11 +141,11 @@ export const getAssignmentStatistics = (props) => {
     const accordionElements = [
         {
             title: 'Table',
-            content: <>{GradesTabel(props)}</>,
+            content: <GradesTabel graders={props.graders} groups={props.groups} />,
         },
         {
             title: 'Groups vs Grade Graphic',
-            content: 'graph',
+            content: <GroupNoGradeGraph />,
         },
         {
             title: 'Grade vs Group Number Graphic',
