@@ -11,6 +11,7 @@ import {
     Tab,
     getNewFeedbacksAsAccordion,
 } from '../../components';
+import { RequestApprovalModal, RequestDisapprovalModal } from './NotificationsComponents';
 
 class Notifications extends Component {
     constructor(props) {
@@ -23,6 +24,13 @@ class Notifications extends Component {
             outgoingRequests: null,
 
             newFeedbacks: null,
+
+            isApprovalModalOpen: false,
+            isDisapprovalModalOpen: false,
+
+            currentRequestId: null,
+            currentRequestType: null,
+            currentRequestUserName: null,
         };
     }
 
@@ -49,9 +57,32 @@ class Notifications extends Component {
         this.props.history.push('/profile/' + userId);
     };
 
-    onRequestApproved = (requestId) => {};
+    onRequestApproved = (requestId, requestType, userName) => {
+        this.setState({
+            currentRequestId: requestId,
+            currentRequestType: requestType,
+            currentRequestUserName: userName,
+            isApprovalModalOpen: true,
+        });
+    };
 
-    onRequestDisapproved = (requestId) => {};
+    onRequestDisapproved = (requestId, requestType, userName) => {
+        this.setState({
+            currentRequestId: requestId,
+            currentRequestType: requestType,
+            currentRequestUserName: userName,
+            isDisapprovalModalOpen: true,
+        });
+    };
+
+    onModalClosed = (modelType, isSuccess) => {
+        this.setState({
+            [modelType]: false,
+        });
+        if (!isSuccess) return;
+
+        console.log(modelType + isSuccess + this.state.currentRequestId);
+    };
 
     onSubmissionClicked = (projectId, submissionId) => {
         this.props.history.push('/project/' + projectId + '/submission/' + submissionId);
@@ -64,7 +95,6 @@ class Notifications extends Component {
                 this.state.incomingRequests,
                 'incoming',
                 this.onUserClicked,
-                this.onCourseClicked,
                 this.onRequestApproved,
                 this.onRequestDisapproved
             ),
@@ -78,7 +108,6 @@ class Notifications extends Component {
                 this.state.outgoingRequests,
                 'outgoing',
                 this.onUserClicked,
-                this.onCourseClicked,
                 this.onRequestApproved,
                 this.onRequestDisapproved
             ),
@@ -90,16 +119,33 @@ class Notifications extends Component {
             title: 'New Feedbacks',
             content: getNewFeedbacksAsAccordion(
                 this.state.newFeedbacks,
-                this.onUserClicked,
                 this.onSubmissionClicked,
-                this.onProjectClicked,
-                this.onCourseClicked
+                this.onProjectClicked
             ),
         };
     };
 
     getPaneElements = () => {
         return [this.getIncomingRequestsPane(), this.getOutgoingRequestsPane(), this.getNewFeedbacksPane()];
+    };
+
+    getModals = () => {
+        return (
+            <>
+                <RequestApprovalModal
+                    isOpen={this.state.isApprovalModalOpen}
+                    closeModal={(isSuccess) => this.onModalClosed('isApprovalModalOpen', isSuccess)}
+                    requestType={this.state.currentRequestType}
+                    userName={this.state.currentRequestUserName}
+                />
+                <RequestDisapprovalModal
+                    isOpen={this.state.isDisapprovalModalOpen}
+                    closeModal={(isSuccess) => this.onModalClosed('isDisapprovalModalOpen', isSuccess)}
+                    requestType={this.state.currentRequestType}
+                    userName={this.state.currentRequestUserName}
+                />
+            </>
+        );
     };
 
     render() {
@@ -111,22 +157,25 @@ class Notifications extends Component {
             : null;
 
         return (
-            <Grid>
-                <GridColumn width={4}>
-                    <div className={'HomeDivLeft'}>
-                        <ProfilePrompt name={this.props.name} onClick={this.onProfilePromptClicked} />
-                        {myProjectsComponent}
-                        {instructedCoursesComponent}
-                    </div>
-                </GridColumn>
-                <GridColumn width={12}>
-                    <Tab tabPanes={this.getPaneElements()} />
-                    <div>
-                        {}
-                        {}
-                    </div>
-                </GridColumn>
-            </Grid>
+            <>
+                <Grid>
+                    <GridColumn width={4}>
+                        <div className={'HomeDivLeft'}>
+                            <ProfilePrompt name={this.props.name} onClick={this.onProfilePromptClicked} />
+                            {myProjectsComponent}
+                            {instructedCoursesComponent}
+                        </div>
+                    </GridColumn>
+                    <GridColumn width={12}>
+                        <Tab tabPanes={this.getPaneElements()} />
+                        <div>
+                            {}
+                            {}
+                        </div>
+                    </GridColumn>
+                </Grid>
+                {this.getModals()}
+            </>
         );
     }
 }
@@ -186,6 +235,7 @@ const dummyIncomingRequests = {
         {
             type: 'Join',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             user: {
                 name: 'Hasan Kaya',
                 userId: 1,
@@ -201,7 +251,6 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
             voteStatus: '2/5',
@@ -209,6 +258,7 @@ const dummyIncomingRequests = {
         {
             type: 'Merge',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             yourGroup: [
                 {
                     name: 'Hasan Kaya',
@@ -231,7 +281,6 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
             voteStatus: '2/5',
@@ -241,6 +290,7 @@ const dummyIncomingRequests = {
         {
             type: 'Join',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             user: {
                 name: 'Hasan Kaya',
                 userId: 1,
@@ -256,7 +306,6 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
             voteStatus: '2/5',
@@ -264,6 +313,7 @@ const dummyIncomingRequests = {
         {
             type: 'Merge',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             yourGroup: [
                 {
                     name: 'Hasan Kaya',
@@ -286,7 +336,6 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             requestDate: '12 March 2021',
             formationDate: '22 March 2021',
             voteStatus: '2/5',
@@ -296,6 +345,7 @@ const dummyIncomingRequests = {
         {
             type: 'Join',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             status: 'Approved',
             user: {
                 name: 'Hasan Kaya',
@@ -312,12 +362,12 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             approvalDate: '12 March 2021',
         },
         {
             type: 'Merge',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             status: 'Approved',
             yourGroup: [
                 {
@@ -341,12 +391,12 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             approvalDate: '12 March 2021',
         },
         {
             type: 'Join',
             requestId: 1,
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             status: 'Disapproved',
             user: {
                 name: 'Hasan Kaya',
@@ -363,13 +413,13 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             approvalDate: '12 March 2021',
         },
         {
             type: 'Merge',
             requestId: 1,
             status: 'Disapproved',
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             yourGroup: [
                 {
                     name: 'Hasan Kaya',
@@ -392,7 +442,6 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            courseId: 1,
             approvalDate: '12 March 2021',
         },
     ],
@@ -402,7 +451,7 @@ const dummyOutgoingRequests = {
     pending: [
         {
             type: 'Merge',
-            requestId: 1,
+            requestId: 3,
             yourGroup: [
                 {
                     name: 'Hasan Kaya',
@@ -434,6 +483,7 @@ const dummyOutgoingRequests = {
     unresolved: [
         {
             type: 'Join',
+
             requestId: 1,
             otherGroup: [
                 {
@@ -453,6 +503,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Merge',
+
             requestId: 1,
             isRequestOwner: true,
             yourGroup: [
@@ -486,6 +537,7 @@ const dummyOutgoingRequests = {
     resolved: [
         {
             type: 'Join',
+
             requestId: 1,
             status: 'Approved',
             otherGroup: [
@@ -504,6 +556,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Merge',
+
             requestId: 1,
             status: 'Approved',
             isRequestOwner: false,
@@ -534,6 +587,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Join',
+
             requestId: 1,
             status: 'Disapproved',
             otherGroup: [
@@ -552,6 +606,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Merge',
+
             requestId: 1,
             status: 'Disapproved',
             isRequestOwner: true,
@@ -588,7 +643,6 @@ const dummyNewFeedbacks = {
         {
             user: {
                 name: 'Elgun Jabrayilzade',
-                userId: 1,
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
@@ -598,7 +652,6 @@ const dummyNewFeedbacks = {
             },
             course: {
                 courseName: 'CS319-2021Spring',
-                courseId: 1,
             },
             submission: {
                 assignmentName: 'Analiz Report',
@@ -609,7 +662,6 @@ const dummyNewFeedbacks = {
         {
             user: {
                 name: 'Elgun Jabrayilzade',
-                userId: 1,
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
@@ -619,7 +671,6 @@ const dummyNewFeedbacks = {
             },
             course: {
                 courseName: 'CS319-2021Spring',
-                courseId: 1,
             },
             project: {
                 projectName: 'BilHub',
@@ -631,7 +682,6 @@ const dummyNewFeedbacks = {
         {
             user: {
                 name: 'Elgun Jabrayilzade',
-                userId: 1,
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
@@ -641,7 +691,6 @@ const dummyNewFeedbacks = {
             },
             course: {
                 courseName: 'CS319-2021Spring',
-                courseId: 1,
             },
             submission: {
                 assignmentName: 'Analiz Report',
@@ -652,7 +701,6 @@ const dummyNewFeedbacks = {
         {
             user: {
                 name: 'Elgun Jabrayilzade',
-                userId: 1,
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
@@ -662,7 +710,6 @@ const dummyNewFeedbacks = {
             },
             course: {
                 courseName: 'CS319-2021Spring',
-                courseId: 1,
             },
             project: {
                 projectName: 'BilHub',

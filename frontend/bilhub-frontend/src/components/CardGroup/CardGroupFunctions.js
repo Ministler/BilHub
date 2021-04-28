@@ -53,31 +53,19 @@ export const convertAssignmentsToAssignmentList = (
     );
 };
 
-export const convertNewFeedbacksToFeedbackList = (
-    newFeedbacks,
-    onUserClicked,
-    onSubmissionClicked,
-    onProjectClicked,
-    onCourseClicked
-) => {
+export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClicked, onProjectClicked) => {
     const newFeedbackCardElements = newFeedbacks ? (
         newFeedbacks.map((feedback) => {
             let titleElement;
             if (feedback.submission) {
                 titleElement = (
                     <>
-                        <span onClick={() => onUserClicked(feedback.user?.userId)}> {feedback.user?.name} </span>
-                        Commented to Your
                         <span
                             onClick={() =>
                                 onSubmissionClicked(feedback.submission?.projectId, feedback.submission?.submissionId)
                             }>
                             {' '}
-                            {feedback.submission?.assignmentName}{' '}
-                        </span>
-                        Submission in
-                        <span onClick={() => onCourseClicked(feedback.course?.courseId)}>
-                            {' '}
+                            {feedback.user?.name} Commented to Your {feedback.submission?.assignmentName} Submission in{' '}
                             {feedback.course?.courseName}{' '}
                         </span>
                     </>
@@ -85,16 +73,8 @@ export const convertNewFeedbacksToFeedbackList = (
             } else if (feedback.project) {
                 titleElement = (
                     <>
-                        <span onClick={() => onUserClicked(feedback.user?.userId)}> {feedback.user?.name} </span>
-                        Commented to Your
                         <span onClick={() => onProjectClicked(feedback.project?.projectId)}>
-                            {' '}
-                            {feedback.project?.projectName}{' '}
-                        </span>
-                        Project in
-                        <span onClick={() => onCourseClicked(feedback.course?.courseId)}>
-                            {' '}
-                            {feedback.course?.courseName}{' '}
+                            Commented to Your {feedback.project?.projectName} Project in {feedback.course?.courseName}{' '}
                         </span>
                     </>
                 );
@@ -105,7 +85,6 @@ export const convertNewFeedbacksToFeedbackList = (
                     caption={feedback.feedback?.caption}
                     grade={feedback.feedback?.grade}
                     date={feedback.date}
-                    onAuthorClicked={() => onUserClicked(feedback.user?.userId)}
                 />
             );
         })
@@ -231,7 +210,6 @@ export const convertRequestsToRequestsList = (
     requestsType,
     requestStatus,
     onUserClicked,
-    onCourseClicked,
     onRequestApproved,
     onRequestDisapproved
 ) => {
@@ -255,7 +233,7 @@ export const convertRequestsToRequestsList = (
                     if (requestsType === 'incoming') {
                         if (request.type === 'Join') {
                             userName = request.user?.name;
-                            userId = request.user?.Id;
+                            userId = request.user?.userId;
                         }
 
                         if (request.type === 'Merge') {
@@ -264,7 +242,7 @@ export const convertRequestsToRequestsList = (
                             });
 
                             userName = requestOwner?.name;
-                            userId = requestOwner?.Id;
+                            userId = requestOwner?.userId;
                         }
 
                         if (requestStatus === 'pending') {
@@ -272,8 +250,14 @@ export const convertRequestsToRequestsList = (
 
                             voteIcons = (
                                 <>
-                                    <Icon onClick={onRequestApproved} name="checkmark" />
-                                    <Icon onClick={onRequestDisapproved} name="x" />
+                                    <Icon
+                                        onClick={() => onRequestApproved(request.requestId, request.type, userName)}
+                                        name="checkmark"
+                                    />
+                                    <Icon
+                                        onClick={() => onRequestDisapproved(request.requestId, request.type, userName)}
+                                        name="x"
+                                    />
                                 </>
                             );
                         }
@@ -306,7 +290,7 @@ export const convertRequestsToRequestsList = (
                                     return user.requestOwner;
                                 });
                                 userName = requestOwner?.name;
-                                userId = requestOwner?.Id;
+                                userId = requestOwner?.userId;
                             }
                         }
 
@@ -315,8 +299,14 @@ export const convertRequestsToRequestsList = (
 
                             voteIcons = (
                                 <>
-                                    <Icon onClick={onRequestApproved} name="checkmark" />
-                                    <Icon onClick={onRequestDisapproved} name="x" />
+                                    <Icon
+                                        onClick={() => onRequestApproved(request.requestId, request.type, userName)}
+                                        name="checkmark"
+                                    />
+                                    <Icon
+                                        onClick={() => onRequestDisapproved(request.requestId, request.type, userName)}
+                                        name="x"
+                                    />
                                 </>
                             );
                         }
@@ -342,6 +332,7 @@ export const convertRequestsToRequestsList = (
                             titleStart={titleStart}
                             titleMid={titleMid}
                             userName={userName}
+                            message={request.message}
                             courseName={request.course}
                             yourGroup={yourGroup}
                             otherGroup={otherGroup}
@@ -352,7 +343,6 @@ export const convertRequestsToRequestsList = (
                             approvalDate={request.approvalDate}
                             disapprovalDate={request.disapprovalDate}
                             onUserClicked={() => onUserClicked(userId)}
-                            onCourseClicked={() => onCourseClicked(request.courseId)}
                         />
                     );
                 })

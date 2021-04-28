@@ -40,52 +40,30 @@ export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal
     return <MyAccordion accordionSections={accordionElements} />;
 };
 
-export const getNewFeedbacksAsAccordion = (
-    feedbacks,
-    onUserClicked,
-    onSubmissionClicked,
-    onProjectClicked,
-    onCourseClicked
-) => {
+export const getNewFeedbacksAsAccordion = (feedbacks, onSubmissionClicked, onProjectClicked) => {
     const accordionElements = [
         {
             title: 'SRS Feedback',
-            content: convertNewFeedbacksToFeedbackList(
-                feedbacks?.SRSResults,
-                onUserClicked,
-                onSubmissionClicked,
-                onProjectClicked,
-                onCourseClicked
-            ),
+            content: convertNewFeedbacksToFeedbackList(feedbacks?.SRSResults, onSubmissionClicked, onProjectClicked),
         },
         {
             title: 'Instructor Feedbacks',
             content: convertNewFeedbacksToFeedbackList(
                 feedbacks?.InstructorComments,
-                onUserClicked,
                 onSubmissionClicked,
-                onProjectClicked,
-                onCourseClicked
+                onProjectClicked
             ),
         },
         {
             title: 'TA Feedbacks',
-            content: convertNewFeedbacksToFeedbackList(
-                feedbacks?.TAFeedbacks,
-                onUserClicked,
-                onSubmissionClicked,
-                onProjectClicked,
-                onCourseClicked
-            ),
+            content: convertNewFeedbacksToFeedbackList(feedbacks?.TAFeedbacks, onSubmissionClicked, onProjectClicked),
         },
         {
             title: 'Student Feedbacks',
             content: convertNewFeedbacksToFeedbackList(
                 feedbacks?.StudentsFeedbacks,
-                onUserClicked,
                 onSubmissionClicked,
-                onProjectClicked,
-                onCourseClicked
+                onProjectClicked
             ),
         },
     ];
@@ -97,7 +75,6 @@ export const getRequestsAsAccordion = (
     requests,
     requestsType,
     onUserClicked,
-    onCourseClicked,
     onRequestApproved,
     onRequestDisapproved
 ) => {
@@ -109,30 +86,17 @@ export const getRequestsAsAccordion = (
                 requestsType,
                 'pending',
                 onUserClicked,
-                onCourseClicked,
                 onRequestApproved,
                 onRequestDisapproved
             ),
         },
         {
             title: 'Unresolved',
-            content: convertRequestsToRequestsList(
-                requests?.unresolved,
-                requestsType,
-                'unresolved',
-                onUserClicked,
-                onCourseClicked
-            ),
+            content: convertRequestsToRequestsList(requests?.unresolved, requestsType, 'unresolved', onUserClicked),
         },
         {
             title: 'Resolved',
-            content: convertRequestsToRequestsList(
-                requests?.resolved,
-                requestsType,
-                'resolved',
-                onUserClicked,
-                onCourseClicked
-            ),
+            content: convertRequestsToRequestsList(requests?.resolved, requestsType, 'resolved', onUserClicked),
         },
     ];
 

@@ -57,9 +57,11 @@ export const RequestCardElement = (props) => {
         <Card className="FeedbackCardElement">
             <Card.Content>
                 <Card.Header>
-                    {props.titleStart} <span onClick={props.onUserClicked}>{props.userName}</span> {props.titleMid}{' '}
-                    <span onClick={props.onCourseClicked}>{props.courseName}</span>
+                    <span onClick={props.onUserClicked}>
+                        {props.titleStart} {props.userName} {props.titleMid} {props.courseName}
+                    </span>
                 </Card.Header>
+                <Card.Description>{props.message}</Card.Description>
                 <Card.Description>
                     {props.yourGroup ? (
                         <>
