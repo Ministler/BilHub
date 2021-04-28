@@ -45,7 +45,9 @@ export const FeedbackCardElement = (props) => {
                 </Card.Description>
             </Card.Content>
             <Card.Content className="FeedbackCardExtra">
-                <div className="FeedbackGrade">Grade: {props.grade}</div>
+                <div className="FeedbackGrade">
+                    Grade: {props.grade}/{props.maxGrade ? props.maxGrade : '10'}
+                </div>
                 <div className="FeedbackDate">{props.date}</div>
             </Card.Content>
         </Card>

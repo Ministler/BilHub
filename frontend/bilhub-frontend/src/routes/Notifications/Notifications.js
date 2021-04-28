@@ -34,6 +34,25 @@ class Notifications extends Component {
         };
     }
 
+    onModalClosed = (modalType, isSuccess) => {
+        this.setState({
+            [modalType]: false,
+        });
+        if (!isSuccess) return;
+
+        let isApproved = false;
+        if (modalType === 'isApprovalModalOpen') {
+            isApproved = true;
+        }
+
+        const request = {
+            requestId: this.state.currentRequestId,
+            isApproved: isApproved,
+        };
+
+        console.log(request);
+    };
+
     componentDidMount() {
         this.setState({
             myProjects: dummyMyProjectsList,
@@ -73,15 +92,6 @@ class Notifications extends Component {
             currentRequestUserName: userName,
             isDisapprovalModalOpen: true,
         });
-    };
-
-    onModalClosed = (modelType, isSuccess) => {
-        this.setState({
-            [modelType]: false,
-        });
-        if (!isSuccess) return;
-
-        console.log(modelType + isSuccess + this.state.currentRequestId);
     };
 
     onSubmissionClicked = (projectId, submissionId) => {

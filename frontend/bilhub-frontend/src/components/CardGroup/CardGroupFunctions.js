@@ -95,7 +95,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
     return newFeedbackCardElements;
 };
 
-export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorClicked, userId) => {
+export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorClicked, userId) => {
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;
@@ -105,11 +105,11 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorC
                         <Icon
                             name="edit"
                             onClick={() =>
-                                onOpenModel(
+                                onOpenmodal(
                                     'isEditFeedbackOpen',
                                     false,
                                     feedback.commentId,
-                                    feedback.feedback,
+                                    feedback.caption,
                                     feedback.grade
                                 )
                             }
@@ -117,11 +117,11 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorC
                         <Icon
                             name="delete"
                             onClick={() =>
-                                onOpenModel(
+                                onOpenmodal(
                                     'isDeleteFeedbackOpen',
                                     false,
                                     feedback.commentId,
-                                    feedback.feedback,
+                                    feedback.caption,
                                     feedback.grade
                                 )
                             }
@@ -132,9 +132,9 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorC
 
             return (
                 <FeedbackCardElement
-                    author={feedback.name}
+                    author={feedback.name ? feedback.name : 'Comment is anonymous'}
                     caption={feedback.caption}
-                    grade={feedback.grade}
+                    grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
                     date={feedback.date}
                     icons={icons}
                     onAuthorClicked={() => onAuthorClicked(feedback.userId)}
@@ -152,7 +152,13 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModel, onAuthorC
     );
 };
 
-export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, onOpenModal, onAuthorClicked) => {
+export const convertSRSFeedbackToSRSCardElement = (
+    SRSResult,
+    isTAorInstructor,
+    onModalOpenedWithComments,
+    onAuthorClicked,
+    onmodalOpened
+) => {
     if (SRSResult) {
         let icons = null;
         if (isTAorInstructor) {
@@ -161,24 +167,28 @@ export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, 
                     <Icon
                         name="edit"
                         onClick={() =>
-                            onOpenModal(
+                            onModalOpenedWithComments(
                                 'isEditFeedbackOpen',
                                 true,
                                 SRSResult.commentId,
-                                SRSResult.feedback,
-                                SRSResult.grade
+                                SRSResult.caption,
+                                SRSResult.grade,
+                                SRSResult.file,
+                                SRSResult.maxGrade
                             )
                         }
                     />
                     <Icon
                         name="delete"
                         onClick={() =>
-                            onOpenModal(
+                            onModalOpenedWithComments(
                                 'isDeleteFeedbackOpen',
                                 true,
                                 SRSResult.commentId,
-                                SRSResult.feedback,
-                                SRSResult.grade
+                                SRSResult.caption,
+                                SRSResult.grade,
+                                SRSResult.file,
+                                SRSResult.maxGrade
                             )
                         }
                     />
@@ -195,11 +205,12 @@ export const convertSRSFeedbackToSRSCardElement = (SRSResult, isTAorInstructor, 
                     grade={SRSResult.grade}
                     date={SRSResult.date}
                     icons={icons}
+                    maxGrade={SRSResult.maxGrade}
                 />
             </Card.Group>
         );
     } else if (isTAorInstructor) {
-        return <Button onClick={() => this.openModal('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
+        return <Button onClick={() => onmodalOpened('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
     } else {
         return <div>No SRS Feedback</div>;
     }

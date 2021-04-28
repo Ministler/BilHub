@@ -54,7 +54,93 @@ export const NewCommentModal = (props) => {
                 </div>
                 <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
                 <input type="file" />
-                <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} />
+                {!props.isTitleSRS ? (
+                    <>
+                        <input
+                            type="number"
+                            max="10"
+                            min="0"
+                            value={props.grade}
+                            onChange={(e) => props.onGradeChange(e)}
+                        />{' '}
+                        out of 10
+                    </>
+                ) : (
+                    <>
+                        <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} /> out of{' '}
+                        <input type="number" value={props.maxGrade} onChange={(e) => props.onMaxGradeChange(e)} />
+                    </>
+                )}
+            </>
+        </Modal>
+    );
+};
+
+export const EditCommentModal = (props) => {
+    let title = props.isTitleSRS ? 'SRS - ' : '';
+    title = title + 'Edit Feedback to ' + props.projectName + "'s Analysis Report";
+    const actions = (
+        <Button
+            content="Edit Feedback"
+            labelPosition="right"
+            icon="edit"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="info" />
+                    Please edit your feedback below
+                </div>
+                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <input type="file" />
+                {!props.isTitleSRS ? (
+                    <>
+                        <input
+                            type="number"
+                            max="10"
+                            min="0"
+                            value={props.grade}
+                            onChange={(e) => props.onGradeChange(e)}
+                        />{' '}
+                        out of 10
+                    </>
+                ) : (
+                    <>
+                        <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} /> out of{' '}
+                        <input type="number" value={props.maxGrade} onChange={(e) => props.onMaxGradeChange(e)} />
+                    </>
+                )}
+            </>
+        </Modal>
+    );
+};
+
+export const DeleteCommentModal = (props) => {
+    let title = props.isTitleSRS ? 'SRS - ' : '';
+    title = title + 'Delete Feedback to ' + props.projectName + "'s Analysis Report";
+    const actions = (
+        <Button
+            content="Delete Feedback"
+            labelPosition="right"
+            icon="checkmark"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="warning" />
+                    Please edit your feedback below
+                </div>
+                <TextArea disabled value={props.text} />
+                <input type="file" />
+                <input disabled type="number" value={props.grade} /> out of {props.maxGrade ? props.maxGrade : '10'}
             </>
         </Modal>
     );
@@ -130,60 +216,6 @@ export const DeleteSubmissionModal = (props) => {
                 </div>
                 <TextArea disabled value={props.text} />
                 <input type="file" />
-            </>
-        </Modal>
-    );
-};
-
-export const EditCommentModal = (props) => {
-    let title = props.isTitleSRS ? 'SRS - ' : '';
-    title = title + 'Edit Feedback to ' + props.projectName + "'s Analysis Report";
-    const actions = (
-        <Button
-            content="Edit Feedback"
-            labelPosition="right"
-            icon="edit"
-            onClick={() => props.closeModal(true)}
-            positive
-        />
-    );
-    return (
-        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
-            <>
-                <div>
-                    <Icon name="info" />
-                    Please edit your feedback below
-                </div>
-                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
-                <input type="file" />
-                <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} />
-            </>
-        </Modal>
-    );
-};
-
-export const DeleteCommentModal = (props) => {
-    let title = props.isTitleSRS ? 'SRS - ' : '';
-    title = title + 'Delete Feedback to ' + props.projectName + "'s Analysis Report";
-    const actions = (
-        <Button
-            content="Delete Feedback"
-            labelPosition="right"
-            icon="checkmark"
-            onClick={() => props.closeModal(true)}
-            positive
-        />
-    );
-    return (
-        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
-            <>
-                <div>
-                    <Icon name="warning" />
-                    Please edit your feedback below
-                </div>
-                <TextArea disabled value={props.text} />
-                <input type="file" />
-                <input disabled type="number" value={props.grade} />
             </>
         </Modal>
     );

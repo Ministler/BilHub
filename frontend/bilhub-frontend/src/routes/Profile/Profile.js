@@ -19,6 +19,15 @@ class Profile extends Component {
         console.log(this.props);
     }
 
+    changeUserInformation = (newInformation) => {
+        const request = {
+            newInformation: newInformation,
+            userId: this.props.userId,
+        };
+
+        console.log(request);
+    };
+
     componentDidMount() {
         this.setState({
             userInformation: dummyUser.userInformation,
@@ -54,12 +63,6 @@ class Profile extends Component {
 
     onCourseClicked = (courseId) => {
         this.props.history.push('/course/' + courseId);
-    };
-
-    changeUserInformation = (newInformation) => {
-        this.setState({
-            userInformation: newInformation,
-        });
     };
 
     getInformationElement = () => {

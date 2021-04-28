@@ -8,33 +8,51 @@ import { convertSubmissionsToSubmissionElement } from '../BriefList';
 import { MyAccordion } from './AccordionUI';
 import { GradesTabel } from '../Statistics';
 
-export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal, onAuthorClicked, userId) => {
+export const getFeedbacksAsAccordion = (
+    feedbacks,
+    isTAorInstructor,
+    onModalOpenedWithComments,
+    onAuthorClicked,
+    userId,
+    onModalOpened
+) => {
     const accordionElements = [
         {
             title: 'SRS Feedback',
             content: convertSRSFeedbackToSRSCardElement(
                 feedbacks?.SRSResult,
                 isTAorInstructor,
-                onOpenModal,
-                onAuthorClicked
+                onModalOpenedWithComments,
+                onAuthorClicked,
+                onModalOpened
             ),
         },
         {
             title: 'Instructor Feedbacks',
             content: convertFeedbacksToFeedbackList(
                 feedbacks?.InstructorComments,
-                onOpenModal,
+                onModalOpenedWithComments,
                 onAuthorClicked,
                 userId
             ),
         },
         {
             title: 'TA Feedbacks',
-            content: convertFeedbacksToFeedbackList(feedbacks?.TAComments, onOpenModal, onAuthorClicked, userId),
+            content: convertFeedbacksToFeedbackList(
+                feedbacks?.TAComments,
+                onModalOpenedWithComments,
+                onAuthorClicked,
+                userId
+            ),
         },
         {
             title: 'Student Feedbacks',
-            content: convertFeedbacksToFeedbackList(feedbacks?.StudentComments, onOpenModal, onAuthorClicked, userId),
+            content: convertFeedbacksToFeedbackList(
+                feedbacks?.StudentComments,
+                onModalOpenedWithComments,
+                onAuthorClicked,
+                userId
+            ),
         },
     ];
 

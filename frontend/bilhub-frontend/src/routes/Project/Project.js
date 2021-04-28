@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Icon, Input, TextArea, Segment, Button } from 'semantic-ui-react';
+import { connect } from 'react-redux';
 
 import './Project.css';
 import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal } from './ProjectComponents';
@@ -14,11 +15,10 @@ import {
 } from '../../components';
 import { ProjectSubmission } from './ProjectSubmission';
 
-export class Project extends Component {
+class Project extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: null,
             projectGroup: { members: [] },
             assignments: null,
             grades: null,
@@ -30,7 +30,7 @@ export class Project extends Component {
             newName: '',
             newInformation: '',
 
-            // States regarding open models of right part
+            // States regarding open modals of right part
             isGiveFeedbackOpen: false,
             isEditFeedbackOpen: false,
             isDeleteFeedbackOpen: false,
@@ -38,13 +38,89 @@ export class Project extends Component {
             currentFeedbackText: '',
             currentFeedbackFile: null,
             currentFeedbackGrade: 10,
+            currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
         };
     }
 
+    changeGroupName = (newName) => {
+        const request = {
+            newName: newName,
+            groupId: this.props.match.params.projectId,
+        };
+
+        console.log(request);
+    };
+
+    changeGroupInformation = (newInformation) => {
+        const request = {
+            newInformation: newInformation,
+            groupId: this.props.match.params.projectId,
+        };
+
+        console.log(request);
+    };
+
+    onAssignmentFileClicked = () => {
+        console.log('FILE');
+    };
+
+    onModalClosed = (modalType, isSuccess) => {
+        this.setState({
+            [modalType]: false,
+        });
+        if (!isSuccess) return;
+
+        let request = 'error';
+        if (this.state.isFeedbackSRS) {
+            if (modalType === 'isGiveFeedbackOpen') {
+                request = {
+                    grade: this.state.currentFeedbackGrade,
+                    maxGrade: this.state.currentMaxFeedbackGrade,
+                    userId: this.props.userId,
+                };
+            } else if (modalType === 'isEditFeedbackOpen') {
+                request = {
+                    grade: this.state.currentFeedbackGrade,
+                    maxGrade: this.state.currentMaxFeedbackGrade,
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            } else if (modalType === 'isDeleteFeedbackOpen') {
+                request = {
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            }
+        } else {
+            if (modalType === 'isGiveFeedbackOpen') {
+                request = {
+                    newGrade: this.state.currentFeedbackGrade,
+                    newText: this.state.currentFeedbackText,
+                    newFile: this.state.currentFeedbackFile,
+                    userId: this.props.userId,
+                };
+            } else if (modalType === 'isEditFeedbackOpen') {
+                request = {
+                    newGrade: this.state.currentFeedbackGrade,
+                    newText: this.state.currentFeedbackText,
+                    newFile: this.state.currentFeedbackFile,
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            } else if (modalType === 'isDeleteFeedbackOpen') {
+                request = {
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            }
+        }
+
+        console.log(request);
+    };
+
     componentDidMount() {
         this.setState({
-            user: dummyUser,
             projectGroup: dummyProjectGroup,
             assignments: dummyAssignmentsList,
             grades: dummyGrades,
@@ -79,29 +155,9 @@ export class Project extends Component {
         });
     };
 
-    changeGroupName = (newName) => {
-        let projectGroup = { ...this.state.projectGroup };
-        projectGroup.name = newName;
-        this.setState({
-            projectGroup: projectGroup,
-        });
-    };
-
-    changeGroupInformation = (newInformation) => {
-        let projectGroup = { ...this.state.projectGroup };
-        projectGroup.information = newInformation;
-        this.setState({
-            projectGroup: projectGroup,
-        });
-    };
-
     // RIGHT SIDE LOGIC
-    onAssignmentClicked = (submissionId) => {
-        this.props.history.push('/project/' + this.props.match.params.projectId + '/submission/' + submissionId);
-    };
-
-    onAssignmentFileClicked = () => {
-        console.log('FILE');
+    onSubmissionClicked = (projectId, submissionId) => {
+        this.props.history.push('/project/' + projectId + '/submission/' + submissionId);
     };
 
     onAuthorClicked = (userId) => {
@@ -123,20 +179,29 @@ export class Project extends Component {
         });
     };
 
-    onModalOpened = (modelType, isFeedbackSRS) => {
+    onCurrentFeedbackMaxGradeChanged = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade: e.target.value,
+        });
+    };
+
+    onModalOpened = (modalType, isFeedbackSRS) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
+                currentMaxFeedbackGrade: 10,
             });
         } else {
             this.setState({
                 isFeedbackSRS: false,
+                currentMaxFeedbackGrade: 10,
             });
         }
 
-        if (modelType) {
+        if (modalType) {
             this.setState({
-                [modelType]: true,
+                [modalType]: true,
                 currentFeedbackGrade: 10,
                 currentFeedbackFile: 'empty',
                 currentFeedbackText: '',
@@ -144,33 +209,36 @@ export class Project extends Component {
         }
     };
 
-    onModalOpenedWithComment = (modelType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
+    onModalOpenedWithComment = (
+        modalType,
+        isFeedbackSRS,
+        commentId,
+        commentText,
+        commentGrade,
+        commentFile,
+        SRSMaxGrade
+    ) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
+                currentMaxFeedbackGrade: SRSMaxGrade,
             });
         } else {
             this.setState({
                 isFeedbackSRS: false,
+                currentMaxFeedbackGrade: 10,
             });
         }
 
-        if (modelType) {
+        if (modalType) {
             this.setState({
                 currentFeedbackId: commentId,
-                [modelType]: true,
+                [modalType]: true,
                 currentFeedbackText: commentText,
                 currentFeedbackGrade: commentGrade,
                 currentFeedbackFile: commentFile,
             });
         }
-    };
-
-    onModalClosed = (modelType, isSuccess) => {
-        this.setState({
-            [modelType]: false,
-        });
-        if (!isSuccess) return;
     };
 
     getInformationPart = () => {
@@ -269,7 +337,7 @@ export class Project extends Component {
                 convertAssignmentsToAssignmentList(
                     this.state.assignments,
                     null,
-                    this.onAssignmentClicked,
+                    this.onSubmissionClicked,
                     this.onAssignmentFileClicked
                 )
             ) : (
@@ -323,7 +391,8 @@ export class Project extends Component {
                     this.state.projectGroup?.isTAorInstructor,
                     this.onModalOpenedWithComment,
                     this.onAuthorClicked,
-                    this.props.userId
+                    this.props.userId,
+                    this.onModalOpened
                 )}
                 newCommentButton={newCommentButton}
             />
@@ -349,8 +418,10 @@ export class Project extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                     onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
                     onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                    onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 />
                 <EditCommentModal
                     isOpen={this.state.isEditFeedbackOpen}
@@ -359,8 +430,10 @@ export class Project extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                     onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
                     onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                    onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 />
                 <DeleteCommentModal
                     isOpen={this.state.isDeleteFeedbackOpen}
@@ -369,6 +442,7 @@ export class Project extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                 />
             </>
         );
@@ -389,7 +463,7 @@ export class Project extends Component {
                                 projectName={this.state.projectGroup?.name}
                                 projectId={this.props.match.params.projectId}
                                 submissionId={this.props.match.params.submissionId}
-                                userId={this.state.user?.userId}
+                                userId={this.props.userId}
                             />
                         )}
                     </div>
@@ -400,10 +474,15 @@ export class Project extends Component {
     }
 }
 
-const dummyUser = {
-    name: 'Aybala Karakaya',
-    userId: 1,
+const mapStateToProps = (state) => {
+    return {
+        userName: state.name,
+        userType: state.userType,
+        userId: state.userId,
+    };
 };
+
+export default connect(mapStateToProps)(Project);
 
 const dummyProjectGroup = {
     isInGroup: true,
@@ -415,12 +494,12 @@ const dummyProjectGroup = {
     courseName: 'CS319-2021Spring',
     courseId: 1,
     members: [
-        { name: 'Barış Ogün Yörük', information: 'Frontend', userId: 1 },
-        { name: 'Halil Özgür Demir', information: 'Frontend', userId: 2 },
-        { name: 'Yusuf Uyar Miraç', information: 'Frontend', userId: 3 },
-        { name: 'Aybala Karakaya', information: 'Backend', userId: 4 },
-        { name: 'Çağrı Mustafa Durgut', information: 'Backend', userId: 5 },
-        { name: 'Oğuzhan Özçelik', information: 'Database', userId: 6 },
+        { name: 'Barış Ogün Yörük', userId: 1 },
+        { name: 'Halil Özgür Demir', userId: 2 },
+        { name: 'Yusuf Uyar Miraç', userId: 3 },
+        { name: 'Aybala Karakaya', userId: 4 },
+        { name: 'Çağrı Mustafa Durgut', userId: 5 },
+        { name: 'Oğuzhan Özçelik', userId: 6 },
     ],
     information:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti reiciendis quae provident, fugit animi in tempore laudantium doloribus ipsum repellat voluptates ullam corporis dignissimos, porro sit optio culpa laboriosam explicabo consequuntur cum adipisci rerum quibusdam quas debitis. Nemo error accusantium tempora. Nisi autem, ipsum laboriosam aperiam quam harum debitis doloremque.',
@@ -433,9 +512,9 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
+        projectId: 1,
         submissionId: 1,
     },
     {
@@ -444,7 +523,6 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 2,
@@ -457,7 +535,6 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
@@ -469,7 +546,6 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
@@ -481,7 +557,6 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
@@ -493,7 +568,6 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
@@ -505,7 +579,6 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publisherId: 1,
         publishmentDate: '13 March 2023 12:00',
         dueDate: '16 April 2025, 23:59',
         projectId: 3,
@@ -519,25 +592,21 @@ const dummyGrades = {
             name: 'Eray Tüzün',
             type: 'Project Instructor',
             grade: '9.5',
-            userId: 1,
         },
         {
             name: 'Alper Sarıkan',
             type: 'Instructor',
             grade: '8.1',
-            userId: 2,
         },
         {
             name: 'Erdem Tuna',
             type: 'TA',
             grade: '7.1',
-            userId: 3,
         },
         {
             name: 'Elgun Jabrayilzade',
             type: 'TA',
             grade: '8.1',
-            userId: 4,
         },
     ],
     studentsAverage: 8,
@@ -548,12 +617,8 @@ const dummyGrades = {
 
 const dummyFeedbacks = {
     SRSResult: {
-        name: 'Elgun Jabrayilzade',
-        caption: 'Please download the complete feedback file',
-        file: 'dummyFile',
-        date: '11 March 2021',
-        commentId: 1,
-        grade: 9.5,
+        grade: '9.5',
+        maxGrade: '11',
     },
     InstructorComments: [
         {
@@ -563,7 +628,7 @@ const dummyFeedbacks = {
             grade: '9.5',
             date: '11 March 2021',
             commentId: 3,
-            userId: 1,
+            userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
@@ -605,7 +670,6 @@ const dummyFeedbacks = {
             commentId: 5,
             userId: 1,
             userGroupName: 'ClassRoom Helper',
-            userGroupId: 5,
         },
         {
             name: 'Alper Sarıkan',
@@ -616,7 +680,6 @@ const dummyFeedbacks = {
             grade: '8.1',
             userId: 2,
             userGroupName: 'ProjectManager',
-            userGroupId: 4,
         },
         {
             name: 'Eray Tüzün',

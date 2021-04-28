@@ -29,14 +29,14 @@ class ProjectAssignment extends Component {
             grades: null,
             feedbacks: [],
 
-            // State models regarding submission
+            // State modals regarding submission
             isAddSubmissionOpen: false,
             isEditSubmissionOpen: false,
             isDeleteSubmissionOpen: false,
             submissionFile: null,
             submissionCaption: '',
 
-            // States models regarding feedbacks
+            // States modals regarding feedbacks
             isGiveFeedbackOpen: false,
             isEditFeedbackOpen: false,
             isDeleteFeedbackOpen: false,
@@ -70,7 +70,7 @@ class ProjectAssignment extends Component {
         console.log('file');
     };
 
-    onSubmissionModelOpened = (modalType) => {
+    onSubmissionmodalOpened = (modalType) => {
         if (modalType) {
             this.setState({
                 [modalType]: true,
@@ -80,7 +80,7 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onExistingSubmissionModelOpened = (modalType, submissionCaption, submissionFile) => {
+    onExistingSubmissionmodalOpened = (modalType, submissionCaption, submissionFile) => {
         if (modalType) {
             this.setState({
                 [modalType]: true,
@@ -117,8 +117,8 @@ class ProjectAssignment extends Component {
         });
     };
 
-    // Models
-    onModalOpened = (modelType, isFeedbackSRS) => {
+    // modals
+    onModalOpened = (modalType, isFeedbackSRS) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
@@ -129,9 +129,9 @@ class ProjectAssignment extends Component {
             });
         }
 
-        if (modelType) {
+        if (modalType) {
             this.setState({
-                [modelType]: true,
+                [modalType]: true,
                 currentFeedbackGrade: 10,
                 currentFeedbackFile: 'empty',
                 currentFeedbackText: '',
@@ -139,7 +139,7 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onModelOpenedWithCommentOpened = (modelType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
+    onmodalOpenedWithCommentOpened = (modalType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
@@ -150,10 +150,10 @@ class ProjectAssignment extends Component {
             });
         }
 
-        if (modelType) {
+        if (modalType) {
             this.setState({
                 currentFeedbackId: commentId,
-                [modelType]: true,
+                [modalType]: true,
                 currentFeedbackText: commentText,
                 currentFeedbackGrade: commentGrade,
                 currentFeedbackFile: commentFile,
@@ -161,16 +161,16 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onSubmissionModalClosed = (modelType, isSuccess) => {
+    onSubmissionModalClosed = (modalType, isSuccess) => {
         this.setState({
-            [modelType]: false,
+            [modalType]: false,
         });
         if (!isSuccess) return;
     };
 
-    onModalClosed = (modelType, isSuccess) => {
+    onModalClosed = (modalType, isSuccess) => {
         this.setState({
-            [modelType]: false,
+            [modalType]: false,
         });
         if (!isSuccess) return;
     };
@@ -179,7 +179,7 @@ class ProjectAssignment extends Component {
         if (this.state.submissionPage?.isInGroup) {
             if (!this.state.submissionPage.hasSubmission) {
                 return (
-                    <Button onClick={() => this.onSubmissionModelOpened('isAddSubmissionOpen')}>
+                    <Button onClick={() => this.onSubmissionmodalOpened('isAddSubmissionOpen')}>
                         Add New Submission
                     </Button>
                 );
@@ -188,7 +188,7 @@ class ProjectAssignment extends Component {
                     <>
                         <Button
                             onClick={() =>
-                                this.openExistingSubmissionModel(
+                                this.openExistingSubmissionmodal(
                                     'isEditSubmissionOpen',
                                     this.state.submission.caption,
                                     this.state.submission.file
@@ -198,7 +198,7 @@ class ProjectAssignment extends Component {
                         </Button>
                         <Button
                             onClick={() =>
-                                this.openExistingSubmissionModel(
+                                this.openExistingSubmissionmodal(
                                     'isDeleteSubmissionOpen',
                                     this.state.submission.caption,
                                     this.state.submission.file
@@ -261,7 +261,7 @@ class ProjectAssignment extends Component {
                 feedbacksAccordion={getFeedbacksAsAccordion(
                     this.state.feedbacks,
                     this.state.submissionPage?.isTAorInstructor,
-                    this.onModelOpenedWithCommentOpened,
+                    this.onmodalOpenedWithCommentOpened,
                     this.onAuthorClicked,
                     this.props.userId
                 )}

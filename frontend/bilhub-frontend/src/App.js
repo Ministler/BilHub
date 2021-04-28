@@ -26,7 +26,7 @@ class App extends Component {
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];
-                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor');
+                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'student');
             })
             .catch((error) => {
                 console.log(error.response);
