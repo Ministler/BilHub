@@ -149,17 +149,28 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Route("{assignmentId}")]
-        public async Task<IActionResult> SubmitAssignment(int assignmentId, string description)
+        public async Task<IActionResult> SubmitAssignment([FromForm] AddSubmissionwithAttachmentDto addwithAttachment)
         {
-            AddSubmissionDto dto = new AddSubmissionDto { Description = description, AffiliatedAssignmentId = assignmentId };
-            ServiceResponse<string> response = await _submissionService.AddSubmission(dto);
+            ServiceResponse<GetSubmissionDto> response = await _submissionService.AddSubmission(addwithAttachment.addSubmissionDto);
+            if (response.Success)
+            {
+                if (addwithAttachment.file != null)
+                    await _submissionService.SubmitAssignment(new AddSubmissionFileDto { File = addwithAttachment.file, SubmissionId = response.Data.Id });
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpDelete]
+        [Route("{submissionId}")]
+        public async Task<IActionResult> DeleteSubmission(int submissionId)
+        {
+            ServiceResponse<string> response = await _submissionService.Delete(submissionId);
             if (response.Success)
             {
                 return Ok(response);
             }
             return NotFound(response);
-
         }
 
         [HttpPost]
@@ -202,7 +213,7 @@ namespace backend.Controllers
 
         [HttpDelete]
         [Route("File/{submissionId}")]
-        public async Task<IActionResult> DeleteSubmission(int submissionId)
+        public async Task<IActionResult> DeleteSubmissionFile(int submissionId)
         {
             DeleteSubmissionFileDto dto = new DeleteSubmissionFileDto { SubmissionId = submissionId };
             ServiceResponse<string> response = await _submissionService.DeleteSubmissionFile(dto);

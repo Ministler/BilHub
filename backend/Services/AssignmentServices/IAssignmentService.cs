@@ -9,7 +9,7 @@ namespace backend.Services.AssignmentServices
         Task<ServiceResponse<string>> SubmitAssignmentFile(AddAssignmentFileDto file);
         Task<ServiceResponse<string>> DownloadAssignmentFile(GetAssignmentFileDto dto);
         Task<ServiceResponse<string>> DeleteFile(DeleteAssignmentFileDto dto);
-        Task<ServiceResponse<string>> SubmitAssignment(AddAssignmentDto assignmentDto);
+        Task<ServiceResponse<GetAssignmentDto>> SubmitAssignment(AddAssignmentDto assignmentDto);
         Task<ServiceResponse<string>> DeleteAssignment(DeleteAssignmentDto dto);
 
     }

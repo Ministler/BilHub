@@ -8,7 +8,6 @@ namespace backend.Dtos.Assignment
         public string Title { get; set; }
         public string AssignmenDescription { get; set; }
         public DateTime DueDate { get; set; }
-        public DateTime CreateTime { get; set; }
         public string AcceptedTypes { get; set; }
         public int MaxFileSizeInBytes { get; set; }
         public bool VisibiltyOfSubmission { get; set; }

@@ -152,41 +152,41 @@ namespace backend.Services.AssignmentServices
             return response;
         }
 
-        public async Task<ServiceResponse<string>> SubmitAssignment(AddAssignmentDto assignmentDto)
+        public async Task<ServiceResponse<GetAssignmentDto>> SubmitAssignment(AddAssignmentDto assignmentDto)
         {
-            ServiceResponse<string> response = new ServiceResponse<string>();
+            ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
             Course course = await _context.Courses.Include(c => c.Instructors).FirstOrDefaultAsync(c => c.Id == assignmentDto.CourseId);
             if (course == null)
             {
-                response.Data = "No submission";
+                response.Data = null;
                 response.Message = "There is no course under this id";
                 response.Success = false;
                 return response;
             }
             if (course.Instructors.FirstOrDefault(u => u.UserId == GetUserId()) == null)
             {
-                response.Data = "Not allowed";
+                response.Data = null;
                 response.Message = "You are not allowed to post assignments for this course";
                 response.Success = false;
                 return response;
             }
             if (assignmentDto.Title == null)
             {
-                response.Data = "Bad Request";
+                response.Data = null;
                 response.Message = "You should add a title to your submission";
                 response.Success = false;
                 return response;
             }
             if (assignmentDto.AssignmenDescription == null)
             {
-                response.Data = "Bad Request";
+                response.Data = null;
                 response.Message = "You should add a description to your submission";
                 response.Success = false;
                 return response;
             }
             if ((assignmentDto.DueDate - DateTime.Now).TotalDays < 3)
             {
-                response.Data = "Bad Request";
+                response.Data = null;
                 response.Message = "A deadline cannot be closer to publishment date less than 3 days";
                 response.Success = false;
                 return response;
@@ -208,6 +208,8 @@ namespace backend.Services.AssignmentServices
             };
             await _context.Assignments.AddAsync(assignment);
             await _context.SaveChangesAsync();
+            response.Data = _mapper.Map<GetAssignmentDto>(assignment);
+            response.Data.FileEndpoint = string.Format("Assignment/File/{0}", assignment.Id);
             return response;
         }
 
@@ -219,7 +221,7 @@ namespace backend.Services.AssignmentServices
             if (assignment == null)
             {
                 response.Data = "No submission";
-                response.Message = "There is no submission under this id";
+                response.Message = "There is no assignment under this id";
                 response.Success = false;
                 return response;
             }
@@ -227,7 +229,7 @@ namespace backend.Services.AssignmentServices
             if (course == null)
             {
                 response.Data = "Not allowed";
-                response.Message = "You are not allowed to post file for this assignment";
+                response.Message = "You are not allowed to delete this assignment";
                 response.Success = false;
                 return response;
             }
@@ -244,5 +246,6 @@ namespace backend.Services.AssignmentServices
             await _context.SaveChangesAsync();
             return response;
         }
+
     }
 }

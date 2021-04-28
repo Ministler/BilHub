@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using System.Web;
 using backend.Services.CommentServices;
 
 namespace backend.Services.SubmissionServices
@@ -184,7 +185,7 @@ namespace backend.Services.SubmissionServices
 
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
                 "StaticFiles/Submissions", submission.CourseId,
-                submission.SectionId, submission.CourseId, submission.AffiliatedAssignmentId));
+                submission.SectionId, submission.AffiliatedAssignmentId, submission.AffiliatedGroupId));
             var filePath = Directory.GetFiles(target).FirstOrDefault();
             submission.FilePath = null;
             submission.HasSubmission = false;
@@ -257,9 +258,9 @@ namespace backend.Services.SubmissionServices
             return response;
         }
 
-        public async Task<ServiceResponse<string>> AddSubmission(AddSubmissionDto addSubmissionDto)
+        public async Task<ServiceResponse<GetSubmissionDto>> AddSubmission(AddSubmissionDto addSubmissionDto)
         {
-            ServiceResponse<string> response = new ServiceResponse<string>();
+            ServiceResponse<GetSubmissionDto> response = new ServiceResponse<GetSubmissionDto>();
             User user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == addSubmissionDto.AffiliatedAssignmentId);
@@ -305,6 +306,8 @@ namespace backend.Services.SubmissionServices
             };
             _context.Submissions.Add(submission);
             await _context.SaveChangesAsync();
+            response.Data = _mapper.Map<GetSubmissionDto>(submission);
+            response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
             return response;
         }
 
@@ -329,6 +332,7 @@ namespace backend.Services.SubmissionServices
             }
             await DeleteWithForce(submissionId);
             _context.Submissions.Remove(submission);
+            await _context.SaveChangesAsync();
             return response;
         }
     }

@@ -40,11 +40,13 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitAssignment(AddAssignmentDto assignmentDto)
+        public async Task<IActionResult> SubmitAssignment([FromForm] AddwithAttachmentDto addwithAttachment)
         {
-            ServiceResponse<string> response = await _assignmentService.SubmitAssignment(assignmentDto);
+            ServiceResponse<GetAssignmentDto> response = await _assignmentService.SubmitAssignment(addwithAttachment.addAssignmentDto);
             if (response.Success)
             {
+                if (addwithAttachment.file != null)
+                    await _assignmentService.SubmitAssignmentFile(new AddAssignmentFileDto { File = addwithAttachment.file, AssignmentId = response.Data.Id });
                 return Ok(response);
             }
             return NotFound(response);

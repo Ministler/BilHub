@@ -15,6 +15,6 @@ namespace backend.Services.SubmissionServices
         Task<ServiceResponse<string>> DeleteSubmissionFile(DeleteSubmissionFileDto dto);
         Task<ServiceResponse<string>> DeleteWithForce(int submissionId);
         Task<ServiceResponse<string>> Delete(int submissionId);
-        Task<ServiceResponse<string>> AddSubmission(AddSubmissionDto addSubmissionDto);
+        Task<ServiceResponse<GetSubmissionDto>> AddSubmission(AddSubmissionDto addSubmissionDto);
     }
 }
