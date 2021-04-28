@@ -29,4 +29,4 @@ export {
     convertUnformedGroupsToBriefList,
     convertFormedGroupsToBriefList,
 } from './BriefList';
-export { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from './Statistics';
+export { GradesTabel, GroupNoGradeGraph } from './Statistics';

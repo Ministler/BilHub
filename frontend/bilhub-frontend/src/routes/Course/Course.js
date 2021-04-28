@@ -138,7 +138,7 @@ class Course extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getCourseStatistics()}</>,
+            content: <>{getCourseStatistics(dummyCourseGrades)} </>,
         };
     };
 
@@ -313,4 +313,25 @@ const dummyCourseAssignments = [
         publishmentDate: '12 March 2021 12:00',
         dueDate: '12 April 2021 12:00',
     },
+];
+
+const dummyCourseGrades = {
+    graders: ['Eray Tüzün', 'Alper Sarıkan', 'Erdem Tuna', 'Kraliçe Irmak', 'Students'],
+    groups: [
+        { name: 'BilHub', grades: [99, 98, 97, 10, 89] },
+        { name: 'BilCalendar', grades: [75, 45, 23, 10, 89] },
+        { name: 'CS315Odevi', grades: [38, 98, 97, 1, 43] },
+        { name: 'Website', grades: [46, 87, 24, 10, 94] },
+    ],
+};
+
+const dummyFinalGrades = [
+    { group: 'BilHub', grade: 90 },
+    { group: 'BilHub2', grade: 20 },
+    { group: 'BilHub3', grade: 80 },
+    { group: 'BilHubNot', grade: 78 },
+    { group: 'BildfgHub3', grade: 80 },
+    { group: 'BilHddfgdubNot', grade: 78 },
+    { group: 'BilHsdfsdfsdfsdfub3', grade: 80 },
+    { group: 'BilHusdfsdfsdfsdfsdfsdfbNot', grade: 78 },
 ];
