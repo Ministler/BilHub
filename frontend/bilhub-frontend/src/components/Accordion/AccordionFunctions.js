@@ -160,7 +160,7 @@ export const getCourseStatistics = (props) => {
     const accordionElements = [
         {
             title: 'Table',
-            content: 'table stat',
+            content: <>{GradesTabel(props)}</>,
         },
         {
             title: 'Groups vs Grade Graphic',
