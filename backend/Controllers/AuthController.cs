@@ -29,7 +29,7 @@ namespace backend.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDto request)
         {
-            ServiceResponse<string> response = await _authRepo.Login(request);
+            ServiceResponse<GetUserDto> response = await _authRepo.Login(request);
             if (!response.Success)
             {
                 return BadRequest(response);

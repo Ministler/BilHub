@@ -51,11 +51,37 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAssignment([FromForm] UpdateAssignmentWithAttachment updateAssignment)
+        {
+            ServiceResponse<GetAssignmentDto> response = await _assignmentService.UpdateAssignment(updateAssignment.updateAssignmentDto);
+            if (response.Success)
+            {
+                if (updateAssignment.file != null)
+                    await _assignmentService.SubmitAssignmentFile(new AddAssignmentFileDto { File = updateAssignment.file, AssignmentId = response.Data.Id });
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
         [HttpDelete]
         [Route("{assignmentId}")]
         public async Task<IActionResult> DeleteAssignment(int assignmentId)
         {
             ServiceResponse<string> response = await _assignmentService.DeleteAssignment(new DeleteAssignmentDto { AssignmentId = assignmentId });
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet]
+        [Route("{assignmentId}")]
+        public async Task<IActionResult> GetAssignment(int assignmentId)
+        {
+            ServiceResponse<GetAssignmentDto> response = await _assignmentService.GetAssignment(assignmentId);
             if (response.Success)
             {
                 return Ok(response);

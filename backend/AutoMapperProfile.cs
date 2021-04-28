@@ -3,6 +3,7 @@ using AutoMapper;
 using backend.Dtos.Assignment;
 using backend.Dtos.ProjectGroup;
 using backend.Dtos.Submission;
+using backend.Dtos.User;
 using backend.Models;
 
 namespace backend
@@ -19,6 +20,7 @@ namespace backend
             CreateMap<Section, SectionInProjectGroupDto>();
             CreateMap<Assignment, GetAssignmentDto>();
             CreateMap<Submission, GetSubmissionDto>();
+            CreateMap<User, GetUserDto>();
         }
 
     }

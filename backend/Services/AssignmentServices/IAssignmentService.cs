@@ -11,6 +11,8 @@ namespace backend.Services.AssignmentServices
         Task<ServiceResponse<string>> DeleteFile(DeleteAssignmentFileDto dto);
         Task<ServiceResponse<GetAssignmentDto>> SubmitAssignment(AddAssignmentDto assignmentDto);
         Task<ServiceResponse<string>> DeleteAssignment(DeleteAssignmentDto dto);
+        Task<ServiceResponse<GetAssignmentDto>> GetAssignment(int assignmentId);
+        Task<ServiceResponse<GetAssignmentDto>> UpdateAssignment(UpdateAssignmentDto dto);
 
     }
 }

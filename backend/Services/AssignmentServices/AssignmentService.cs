@@ -113,7 +113,7 @@ namespace backend.Services.AssignmentServices
             if (course == null || projectGroup == null)
             {
                 response.Data = "Not allowed";
-                response.Message = "You are not allowed to post file for this assignment";
+                response.Message = "You are not allowed to see file for this assignment";
                 response.Success = false;
                 return response;
             }
@@ -220,7 +220,7 @@ namespace backend.Services.AssignmentServices
             Assignment assignment = await _context.Assignments.Include(a => a.Submissions).FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
             if (assignment == null)
             {
-                response.Data = "No submission";
+                response.Data = "No assignment";
                 response.Message = "There is no assignment under this id";
                 response.Success = false;
                 return response;
@@ -247,5 +247,65 @@ namespace backend.Services.AssignmentServices
             return response;
         }
 
+        public async Task<ServiceResponse<GetAssignmentDto>> GetAssignment(int assignmentId)
+        {
+            ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
+            Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == assignmentId);
+            if (assignment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no submission under this id";
+                response.Success = false;
+                return response;
+            }
+            User user = await _context.Users.Include(u => u.InstructedCourses)
+                .Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup)
+                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            if (!user.InstructedCourses.Any(c => c.CourseId == assignment.AfilliatedCourseId) && user.UserType == UserTypeClass.Student
+                && !user.ProjectGroups.Any(pgu => pgu.ProjectGroup.AffiliatedCourseId == assignment.AfilliatedCourseId)
+                )
+            {
+                response.Data = null;
+                response.Message = "You are not allowed to see for this assignment";
+                response.Success = false;
+                return response;
+            }
+            response.Data = _mapper.Map<GetAssignmentDto>(assignment);
+            return response;
+        }
+
+        public async Task<ServiceResponse<GetAssignmentDto>> UpdateAssignment(UpdateAssignmentDto dto)
+        {
+            ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
+            Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == dto.AssignmentId);
+            if (assignment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no submission under this id";
+                response.Success = false;
+                return response;
+            }
+            User user = await _context.Users.Include(u => u.InstructedCourses)
+                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            if (!user.InstructedCourses.Any(c => c.CourseId == assignment.AfilliatedCourseId))
+            {
+                response.Data = null;
+                response.Message = "You are not allowed to see for this assignment";
+                response.Success = false;
+                return response;
+            }
+            assignment.AssignmentDescription = dto.AssignmenDescription;
+            assignment.DueDate = dto.DueDate;
+            assignment.IsItGraded = dto.IsItGraded;
+            assignment.Title = dto.Title;
+            assignment.AcceptedTypes = dto.AcceptedTypes;
+            assignment.MaxFileSizeInBytes = dto.MaxFileSizeInBytes;
+            assignment.VisibilityOfSubmission = dto.VisibiltyOfSubmission;
+            assignment.CanBeGradedByStudents = dto.CanBeGradedByStudents;
+            _context.Assignments.Update(assignment);
+            await _context.SaveChangesAsync();
+            response.Data = _mapper.Map<GetAssignmentDto>(assignment);
+            return response;
+        }
     }
 }

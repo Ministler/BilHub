@@ -66,7 +66,8 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<string>> DownloadSubmission(GetSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedGroup)
+                .ThenInclude(pg => pg.GroupMembers).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
             if (submission == null)
             {
                 response.Data = null;
@@ -81,9 +82,10 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            User user = await _context.Users.Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup projectGroup = user.ProjectGroups.FirstOrDefault(pgu => pgu.ProjectGroupId == submission.AffiliatedGroupId).ProjectGroup;
-            if (!submission.AffiliatedAssignment.VisibilityOfSubmission && projectGroup == null && user.UserType == UserTypeClass.Student)
+            Course course = await _context.Courses.Include(c => c.Instructors)
+                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()));
+            if (!submission.AffiliatedAssignment.VisibilityOfSubmission
+                && course == null && submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
             {
                 response.Data = null;
                 response.Message = "You are not authorized to see this submission";
@@ -311,6 +313,37 @@ namespace backend.Services.SubmissionServices
             return response;
         }
 
+        public async Task<ServiceResponse<GetSubmissionDto>> UpdateSubmission(UpdateSubmissionDto submissionDto)
+        {
+            ServiceResponse<GetSubmissionDto> response = new ServiceResponse<GetSubmissionDto>();
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedGroup)
+                .ThenInclude(pg => pg.GroupMembers).FirstOrDefaultAsync(s => s.Id == submissionDto.SubmissionId);
+            if (submission == null)
+            {
+                response.Data = null;
+                response.Message = "There is no submission under this Id";
+                response.Success = false;
+                return response;
+            }
+            if (!submission.AffiliatedGroup.GroupMembers.Any(pgu => pgu.UserId == user.Id))
+            {
+                response.Data = null;
+                response.Message = "You don't have a submission for this assignment";
+                response.Success = false;
+                return response;
+            }
+            submission.Description = submissionDto.Description;
+            submission.UpdatedAt = DateTime.Now;
+            _context.Submissions.Update(submission);
+            await _context.SaveChangesAsync();
+            response.Data = _mapper.Map<GetSubmissionDto>(submission);
+            response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
+            return response;
+        }
+
+
         public async Task<ServiceResponse<string>> Delete(int submissionId)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -333,6 +366,40 @@ namespace backend.Services.SubmissionServices
             await DeleteWithForce(submissionId);
             _context.Submissions.Remove(submission);
             await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<GetSubmissionDto>> GetSubmission(int submissionId)
+        {
+            ServiceResponse<GetSubmissionDto> response = new ServiceResponse<GetSubmissionDto>();
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).Include(s => s.AffiliatedGroup)
+                .ThenInclude(pg => pg.GroupMembers).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such submission";
+                response.Success = false;
+                return response;
+            }
+            if (!submission.HasSubmission)
+            {
+                response.Data = null;
+                response.Message = "This group has not yet submitted their file for this assigment";
+                response.Success = false;
+                return response;
+            }
+            Course course = await _context.Courses.Include(c => c.Instructors)
+                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()));
+            if (!submission.AffiliatedAssignment.VisibilityOfSubmission
+                && course == null && !submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to see this submission";
+                response.Success = false;
+                return response;
+            }
+            response.Data = _mapper.Map<GetSubmissionDto>(submission);
+            response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
             return response;
         }
     }

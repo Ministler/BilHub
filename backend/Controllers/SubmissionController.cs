@@ -173,6 +173,31 @@ namespace backend.Controllers
             return NotFound(response);
         }
 
+        [HttpGet]
+        [Route("{submissionId}")]
+        public async Task<IActionResult> GetSubmission(int submissionId)
+        {
+            ServiceResponse<GetSubmissionDto> response = await _submissionService.GetSubmission(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAssignment([FromForm] UpdateSubmissionWithAttachment updateSubmissionWithAttachment)
+        {
+            ServiceResponse<GetSubmissionDto> response = await _submissionService.UpdateSubmission(updateSubmissionWithAttachment.updateSubmissionDto);
+            if (response.Success)
+            {
+                if (updateSubmissionWithAttachment.file != null)
+                    await _submissionService.SubmitAssignment(new AddSubmissionFileDto { File = updateSubmissionWithAttachment.file, SubmissionId = response.Data.Id });
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
         [HttpPost]
         [Route("File/{submissionId}")]
         public async Task<IActionResult> Submit(IFormFile file, int submissionId)
@@ -189,7 +214,7 @@ namespace backend.Controllers
 
         [HttpGet]
         [Route("File/{submissionId}")]
-        public async Task<IActionResult> GetSubmission(int submissionId)
+        public async Task<IActionResult> GetSubmissionFile(int submissionId)
         {
             GetSubmissionFileDto dto = new GetSubmissionFileDto { SubmissionId = submissionId };
             ServiceResponse<string> response = await _submissionService.DownloadSubmission(dto);
