@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoMapper;
 using backend.Dtos.Assignment;
+using backend.Dtos.Comment;
 using backend.Dtos.ProjectGroup;
 using backend.Dtos.Submission;
 using backend.Dtos.User;
@@ -20,6 +21,7 @@ namespace backend
             CreateMap<Section, SectionInProjectGroupDto>();
             CreateMap<Assignment, GetAssignmentDto>();
             CreateMap<Submission, GetSubmissionDto>();
+            CreateMap<Comment, GetCommentDto>();
             CreateMap<User, GetUserDto>();
         }
 

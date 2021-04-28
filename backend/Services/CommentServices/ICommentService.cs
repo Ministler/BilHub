@@ -12,7 +12,9 @@ namespace backend.Services.CommentServices
         Task<ServiceResponse<string>> DeleteFile(DeleteCommentFileDto dto);
         Task<ServiceResponse<string>> DeleteWithForce(int commentId);
         Task<ServiceResponse<string>> Delete(int commentId);
-        Task<ServiceResponse<string>> Add(AddCommentDto addCommentDto);
+        Task<ServiceResponse<GetCommentDto>> Add(AddCommentDto addCommentDto);
+        Task<ServiceResponse<GetCommentDto>> Update(AddCommentDto addCommentDto);
+        Task<ServiceResponse<GetCommentDto>> Get(int commentId);
 
     }
 }

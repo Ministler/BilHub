@@ -30,16 +30,6 @@ namespace backend.Data
                 .WithOne(s => s.AffiliatedAssignment)
                 .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.Cascade);
 
-            // modelBuilder.Entity<Submission>()
-            //     .HasOne(s => s.AffiliatedAssignment)
-            //     .WithMany(a => a.Submissions)
-            //     .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Submission>()
-                .HasOne(s => s.AffiliatedAssignment)
-                .WithMany(a => a.Submissions)
-                .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.NoAction);
-
             modelBuilder.Entity<Submission>()
                 .HasOne(s => s.AffiliatedGroup)
                 .WithMany(a => a.Submissions)

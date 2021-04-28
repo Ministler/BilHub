@@ -86,8 +86,8 @@ namespace backend.Services.CommentServices
                 response.Success = false;
                 return response;
             }
-            response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}",
-                "StaticFiles/Feedbacks", submission.CourseId, submission.SectionId, dto.SubmissionId));
+            response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}",
+                "StaticFiles/Feedbacks", submission.CourseId, dto.SubmissionId));
             return response;
         }
 
@@ -126,29 +126,18 @@ namespace backend.Services.CommentServices
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            Submission submission = await _context.Submissions.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == file.SubmissionId);
-            if (submission == null)
+            Comment comment = await _context.Comments.Include(u => u.CommentedSubmission).FirstOrDefaultAsync(c => c.Id == file.CommentId);
+            if (comment == null)
             {
-                response.Data = "No submission";
-                response.Message = "There is no submission under this name";
+                response.Data = "No comment";
+                response.Message = "There is no comment under this id";
                 response.Success = false;
                 return response;
             }
-            Course course = _context.Courses.Include(c => c.Instructors)
-                .FirstOrDefault(c => c.Id == submission.CourseId);
-
-            if (course == null || course.Instructors.FirstOrDefault(i => i.UserId == GetUserId()) == null)
-            {
-                response.Data = "Not allowed";
-                response.Message = "You are not allowed to post file for this comment";
-                response.Success = false;
-                return response;
-            }
-            Comment comment = submission.Comments.FirstOrDefault(c => c.Id == file.CommentId);
-            if (comment == null || comment.Id != file.CommentId || file.CommentFile == null)
+            if (comment.CommentedUserId != user.Id || file.CommentFile == null)
             {
                 response.Data = "Bad Request";
-                response.Message = "There is no comment to attach any file or you are not authorized";
+                response.Message = "There is no file to attach or you are not authorized";
                 response.Success = false;
                 return response;
             }
@@ -159,9 +148,8 @@ namespace backend.Services.CommentServices
                 response.Success = false;
                 return response;
             }
-            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "StaticFiles/Feedbacks", submission.CourseId,
-                submission.SectionId, file.SubmissionId, user.Id));
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/",
+                "StaticFiles/Feedbacks", comment.CommentedSubmission.CourseId, comment.CommentedSubmissionId, user.Id));
             Directory.CreateDirectory(target);
             if (file.CommentFile.Length <= 0) response.Success = false;
             else
@@ -251,9 +239,8 @@ namespace backend.Services.CommentServices
                 return response;
             }
 
-            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "StaticFiles/Feedbacks", comment.CommentedSubmission.CourseId,
-                comment.CommentedSubmission.SectionId, comment.CommentedSubmissionId, user.Id));
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}",
+                "StaticFiles/Feedbacks", comment.CommentedSubmission.CourseId, comment.CommentedSubmissionId, user.Id));
             Directory.CreateDirectory(target);
             var filePath = Path.Combine(target, user.Name.Trim().Replace(" ", "_") + "_Feedback.pdf");
             comment.FilePath = null;
@@ -300,9 +287,9 @@ namespace backend.Services.CommentServices
             return response;
         }
 
-        public async Task<ServiceResponse<string>> Add(AddCommentDto addCommentDto)
+        public async Task<ServiceResponse<GetCommentDto>> Add(AddCommentDto addCommentDto)
         {
-            ServiceResponse<string> response = new ServiceResponse<string>();
+            ServiceResponse<GetCommentDto> response = new ServiceResponse<GetCommentDto>();
             User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
             Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == addCommentDto.CommentedSubmissionId);
             if (submission == null)
@@ -349,7 +336,20 @@ namespace backend.Services.CommentServices
             };
             await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
+            response.Data = _mapper.Map<GetCommentDto>(comment);
+            response.Data.CommentId = comment.Id;
+            response.Data.FileEndpoint = "Comment/File/{" + comment.Id + "}";
             return response;
+        }
+
+        public Task<ServiceResponse<GetCommentDto>> Update(AddCommentDto addCommentDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<GetCommentDto>> Get(int commentId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
