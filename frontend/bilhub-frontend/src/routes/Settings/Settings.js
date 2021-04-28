@@ -51,7 +51,7 @@ export class Settings extends Component {
             return (
                 <Form class="Sign in form">
                     {props.updateState && (
-                        <div class="ui info message" style={{ fontSize: '12px', width: '50%' }}>
+                        <div class="ui info message" style={{ fontSize: '12px', width: '60%' }}>
                             <i class="close icon" onClick={this.onErrorCleaned}></i>
                             {props.updateState}
                         </div>
@@ -77,7 +77,7 @@ export class Settings extends Component {
             return (
                 <Form class="Sign in form">
                     {props.updateState && (
-                        <div class="ui info message" style={{ fontSize: '12px' }}>
+                        <div class="ui info message" style={{ fontSize: '12px', width: '60%' }}>
                             <i class="close icon" onClick={this.onErrorCleaned}></i>
                             {props.updateState}
                         </div>

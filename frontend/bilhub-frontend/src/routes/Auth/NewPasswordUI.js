@@ -11,13 +11,24 @@ export const NewPasswordUI = (props) => {
                         <i className="circular users icon"></i>
                         Reset your password
                     </h2>
+                    {props.error && (
+                        <div className="ui negative message" style={{ fontSize: '12px' }}>
+                            <i
+                                className="close icon"
+                                onClick={() => {
+                                    props.onErrorClosed();
+                                }}></i>
+                            {props.error}
+                        </div>
+                    )}
                     <Segment>
                         <Form className="Sign in form">
                             <div className="field">
                                 <label style={{ fontSize: '12px' }}>Please type your Bilkent email</label>
-                                <Form.Input type="email" name="email" />
+                                <Form.Input type="email" name="email" value={props.form?.email || ''}
+                                    onChange={props.onChange}/>
                             </div>
-                            <Button fluid positive className="Sign in button" type="submit">
+                            <Button onClick={props.onSubmit} fluid positive className="Sign in button" type="submit">
                                 Send new password
                             </Button>
                         </Form>
