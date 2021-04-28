@@ -65,5 +65,17 @@ namespace backend.Controllers
         {  
             return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId ) );
         }
+
+        [HttpPost("CompleteJoinRequest")]
+        public async Task<ActionResult> CompleteJoinRequest ( int joinRequestId )
+        {  
+            return Ok ( await _projectGroupService.CompleteJoinRequest ( joinRequestId ) );
+        }
+
+        [HttpPost("CompleteMergeRequest")]
+        public async Task<ActionResult> CompleteMergeRequest ( int mergeRequestId )
+        {  
+            return Ok ( await _projectGroupService.CompleteMergeRequest ( mergeRequestId ) );
+        }
     }
 }
