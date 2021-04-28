@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Icon, Card } from 'semantic-ui-react';
+import { Segment, Icon, Card, Grid } from 'semantic-ui-react';
 
 import { convertMembersToMemberElement, Tab } from '../../../components';
 
@@ -29,6 +29,7 @@ export const TabExampleSecondaryPointing = (props) => {
                             title={course.courseName}
                             TAs={course.TAs}
                             instructors={course.instructors}
+                            information={course.information}
                             onMemberClicked={(userId) => props.onMemberClicked(userId)}
                             onCourseTitleClicked={() => props.onCourseTitleClicked(course.courseId)}
                         />
@@ -88,19 +89,27 @@ export const ProjectCardElement = (props) => {
 
 export const CourseCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement">
+        <Card className="ProjectCardElement" fluid link>
             <Card.Content>
                 <Card.Header>
                     <div onClick={props.onCourseTitleClicked}>{props.title}</div>
                 </Card.Header>
                 <Card.Description>
-                    <h4>TAs</h4>
-                    {convertMembersToMemberElement(props.TAs, props.onMemberClicked)}
+                    <Grid columns={2} divided>
+                        <Grid.Column>
+                            <label style={{ fontSize: '14px', fontWeight: "bold" }}>Instructors</label>
+                            {convertMembersToMemberElement(props.instructors, props.onMemberClicked)} 
+                        </Grid.Column>
+                        <Grid.Column>
+                            <label style={{ fontSize: '14px', fontWeight: "bold" }}>TAs</label>
+                            {convertMembersToMemberElement(props.TAs, props.onMemberClicked)}
+                        </Grid.Column>
+                    </Grid>
+                    <p style={{marginTop: "15px"}}>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus a fugit amet rem officia id voluptate sint cumque hic odit incidunt, cum alias perspiciatis voluptas! Quasi similique tenetur corporis itaque.
+                    </p>
                 </Card.Description>
-                <Card.Description>
-                    <h4>Instructors</h4>
-                    {convertMembersToMemberElement(props.instructors, props.onMemberClicked)}
-                </Card.Description>
+
             </Card.Content>
         </Card>
     );

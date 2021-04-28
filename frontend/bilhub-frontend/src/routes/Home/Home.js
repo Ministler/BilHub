@@ -90,17 +90,15 @@ export class Home extends Component {
         return (
             <Grid>
                 <GridColumn width={4}>
-                    <div className={'HomeDivLeft'}>
+                    <div>
                         <ProfilePrompt name={this.state.user?.name} onClick={this.onProfilePromptClicked} />
                         {myProjectsComponent}
                         {instructedCoursesComponent}
                     </div>
                 </GridColumn>
-                <GridColumn width={1} />
-                <GridColumn width={6}>{feedsComponent}</GridColumn>
-                <GridColumn width={1} />
-                <GridColumn width={4}>
-                    <div className={'HomeDivRight'}>
+                <GridColumn width={9}>{feedsComponent}</GridColumn>
+                <GridColumn width={3}>
+                    <div>
                         {upcomingAssignmentsComponent}
                         {notGradedAssignmentsComponent}
                     </div>

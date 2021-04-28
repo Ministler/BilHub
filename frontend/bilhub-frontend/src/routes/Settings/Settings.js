@@ -42,7 +42,7 @@ export class Settings extends Component {
         this.setState({ updateState: 'Changes are successfully updated' });
     };
 
-    pepe = (event) => {
+    onCloseIcon = (event) => {
         this.setState({ updateState: '' });
     };
 
@@ -51,8 +51,8 @@ export class Settings extends Component {
             return (
                 <Form class="Sign in form">
                     {props.updateState && (
-                        <div class="ui info message" style={{ fontSize: '12px', width: '50%' }}>
-                            <i class="close icon" onClick={this.pepe}></i>
+                        <div class="ui info message" style={{ fontSize: '12px', width: '60%' }}>
+                            <i class="close icon" onClick={this.onCloseIcon}></i>
                             {props.updateState}
                         </div>
                     )}
@@ -77,8 +77,8 @@ export class Settings extends Component {
             return (
                 <Form class="Sign in form">
                     {props.updateState && (
-                        <div class="ui info message" style={{ fontSize: '12px' }}>
-                            <i class="close icon" onClick={this.pepe}></i>
+                        <div class="ui info message" style={{ fontSize: '12px', width: '60%' }}>
+                            <i class="close icon" onClick={this.onCloseIcon}></i>
                             {props.updateState}
                         </div>
                     )}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import { SignupUI } from './SignupUI';
+import { ConformationUI } from './ConformationUI';
 import { singupRequest } from '../../API';
 
 export default class Signup extends Component {
@@ -26,6 +27,7 @@ export default class Signup extends Component {
 
     onChange = (name, value) => {
         this.setForm({ ...this.state.form, [name]: value });
+        console.log(this.state.form.conformationCode);
     };
 
     onSubmit = () => {
@@ -70,6 +72,18 @@ export default class Signup extends Component {
             });
     };
 
+    onConformation = () => {
+       /* if (
+            code does not match
+        ) {
+            this.setError('Conformatıon code does not match');
+            return;
+        }*/
+
+        console.log(this.state.form.conformationCode);
+        this.props.history.push('/login');
+    };
+
     render() {
         return !this.state.activationMode ? (
             <SignupUI
@@ -80,7 +94,12 @@ export default class Signup extends Component {
                 onErrorClosed={() => this.setError(null)}
             />
         ) : (
-            <div>asd</div>
+            <ConformationUI 
+            onConformation={this.onConformation}
+            onChange={(e, { name, value }) => this.onChange(name, value)}
+            form={this.state.form}
+            error={this.state.error}
+            onErrorClosed={() => this.setError(null)}/>
         );
     }
 }

@@ -108,7 +108,7 @@ class Profile extends Component {
                             icon={this.getEditInformationIcon()}
                         />
                     </div>
-                    <div class="eight wide column">
+                    <div class="twelve wide column">
                         <TabExampleSecondaryPointing
                             userType={this.props.userType}
                             projects={this.state.projects}
