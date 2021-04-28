@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Icon, Dropdown, Button } from 'semantic-ui-react';
+import { Icon, Dropdown, Button, Accordion } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 
 import './CourseAssignment.css';
-import { AssignmentCardElement, Tab, getSubmissionsAsAccordion } from '../../../components';
+import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
 
 class CourseAssignment extends Component {
     constructor(props) {
@@ -127,7 +127,7 @@ class CourseAssignment extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <div>Denemes</div>,
+            content: <>{getAssignmentStatistics(dummyAssignmentGrades)}</>,
         };
     };
 
@@ -276,5 +276,15 @@ const dummyGroupSubmissions = [
         ],
     },
 ];
+
+const dummyAssignmentGrades = {
+    graders: ['Eray Tüzün', 'Alper Sarıkan', 'Erdem Tuna', 'Kraliçe Irmak', 'Students'],
+    groups: [
+        { name: 'BilHub', grades: [99, 98, 97, 10, 89] },
+        { name: 'BilCalendar', grades: [75, 45, 23, 10, 89] },
+        { name: 'CS315Odevi', grades: [38, 98, 97, 1, 43] },
+        { name: 'Website', grades: [46, 87, 24, 10, 94] },
+    ],
+};
 
 export default withRouter(CourseAssignment);

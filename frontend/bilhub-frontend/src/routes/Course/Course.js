@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import './Course.css';
 import { InformationSection } from './CourseComponents';
 import { GroupsTab } from './GroupsTab';
-import { Tab, convertAssignmentsToAssignmentList } from '../../components';
+import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
 
 class Course extends Component {
@@ -138,7 +138,7 @@ class Course extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <></>,
+            content: <>{getCourseStatistics()}</>,
         };
     };
 

@@ -1,1 +1,1 @@
-export { InformationSection, FormationGroupModal, FormedGroupModal } from './CourseComponents';
+export { InformationSection } from './CourseComponents';

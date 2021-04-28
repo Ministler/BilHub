@@ -6,6 +6,7 @@ import {
 } from '../CardGroup';
 import { convertSubmissionsToSubmissionElement } from '../BriefList';
 import { MyAccordion } from './AccordionUI';
+import { GradesTabel } from '../Statistics';
 
 export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal, onAuthorClicked, userId) => {
     const accordionElements = [
@@ -128,6 +129,46 @@ export const getSubmissionsAsAccordion = (submissions, onSubmissionPageClicked, 
                 onSubmissionPageClicked,
                 onSubmissionFileClicked
             ),
+        },
+    ];
+
+    return <MyAccordion accordionSections={accordionElements} />;
+};
+
+export const getAssignmentStatistics = (props) => {
+    console.log('tried to print stat');
+    const accordionElements = [
+        {
+            title: 'Table',
+            content: <>{GradesTabel(props)}</>,
+        },
+        {
+            title: 'Groups vs Grade Graphic',
+            content: 'graph',
+        },
+        {
+            title: 'Grade vs Group Number Graphic',
+            content: 'graph',
+        },
+    ];
+
+    return <MyAccordion accordionSections={accordionElements} />;
+};
+
+export const getCourseStatistics = (props) => {
+    console.log('tried to print stat');
+    const accordionElements = [
+        {
+            title: 'Table',
+            content: 'table stat',
+        },
+        {
+            title: 'Groups vs Grade Graphic',
+            content: 'graph',
+        },
+        {
+            title: 'Grade vs Group Number Graphic',
+            content: 'graph',
         },
     ];
 

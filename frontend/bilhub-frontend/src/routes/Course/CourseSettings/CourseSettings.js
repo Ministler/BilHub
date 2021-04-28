@@ -96,6 +96,7 @@ export class CourseSettings extends Component {
             studentAutoList: [],
             groupFormationType: dummyCourseInformation.groupFormationType,
             isModalOpen: false,
+            curGroupModal: {},
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -140,194 +141,172 @@ export class CourseSettings extends Component {
         );
     }
 
-    getModals = () => {
-        return (
-            <>
-                <FormationGroupModal
-                    isOpen={dummyCourseInformation.courseState === 'formation' && this.state.isModalOpen}
-                    closeModal={(isSuccess) => this.onModalClosed('isGiveFeedbackOpen', isSuccess)}
-                    projectName={this.state.projectGroup.name}
-                    isTitleSRS={this.state.isFeedbackSRS}
-                    text={this.state.currentFeedbackText}
-                    grade={this.state.currentFeedbackGrade}
-                    onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
-                    onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
-                />
-                <FormedGroupModal
-                    isOpen={dummyCourseInformation.courseState === 'formed' && this.state.isModalOpen}
-                    closeModal={(isSuccess) => this.onModalClosed('isGiveFeedbackOpen', isSuccess)}
-                    projectName={this.state.projectGroup.name}
-                    isTitleSRS={this.state.isFeedbackSRS}
-                    text={this.state.currentFeedbackText}
-                    grade={this.state.currentFeedbackGrade}
-                    onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
-                    onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
-                />
-            </>
-        );
-    };
-
     render() {
         return (
-            <Form>
-                <Form.Group>
-                    <h1>{this.settingTitle}</h1>
-                </Form.Group>
-                <Divider />
-                <Form.Group>
-                    <Form.Field width={3}>
-                        <label for="code">Code:</label>{' '}
-                        <Form.Input
-                            value={this.state.code}
-                            onChange={this.handleChange}
-                            name="code"
-                            style={{ width: '50%' }}
-                        />
-                    </Form.Field>
-                    <Form.Field width={3}>
-                        <label for="year">Year:</label>
-                        <Form.Input
-                            value={this.state.year}
-                            min="0"
-                            name="year"
-                            style={{ width: '50%' }}
-                            onChange={this.handleChange}
-                            type="number"
-                        />
-                    </Form.Field>
-                    <Form.Field width={3}>
-                        <label for="semester">Semester:</label>
-                        <Form.Dropdown
-                            value={this.state.semester}
-                            onChange={this.handleChange}
-                            name="semester"
-                            inline
-                            placeholder="Select"
-                            selection
-                            options={semesterOptions}
-                        />
-                    </Form.Field>
-                    <Form.Field width={7} textAlign="center">
-                        {this.state.code}
-                        {(this.state.code != '' || this.state.code != '') && '-'}
-                        {this.state.year} {this.state.semester}
-                    </Form.Field>
-                </Form.Group>
-                <Divider />
-                <Grid>
-                    <Grid.Row columns={6}>
-                        <GridColumn>Add Instructor:</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
-                        <GridColumn>Add Teaching Assistants</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
-                    </Grid.Row>
-                    <Grid.Row columns={6}>
-                        <GridColumn>
-                            <div>Add Student as .txt file:</div>
-                            {this.state.sectionNumber > 0 && (
-                                <div>
-                                    Section:
-                                    <Dropdown
-                                        fluid
-                                        selection
-                                        options={this.state.sections}
-                                        defaultValue={this.state.sections[0].value}
-                                    />
-                                </div>
+            <>
+                <Form>
+                    <Form.Group>
+                        <h1>{this.settingTitle}</h1>
+                    </Form.Group>
+                    <Divider />
+                    <Form.Group>
+                        <Form.Field width={3}>
+                            <label for="code">Code:</label>{' '}
+                            <Form.Input
+                                value={this.state.code}
+                                onChange={this.handleChange}
+                                name="code"
+                                style={{ width: '50%' }}
+                            />
+                        </Form.Field>
+                        <Form.Field width={3}>
+                            <label for="year">Year:</label>
+                            <Form.Input
+                                value={this.state.year}
+                                min="0"
+                                name="year"
+                                style={{ width: '50%' }}
+                                onChange={this.handleChange}
+                                type="number"
+                            />
+                        </Form.Field>
+                        <Form.Field width={3}>
+                            <label for="semester">Semester:</label>
+                            <Form.Dropdown
+                                value={this.state.semester}
+                                onChange={this.handleChange}
+                                name="semester"
+                                inline
+                                placeholder="Select"
+                                selection
+                                options={semesterOptions}
+                            />
+                        </Form.Field>
+                        <Form.Field width={7} textAlign="center">
+                            {this.state.code}
+                            {(this.state.code != '' || this.state.code != '') && '-'}
+                            {this.state.year} {this.state.semester}
+                        </Form.Field>
+                    </Form.Group>
+                    <Divider />
+                    <Grid>
+                        <Grid.Row columns={6}>
+                            <GridColumn>Add Instructor:</GridColumn>
+                            <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                            <GridColumn>Add Teaching Assistants</GridColumn>
+                            <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                        </Grid.Row>
+                        <Grid.Row columns={6}>
+                            <GridColumn>
+                                <div>Add Student as .txt file:</div>
+                                {this.state.sectionNumber > 0 && (
+                                    <div>
+                                        Section:
+                                        <Dropdown
+                                            fluid
+                                            selection
+                                            options={this.state.sections}
+                                            defaultValue={this.state.sections[0].value}
+                                        />
+                                    </div>
+                                )}
+                            </GridColumn>
+                            <GridColumn>
+                                <Button>Add File</Button>
+                            </GridColumn>
+                            <GridColumn>
+                                <div>Add Student as a list:</div>
+                                {this.state.sectionNumber > 0 && (
+                                    <div>
+                                        Section:{' '}
+                                        <Dropdown
+                                            fluid
+                                            selection
+                                            options={this.state.sections}
+                                            defaultValue={this.state.sections[0].value}
+                                        />
+                                    </div>
+                                )}
+                            </GridColumn>
+                            <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                        </Grid.Row>
+                    </Grid>
+                    <Divider />
+                    <Form.Group>
+                        <Form.Field>
+                            Group Formation Type:
+                            <Dropdown
+                                style={{ float: 'left' }}
+                                name="groupFormationType"
+                                onChange={this.handleChange}
+                                fluid
+                                selection
+                                options={groupFormationSettings}
+                                value={this.state.groupFormationType}></Dropdown>
+                            {this.state.groupFormationType == '' && (
+                                <Popup
+                                    style={{ float: 'left' }}
+                                    content={'Select one of the group formations'}
+                                    header={'Group Formation'}
+                                    trigger={<Icon name="info circle"></Icon>}
+                                />
                             )}
-                        </GridColumn>
-                        <GridColumn>
-                            <Button>Add File</Button>
-                        </GridColumn>
-                        <GridColumn>
-                            <div>Add Student as a list:</div>
-                            {this.state.sectionNumber > 0 && (
-                                <div>
-                                    Section:{' '}
-                                    <Dropdown
-                                        fluid
-                                        selection
-                                        options={this.state.sections}
-                                        defaultValue={this.state.sections[0].value}
+                            {this.state.groupFormationType == 'By Group Size' && (
+                                <span>
+                                    <Popup
+                                        style={{ float: 'left' }}
+                                        content={'Select one of the group formations'}
+                                        header={'Group Formation'}
+                                        trigger={<Icon name="info circle"></Icon>}
                                     />
-                                </div>
+                                    <div>
+                                        Min:<Input type="number"></Input> Max:<Input type="number"></Input>
+                                        Group Formation Date
+                                        <Input type="date"></Input>
+                                    </div>
+                                </span>
                             )}
-                        </GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
-                    </Grid.Row>
-                </Grid>
-                <Divider />
-                <Form.Group>
+                            {this.state.groupFormationType == 'By Group Number' && (
+                                <span>
+                                    <Popup
+                                        style={{ float: 'left' }}
+                                        content={'Select one of the group formations'}
+                                        header={'Group Formation'}
+                                        trigger={<Icon name="info circle"></Icon>}
+                                    />
+                                    <div>
+                                        Group Number:<Input type="number"></Input>
+                                        Group Formation Date
+                                        <Input type="date"></Input>
+                                    </div>
+                                </span>
+                            )}
+                        </Form.Field>
+                    </Form.Group>
+                    <Divider />
+                    <Button>Change Group Settings</Button>
+                    <Divider />
+                    <h1>Change Groups</h1>
+                    Section:
                     <Form.Field>
-                        Group Formation Type:
                         <Dropdown
-                            style={{ float: 'left' }}
-                            name="groupFormationType"
-                            onChange={this.handleChange}
                             fluid
                             selection
-                            options={groupFormationSettings}
-                            value={this.state.groupFormationType}></Dropdown>
-                        {this.state.groupFormationType == '' && (
-                            <Popup
-                                style={{ float: 'left' }}
-                                content={'Select one of the group formations'}
-                                header={'Group Formation'}
-                                trigger={<Icon name="info circle"></Icon>}
-                            />
-                        )}
-                        {this.state.groupFormationType == 'By Group Size' && (
-                            <span>
-                                <Popup
-                                    style={{ float: 'left' }}
-                                    content={'Select one of the group formations'}
-                                    header={'Group Formation'}
-                                    trigger={<Icon name="info circle"></Icon>}
-                                />
-                                <div>
-                                    Min:<Input type="number"></Input> Max:<Input type="number"></Input>
-                                    Group Formation Date
-                                    <Input type="date"></Input>
-                                </div>
-                            </span>
-                        )}
-                        {this.state.groupFormationType == 'By Group Number' && (
-                            <span>
-                                <Popup
-                                    style={{ float: 'left' }}
-                                    content={'Select one of the group formations'}
-                                    header={'Group Formation'}
-                                    trigger={<Icon name="info circle"></Icon>}
-                                />
-                                <div>
-                                    Group Number:<Input type="number"></Input>
-                                    Group Formation Date
-                                    <Input type="date"></Input>
-                                </div>
-                            </span>
-                        )}
+                            options={this.state.sections}
+                            defaultValue={this.state.sections[0].value}
+                        />
                     </Form.Field>
-                </Form.Group>
-                <Divider />
-                <Button>Change Group Settings</Button>
-                <Divider />
-                <h1>Change Groups</h1>
-                Section:
-                <Form.Field>
-                    <Dropdown
-                        fluid
-                        selection
-                        options={this.state.sections}
-                        defaultValue={this.state.sections[0].value}
-                    />
-                </Form.Field>
-                <Divider />
-                {dummyCourseInformation.courseState === 'formation' &&
-                    convertUnformedGroupsToBriefList(dummyGroupsInFormation)}
-                {dummyCourseInformation.courseState === 'formed' &&
-                    convertFormedGroupsToBriefList(dummyGroupsInFormation)}
-                {this.getModals}
-            </Form>
+                    <Divider />
+                    {dummyCourseInformation.courseState === 'formation' &&
+                        convertUnformedGroupsToBriefList({
+                            groups: dummyGroupsInFormation,
+                        })}
+                    {dummyCourseInformation.courseState === 'formed' &&
+                        convertFormedGroupsToBriefList({
+                            groups: dummyGroupsInFormation,
+                        })}
+                </Form>
+            </>
         );
     }
 }
