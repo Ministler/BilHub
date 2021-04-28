@@ -175,5 +175,17 @@ namespace backend.Controllers
             }
 
         }
+        [HttpPost]
+
+        [Route("{submissionId}")]
+        public async Task<IActionResult> Comment(int submissionId, string comment, decimal grade, decimal maxGrade)
+        {
+            ServiceResponse<string> response = await _commentService.Add(new AddCommentDto { CommentedSubmissionId = submissionId, CommentText = comment, Grade = grade, MaxGrade = maxGrade });
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
     }
 }

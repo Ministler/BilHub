@@ -4,6 +4,7 @@ namespace backend.Models
     {
         public User GradingUser { get; set; }
         public int GradingUserId { get; set; }
+        public string Description { get; set; }
         public ProjectGroup GradedProjectGroup { get; set; }
         public int GradedProjectGroupID { get; set; }
     }

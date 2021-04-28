@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
+using System.Collections.Generic;
+using backend.Services.CommentServices;
 
 namespace backend.Services.SubmissionServices
 {
@@ -17,13 +19,15 @@ namespace backend.Services.SubmissionServices
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly ICommentService _commentservice;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebHostEnvironment _hostingEnvironment;
-        public SubmissionService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
+        public SubmissionService(IMapper mapper, ICommentService commentservice, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;
             _mapper = mapper;
+            _commentservice = commentservice;
             _hostingEnvironment = hostingEnvironment;
         }
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -93,7 +97,7 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<string>> SubmitAssignment(AddSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
             if (submission == null)
             {
                 response.Data = "Bad Request";
@@ -109,6 +113,13 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
+            if (submission.HasSubmission && DateTime.Compare(submission.AffiliatedAssignment.DueDate, DateTime.Now) < 0)
+            {
+                response.Data = "Not allowed";
+                response.Message = "You can not change your submission after deadline";
+                response.Success = false;
+                return response;
+            }
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
                 "StaticFiles/Submissions", submission.CourseId,
                 submission.SectionId, submission.AffiliatedAssignmentId, submission.AffiliatedGroupId));
@@ -119,8 +130,11 @@ namespace backend.Services.SubmissionServices
             {
                 string oldfile = Directory.GetFiles(target).FirstOrDefault();
                 string extension = Path.GetExtension(dto.File.FileName);
-                var filePath = Path.Combine(target, string.Format("Course{0}-Section{1}-Group{2}-Assignment{3}"
-                    , submission.CourseId, submission.SectionId, submission.AffiliatedGroupId, submission.AffiliatedAssignmentId) + extension);
+                Course course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == submission.CourseId);
+                Section section = await _context.Sections.FirstOrDefaultAsync(s => s.Id == submission.SectionId);
+                var filePath = Path.Combine(target, string.Format("{0}_Section{1}_Group{2}_{3}"
+                    , course.Name.Trim().Replace(" ", "_"), section.SectionNo, submission.AffiliatedGroupId,
+                    submission.AffiliatedAssignment.Title.Trim().Replace(" ", "_")) + extension);
                 submission.FilePath = filePath;
                 submission.UpdatedAt = DateTime.Now;
                 submission.HasSubmission = true;
@@ -141,7 +155,7 @@ namespace backend.Services.SubmissionServices
             return response;
         }
 
-        public async Task<ServiceResponse<string>> DeleteSubmssion(DeleteSubmissionFIleDto dto)
+        public async Task<ServiceResponse<string>> DeleteSubmissionFile(DeleteSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
@@ -180,6 +194,141 @@ namespace backend.Services.SubmissionServices
             submission.UpdatedAt = DateTime.Now;
             _context.Submissions.Update(submission);
             await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> DeleteWithForce(int submissionId)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            Submission submission = await _context.Submissions.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = "Bad Request";
+                response.Message = "There is no submission with this Id";
+                response.Success = false;
+                return response;
+            }
+            foreach (int commentId in submission.Comments.Select(c => c.Id))
+                await _commentservice.DeleteWithForce(commentId);
+            if (!submission.HasSubmission)
+            {
+                response.Data = "Not found";
+                response.Message = "There is no submission file for this submission";
+                response.Success = false;
+                return response;
+            }
+
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
+                "StaticFiles/Submissions", submission.CourseId,
+                submission.SectionId, submission.AffiliatedAssignmentId, submission.AffiliatedGroupId));
+            var filePath = Directory.GetFiles(target).FirstOrDefault();
+            submission.FilePath = null;
+            submission.HasSubmission = false;
+            File.Delete(filePath);
+            response.Data = target;
+            response.Message = "file succesfully deleted.";
+            submission.UpdatedAt = DateTime.Now;
+            _context.Submissions.Update(submission);
+            await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<string>>> DownloadNotGradedSubmissions(GetUngradedSubmissionFilesDto dto)
+        {
+            ServiceResponse<IEnumerable<string>> response = new ServiceResponse<IEnumerable<string>>();
+            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Course course = await _context.Courses.Include(u => u.Instructors).FirstOrDefaultAsync(c => c.Id == dto.CourseId);
+            if (course == null)
+            {
+                response.Data = null;
+                response.Message = "There is no course under this Id";
+                response.Success = false;
+                return response;
+            }
+            if (course.Instructors.FirstOrDefault(i => i.UserId == user.Id) == null && user.UserType == UserTypeClass.Student)
+            {
+                response.Data = null;
+                response.Message = "You are not authorized for this endpoint";
+                response.Success = false;
+                return response;
+            }
+            response.Data = _context.Submissions.Include(s => s.AffiliatedAssignment)
+                .Where(s => !s.IsGraded && s.AffiliatedAssignment.IsItGraded).Select(s => s.FilePath);
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> AddSubmission(AddSubmissionDto addSubmissionDto)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == addSubmissionDto.AffiliatedAssignmentId);
+            if (assignment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no assgnment under this Id";
+                response.Success = false;
+                return response;
+            }
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(pg => pg.GroupMembers)
+                .FirstOrDefaultAsync(pg => pg.GroupMembers.Any(pgu => pgu.UserId == user.Id)
+                   && pg.AffiliatedCourseId == assignment.AfilliatedCourseId
+                );
+            if (projectGroup == null)
+            {
+                response.Data = null;
+                response.Message = "You are not authorized for this endpoint";
+                response.Success = false;
+                return response;
+            }
+            Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.AffiliatedAssignmentId == addSubmissionDto.AffiliatedAssignmentId);
+            if (submission != null)
+            {
+                response.Data = null;
+                response.Message = "You already have a submission for this assignment";
+                response.Success = false;
+                return response;
+            }
+            submission = new Submission
+            {
+                HasSubmission = false,
+                AffiliatedAssignmentId = assignment.Id,
+                CourseId = assignment.AfilliatedCourseId,
+                IsGraded = assignment.IsItGraded,
+                SrsGrade = 0,
+                SectionId = projectGroup.AffiliatedSectionId,
+                Description = addSubmissionDto.Description,
+                AffiliatedGroupId = projectGroup.Id,
+                UpdatedAt = DateTime.Now,
+                FilePath = "",
+
+            };
+            _context.Submissions.Add(submission);
+            await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> Delete(int submissionId)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = "Bad Request";
+                response.Message = "There is no submission with this Id";
+                response.Success = false;
+                return response;
+            }
+            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(ss => ss.Id == GetUserId());
+            if (!user.ProjectGroups.Any(pgu => pgu.ProjectGroupId == submission.AffiliatedGroupId))
+            {
+                response.Data = "Not allowed";
+                response.Message = "You are not allowed to delete file for this submission";
+                response.Success = false;
+                return response;
+            }
+            await DeleteWithForce(submissionId);
+            _context.Submissions.Remove(submission);
             return response;
         }
     }

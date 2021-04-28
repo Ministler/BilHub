@@ -12,9 +12,8 @@ namespace backend.Models
         }
         public int Id { get; set; }
         public string Title { get; set; }
-        public Section AffiliatedSection { get; set; }
-        public int AffiliatedSectionId { get; set; }
-        public int CourseId { get; set; }
+        public Course AfilliatedCourse { get; set; }
+        public int AfilliatedCourseId { get; set; }
         public string AssignmentDescription { get; set; }
         public string FilePath { get; set; }
         public DateTime DueDate { get; set; }

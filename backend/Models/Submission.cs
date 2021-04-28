@@ -11,7 +11,10 @@ namespace backend.Models
             Comments = new Collection<Comment>();
         }
         public int Id { get; set; }
+        public string Description { get; set; }
         public Assignment AffiliatedAssignment { get; set; }
+        public bool IsGraded { get; set; }
+        public decimal SrsGrade { get; set; }
         public int AffiliatedAssignmentId { get; set; }
         public ProjectGroup AffiliatedGroup { get; set; }
         public int AffiliatedGroupId { get; set; }

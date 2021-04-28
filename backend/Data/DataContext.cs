@@ -24,10 +24,16 @@ namespace backend.Data
         public DbSet<ProjectGroupUser> ProjectGroupUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Submission>()
-                .HasOne(s => s.AffiliatedAssignment)
-                .WithMany(a => a.Submissions)
-                .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Assignment>()
+                .HasMany(a => a.Submissions)
+                .WithOne(s => s.AffiliatedAssignment)
+                .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.Cascade);
+
+            // modelBuilder.Entity<Submission>()
+            //     .HasOne(s => s.AffiliatedAssignment)
+            //     .WithMany(a => a.Submissions)
+            //     .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Submission>()
                 .HasOne(s => s.AffiliatedGroup)
@@ -74,8 +80,7 @@ namespace backend.Data
                 new Assignment
                 {
                     Id = 3,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
+                    AfilliatedCourseId = 1,
                     AssignmentDescription = "Odev iteration 1",
                     DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
@@ -87,8 +92,7 @@ namespace backend.Data
                 }, new Assignment
                 {
                     Id = 4,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
+                    AfilliatedCourseId = 1,
                     AssignmentDescription = "Odev iteration 2",
                     DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
@@ -641,7 +645,7 @@ namespace backend.Data
                 }, new ProjectGroup
                 {
                     Id = 3,
-                    AffiliatedSectionId = 1,
+                    AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
@@ -650,7 +654,7 @@ namespace backend.Data
                 }, new ProjectGroup
                 {
                     Id = 4,
-                    AffiliatedSectionId = 2,
+                    AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
@@ -733,8 +737,7 @@ namespace backend.Data
                 new Assignment
                 {
                     Id = 1,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
+                    AfilliatedCourseId = 1,
                     AssignmentDescription = "Odev",
                     DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
@@ -746,8 +749,7 @@ namespace backend.Data
                 }, new Assignment
                 {
                     Id = 2,
-                    AffiliatedSectionId = 1,
-                    CourseId = 2,
+                    AfilliatedCourseId = 2,
                     AssignmentDescription = "315 proje",
                     DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,

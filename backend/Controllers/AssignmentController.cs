@@ -27,10 +27,10 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Route("File/{sectionId}/{assignmentId}")]
-        public async Task<IActionResult> SubmitFile(IFormFile file, int sectionId, int assignmentId)
+        [Route("File/{assignmentId}")]
+        public async Task<IActionResult> SubmitFile(IFormFile file, int assignmentId)
         {
-            AddAssignmentFileDto dto = new AddAssignmentFileDto { File = file, SectionId = sectionId, AssignmentId = assignmentId };
+            AddAssignmentFileDto dto = new AddAssignmentFileDto { File = file, AssignmentId = assignmentId };
             ServiceResponse<string> response = await _assignmentService.SubmitAssignmentFile(dto);
             if (response.Success)
             {
@@ -38,6 +38,29 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitAssignment(AddAssignmentDto assignmentDto)
+        {
+            ServiceResponse<string> response = await _assignmentService.SubmitAssignment(assignmentDto);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+        [HttpDelete]
+        [Route("{assignmentId}")]
+        public async Task<IActionResult> DeleteAssignment(int assignmentId)
+        {
+            ServiceResponse<string> response = await _assignmentService.DeleteAssignment(new DeleteAssignmentDto { AssignmentId = assignmentId });
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
 
         [HttpDelete]
         [Route("File/{assignmentId}")]

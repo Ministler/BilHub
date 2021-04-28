@@ -230,5 +230,126 @@ namespace backend.Services.CommentServices
             await _context.SaveChangesAsync();
             return response;
         }
+
+        public async Task<ServiceResponse<string>> DeleteWithForce(int commentId)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Comment comment = await _context.Comments.Include(c => c.CommentedSubmission).FirstOrDefaultAsync(s => s.Id == commentId);
+            if (comment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no comment with this Id";
+                response.Success = false;
+                return response;
+            }
+            if (!comment.FileAttachmentAvailability)
+            {
+                response.Data = null;
+                response.Message = "This user has not yet submitted his comment as a file for this group yet";
+                response.Success = false;
+                return response;
+            }
+
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
+                "StaticFiles/Feedbacks", comment.CommentedSubmission.CourseId,
+                comment.CommentedSubmission.SectionId, comment.CommentedSubmissionId, user.Id));
+            Directory.CreateDirectory(target);
+            var filePath = Path.Combine(target, user.Name.Trim().Replace(" ", "_") + "_Feedback.pdf");
+            comment.FilePath = null;
+            comment.FileAttachmentAvailability = false;
+            File.Delete(filePath);
+            response.Data = target;
+            response.Message = "file succesfully deleted.";
+            comment.CreatedAt = DateTime.MinValue;
+            _context.Comments.Update(comment);
+            await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> Delete(int commentId)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Comment comment = await _context.Comments.Include(c => c.CommentedSubmission).FirstOrDefaultAsync(s => s.Id == commentId);
+            if (comment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no comment with this Id";
+                response.Success = false;
+                return response;
+            }
+            if (comment.CommentedUserId != GetUserId())
+            {
+                response.Data = null;
+                response.Message = "You are not authorized for this endpoint";
+                response.Success = false;
+                return response;
+            }
+
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
+                "StaticFiles/Feedbacks", comment.CommentedSubmission.CourseId,
+                comment.CommentedSubmission.SectionId, comment.CommentedSubmissionId, user.Id));
+            Directory.CreateDirectory(target);
+            var filePath = Path.Combine(target, user.Name.Trim().Replace(" ", "_") + "_Feedback.pdf");
+            File.Delete(filePath);
+            response.Data = target;
+            response.Message = "Comment succesfully deleted.";
+            _context.Comments.Remove(comment);
+            await _context.SaveChangesAsync();
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> Add(AddCommentDto addCommentDto)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == addCommentDto.CommentedSubmissionId);
+            if (submission == null)
+            {
+                response.Data = null;
+                response.Message = "There is no comment with this Id";
+                response.Success = false;
+                return response;
+            }
+            if (submission.Comments.Any(c => c.CommentedUserId == GetUserId()))
+            {
+                response.Data = null;
+                response.Message = "You already commented on this submission";
+                response.Success = false;
+                return response;
+            }
+            //user comment
+            Course course = await _context.Courses.Include(c => c.Instructors).FirstOrDefaultAsync(c => c.Id == submission.AffiliatedAssignment.AfilliatedCourseId);
+            if (course == null)
+            {
+                response.Data = null;
+                response.Message = "There is a mistake about course";
+                response.Success = false;
+                return response;
+            }
+            //&& user.UserType == UserTypeClass.Student && submission.AffiliatedAssignment
+            if (!course.Instructors.Any(cu => cu.UserId == user.Id))
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to make comment";
+                response.Success = false;
+                return response;
+            }
+            Comment comment = new Comment
+            {
+                CommentedSubmissionId = addCommentDto.CommentedSubmissionId,
+                CommentText = addCommentDto.CommentText,
+                CreatedAt = DateTime.Now,
+                CommentedUserId = user.Id,
+                FilePath = "",
+                Grade = addCommentDto.Grade,
+                MaxGrade = addCommentDto.MaxGrade,
+                FileAttachmentAvailability = false
+            };
+            await _context.Comments.AddAsync(comment);
+            await _context.SaveChangesAsync();
+            return response;
+        }
     }
 }

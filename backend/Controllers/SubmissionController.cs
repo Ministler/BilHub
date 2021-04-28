@@ -30,10 +30,61 @@ namespace backend.Controllers
 
             _hostingEnvironment = hostingEnvironment;
         }
-
         [HttpGet]
-        [Route("File/{courseId}/{sectionId}/{assignmentId}")]
-        public async Task<ActionResult> GetAllSubmissions(int courseId, int sectionId, int assignmentId)
+        [Route("File/Ungraded/{courseId}")]
+        public async Task<ActionResult> GetUngradedSubmissions(int courseId)
+        {
+            GetUngradedSubmissionFilesDto dto = new GetUngradedSubmissionFilesDto { CourseId = courseId };
+            ServiceResponse<IEnumerable<string>> response = await _submissionService.DownloadNotGradedSubmissions(dto);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            List<string> files = response.Data.ToList();
+
+            var webRoot = _hostingEnvironment.ContentRootPath;
+            var fileName = "Submissions.zip";
+            var tempOutput = webRoot + "/StaticFiles/Submissions/" + fileName;
+            using (ZipOutputStream zipOutputStream = new ZipOutputStream(System.IO.File.Create(tempOutput)))
+            {
+                zipOutputStream.SetLevel(9);
+                byte[] buffer = new byte[4096];
+                for (int i = 0; i < files.Count; i++)
+                {
+                    ZipEntry zipEntry = new ZipEntry(Path.GetFileName(files[i]));
+                    zipEntry.DateTime = DateTime.Now;
+                    zipEntry.IsUnicodeText = true;
+                    zipOutputStream.PutNextEntry(zipEntry);
+                    using (FileStream fileStream = System.IO.File.OpenRead(files[i]))
+                    {
+                        int sourceBytes;
+                        do
+                        {
+                            sourceBytes = fileStream.Read(buffer, 0, buffer.Length);
+                            zipOutputStream.Write(buffer, 0, sourceBytes);
+                        } while (sourceBytes > 0);
+                    }
+                }
+
+                zipOutputStream.Finish();
+                zipOutputStream.Flush();
+                zipOutputStream.Close();
+
+                byte[] finalResult = System.IO.File.ReadAllBytes(tempOutput);
+                if (System.IO.File.Exists(tempOutput))
+                {
+                    System.IO.File.Delete(tempOutput);
+                }
+                if (finalResult == null || !finalResult.Any())
+                {
+                    return BadRequest(response);
+                }
+                return File(finalResult, "application/zip", fileName);
+            }
+        }
+        [HttpGet]
+        [Route("File/{courseId}/{sectionId?}/{assignmentId?}")]
+        public async Task<ActionResult> GetAllSubmissions(int courseId, int sectionId = -1, int assignmentId = -1)
         {
             GetSubmissionsFileDto dto = new GetSubmissionsFileDto { CourseId = courseId, SectionId = sectionId, AssignmentId = assignmentId };
             ServiceResponse<string> response = await _submissionService.DownloadAllSubmissions(dto);
@@ -98,6 +149,20 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [Route("{assignmentId}")]
+        public async Task<IActionResult> SubmitAssignment(int assignmentId, string description)
+        {
+            AddSubmissionDto dto = new AddSubmissionDto { Description = description, AffiliatedAssignmentId = assignmentId };
+            ServiceResponse<string> response = await _submissionService.AddSubmission(dto);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+
+        }
+
+        [HttpPost]
         [Route("File/{submissionId}")]
         public async Task<IActionResult> Submit(IFormFile file, int submissionId)
         {
@@ -139,8 +204,8 @@ namespace backend.Controllers
         [Route("File/{submissionId}")]
         public async Task<IActionResult> DeleteSubmission(int submissionId)
         {
-            DeleteSubmissionFIleDto dto = new DeleteSubmissionFIleDto { SubmissionId = submissionId };
-            ServiceResponse<string> response = await _submissionService.DeleteSubmssion(dto);
+            DeleteSubmissionFileDto dto = new DeleteSubmissionFileDto { SubmissionId = submissionId };
+            ServiceResponse<string> response = await _submissionService.DeleteSubmissionFile(dto);
             if (response.Success)
             {
                 return Ok(response);
