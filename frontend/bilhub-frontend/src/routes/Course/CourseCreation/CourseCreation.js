@@ -8,7 +8,6 @@ import {
     Segment,
     GridColumn,
     Button,
-    GridRow,
     Icon,
     Form,
     Message,
@@ -47,11 +46,13 @@ const groupFormationSettings = [
         text: 'By Group Number',
         value: 'By Group Number',
     },
+    {
+        key: 'By Hard Coded',
+        text: 'By Hard Coded',
+        value: 'By Hard Coded',
+    },
 ];
 
-var code = '';
-var year = '';
-var semester = '';
 export class CourseCreation extends Component {
     constructor(props) {
         super(props);
@@ -59,6 +60,7 @@ export class CourseCreation extends Component {
             code: '',
             year: '',
             semester: '',
+
             isSectionless: false,
             sectionNumber: 1,
             sections: [
@@ -68,18 +70,37 @@ export class CourseCreation extends Component {
                     value: 1,
                 },
             ],
+
             instructorList: [],
             TAList: [],
             studentManualList: [],
             studentAutoList: [],
             groupFormationType: '',
         };
-        this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(event, data) {
+    validations = (data) => {
+        console.log(data);
+        const name = data.name;
+        switch (name) {
+            case 'code':
+                if (String(data.value).length > 7) return false;
+                break;
+        }
+
+        return true;
+    };
+
+    handleChange = (event, data) => {
+        event.preventDefault();
+
+        if (!this.validations(data)) {
+            return;
+        }
+
         const name = data.name;
         var value = '';
+
         if (data.type === 'checkbox') {
             value = data.checked;
             var sectionNumber = value ? 0 : 1;
@@ -90,7 +111,7 @@ export class CourseCreation extends Component {
                 [name]: value,
             });
         }
-    }
+    };
 
     changeSection = (event, data) => {
         var sections = [];
@@ -101,7 +122,7 @@ export class CourseCreation extends Component {
                 value: i,
             });
         }
-        console.log(sections);
+
         this.setState({ sections: sections });
         this.handleChange(event, data);
     };
@@ -117,9 +138,20 @@ export class CourseCreation extends Component {
         );
     }
 
+    onFormSubmit = (e) => {
+        console.log(this.state.sectionNumber);
+        return {
+            courseName: this.state.code + '/' + this.state.year + this.state.semester,
+            isSectionless: this.state.isSectionless,
+            numberOfSection: this.state.sectionNumber, // If sectionless this field is 0
+
+            groupFormationType: this.state.groupFormationType,
+        };
+    };
+
     render() {
         return (
-            <Form>
+            <Form onSubmit={this.onFormSubmit}>
                 <Form.Group>
                     <h1>Create New Course</h1>
                 </Form.Group>
@@ -138,6 +170,7 @@ export class CourseCreation extends Component {
                         <label for="year">Year:</label>
                         <Form.Input
                             min="0"
+                            max="9999"
                             name="year"
                             style={{ width: '50%' }}
                             onChange={this.handleChange}
@@ -267,6 +300,21 @@ export class CourseCreation extends Component {
                             </span>
                         )}
                         {this.state.groupFormationType == 'By Group Number' && (
+                            <span>
+                                <Popup
+                                    style={{ float: 'left' }}
+                                    content={'Select one of the group formations'}
+                                    header={'Group Formation'}
+                                    trigger={<Icon name="info circle"></Icon>}
+                                />
+                                <div>
+                                    Group Number:<Input type="number"></Input>
+                                    Group Formation Date
+                                    <Input type="date"></Input>
+                                </div>
+                            </span>
+                        )}
+                        {this.state.groupFormationType == 'By Hard Coded' && (
                             <span>
                                 <Popup
                                     style={{ float: 'left' }}
