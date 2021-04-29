@@ -127,7 +127,7 @@ class CourseAssignment extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getAssignmentStatistics(dummyAssignmentGrades)}</>,
+            content: <>{getAssignmentStatistics(dummyAssignmentGrades, dummyFinalGrades)}</>,
         };
     };
 
@@ -286,5 +286,16 @@ const dummyAssignmentGrades = {
         { name: 'Website', grades: [46, 87, 24, 10, 94] },
     ],
 };
+
+const dummyFinalGrades = [
+    { group: 'BilHub', grade: 90 },
+    { group: 'BilHub2', grade: 20 },
+    { group: 'BilHub3', grade: 80 },
+    { group: 'BilHubNot', grade: 78 },
+    { group: 'OZCO1000', grade: 80 },
+    { group: 'BilCalendar', grade: 78 },
+    { group: 'Yusuf Keke', grade: 80 },
+    { group: 'Website', grade: 78 },
+];
 
 export default withRouter(CourseAssignment);

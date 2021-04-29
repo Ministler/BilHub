@@ -50,7 +50,7 @@ export const NewCommentModal = (props) => {
                     <Icon name="info" />
                     Please write your feedback below
                 </div>
-                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <TextArea className="FeedbackText" onChange={(e) => props.onTextChange(e)} value={props.text} />
                 <input type="file" />
                 {!props.isTitleSRS ? (
                     <>

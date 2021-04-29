@@ -1,6 +1,5 @@
 .AddSegment {
     position: relative;
-    bottom: -72%;
 }
 
 .PlusButton {
@@ -9,4 +8,19 @@
     border-radius: 3px;
     float: right;
     margin-top: 5px !important;
+}
+
+.CreationForm {
+    width: 60%;
+    margin: auto;
+}
+
+.newCourseName {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.UserList {
+    overflow-y: scroll;
+    height: 120px;
 }
