@@ -38,7 +38,7 @@ export class MyAccordion extends Component {
         });
 
         return (
-            <Accordion className="MyAccordion" styled>
+            <Accordion className="MyAccordion">
                 {accordionSections}
             </Accordion>
         );

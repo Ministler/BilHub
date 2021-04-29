@@ -10,12 +10,10 @@ export const InformationSection = (props) => {
             <div className="clickableChangeColor" onClick={props.onCourseClicked}>
                 <h1>{props.courseName}</h1>
             </div>
-            <div>
-                <h1>
-                    {props.groupNameElement}
-                    <span className="GroupNameEdit"> {props.nameEditIcon} </span>
-                </h1>
-            </div>
+            <h2 style={{display: 'inline'}}>
+                {props.groupNameElement}
+            </h2>
+            <span className="GroupNameEdit"> {props.nameEditIcon} </span>
             <div className="MembersBlock">
                 <div>
                     <h3>Members</h3>
@@ -26,7 +24,7 @@ export const InformationSection = (props) => {
                 <div>
                     <h3>Information</h3>
                 </div>
-                <p className="InformationText">{props.informationElement}</p>
+                <p className="InformationText"  style={{display: 'inline'}}>{props.informationElement} &nbsp;</p>
                 {props.informationEditIcon}
             </div>
         </div>

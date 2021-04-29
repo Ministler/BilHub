@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button } from 'semantic-ui-react';
+import { Icon, Button, Grid } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import {
     NewCommentModal,
@@ -386,8 +386,9 @@ class ProjectAssignment extends Component {
 
     render() {
         return (
-            <div>
-                <Icon onClick={this.onReturnProjectPage} size="huge" name="angle left" />
+            <div class="inline">
+                <Icon onClick={this.onReturnProjectPage} size="big" name="angle left" color="blue" style={{display: 'inline',}}/>
+                <p onClick={this.onReturnProjectPage} style={{display: 'inline', fontSize: "16px", fontWeight: "bold", color: "rgb(33, 133, 208)"}}>Back To Assigments</p>
                 <Tab tabPanes={this.getPaneElements()} />
                 {this.getModals()}
             </div>
@@ -415,8 +416,8 @@ const dummyAssignment = {
 };
 
 const dummySubmissionPage = {
-    isSubmissionAnonim: true,
-    isInGroup: false,
+    isSubmissionAnonim: false,
+    isInGroup: true,
     isTAorInstructor: false,
     canUserComment: true,
     hasSubmission: true,

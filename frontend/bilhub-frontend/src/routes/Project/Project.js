@@ -276,6 +276,7 @@ class Project extends Component {
                         this.onEditModeToggled('nameEditMode');
                     }}
                     name={'check'}
+                    color="blue"
                 />
             ) : (
                 <Icon
@@ -284,6 +285,7 @@ class Project extends Component {
                         this.onEditModeToggled('nameEditMode');
                     }}
                     name={'edit'}
+                    color="blue"
                 />
             );
         }
@@ -315,6 +317,7 @@ class Project extends Component {
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'check'}
+                    color="blue"
                 />
             ) : (
                 <Icon
@@ -323,6 +326,7 @@ class Project extends Component {
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'edit'}
+                    color="blue"
                 />
             );
         }

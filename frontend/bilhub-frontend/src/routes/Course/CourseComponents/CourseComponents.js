@@ -1,32 +1,31 @@
 import React from 'react';
 
 import { convertMembersToMemberElement } from '../../../components';
-
+import './CourseComponents.css';
 import { Button, Modal, Icon, TextArea } from 'semantic-ui-react';
 
 export const InformationSection = (props) => {
     return (
         <div>
             <div>
-                <h1>
+                <h1 style={{display: 'inline'}}>
                     {props.courseName}
-                    {props.courseSettingsIcon}
                 </h1>
-
-                <h3>{props.description}</h3>
+                <span className="CourseNameEdit"> {props.courseSettingsIcon} </span>
+                <p>{props.description}</p>
             </div>
-            <div>
-                <h2>Instructor</h2>
+            <div className="InstructorsBlock">
+                    <h3>Instructors</h3>
                 {convertMembersToMemberElement(props.instructors, props.onUserClicked)}
             </div>
-            <div>
-                <h2>TA's</h2>
+            <div className="TAsBlock">
+                <h3>TA's</h3>
                 {convertMembersToMemberElement(props.TAs, props.onUserClicked)}
             </div>
-            <div>
+            <div className="InformationBlock">
                 <h3>Information</h3>
+                <p  style={{display: 'inline'}}>{props.informationElement} &nbsp;</p>
                 {props.informationEditIcon}
-                <p>{props.informationElement}</p>
             </div>
         </div>
     );

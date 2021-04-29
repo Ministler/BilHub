@@ -69,12 +69,26 @@ export const TabExampleSecondaryPointing = (props) => {
 
 export const ProjectCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement">
+        <Card className="ProjectCardElement" fluid link style={{width: "95%"}}>
             <Card.Content>
                 <Card.Header>
                     <div onClick={props.onProjectClicked}>{props.title}</div>
                 </Card.Header>
-                <Card.Description>{convertMembersToMemberElement(props.members, props.onUserClicked)}</Card.Description>
+                <Card.Description>
+                    <Grid columns={2} divided>
+                        <Grid.Column>
+                            {convertMembersToMemberElement(props.members.slice(0, Math.ceil(props.members.length/2)), props.onUserClicked)}
+                        </Grid.Column>
+                        <Grid.Column>
+                            {convertMembersToMemberElement(props.members.slice(Math.ceil(props.members.length/2)), props.onUserClicked)}
+                        </Grid.Column>
+                    </Grid>
+                    <p style={{ marginTop: '15px' }}>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus a fugit amet rem officia id
+                        voluptate sint cumque hic odit incidunt, cum alias perspiciatis voluptas! Quasi similique
+                        tenetur corporis itaque.
+                    </p>
+                </Card.Description>
             </Card.Content>
             <Card.Content className="ProjectCardExtra">
                 <div className="ProjectGrade">
@@ -87,7 +101,7 @@ export const ProjectCardElement = (props) => {
 
 export const CourseCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement" fluid link>
+        <Card className="ProjectCardElement" fluid link style={{width: "95%"}}>
             <Card.Content>
                 <Card.Header>
                     <div onClick={props.onCourseClicked}>{props.title}</div>

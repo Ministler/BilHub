@@ -178,10 +178,6 @@ class Notifications extends Component {
                     </GridColumn>
                     <GridColumn width={12}>
                         <Tab tabPanes={this.getPaneElements()} />
-                        <div>
-                            {}
-                            {}
-                        </div>
                     </GridColumn>
                 </Grid>
                 {this.getModals()}

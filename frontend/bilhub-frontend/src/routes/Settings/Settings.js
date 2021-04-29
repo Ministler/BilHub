@@ -22,7 +22,9 @@ export class Settings extends Component {
         this.state = {
             user: null,
             segment: 'Profile Settings',
+            sendConformation: false,
             updateState: '',
+            error: '',
         };
     }
 
@@ -37,13 +39,34 @@ export class Settings extends Component {
         else this.setState({ segment: id });
     };
 
-    update = (e) => {
+    updateProfile = (e) => {
         // update data...
+        // change error state if error occures
         this.setState({ updateState: 'Changes are successfully updated' });
     };
 
-    onErrorCleaned = (event) => {
+    updatePassword = (e) => {
+        // update data...
+        // change error state if error occures
+        this.setState({ updateState: 'Changes are successfully updated' });
+    };
+
+    updateEmail = (e) => {
+        // update data...
+        // change error state if error occures
+        this.setState({ updateState: 'Changes are successfully updated' });
+    };
+
+    onInfoClosed = (event) => {
         this.setState({ updateState: '' });
+    };
+
+    onErrorClosed = (event) => {
+        this.setState({ error: '' });
+    };
+
+    sendConformation = (event) => {
+        this.setState({ sendConformation: true });
     };
 
     Tabs = (props) => {
@@ -52,7 +75,7 @@ export class Settings extends Component {
                 <Form class="Sign in form">
                     {props.updateState && (
                         <div class="ui info message" style={{ fontSize: '12px', width: '60%' }}>
-                            <i class="close icon" onClick={this.onErrorCleaned}></i>
+                            <i class="close icon" onClick={this.onInfoClosed}></i>
                             {props.updateState}
                         </div>
                     )}
@@ -68,7 +91,7 @@ export class Settings extends Component {
                         <label style={{ fontSize: '12px' }}>Bio</label>
                         <textarea rows="5" style={{ width: '60%' }}></textarea>
                     </div>
-                    <button class="ui teal button" onClick={this.update}>
+                    <button class="ui teal button" onClick={this.updateProfile}>
                         Update
                     </button>
                 </Form>
@@ -76,11 +99,33 @@ export class Settings extends Component {
         } else if (props.segment === 'Account Settings') {
             return (
                 <Form class="Sign in form">
+                    {props.error && (
+                        <div class="ui negative message" style={{ fontSize: '12px', width: '60%' }}>
+                            <i class="close icon" onClick={this.onErrorClosed}></i>
+                            {props.error}
+                        </div>
+                    )}
                     {props.updateState && (
                         <div class="ui info message" style={{ fontSize: '12px', width: '60%' }}>
-                            <i class="close icon" onClick={this.onErrorCleaned}></i>
+                            <i class="close icon" onClick={this.onInfoClosed}></i>
                             {props.updateState}
                         </div>
+                    )}
+                    <div class="field">
+                        <label style={{ fontSize: '12px' }}>Change Bilkent Email</label>
+                        <Form.Input type="email" name="email" style={{ width: '60%' }} 
+                        action={{content: 'Change', onClick: () => this.sendConformation()}}/>
+                    </div>
+                    { props.sendConformation && (
+                    <div class="field">
+                        <label style={{ fontSize: '12px' }}>Conformation Code</label>
+                        <Form.Input type="text" name="code" style={{ width: '60%' }} />
+                    </div>
+                    )}
+                    { props.sendConformation && (
+                    <button class="ui teal button" onClick={this.updateEmail}>
+                        Update
+                    </button>
                     )}
                     <div class="field">
                         <label style={{ fontSize: '12px' }}>Change Password</label>
@@ -90,7 +135,7 @@ export class Settings extends Component {
                         <label style={{ fontSize: '12px' }}>Retype new Password</label>
                         <Form.Input type="password" name="passwordRe" style={{ width: '60%' }} />
                     </div>
-                    <button class="ui teal button" onClick={this.update}>
+                    <button class="ui teal button" onClick={this.updatePassword}>
                         Update
                     </button>
                 </Form>
@@ -143,7 +188,8 @@ export class Settings extends Component {
                     <div class="eight wide column">
                         <p style={{ fontSize: '30px', marginTop: '-8px' }}>{this.state.segment}</p>
                         <div class="ui divider" style={{ marginTop: '-12px', width: '70%' }}></div>
-                        <this.Tabs segment={this.state.segment} updateState={this.state.updateState}></this.Tabs>
+                        <this.Tabs segment={this.state.segment} updateState={this.state.updateState} error={this.state.error}
+                        sendConformation={this.state.sendConformation}></this.Tabs>
                     </div>
                 </div>
             </div>
