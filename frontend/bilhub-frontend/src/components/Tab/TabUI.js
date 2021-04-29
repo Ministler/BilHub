@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tab } from 'semantic-ui-react';
+import { Tab, Icon } from 'semantic-ui-react';
 
 import { AssignmentCardElement } from '../CardGroup';
 
@@ -47,19 +47,29 @@ export const SubmissionPane = (props) => {
         submissionCard = (
             <AssignmentCardElement
                 title={'Submission'}
-                file={props.submission.file}
+                fileIcon={props.submission.file ? <Icon name="file" /> : null}
                 fileClicked={props.onSubmissionFileClicked}
                 date={props.submission.date}
                 caption={props.assignment.caption}></AssignmentCardElement>
         );
     }
 
+    let statusIcon = null;
+    if (props.assignment.status === 'graded') {
+        statusIcon = <Icon name="check circle outline" />;
+    } else if (props.assignment.status === 'submitted') {
+        statusIcon = <Icon name="clock outline" />;
+    } else if (props.assignment.status === 'notsubmitted') {
+        statusIcon = <Icon name="remove circle" />;
+    }
+
     return (
         <div>
             <AssignmentCardElement
                 title={props.assignment.title}
-                file={props.assignment.file}
-                fileClicked={props.onAssignmentfileClicked}
+                titleIcon={statusIcon}
+                fileIcon={props.assignment.file ? <Icon name="file" /> : null}
+                fileClicked={props.onAssignmentFileClicked}
                 status={props.assignment.status}
                 date={props.assignment.date}
                 publisher={props.assignment.publisher}

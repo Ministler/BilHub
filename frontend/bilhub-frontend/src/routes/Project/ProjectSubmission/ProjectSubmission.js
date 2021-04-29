@@ -44,9 +44,102 @@ class ProjectAssignment extends Component {
             currentFeedbackText: '',
             currentFeedbackFile: null,
             currentFeedbackGrade: 10,
+            currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
         };
     }
+
+    onAssignmentFileClicked = () => {
+        console.log('file');
+    };
+
+    onSubmissionFileClicked = () => {
+        console.log('file');
+    };
+
+    onSubmissionModalClosed = (modalType, isSuccess) => {
+        this.setState({
+            [modalType]: false,
+        });
+        if (!isSuccess) return;
+
+        let request = 'error';
+        if (modalType === 'isAddSubmissionOpen') {
+            request = {
+                submissionId: this.props.match.params.submissionId,
+                file: this.state.submissionFile,
+                submissionCaption: this.state.submissionCaption,
+            };
+        } else if (modalType === 'isEditSubmissionOpen') {
+            request = {
+                submissionId: this.props.match.params.submissionId,
+                file: this.state.submissionFile,
+                submissionCaption: this.state.submissionCaption,
+            };
+        } else if (modalType === 'isDeleteSubmissionOpen') {
+            request = {
+                submissionId: this.props.match.params.submissionId,
+            };
+        }
+
+        console.log(request);
+    };
+
+    onModalClosed = (modalType, isSuccess) => {
+        this.setState({
+            [modalType]: false,
+        });
+        if (!isSuccess) return;
+
+        let request = 'error';
+        if (this.state.isFeedbackSRS) {
+            if (modalType === 'isGiveFeedbackOpen') {
+                request = {
+                    grade: this.state.currentFeedbackGrade,
+                    maxGrade: this.state.currentMaxFeedbackGrade,
+                    userId: this.props.userId,
+                    submissionId: this.props.match.params.submissionId,
+                };
+            } else if (modalType === 'isEditFeedbackOpen') {
+                request = {
+                    grade: this.state.currentFeedbackGrade,
+                    maxGrade: this.state.currentMaxFeedbackGrade,
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            } else if (modalType === 'isDeleteFeedbackOpen') {
+                request = {
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            }
+        } else {
+            if (modalType === 'isGiveFeedbackOpen') {
+                request = {
+                    newGrade: this.state.currentFeedbackGrade,
+                    newText: this.state.currentFeedbackText,
+                    newFile: this.state.currentFeedbackFile,
+                    userId: this.props.userId,
+                    submissionId: this.props.match.params.submissionId,
+                };
+            } else if (modalType === 'isEditFeedbackOpen') {
+                request = {
+                    newGrade: this.state.currentFeedbackGrade,
+                    newText: this.state.currentFeedbackText,
+                    newFile: this.state.currentFeedbackFile,
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            } else if (modalType === 'isDeleteFeedbackOpen') {
+                request = {
+                    commentId: this.state.currentFeedbackId,
+                    userId: this.props.userId,
+                };
+            }
+        }
+
+        console.log(request);
+    };
 
     componentDidMount() {
         this.setState({
@@ -62,15 +155,7 @@ class ProjectAssignment extends Component {
         this.props.history.replace('/project/' + this.props.projectId);
     };
 
-    onAssignmentFileClicked = () => {
-        console.log('file');
-    };
-
-    onSubmissionFileClicked = () => {
-        console.log('file');
-    };
-
-    onSubmissionmodalOpened = (modalType) => {
+    onSubmissionModalOpened = (modalType) => {
         if (modalType) {
             this.setState({
                 [modalType]: true,
@@ -80,7 +165,7 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onExistingSubmissionmodalOpened = (modalType, submissionCaption, submissionFile) => {
+    onExistingSubmissionModalOpened = (modalType, submissionCaption, submissionFile) => {
         if (modalType) {
             this.setState({
                 [modalType]: true,
@@ -90,12 +175,6 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onSubmissionModalClosed = (modalType, isSuccess) => {
-        this.setState({
-            [modalType]: false,
-        });
-        if (!isSuccess) return;
-    };
     onCurrentFeedbackTextChanged = (e) => {
         e.preventDefault();
         this.setState({
@@ -107,6 +186,13 @@ class ProjectAssignment extends Component {
         e.preventDefault();
         this.setState({
             currentFeedbackGrade: e.target.value,
+        });
+    };
+
+    onCurrentFeedbackMaxGradeChanged = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade: e.target.value,
         });
     };
 
@@ -133,20 +219,31 @@ class ProjectAssignment extends Component {
             this.setState({
                 [modalType]: true,
                 currentFeedbackGrade: 10,
+                currentMaxFeedbackGrade: 10,
                 currentFeedbackFile: 'empty',
                 currentFeedbackText: '',
             });
         }
     };
 
-    onmodalOpenedWithCommentOpened = (modalType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
+    onModalOpenedWithCommentOpened = (
+        modalType,
+        isFeedbackSRS,
+        commentId,
+        commentText,
+        commentGrade,
+        commentFile,
+        SRSMaxGrade
+    ) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
+                currentMaxFeedbackGrade: SRSMaxGrade,
             });
         } else {
             this.setState({
                 isFeedbackSRS: false,
+                currentMaxFeedbackGrade: 10,
             });
         }
 
@@ -161,25 +258,11 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onSubmissionModalClosed = (modalType, isSuccess) => {
-        this.setState({
-            [modalType]: false,
-        });
-        if (!isSuccess) return;
-    };
-
-    onModalClosed = (modalType, isSuccess) => {
-        this.setState({
-            [modalType]: false,
-        });
-        if (!isSuccess) return;
-    };
-
     getSubmissionButtons = () => {
         if (this.state.submissionPage?.isInGroup) {
             if (!this.state.submissionPage.hasSubmission) {
                 return (
-                    <Button onClick={() => this.onSubmissionmodalOpened('isAddSubmissionOpen')}>
+                    <Button onClick={() => this.onSubmissionModalOpened('isAddSubmissionOpen')}>
                         Add New Submission
                     </Button>
                 );
@@ -188,7 +271,7 @@ class ProjectAssignment extends Component {
                     <>
                         <Button
                             onClick={() =>
-                                this.openExistingSubmissionmodal(
+                                this.onExistingSubmissionModalOpened(
                                     'isEditSubmissionOpen',
                                     this.state.submission.caption,
                                     this.state.submission.file
@@ -198,7 +281,7 @@ class ProjectAssignment extends Component {
                         </Button>
                         <Button
                             onClick={() =>
-                                this.openExistingSubmissionmodal(
+                                this.onExistingSubmissionModalOpened(
                                     'isDeleteSubmissionOpen',
                                     this.state.submission.caption,
                                     this.state.submission.file
@@ -261,9 +344,10 @@ class ProjectAssignment extends Component {
                 feedbacksAccordion={getFeedbacksAsAccordion(
                     this.state.feedbacks,
                     this.state.submissionPage?.isTAorInstructor,
-                    this.onmodalOpenedWithCommentOpened,
+                    this.onModalOpenedWithCommentOpened,
                     this.onAuthorClicked,
-                    this.props.userId
+                    this.props.userId,
+                    this.onModalOpened
                 )}
                 newCommentButton={newCommentButton}
             />
@@ -334,6 +418,7 @@ class ProjectAssignment extends Component {
             <>
                 <NewSubmissionModal
                     isOpen={this.state.isAddSubmissionOpen}
+                    instructions={this.state.assignment.submissionInfo}
                     closeModal={(isSuccess) => this.onSubmissionModalClosed('isAddSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
@@ -341,10 +426,11 @@ class ProjectAssignment extends Component {
                 />
                 <EditSubmissionModal
                     isOpen={this.state.isEditSubmissionOpen}
+                    instructions={this.state.assignment.submissionInfo}
                     closeModal={(isSuccess) => this.onSubmissionModalClosed('isEditSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
-                    onTextChange={(e) => this.onSubmissionCaptionChange(e)}
+                    onTextChange={(e) => this.onSubmissionCaptionChanged(e)}
                 />
                 <DeleteSubmissionModal
                     isOpen={this.state.isDeleteSubmissionOpen}
@@ -359,8 +445,10 @@ class ProjectAssignment extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                     onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
                     onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                    onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 />
                 <EditCommentModal
                     isOpen={this.state.isEditFeedbackOpen}
@@ -369,8 +457,10 @@ class ProjectAssignment extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                     onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
                     onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                    onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 />
                 <DeleteCommentModal
                     isOpen={this.state.isDeleteFeedbackOpen}
@@ -379,6 +469,7 @@ class ProjectAssignment extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                 />
             </>
         );
@@ -407,7 +498,6 @@ const dummyAssignment = {
     caption:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
     publisher: 'Erdem Tuna',
-    publisherId: 1,
     publishmentDate: '13 March 2023 12:00',
     dueDate: '16 April 2025, 23:59',
     file: 'deneme',
@@ -415,11 +505,11 @@ const dummyAssignment = {
 };
 
 const dummySubmissionPage = {
-    isSubmissionAnonim: true,
-    isInGroup: false,
-    isTAorInstructor: false,
+    isSubmissionAnonim: false,
+    isInGroup: true,
+    isTAorInstructor: true,
     canUserComment: true,
-    hasSubmission: true,
+    hasSubmission: false,
 };
 
 const dummySubmission = {
@@ -436,7 +526,7 @@ const dummyGrades = {
             name: 'Eray Tüzün',
             type: 'Project Instructor',
             grade: '9.5',
-            userId: 1,
+            userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
@@ -465,13 +555,8 @@ const dummyGrades = {
 
 const dummyFeedbacks = {
     SRSResult: {
-        name: 'Elgun Jabrayilzade',
-        caption: 'Please download the complete feedback file',
-        file: 'dummyFile',
-        date: '11 March 2021',
-        commentId: 1,
-        userId: 1,
-        grade: 9.5,
+        grade: '9.5',
+        maxGrade: '11',
     },
     InstructorComments: [
         {
@@ -481,7 +566,7 @@ const dummyFeedbacks = {
             grade: '9.5',
             date: '11 March 2021',
             commentId: 3,
-            userId: 1,
+            userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
@@ -515,15 +600,13 @@ const dummyFeedbacks = {
     ],
     StudentComments: [
         {
-            name: 'Eray Tüzün',
+            //name: 'Eray Tüzün',
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
-            grade: '9.5',
+            //grade: '9.5',
             date: '11 March 2021',
             commentId: 5,
             userId: 1,
-            userGroupName: 'ClassRoom Helper',
-            userGroupId: 5,
         },
         {
             name: 'Alper Sarıkan',
@@ -533,8 +616,6 @@ const dummyFeedbacks = {
             file: 'dummyFile',
             grade: '8.1',
             userId: 2,
-            userGroupName: 'ProjectManager',
-            userGroupId: 4,
         },
         {
             name: 'Eray Tüzün',

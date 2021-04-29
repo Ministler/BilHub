@@ -78,6 +78,7 @@ class Project extends Component {
                     grade: this.state.currentFeedbackGrade,
                     maxGrade: this.state.currentMaxFeedbackGrade,
                     userId: this.props.userId,
+                    groupId: this.props.match.params.projectId,
                 };
             } else if (modalType === 'isEditFeedbackOpen') {
                 request = {
@@ -99,6 +100,7 @@ class Project extends Component {
                     newText: this.state.currentFeedbackText,
                     newFile: this.state.currentFeedbackFile,
                     userId: this.props.userId,
+                    groupId: this.props.match.params.projectId,
                 };
             } else if (modalType === 'isEditFeedbackOpen') {
                 request = {
@@ -190,12 +192,10 @@ class Project extends Component {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
-                currentMaxFeedbackGrade: 10,
             });
         } else {
             this.setState({
                 isFeedbackSRS: false,
-                currentMaxFeedbackGrade: 10,
             });
         }
 
@@ -203,6 +203,7 @@ class Project extends Component {
             this.setState({
                 [modalType]: true,
                 currentFeedbackGrade: 10,
+                currentMaxFeedbackGrade: 10,
                 currentFeedbackFile: 'empty',
                 currentFeedbackText: '',
             });

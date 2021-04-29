@@ -95,7 +95,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
     return newFeedbackCardElements;
 };
 
-export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorClicked, userId) => {
+export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModal, onAuthorClicked, userId) => {
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;
@@ -105,7 +105,7 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorC
                         <Icon
                             name="edit"
                             onClick={() =>
-                                onOpenmodal(
+                                onOpenModal(
                                     'isEditFeedbackOpen',
                                     false,
                                     feedback.commentId,
@@ -117,7 +117,7 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorC
                         <Icon
                             name="delete"
                             onClick={() =>
-                                onOpenmodal(
+                                onOpenModal(
                                     'isDeleteFeedbackOpen',
                                     false,
                                     feedback.commentId,
@@ -157,7 +157,7 @@ export const convertSRSFeedbackToSRSCardElement = (
     isTAorInstructor,
     onModalOpenedWithComments,
     onAuthorClicked,
-    onmodalOpened
+    onModalOpened
 ) => {
     if (SRSResult) {
         let icons = null;
@@ -210,7 +210,7 @@ export const convertSRSFeedbackToSRSCardElement = (
             </Card.Group>
         );
     } else if (isTAorInstructor) {
-        return <Button onClick={() => onmodalOpened('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
+        return <Button onClick={() => onModalOpened('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
     } else {
         return <div>No SRS Feedback</div>;
     }
