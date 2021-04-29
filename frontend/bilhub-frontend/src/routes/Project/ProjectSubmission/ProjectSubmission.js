@@ -266,7 +266,7 @@ class ProjectAssignment extends Component {
                         Add New Submission
                     </Button>
                 );
-            } else {
+            } else if (this.state.submissionPage.isEdittable) {
                 return (
                     <>
                         <Button
@@ -377,6 +377,7 @@ class ProjectAssignment extends Component {
                     <SubmissionPane
                         assignment={assignment}
                         submission={'anonim'}
+                        isLate={this.state.submissionPage?.isLate}
                         onAssignmentFileClicked={this.onAssignmentFileClicked}
                         buttons={submissionButtons}
                     />
@@ -386,6 +387,7 @@ class ProjectAssignment extends Component {
                     <SubmissionPane
                         assignment={assignment}
                         submission={this.state.submission}
+                        isLate={this.state.submissionPage?.isLate}
                         onAssignmentFileClicked={this.onAssignmentFileClicked}
                         onSubmissionFileClicked={this.onSubmissionFileClicked}
                         buttons={submissionButtons}
@@ -509,7 +511,9 @@ const dummySubmissionPage = {
     isInGroup: true,
     isTAorInstructor: true,
     canUserComment: true,
-    hasSubmission: false,
+    hasSubmission: true,
+    isLate: true,
+    isEdittable: false,
 };
 
 const dummySubmission = {

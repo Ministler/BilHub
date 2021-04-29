@@ -46,7 +46,7 @@ export const SubmissionPane = (props) => {
     } else {
         submissionCard = (
             <AssignmentCardElement
-                title={'Submission'}
+                title={props.isLate ? 'LATE - Submission' : 'Submission'}
                 fileIcon={props.submission.file ? <Icon name="file" /> : null}
                 fileClicked={props.onSubmissionFileClicked}
                 date={props.submission.date}
