@@ -86,6 +86,7 @@ class Profile extends Component {
                         this.onInformationEditModeToggled();
                     }}
                     name={'check'}
+                    color="blue"
                 />
             ) : (
                 <Icon
@@ -94,6 +95,7 @@ class Profile extends Component {
                         this.onInformationEditModeToggled();
                     }}
                     name={'edit'}
+                    color="blue"
                 />
             );
         }

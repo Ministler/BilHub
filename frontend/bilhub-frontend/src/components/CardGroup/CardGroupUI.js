@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'semantic-ui-react';
+import { Card, Grid } from 'semantic-ui-react';
 
 import './CardGroupUI.css';
 
@@ -55,42 +55,54 @@ export const FeedbackCardElement = (props) => {
 };
 
 export const RequestCardElement = (props) => {
+    // {props.titleStart} {props.userName} {props.titleMid} {props.courseName}
+    // {props.message}
     return (
         <Card className="FeedbackCardElement">
             <Card.Content>
-                <Card.Header>
-                    <span onClick={props.onUserClicked}>
-                        {props.titleStart} {props.userName} {props.titleMid} {props.courseName}
-                    </span>
+                 <Card.Header>
+                    <div>{props.courseName}</div>
                 </Card.Header>
-                <Card.Description>{props.message}</Card.Description>
+                <p style={{ fontSize: '15px', fontWeight: 'bold' }}>{props.titleStart} {props.userName} {props.titleMid}</p>
                 <Card.Description>
-                    {props.yourGroup ? (
-                        <>
-                            <h2>Your Group</h2>
-                            {props.yourGroup}
-                        </>
-                    ) : null}
-                    {props.otherGroup ? (
-                        <>
-                            <h2>Other Group</h2>
-                            {props.otherGroup}
-                        </>
-                    ) : null}
+                    <Grid columns={2}>
+                        <Grid.Column>
+                            {props.yourGroup ? (
+                                <>
+                                    <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Your Group</label>
+                                    {props.yourGroup}
+                                </>
+                            ) : null}
+                        </Grid.Column>
+                        <Grid.Column>
+                            {props.otherGroup ? (
+                                <>
+                                    <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Their Group</label>
+                                    {props.otherGroup}
+                                </>
+                            ) : null}
+                        </Grid.Column>
+                    </Grid>
+                    <p style={{ marginTop: '15px' }}>
+                        {props.message}
+                    </p>
                 </Card.Description>
             </Card.Content>
-            <Card.Content className="FeedbackCardExtra">
-                <span>
-                    {props.voteStatus}
-                    {props.voteIcons}
-                </span>
-                {props.requestDate ? (
-                    <span>
-                        Request Date: {props.requestDate} / Formation Date: {props.formationDate}
+            <Card.Content>
+                <div style={{float: "left"}}>
+                    <span style={{marginLeft: "10px"}}>    
+                        {props.voteIcons}
                     </span>
-                ) : null}
-                {props.approvalDate ? <span>Approval Date: {props.approvalDate}</span> : null}
-                {props.disapprovalDate ? <span>Dispproval Date: {props.disapprovalDate}</span> : null}
+                </div>
+                <div style={{float: "right"}}>
+                    {props.requestDate ? (
+                        <span>
+                            Request Date: {props.requestDate} / Formation Date: {props.formationDate}
+                        </span>
+                    ) : null}
+                    {props.approvalDate ? <span>Approval Date: {props.approvalDate}</span> : null}
+                    {props.disapprovalDate ? <span>Dispproval Date: {props.disapprovalDate}</span> : null}
+                </div>
             </Card.Content>
         </Card>
     );

@@ -13,6 +13,7 @@ class Settings extends Component {
             error: '',
             information: '',
             userInformation: '',
+            sendConformation: false,
         };
     }
 
@@ -91,6 +92,14 @@ class Settings extends Component {
         this.setState({ information: information });
     };
 
+    onErrorClosed = (event) => {
+        this.setState({ error: '' });
+    };
+
+    sendConformation = (event) => {
+        this.setState({ sendConformation: true });
+    };
+
     Tabs = (props) => {
         if (props.segment === 'Profile Settings') {
             return (
@@ -130,17 +139,6 @@ class Settings extends Component {
         } else if (props.segment === 'Account Settings') {
             return (
                 <>
-                    <Form class="Sign in form" onSubmit={this.updatePassword}>
-                        <div class="field">
-                            <label style={{ fontSize: '12px' }}>Change Password</label>
-                            <Form.Input type="password" name="password" style={{ width: '60%' }} />
-                        </div>
-                        <div class="field">
-                            <label style={{ fontSize: '12px' }}>Retype New Password</label>
-                            <Form.Input type="password" name="passwordRe" style={{ width: '60%' }} />
-                        </div>
-                        <button class="ui teal button">Update Password</button>
-                    </Form>
                     {props.error && (
                         <div class="ui negative message" style={{ fontSize: '12px', width: '60%' }}>
                             <i class="close icon" onClick={() => this.setError(null)}></i>
@@ -153,17 +151,37 @@ class Settings extends Component {
                             {props.information}
                         </div>
                     )}
-                    <Form class="Sign in form" style={{ marginTop: '50px' }} onSubmit={this.updateEmail}>
+                    <Form class="Sign in form" onSubmit={this.updatePassword}>
                         <div class="field">
-                            <label style={{ fontSize: '12px' }}>Change Email</label>
-                            <Form.Input type="email" name="email" style={{ width: '60%' }} />
+                            <label style={{ fontSize: '12px' }}>Change Password</label>
+                            <Form.Input type="password" name="password" style={{ width: '60%' }} />
                         </div>
                         <div class="field">
-                            <label style={{ fontSize: '12px' }}>Retype New Email</label>
-                            <Form.Input type="email" name="emailRe" style={{ width: '60%' }} />
+                            <label style={{ fontSize: '12px' }}>Retype New Password</label>
+                            <Form.Input type="password" name="passwordRe" style={{ width: '60%' }} />
                         </div>
-                        <button class="ui teal button">Update Email</button>
+                        <button class="ui teal button">Update Password</button>
                     </Form>
+                    <div class="field">
+                        <label style={{ fontSize: '12px' }}>Change Bilkent Email</label>
+                        <Form.Input
+                            type="email"
+                            name="email"
+                            style={{ width: '60%' }}
+                            action={{ content: 'Change', onClick: () => this.sendConformation() }}
+                        />
+                    </div>
+                    {props.sendConformation && (
+                        <div class="field">
+                            <label style={{ fontSize: '12px' }}>Conformation Code</label>
+                            <Form.Input type="text" name="code" style={{ width: '60%' }} />
+                        </div>
+                    )}
+                    {props.sendConformation && (
+                        <button class="ui teal button" onClick={this.updateEmail}>
+                            Update
+                        </button>
+                    )}
                 </>
             );
         } else if (props.segment === 'Appearance') {
@@ -223,7 +241,8 @@ class Settings extends Component {
                         <this.Tabs
                             segment={this.state.segment}
                             error={this.state.error}
-                            information={this.state.information}></this.Tabs>
+                            information={this.state.information}
+                            sendConformation={this.state.sendConformation}></this.Tabs>
                     </div>
                 </div>
             </div>

@@ -86,6 +86,7 @@ class Course extends Component {
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'check'}
+                    color="blue"
                 />
             ) : (
                 <Icon
@@ -94,6 +95,7 @@ class Course extends Component {
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'edit'}
+                    color="blue"
                 />
             );
         }
@@ -108,7 +110,7 @@ class Course extends Component {
     getCourseSettingsIcon = () => {
         let icon = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
-            icon = <Icon name="settings" onClick={this.onCourseSettingsClicked} />;
+            icon = <Icon name="setting" onClick={this.onCourseSettingsClicked} color="grey"/>;
         }
         return icon;
     };
@@ -145,7 +147,7 @@ class Course extends Component {
     getNewAssignmentButton = () => {
         let button = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
-            button = <Button content="New Assignment" labelPosition="right" icon="add" primary />;
+            button = <Button content="New Assignment" labelPosition="right" icon="add" primary style={{ marginTop: "20px"}}/>;
         }
         return button;
     };
@@ -175,8 +177,8 @@ class Course extends Component {
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
             controlIcons = (
                 <>
-                    <Icon name="edit" />
-                    <Icon name="close" />
+                    <Icon name="close" color='red' size="small" style={{float: "right"}}/>
+                    <Icon name="edit" color='blue' size="small" style={{float: "right"}}/>
                 </>
             );
         }
@@ -303,6 +305,24 @@ const dummyCourseAssignments = [
         file: 'file',
         publishmentDate: '12 March 2021 12:00',
         dueDate: '12 March 2021 12:00',
+    },
+    {
+        title: 'Design Report',
+        caption:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
+        assignmentId: 2,
+        publisher: 'Erdem Tuna',
+        publishmentDate: '12 March 2021 12:00',
+        dueDate: '12 April 2021 12:00',
+    },
+    {
+        title: 'Design Report',
+        caption:
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
+        assignmentId: 2,
+        publisher: 'Erdem Tuna',
+        publishmentDate: '12 March 2021 12:00',
+        dueDate: '12 April 2021 12:00',
     },
     {
         title: 'Design Report',

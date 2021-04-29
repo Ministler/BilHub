@@ -26,7 +26,15 @@ export const ConformationUI = (props) => {
                     <Segment>
                         <Form className="Conformation form" onSubmit={props.onConformation}>
                             <div className="field">
-                                <label style={{ fontSize: '12px' }}>Conformation Code</label>
+                                <label style={{ fontSize: '12px', display: 'inline', }}>Conformation Code</label>
+                                <Link
+                                    style={{
+                                        fontSize: '12px',
+                                        float: "right",
+                                    }}
+                                    >
+                                    Resend the Code
+                                </Link>
                                 <Form.Input
                                     type="text"
                                     name="conformationCode"
