@@ -18,9 +18,19 @@ export const LoginUI = (props) => {
                             <i
                                 className="close icon"
                                 onClick={() => {
-                                    props.onErrorClosed();
+                                    props.onPopupClosed();
                                 }}></i>
                             {props.error}
+                        </div>
+                    )}
+                    {props.information && (
+                        <div className="ui positive message" style={{ fontSize: '12px' }}>
+                            <i
+                                className="close icon"
+                                onClick={() => {
+                                    props.onPopupClosed();
+                                }}></i>
+                            {props.information}
                         </div>
                     )}
                     <Segment>

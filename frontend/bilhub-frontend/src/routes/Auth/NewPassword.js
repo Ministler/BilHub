@@ -11,6 +11,24 @@ export default class NewPassword extends Component {
         };
     }
 
+    onSubmit = () => {
+        if (!this.state.form.email?.length) {
+            this.setError('Please fill the every blank');
+            return;
+        }
+
+        if (true) {
+            if (true) {
+                this.props.history.push({
+                    pathname: '/login',
+                    state: { redirectedFrom: 'newPassword' },
+                });
+            } else {
+                this.setError('No Such Mail');
+            }
+        }
+    };
+
     onChange = (name, value) => {
         this.setForm({ ...this.state.form, [name]: value });
     };
@@ -25,21 +43,14 @@ export default class NewPassword extends Component {
         this.setState({ error: error });
     };
 
-    onSubmit = () => {
-        if (!this.state.form.email?.length) {
-            this.setError('Please fill the every blank');
-            return;
-        }
-
-        // Send email here
-    };
-
     render() {
-        return <NewPasswordUI               
+        return (
+            <NewPasswordUI
                 onSubmit={this.onSubmit}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
                 onErrorClosed={() => this.setError(null)}
-                error={this.state.error}></NewPasswordUI>;
+                error={this.state.error}></NewPasswordUI>
+        );
     }
 }

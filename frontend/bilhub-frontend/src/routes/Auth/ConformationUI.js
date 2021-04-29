@@ -13,12 +13,18 @@ export const ConformationUI = (props) => {
                     </h2>
                     {props.error && (
                         <div className="ui negative message" style={{ fontSize: '12px' }}>
-                            <i className="close icon" onClick={props.onErrorClosed}></i>
+                            <i className="close icon" onClick={props.onPopupClosed}></i>
                             {props.error}
                         </div>
                     )}
+                    {props.information && (
+                        <div className="ui positive message" style={{ fontSize: '12px' }}>
+                            <i className="close icon" onClick={props.onPopupClosed}></i>
+                            {props.information}
+                        </div>
+                    )}
                     <Segment>
-                        <Form className="Conformation form">
+                        <Form className="Conformation form" onSubmit={props.onConformation}>
                             <div className="field">
                                 <label style={{ fontSize: '12px' }}>Conformation Code</label>
                                 <Form.Input
@@ -26,9 +32,10 @@ export const ConformationUI = (props) => {
                                     name="conformationCode"
                                     value={props.form.conformationCode || ''}
                                     onChange={props.onChange}
+                                    acti
                                 />
                             </div>
-                            <Button onClick={props.onConformation} fluid positive className="Sign in button" type="submit">
+                            <Button fluid positive className="Sign in button" type="submit">
                                 Confirm Your Account
                             </Button>
                         </Form>

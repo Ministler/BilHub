@@ -11,24 +11,10 @@ export default class Signup extends Component {
         this.state = {
             form: {},
             error: null,
+            information: null,
             activationMode: false,
         };
     }
-
-    setForm = (form) => {
-        this.setState({
-            form: form,
-        });
-    };
-
-    setError = (error) => {
-        this.setState({ error: error });
-    };
-
-    onChange = (name, value) => {
-        this.setForm({ ...this.state.form, [name]: value });
-        console.log(this.state.form.conformationCode);
-    };
 
     onSubmit = () => {
         if (
@@ -66,22 +52,44 @@ export default class Signup extends Component {
                 this.setState({
                     activationMode: true,
                 });
+                this.setError(null);
+                this.setInformation('Please Enter the Activation Code that is Sent to Your Bilkent Email');
             })
             .catch(() => {
+                this.setInformation(null);
                 this.setError('Server Error');
             });
     };
 
     onConformation = () => {
-       /* if (
-            code does not match
-        ) {
-            this.setError('Conformatıon code does not match');
-            return;
-        }*/
+        if (true) {
+            this.props.history.push({
+                pathname: '/login',
+                state: { redirectedFrom: 'signup' },
+            });
+        } else {
+            this.setInformation(null);
+            this.setError('Conformation Code is Not Correct');
+        }
+    };
 
+    setForm = (form) => {
+        this.setState({
+            form: form,
+        });
+    };
+
+    setError = (error) => {
+        this.setState({ error: error });
+    };
+
+    setInformation = (information) => {
+        this.setState({ information: information });
+    };
+
+    onChange = (name, value) => {
+        this.setForm({ ...this.state.form, [name]: value });
         console.log(this.state.form.conformationCode);
-        this.props.history.push('/login');
     };
 
     render() {
@@ -91,15 +99,24 @@ export default class Signup extends Component {
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
                 error={this.state.error}
-                onErrorClosed={() => this.setError(null)}
+                information={this.state.information}
+                onPopupClosed={() => {
+                    this.setError(null);
+                    this.setInformation(null);
+                }}
             />
         ) : (
-            <ConformationUI 
-            onConformation={this.onConformation}
-            onChange={(e, { name, value }) => this.onChange(name, value)}
-            form={this.state.form}
-            error={this.state.error}
-            onErrorClosed={() => this.setError(null)}/>
+            <ConformationUI
+                onConformation={this.onConformation}
+                onChange={(e, { name, value }) => this.onChange(name, value)}
+                form={this.state.form}
+                error={this.state.error}
+                information={this.state.information}
+                onPopupClosed={() => {
+                    this.setError(null);
+                    this.setInformation(null);
+                }}
+            />
         );
     }
 }
