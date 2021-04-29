@@ -17,13 +17,16 @@ namespace backend.Models
         public int Id { get; set; }
         public Section AffiliatedSection { get; set; }
         public int AffiliatedSectionId { get; set; }
+        public string Name { get; set; }
+        public decimal SrsGrade { get; set; }
+        public bool IsGraded { get; set; }
         public Course AffiliatedCourse { get; set; }
         public int AffiliatedCourseId { get; set; }
         public bool ConfirmationState { get; set; }
         public int ConfirmedUserNumber { get; set; }
         public string ProjectInformation { get; set; }
-        public ICollection<ProjectGroupUser> GroupMembers { get; set; }
         public string ConfirmedGroupMembers { get; set; }
+        public ICollection<ProjectGroupUser> GroupMembers { get; set; }
         public ICollection<ProjectGrade> ProjectGrades { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         public ICollection<JoinRequest> IncomingJoinRequests { get; set; }

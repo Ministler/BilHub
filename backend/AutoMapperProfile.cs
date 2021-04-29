@@ -1,8 +1,12 @@
 using System.Linq;
 using AutoMapper;
 using backend.Dtos.Course;
-using backend.Dtos.ProjectGroup;
 using backend.Dtos.Section;
+using backend.Dtos.Assignment;
+using backend.Dtos.Comment;
+using backend.Dtos.ProjectGroup;
+using backend.Dtos.Submission;
+using backend.Dtos.User;
 using backend.Models;
 
 namespace backend
@@ -11,7 +15,7 @@ namespace backend
     {
         public AutoMapperProfile()
         {
-            CreateMap<ProjectGroup,GetProjectGroupDto>()
+            CreateMap<ProjectGroup, GetProjectGroupDto>()
                 .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)));
 
             CreateMap<User,UserInProjectGroupDto>();
@@ -24,7 +28,11 @@ namespace backend
             CreateMap<ProjectGroup,ProjectGroupInSectionDto>();
             CreateMap<Section,GetSectionOfCourseDto>();
             CreateMap<Section,GetSectionDto>();
+            CreateMap<Assignment, GetAssignmentDto>();
+            CreateMap<Submission, GetSubmissionDto>();
+            CreateMap<Comment, GetCommentDto>();
+            CreateMap<User, GetUserDto>();
         }
-        
+
     }
 }

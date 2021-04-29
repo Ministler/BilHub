@@ -34,10 +34,10 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Route("File/{submissionId}/{commentId}")]
-        public async Task<IActionResult> Submit(IFormFile file, int submissionId, int commentId)
+        [Route("File/{commentId}")]
+        public async Task<IActionResult> Submit(IFormFile file, int commentId)
         {
-            AddCommentFileDto dto = new AddCommentFileDto { CommentFile = file, SubmissionId = submissionId, CommentId = commentId };
+            AddCommentFileDto dto = new AddCommentFileDto { CommentFile = file, CommentId = commentId };
             ServiceResponse<string> response = await _commentService.SubmitCommentFile(dto);
             if (response.Success)
             {
@@ -48,12 +48,41 @@ namespace backend.Controllers
 
         [HttpDelete]
         [Route("File/{commentId}")]
-        public async Task<IActionResult> Delete(int commentId)
+        public async Task<IActionResult> DeleteFile(int commentId)
         {
             DeleteCommentFileDto dto = new DeleteCommentFileDto { CommentId = commentId };
             ServiceResponse<string> response = await _commentService.DeleteFile(dto);
             if (response.Success)
             {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpDelete]
+        [Route("{commentId}")]
+        public async Task<IActionResult> Delete(int commentId)
+        {
+            ServiceResponse<string> response = await _commentService.Delete(commentId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromForm] UpdateCommentWithAttachmentDto updateCommentWithAttachmentDto)
+        {
+            ServiceResponse<GetCommentDto> response = await _commentService.Update(updateCommentWithAttachmentDto.AddCommentDto);
+            if (response.Success)
+            {
+                if (updateCommentWithAttachmentDto.File != null)
+                    await _commentService.SubmitCommentFile(new AddCommentFileDto
+                    {
+                        CommentFile = updateCommentWithAttachmentDto.File,
+                        CommentId = updateCommentWithAttachmentDto.CommentId
+                    });
                 return Ok(response);
             }
             return NotFound(response);
@@ -174,6 +203,19 @@ namespace backend.Controllers
                 return File(finalResult, "application/zip", fileName);
             }
 
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> Comment([FromForm] AddCommentwithAttachmentDto acwadto)
+        {
+            ServiceResponse<GetCommentDto> response = await _commentService.Add(acwadto.AddCommentDto);
+            if (response.Success)
+            {
+                if (acwadto.File != null)
+                    await _commentService.SubmitCommentFile(new AddCommentFileDto { CommentFile = acwadto.File, CommentId = response.Data.CommentId });
+                return Ok(response);
+            }
+            return NotFound(response);
         }
     }
 }
