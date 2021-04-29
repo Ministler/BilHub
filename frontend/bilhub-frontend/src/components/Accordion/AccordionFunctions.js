@@ -6,54 +6,36 @@ import {
 } from '../CardGroup';
 import { convertSubmissionsToSubmissionElement } from '../BriefList';
 import { MyAccordion } from './AccordionUI';
-import { GradesTabel, GroupNoGradeGraph } from '../Statistics';
+import { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from '../Statistics';
 import React from 'react';
 
-export const getFeedbacksAsAccordion = (
-    feedbacks,
-    isTAorInstructor,
-    onModalOpenedWithComments,
-    onAuthorClicked,
-    userId,
-    onModalOpened
-) => {
+export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal, onAuthorClicked, userId) => {
     const accordionElements = [
         {
             title: 'SRS Feedback',
             content: convertSRSFeedbackToSRSCardElement(
                 feedbacks?.SRSResult,
                 isTAorInstructor,
-                onModalOpenedWithComments,
-                onAuthorClicked,
-                onModalOpened
+                onOpenModal,
+                onAuthorClicked
             ),
         },
         {
             title: 'Instructor Feedbacks',
             content: convertFeedbacksToFeedbackList(
                 feedbacks?.InstructorComments,
-                onModalOpenedWithComments,
+                onOpenModal,
                 onAuthorClicked,
                 userId
             ),
         },
         {
             title: 'TA Feedbacks',
-            content: convertFeedbacksToFeedbackList(
-                feedbacks?.TAComments,
-                onModalOpenedWithComments,
-                onAuthorClicked,
-                userId
-            ),
+            content: convertFeedbacksToFeedbackList(feedbacks?.TAComments, onOpenModal, onAuthorClicked, userId),
         },
         {
             title: 'Student Feedbacks',
-            content: convertFeedbacksToFeedbackList(
-                feedbacks?.StudentComments,
-                onModalOpenedWithComments,
-                onAuthorClicked,
-                userId
-            ),
+            content: convertFeedbacksToFeedbackList(feedbacks?.StudentComments, onOpenModal, onAuthorClicked, userId),
         },
     ];
 
@@ -154,40 +136,40 @@ export const getSubmissionsAsAccordion = (submissions, onSubmissionPageClicked, 
     return <MyAccordion accordionSections={accordionElements} />;
 };
 
-export const getAssignmentStatistics = (props) => {
+export const getAssignmentStatistics = (tableData, graphData) => {
     console.log('tried to print stat');
     const accordionElements = [
         {
             title: 'Table',
-            content: <GradesTabel graders={props.graders} groups={props.groups} />,
+            content: <GradesTabel graders={tableData.graders} groups={tableData.groups} />,
         },
         {
             title: 'Groups vs Grade Graphic',
-            content: <GroupNoGradeGraph />,
+            content: <GradeGroupGraph groups={graphData} />,
         },
         {
             title: 'Grade vs Group Number Graphic',
-            content: 'graph',
+            content: <GroupNoGradeGraph groups={graphData} />,
         },
     ];
 
     return <MyAccordion accordionSections={accordionElements} />;
 };
 
-export const getCourseStatistics = (props) => {
+export const getCourseStatistics = (tableData, graphData) => {
     console.log('tried to print stat');
     const accordionElements = [
         {
             title: 'Table',
-            content: <GradesTabel graders={props.graders} groups={props.groups} />,
+            content: <GradesTabel graders={tableData.graders} groups={tableData.groups} />,
         },
         {
             title: 'Groups vs Grade Graphic',
-            content: <GroupNoGradeGraph />,
+            content: <GradeGroupGraph groups={graphData} />,
         },
         {
             title: 'Grade vs Group Number Graphic',
-            content: 'graph',
+            content: <GroupNoGradeGraph groups={graphData} />,
         },
     ];
 

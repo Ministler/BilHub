@@ -1,1 +1,1 @@
-export { GradesTabel, GroupNoGradeGraph } from './Statistics';
+export { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from './Statistics';

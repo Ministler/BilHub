@@ -78,12 +78,33 @@ const data = [
     ['Gold', 19.3, 'gold'],
     ['Platinum', 21.45, 'color: #e5e4e2'], // CSS-style declaration
 ];
-export const GroupNoGradeGraph = (props) => {
+export const GradeGroupGraph = (props) => {
+    var data = [['Group', 'Grade', { role: 'style' }]];
+    for (var i = 0; i < props.groups.length; i++) {
+        var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        data.push([props.groups[i].group, props.groups[i].grade, randomColor]);
+    }
+
     return (
         <div className="App">
-            <Chart chartType="ColumnChart" width="100%" height="400px" data={data} />
+            <Chart chartType="ColumnChart" width="100%" height="auto" data={data} />
         </div>
     );
 };
 
-export const GradeGroupGraph = (props) => {};
+export const GroupNoGradeGraph = (props) => {
+    var data = [['Grade', 'Group Number', { role: 'style' }]];
+    for (var i = 5; i <= 100; i += 5) {
+        var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        data.push([i - 5 + '-' + i, 0, randomColor]);
+    }
+
+    for (var i = 0; i < props.groups.length; i++) {
+        data[Math.floor((props.groups[i].grade - 1) / 5 + 1)][1]++;
+    }
+    return (
+        <div className="App">
+            <Chart chartType="ColumnChart" width="80%" height="auto" data={data} />
+        </div>
+    );
+};
