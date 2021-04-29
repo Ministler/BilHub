@@ -225,5 +225,23 @@ namespace backend.Data.Auth
             return tokenHandler.WriteToken(token);
         }
 
+        public async Task<ServiceResponse<string>> Resend(string email)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+                return response;
+            }
+            user.VerificationCode = Utility.GenerateRandomCode();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            Utility.SendMail(email, user.VerificationCode, false);
+            response.Data = "new verification code has been sent to your email";
+            return response;
+        }
     }
 }

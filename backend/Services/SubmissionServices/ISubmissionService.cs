@@ -3,6 +3,7 @@ using backend.Models;
 using backend.Dtos.Submission;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using backend.Dtos.Comment;
 
 namespace backend.Services.SubmissionServices
 {
@@ -18,5 +19,8 @@ namespace backend.Services.SubmissionServices
         Task<ServiceResponse<GetSubmissionDto>> AddSubmission(AddSubmissionDto addSubmissionDto);
         Task<ServiceResponse<GetSubmissionDto>> GetSubmission(int submissionId);
         Task<ServiceResponse<GetSubmissionDto>> UpdateSubmission(UpdateSubmissionDto submissionDto);
+        Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetInstructorComments(int submissionId);
+        Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetTaComments(int submissionId);
+        Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetStudentComments(int submissionId);
     }
 }

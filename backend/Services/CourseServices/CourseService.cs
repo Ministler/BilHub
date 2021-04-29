@@ -16,7 +16,7 @@ namespace backend.Services.CourseServices
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public CourseService( IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor )
+        public CourseService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;
@@ -29,31 +29,40 @@ namespace backend.Services.CourseServices
             ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
 
             User dbUser = await _context.Users
-                .Include ( c => c.InstructedCourses )
-                .FirstOrDefaultAsync ( c => c.Id == GetUserId() );
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => c.Id == GetUserId());
 
 
 
-            if ( dbUser == null || !Utility.CheckIfInstructorEmail (dbUser.Email) ) {
+            if (dbUser == null || dbUser.UserType == UserTypeClass.Student)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User is not in instructor list. If you think this is incorrect, please contact the devs.";
                 return serviceResponse;
             }
-            
+            if (createCourseDto.MaxGroupSize < 1 || createCourseDto.MinGroupSize > createCourseDto.MaxGroupSize)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Minumum maxgroupsize should be 1 and minGroupsize should be less than or equal to maxgroupsize";
+                return serviceResponse;
+            }
+
             SemesterType semesterType = SemesterType.Spring;
-            if ( createCourseDto.CourseSemester.Equals("Spring") )
+            if (createCourseDto.CourseSemester.Equals("Spring"))
                 semesterType = SemesterType.Spring;
-            else if ( createCourseDto.CourseSemester.Equals("Summer") )
+            else if (createCourseDto.CourseSemester.Equals("Summer"))
                 semesterType = SemesterType.Summer;
-            else if ( createCourseDto.CourseSemester.Equals("Fall") )
+            else if (createCourseDto.CourseSemester.Equals("Fall"))
                 semesterType = SemesterType.Fall;
-            else {
+            else
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Semester type is given wrong.";
                 return serviceResponse;
             }
 
-            Course newCourse = new Course {
+            Course newCourse = new Course
+            {
                 Name = createCourseDto.Name,
                 CourseSemester = semesterType,
                 Year = createCourseDto.Year,
@@ -65,25 +74,28 @@ namespace backend.Services.CourseServices
                 StartDate = DateTime.Now
             };
 
-            CourseUser founderInstructor = new CourseUser {
+            CourseUser founderInstructor = new CourseUser
+            {
                 User = dbUser,
                 UserId = dbUser.Id,
                 Course = newCourse,
                 CourseId = newCourse.Id
             };
 
-            newCourse.Instructors.Add ( founderInstructor );
+            newCourse.Instructors.Add(founderInstructor);
 
-            for ( int i = 1 ; i <= createCourseDto.NumberOfSections ; i++ ) {
-                Section newSection = new Section {
+            for (int i = 1; i <= createCourseDto.NumberOfSections; i++)
+            {
+                Section newSection = new Section
+                {
                     SectionNo = i,
                     AffiliatedCourse = newCourse,
                     AffiliatedCourseId = newCourse.Id
                 };
-                newCourse.Sections.Add ( newSection );
+                newCourse.Sections.Add(newSection);
             }
 
-            await _context.Courses.AddAsync ( newCourse );
+            await _context.Courses.AddAsync(newCourse);
             await _context.SaveChangesAsync();
 
             serviceResponse.Data = _mapper.Map<GetCourseDto>(newCourse);
@@ -96,11 +108,12 @@ namespace backend.Services.CourseServices
             ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
 
             Course dbCourse = await _context.Courses
-                .Include ( c => c.Instructors ).ThenInclude( cs => cs.User )
-                .Include ( c => c.Sections )
-                .FirstOrDefaultAsync( c => c.Id == courseId );
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
 
-            if ( dbCourse == null ) {
+            if (dbCourse == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Course with given courseId not found.";
                 return serviceResponse;
@@ -115,39 +128,49 @@ namespace backend.Services.CourseServices
             ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
 
             User dbUser = await _context.Users
-                .Include ( c => c.InstructedCourses )
-                .FirstOrDefaultAsync ( c => c.Id == GetUserId() );
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => c.Id == GetUserId());
 
-            if ( dbUser == null || !Utility.CheckIfInstructorEmail (dbUser.Email) ) {
+            if (dbUser == null || dbUser.UserType == UserTypeClass.Student)
+            {
                 serviceResponse.Success = false;
-                serviceResponse.Message = "User is not an instructor type user. If you think this is incorrect, please contact the devs.";
+                serviceResponse.Message = "User is not in instructor list. If you think this is incorrect, please contact the devs.";
+                return serviceResponse;
+            }
+            if (editCourseDto.MaxGroupSize < 1 || editCourseDto.MinGroupSize > editCourseDto.MaxGroupSize)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Minumum maxgroupsize should be 1 and minGroupsize should be less than or equal to maxgroupsize";
                 return serviceResponse;
             }
 
             Course dbCourse = await _context.Courses
-                .Include ( c => c.Instructors ).ThenInclude ( cs => cs.User )
-                .Include ( c => c.Sections )
-                .FirstOrDefaultAsync ( c => c.Id == editCourseDto.Id  );
-            
-            if ( dbCourse == null ) {
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == editCourseDto.Id);
+
+            if (dbCourse == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Course not found.";
                 return serviceResponse;
             }
-            if ( !dbCourse.Instructors.Any ( c => c.UserId == dbUser.Id ) ) {
+            if (!dbCourse.Instructors.Any(c => c.UserId == dbUser.Id))
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User does not have authority on this course.";
                 return serviceResponse;
             }
 
             SemesterType semesterType = SemesterType.Spring;
-            if ( editCourseDto.CourseSemester.Equals("Spring") )
+            if (editCourseDto.CourseSemester.Equals("Spring"))
                 semesterType = SemesterType.Spring;
-            else if ( editCourseDto.CourseSemester.Equals("Summer") )
+            else if (editCourseDto.CourseSemester.Equals("Summer"))
                 semesterType = SemesterType.Summer;
-            else if ( editCourseDto.CourseSemester.Equals("Fall") )
+            else if (editCourseDto.CourseSemester.Equals("Fall"))
                 semesterType = SemesterType.Fall;
-            else {
+            else
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Semester type is given wrong.";
                 return serviceResponse;
@@ -161,7 +184,7 @@ namespace backend.Services.CourseServices
             dbCourse.MinGroupSize = editCourseDto.MinGroupSize;
             dbCourse.MaxGroupSize = editCourseDto.MaxGroupSize;
 
-            _context.Courses.Update ( dbCourse );
+            _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
 
             serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
@@ -173,43 +196,48 @@ namespace backend.Services.CourseServices
             ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
 
             User dbUser = await _context.Users
-                .Include ( c => c.InstructedCourses )
-                .FirstOrDefaultAsync ( c => c.Id == userId );
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => c.Id == userId);
 
             Course dbCourse = await _context.Courses
-                .Include ( c => c.Instructors ).ThenInclude ( cs => cs.User )
-                .Include ( c => c.Sections )
-                .FirstOrDefaultAsync ( c => c.Id == courseId  );
-            
-            if ( dbCourse == null ) {
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Course not found.";
                 return serviceResponse;
             }
-            if ( dbUser == null ) {
+            if (dbUser == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User not found.";
                 return serviceResponse;
             }
-            if ( !dbCourse.Instructors.Any ( c => c.UserId == GetUserId() ) ) {
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User does not have authority on this course.";
                 return serviceResponse;
             }
-            if ( dbCourse.Instructors.Any ( c => c.UserId == userId ) ) {
+            if (dbCourse.Instructors.Any(c => c.UserId == userId))
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User already an instructor/TA in this course.";
                 return serviceResponse;
             }
 
-            CourseUser newInstructor = new CourseUser {
+            CourseUser newInstructor = new CourseUser
+            {
                 User = dbUser,
                 UserId = dbUser.Id,
                 Course = dbCourse,
                 CourseId = dbCourse.Id
             };
-            dbCourse.Instructors.Add ( newInstructor );
-            _context.Courses.Update ( dbCourse );
+            dbCourse.Instructors.Add(newInstructor);
+            _context.Courses.Update(dbCourse);
 
             await _context.SaveChangesAsync();
 
@@ -222,43 +250,49 @@ namespace backend.Services.CourseServices
             ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
 
             User dbUser = await _context.Users
-                .Include ( c => c.InstructedCourses )
-                .FirstOrDefaultAsync ( c => c.Id == userId );
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => c.Id == userId);
 
             Course dbCourse = await _context.Courses
-                .Include ( c => c.Instructors ).ThenInclude ( cs => cs.User )
-                .Include ( c => c.Sections )
-                .FirstOrDefaultAsync ( c => c.Id == courseId  );
-            
-            if ( dbCourse == null ) {
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Course not found.";
                 return serviceResponse;
             }
-            if ( dbUser == null ) {
+            if (dbUser == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User not found.";
                 return serviceResponse;
             }
-            if ( !dbCourse.Instructors.Any ( c => c.UserId == GetUserId() ) ) {
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User does not have authority on this course.";
                 return serviceResponse;
             }
-            if ( !dbCourse.Instructors.Any ( c => c.UserId == userId ) ) {
+            if (!dbCourse.Instructors.Any(c => c.UserId == userId))
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User that is trying to be removed is not an instructor/TA in this course.";
                 return serviceResponse;
             }
-            if ( dbCourse.Instructors.Count == 1 ) {
+            if (dbCourse.Instructors.Count == 1)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "This user is the only instructor left in this course. Thus, it is not permitted to remove him from the course. Please try deleting the course if you want to.";
                 return serviceResponse;
             }
 
-            foreach ( var i in dbCourse.Instructors ) 
+            foreach (var i in dbCourse.Instructors)
             {
-                if ( i.UserId == userId ) {
+                if (i.UserId == userId)
+                {
                     _context.CourseUsers.Remove(i);
                     break;
                 }

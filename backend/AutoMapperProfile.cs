@@ -18,20 +18,21 @@ namespace backend
             CreateMap<ProjectGroup, GetProjectGroupDto>()
                 .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)));
 
-            CreateMap<User,UserInProjectGroupDto>();
-            CreateMap<User,InstructorInCourseDto>();
-            CreateMap<Course,CourseInProjectGroupDto>();
-            CreateMap<Section,SectionInProjectGroupDto>();
-            CreateMap<Course,GetCourseDto>()
-                .ForMember( dto => dto.Instructors, c => c.MapFrom( c => c.Instructors.Select( cs => cs.User ) ) );
-            CreateMap<Course,CourseInSectionDto>();
-            CreateMap<ProjectGroup,ProjectGroupInSectionDto>();
-            CreateMap<Section,GetSectionOfCourseDto>();
-            CreateMap<Section,GetSectionDto>();
+            CreateMap<User, UserInProjectGroupDto>();
+            CreateMap<User, InstructorInCourseDto>();
+            CreateMap<Course, CourseInProjectGroupDto>();
+            CreateMap<Section, SectionInProjectGroupDto>();
+            CreateMap<Course, GetCourseDto>()
+                .ForMember(dto => dto.Instructors, c => c.MapFrom(c => c.Instructors.Select(cs => cs.User)));
+            CreateMap<Course, CourseInSectionDto>();
+            CreateMap<ProjectGroup, ProjectGroupInSectionDto>();
+            CreateMap<Section, GetSectionOfCourseDto>();
+            CreateMap<Section, GetSectionDto>();
             CreateMap<Assignment, GetAssignmentDto>();
             CreateMap<Submission, GetSubmissionDto>();
             CreateMap<Comment, GetCommentDto>();
             CreateMap<User, GetUserDto>();
+            CreateMap<User, GetCommentorDto>();
         }
 
     }

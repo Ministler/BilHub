@@ -59,6 +59,16 @@ namespace backend.Controllers
             return Ok(response);
         }
 
+        [HttpPost("Resend")]
+        public async Task<IActionResult> Resend(string email)
+        {
+            ServiceResponse<string> response = await _authRepo.Resend(email);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(UserChangeDto request)
         {

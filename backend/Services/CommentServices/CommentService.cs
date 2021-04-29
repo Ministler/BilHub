@@ -28,38 +28,6 @@ namespace backend.Services.CommentServices
             _hostingEnvironment = hostingEnvironment;
         }
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-        // public async Task<ServiceResponse<string>> DownloadAllInstructorCommentFiles(GetAllCommentFilesDto dto)
-        // {
-        //     ServiceResponse<string> response = new ServiceResponse<string>();
-        //     User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
-        //     Submission submission = await _context.Submissions.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
-        //     if (submission == null)
-        //     {
-        //         response.Data = null;
-        //         response.Message = "There is no project group under this Id";
-        //         response.Success = false;
-        //         return response;
-        //     }
-        //     if (user.ProjectGroups.FirstOrDefault(pgu => pgu.ProjectGroupId == submission.AffiliatedGroupId) == null && user.UserType == UserTypeClass.Student)
-        //     {
-        //         response.Data = null;
-        //         response.Message = "You are not authorized for this endpoint";
-        //         response.Success = false;
-        //         return response;
-        //     }
-        //     if (submission.Comments.FirstOrDefault(cm => cm.CommentedSubmissionId == dto.SubmissionId) == null)
-        //     {
-        //         response.Data = null;
-        //         response.Message = "There is no comment for this group yet";
-        //         response.Success = false;
-        //         return response;
-        //     }
-        //     response.Data = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}",
-        //         "StaticFiles/Feedbacks", submission.CourseId, submission.SectionId, dto.SubmissionId));
-        //     return response;
-        // }
-
         public async Task<ServiceResponse<string>> DownloadAllCommentFiles(GetAllCommentFilesDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -94,9 +62,8 @@ namespace backend.Services.CommentServices
         public async Task<ServiceResponse<string>> DownloadCommentFile(GetCommentFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            User user = await _context.Users.Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup)
-                .ThenInclude(pg => pg.Submissions).FirstOrDefaultAsync(u => u.Id == GetUserId());
-            Comment comment = await _context.Comments.FirstOrDefaultAsync(s => s.Id == dto.CommentId);
+            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Comment comment = await _context.Comments.Include(c => c.CommentedSubmission).FirstOrDefaultAsync(s => s.Id == dto.CommentId);
             if (comment == null)
             {
                 response.Data = null;
@@ -104,12 +71,19 @@ namespace backend.Services.CommentServices
                 response.Success = false;
                 return response;
             }
-            if (user.ProjectGroups.FirstOrDefault(pgu => pgu.ProjectGroup.Submissions.Any(s => s.Id == comment.CommentedSubmissionId)) == null && user.UserType == UserTypeClass.Student)
+            Submission submission = comment.CommentedSubmission;
+            Assignment assignment = await _context.Assignments.Include(a => a.AfilliatedCourse).ThenInclude(c => c.Instructors)
+                .FirstOrDefaultAsync(a => a.Id == submission.AffiliatedAssignmentId);
+            if (!assignment.VisibilityOfSubmission)
             {
-                response.Data = null;
-                response.Message = "You are not authorized for this endpoint";
-                response.Success = false;
-                return response;
+                if (!user.ProjectGroups.Any(pgu => pgu.UserId == submission.AffiliatedGroupId) &&
+                    !assignment.AfilliatedCourse.Instructors.Any(cu => cu.UserId == GetUserId()) && user.UserType == UserTypeClass.Student)
+                {
+                    response.Data = null;
+                    response.Message = "You are not authorized for this endpoint";
+                    response.Success = false;
+                    return response;
+                }
             }
             if (!comment.FileAttachmentAvailability)
             {
@@ -338,18 +312,68 @@ namespace backend.Services.CommentServices
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.CommentId = comment.Id;
-            response.Data.FileEndpoint = "Comment/File/{" + comment.Id + "}";
+            response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             return response;
         }
 
-        public Task<ServiceResponse<GetCommentDto>> Update(AddCommentDto addCommentDto)
+        public async Task<ServiceResponse<GetCommentDto>> Update(UpdateCommentDto updateCommentDto)
         {
-            throw new NotImplementedException();
+            ServiceResponse<GetCommentDto> response = new ServiceResponse<GetCommentDto>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Comment comment = await _context.Comments.Include(c => c.CommentedUser).FirstOrDefaultAsync(s => s.Id == updateCommentDto.CommentId);
+            if (user.Id != comment.CommentedUserId)
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to make comment";
+                response.Success = false;
+                return response;
+            }
+            comment.CommentText = updateCommentDto.CommentText;
+            comment.MaxGrade = updateCommentDto.MaxGrade;
+            comment.Grade = updateCommentDto.Grade;
+            _context.Comments.Update(comment);
+            await _context.SaveChangesAsync();
+            response.Data = _mapper.Map<GetCommentDto>(comment);
+            response.Data.CommentId = comment.Id;
+            response.Data.FileEndpoint = "Comment/File/" + comment.Id;
+            response.Data.HasFile = comment.FileAttachmentAvailability;
+            return response;
+
         }
 
-        public Task<ServiceResponse<GetCommentDto>> Get(int commentId)
+        public async Task<ServiceResponse<GetCommentDto>> Get(int commentId)
         {
-            throw new NotImplementedException();
+            ServiceResponse<GetCommentDto> response = new ServiceResponse<GetCommentDto>();
+            User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Comment comment = await _context.Comments.Include(c => c.CommentedUser).Include(c => c.CommentedSubmission).FirstOrDefaultAsync(s => s.Id == commentId);
+            if (comment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no comment with this Id";
+                response.Success = false;
+                return response;
+            }
+
+            Submission submission = comment.CommentedSubmission;
+            Assignment assignment = await _context.Assignments.Include(a => a.AfilliatedCourse).ThenInclude(c => c.Instructors)
+                .FirstOrDefaultAsync(a => a.Id == submission.AffiliatedAssignmentId);
+            if (!assignment.VisibilityOfSubmission)
+            {
+                if (!user.ProjectGroups.Any(pgu => pgu.UserId == submission.AffiliatedGroupId) &&
+                    !assignment.AfilliatedCourse.Instructors.Any(cu => cu.UserId == GetUserId()) && user.UserType == UserTypeClass.Student)
+                {
+                    response.Data = null;
+                    response.Message = "You are not authorized for this endpoint";
+                    response.Success = false;
+                    return response;
+                }
+            }
+            response.Data = _mapper.Map<GetCommentDto>(comment);
+            response.Data.CommentId = comment.Id;
+            response.Data.FileEndpoint = "Comment/File/" + comment.Id;
+            response.Data.HasFile = comment.FileAttachmentAvailability;
+            return response;
+
         }
     }
 }

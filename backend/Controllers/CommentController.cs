@@ -71,17 +71,29 @@ namespace backend.Controllers
             return NotFound(response);
         }
 
+        [HttpGet]
+        [Route("{commentId}")]
+        public async Task<IActionResult> Get(int commentId)
+        {
+            ServiceResponse<GetCommentDto> response = await _commentService.Get(commentId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
         [HttpPut]
         public async Task<IActionResult> Update([FromForm] UpdateCommentWithAttachmentDto updateCommentWithAttachmentDto)
         {
-            ServiceResponse<GetCommentDto> response = await _commentService.Update(updateCommentWithAttachmentDto.AddCommentDto);
+            ServiceResponse<GetCommentDto> response = await _commentService.Update(updateCommentWithAttachmentDto.updateCommentDto);
             if (response.Success)
             {
                 if (updateCommentWithAttachmentDto.File != null)
                     await _commentService.SubmitCommentFile(new AddCommentFileDto
                     {
                         CommentFile = updateCommentWithAttachmentDto.File,
-                        CommentId = updateCommentWithAttachmentDto.CommentId
+                        CommentId = updateCommentWithAttachmentDto.updateCommentDto.CommentId
                     });
                 return Ok(response);
             }

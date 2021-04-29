@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 using backend.Services.CommentServices;
+using backend.Dtos.Comment;
 
 namespace backend.Services.SubmissionServices
 {
@@ -83,7 +84,8 @@ namespace backend.Services.SubmissionServices
                 return response;
             }
             Course course = await _context.Courses.Include(c => c.Instructors)
-                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()));
+                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()
+                    && cu.CourseId == submission.AffiliatedAssignment.AfilliatedCourseId));
             if (!submission.AffiliatedAssignment.VisibilityOfSubmission
                 && course == null && submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
             {
@@ -389,7 +391,7 @@ namespace backend.Services.SubmissionServices
                 return response;
             }
             Course course = await _context.Courses.Include(c => c.Instructors)
-                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()));
+                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId() && cu.CourseId == submission.AffiliatedAssignment.AfilliatedCourseId));
             if (!submission.AffiliatedAssignment.VisibilityOfSubmission
                 && course == null && !submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
             {
@@ -401,6 +403,42 @@ namespace backend.Services.SubmissionServices
             response.Data = _mapper.Map<GetSubmissionDto>(submission);
             response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
             return response;
+        }
+
+        public async Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetInstructorComments(int submissionId)
+        {
+            ServiceResponse<IEnumerable<GetCommentDto>> response = new ServiceResponse<IEnumerable<GetCommentDto>>();
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
+                .Include(s => s.Comments).Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such submission";
+                response.Success = false;
+                return response;
+            }
+            Course course = await _context.Courses.Include(c => c.Instructors)
+                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()
+                    && cu.CourseId == submission.AffiliatedAssignment.AfilliatedCourseId));
+            if (!submission.AffiliatedAssignment.VisibilityOfSubmission
+                && course == null && submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to see this submission";
+                response.Success = false;
+                return response;
+            }
+            return response;
+        }
+
+        public Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetTaComments(int submissionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetStudentComments(int submissionId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

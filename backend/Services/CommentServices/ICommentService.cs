@@ -13,7 +13,7 @@ namespace backend.Services.CommentServices
         Task<ServiceResponse<string>> DeleteWithForce(int commentId);
         Task<ServiceResponse<string>> Delete(int commentId);
         Task<ServiceResponse<GetCommentDto>> Add(AddCommentDto addCommentDto);
-        Task<ServiceResponse<GetCommentDto>> Update(AddCommentDto addCommentDto);
+        Task<ServiceResponse<GetCommentDto>> Update(UpdateCommentDto updateCommentDto);
         Task<ServiceResponse<GetCommentDto>> Get(int commentId);
 
     }

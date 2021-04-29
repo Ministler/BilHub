@@ -11,6 +11,7 @@ namespace backend.Data.Auth
         Task<ServiceResponse<string>> ForgotMyPassword(UserForgotDto userForgotDto);
         Task<ServiceResponse<string>> ChangePassword(UserChangeDto userChangeDto);
         Task<ServiceResponse<string>> Verify(UserVerifyDto userVerifyDto);
+        Task<ServiceResponse<string>> Resend(string email);
         Task<bool> UserExists(string username);
     }
 }
