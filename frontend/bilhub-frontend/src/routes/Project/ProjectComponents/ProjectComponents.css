@@ -31,3 +31,12 @@
     min-height: 100px;
     height: 300px;
 }
+
+.FeedbackText {
+    margin-top: 5px !important;
+    margin-right: 5px !important;
+    min-height: 200px;
+    max-height: 200px;
+    min-width: 40%;
+    max-width: 40%;
+}

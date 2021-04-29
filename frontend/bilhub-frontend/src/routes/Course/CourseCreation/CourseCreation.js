@@ -70,17 +70,20 @@ export class CourseCreation extends Component {
                     value: 1,
                 },
             ],
-
             instructorList: [],
+            currentInstructor: '',
             TAList: [],
+            currentTA: '',
             studentManualList: [],
+            manualSection: 0,
+            currentStudent: '',
             studentAutoList: [],
+            autoSection: 0,
             groupFormationType: '',
         };
     }
 
     validations = (data) => {
-        console.log(data);
         const name = data.name;
         switch (name) {
             case 'code':
@@ -100,7 +103,6 @@ export class CourseCreation extends Component {
 
         const name = data.name;
         var value = '';
-
         if (data.type === 'checkbox') {
             value = data.checked;
             var sectionNumber = value ? 0 : 1;
@@ -115,28 +117,59 @@ export class CourseCreation extends Component {
 
     changeSection = (event, data) => {
         var sections = [];
+        var studentManualList = [];
+        var studentAutoList = [];
         for (var i = 1; i <= data.value; i++) {
             sections.push({
                 key: i,
                 text: i,
                 value: i,
             });
+            studentManualList.push([]);
+            studentAutoList.push([]);
         }
-
-        this.setState({ sections: sections });
+        this.state.studentAutoList = studentAutoList;
+        this.state.studentManualList = studentManualList;
+        this.state.sections = sections;
         this.handleChange(event, data);
     };
 
-    createUserList(members) {
+    createUserList(members, userType, listType, section = 0) {
         return (
             <Segment style={{ height: '200px' }}>
-                <List items={members}></List>
+                <List className="UserList" items={members}></List>
                 <Segment.Inline className="AddSegment">
-                    <Input icon={<Icon name="plus" inverted circular link />} placeholder="Enter" />
+                    <Form.Input
+                        name={userType}
+                        onChange={this.handleChange}
+                        icon={
+                            <Icon
+                                name="plus"
+                                inverted
+                                circular
+                                link
+                                onClick={() => {
+                                    this.addUser(userType, listType, section);
+                                }}
+                            />
+                        }
+                        placeholder="Enter"
+                    />
                 </Segment.Inline>
             </Segment>
         );
     }
+
+    addUser = (userType, listType, section) => {
+        let curList = this.state[listType];
+        console.log(listType);
+        if (section === 0) {
+            curList.push(this.state[userType]);
+        } else {
+            curList[section - 1].push(this.state[userType]);
+        }
+        this.setState({ [listType]: curList, [userType]: '' });
+    };
 
     onFormSubmit = (e) => {
         console.log(this.state.sectionNumber);
@@ -151,7 +184,7 @@ export class CourseCreation extends Component {
 
     render() {
         return (
-            <Form onSubmit={this.onFormSubmit}>
+            <Form className="CreationForm" onSubmit={this.onFormSubmit}>
                 <Form.Group>
                     <h1>Create New Course</h1>
                 </Form.Group>
@@ -188,10 +221,12 @@ export class CourseCreation extends Component {
                             options={semesterOptions}
                         />
                     </Form.Field>
-                    <Form.Field width={7} textAlign="center">
-                        {this.state.code}
-                        {(this.state.code != '' || this.state.code != '') && '-'}
-                        {this.state.year} {this.state.semester}
+                    <Form.Field className="newCourseName" width={7} textAlign="center">
+                        <h2>
+                            {this.state.code}
+                            {(this.state.code != '' || this.state.code != '') && '-'}
+                            {this.state.year} {this.state.semester}
+                        </h2>
                     </Form.Field>
                 </Form.Group>
                 <Divider />
@@ -224,23 +259,27 @@ export class CourseCreation extends Component {
                 </Form.Group>
                 <Divider />
                 <Grid>
-                    <Grid.Row columns={6}>
+                    <Grid.Row columns={4}>
                         <GridColumn>Add Instructor:</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                        <GridColumn>
+                            {this.createUserList(this.state.instructorList, 'currentInstructor', 'instructorList')}
+                        </GridColumn>
                         <GridColumn>Add Teaching Assistants</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                        <GridColumn>{this.createUserList(this.state.TAList, 'currentTA', 'TAList')}</GridColumn>
                     </Grid.Row>
-                    <Grid.Row columns={6}>
+                    <Grid.Row columns={4}>
                         <GridColumn>
                             <div>Add Student as .txt file:</div>
                             {this.state.sectionNumber > 0 && (
                                 <div>
                                     Section:
                                     <Dropdown
+                                        name="autoSection"
                                         fluid
                                         selection
                                         options={this.state.sections}
                                         defaultValue={this.state.sections[0].value}
+                                        onChange={this.handleChange}
                                     />
                                 </div>
                             )}
@@ -254,15 +293,24 @@ export class CourseCreation extends Component {
                                 <div>
                                     Section:{' '}
                                     <Dropdown
+                                        name="manualSection"
                                         fluid
                                         selection
                                         options={this.state.sections}
                                         defaultValue={this.state.sections[0].value}
+                                        onChange={this.handleChange}
                                     />
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                        <GridColumn>
+                            {this.createUserList(
+                                this.state.studentManualList,
+                                'currentStudent',
+                                'studentManualList',
+                                this.state.manualSection
+                            )}
+                        </GridColumn>
                     </Grid.Row>
                 </Grid>
                 <Divider />
