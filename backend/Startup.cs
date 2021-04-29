@@ -27,6 +27,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using backend.Services.CourseServices;
+using backend.Services.SectionServices;
 
 namespace backend
 {
@@ -88,6 +90,8 @@ namespace backend
             services.AddScoped<IAssignmentService, AssignmentService>();
             services.AddScoped<IProjectGroupService, ProjectGroupService>();
             services.AddScoped<IMergeRequestService, MergeRequestService>();
+            services.AddScoped<ICourseService,CourseService>();
+            services.AddScoped<ISectionService,SectionService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

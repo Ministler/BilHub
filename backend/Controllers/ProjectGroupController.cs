@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-    // [Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ProjectGroupController : ControllerBase
@@ -64,6 +64,18 @@ namespace backend.Controllers
         public async Task<ActionResult> KickStudentFromGroup ( int projectGroupId, int userId )
         {  
             return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId ) );
+        }
+
+        [HttpPost("CompleteJoinRequest")]
+        public async Task<ActionResult> CompleteJoinRequest ( int joinRequestId )
+        {  
+            return Ok ( await _projectGroupService.CompleteJoinRequest ( joinRequestId ) );
+        }
+
+        [HttpPost("CompleteMergeRequest")]
+        public async Task<ActionResult> CompleteMergeRequest ( int mergeRequestId )
+        {  
+            return Ok ( await _projectGroupService.CompleteMergeRequest ( mergeRequestId ) );
         }
     }
 }

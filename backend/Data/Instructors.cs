@@ -5,6 +5,7 @@ namespace backend.Data
         public static string[] instrs = new
         string[]
         {
+            "oguzhan@admin",
             "akman@cs.bilkent.edu.tr",
             "aykanat@cs.bilkent.edu.tr",
             "calkan@cs.bilkent.edu.tr",
