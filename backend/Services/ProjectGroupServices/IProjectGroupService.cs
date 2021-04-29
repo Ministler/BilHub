@@ -17,6 +17,7 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<string>> ForceCancelGroup ( int projectGroupId );
         Task<ServiceResponse<GetProjectGroupDto>> CompleteJoinRequest ( int joinRequestId );
         Task<ServiceResponse<GetProjectGroupDto>> CompleteMergeRequest ( int mergeRequestId );
+        Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection ( int userId, int sectionId );
         
     }
 }

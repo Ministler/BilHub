@@ -69,6 +69,7 @@ namespace backend.Data
 
             byte[] hash, salt;
             Utility.CreatePasswordHash("31", out hash, out salt);
+            
             modelBuilder.Entity<Assignment>().HasData(
                 new Assignment
                 {
@@ -735,8 +736,7 @@ namespace backend.Data
                     CourseInformation = "Object Oriented Software Engineering",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
                     MinGroupSize = 5,
                     MaxGroupSize = 6
                 }, new Course
@@ -746,8 +746,7 @@ namespace backend.Data
                     CourseInformation = "Programming Languages",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
                     MinGroupSize = 2,
                     MaxGroupSize = 3
                 }, new Course
@@ -757,8 +756,7 @@ namespace backend.Data
                     CourseInformation = "Data Structures and Algorithms",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
                 }, new Course
@@ -768,8 +766,7 @@ namespace backend.Data
                     CourseInformation = "Computer Organization and Architecture",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
                     MinGroupSize = 2,
                     MaxGroupSize = 3
                 }, new Course
@@ -779,8 +776,7 @@ namespace backend.Data
                     CourseInformation = "History",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
                     MinGroupSize = 4,
                     MaxGroupSize = 5
                 }, new Course
@@ -790,56 +786,11 @@ namespace backend.Data
                     CourseInformation = "Calculus",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
-                }/*, new Course
-                {
-                    Id = 7,
-                    Name = "Cs 476",
-                    CourseInformation = "Automata",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 1,
-                    MaxGroupSize = 2
-                }, new Course
-                {
-                    Id = 8,
-                    Name = "Cs 491",
-                    CourseInformation = "bitirme",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 3,
-                    MaxGroupSize = 5
-                }, new Course
-                {
-                    Id = 9,
-                    Name = "Gra 201",
-                    CourseInformation = "Grafik dersi",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 2,
-                    MaxGroupSize = 4
-                }, new Course
-                {
-                    Id = 10,
-                    Name = "Ge 301",
-                    CourseInformation = "emine or withdraw",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 2,
-                    MaxGroupSize = 5
-                }*/
-            );
+                }
+            ); 
             modelBuilder.Entity<CourseUser>().HasData(
                 new CourseUser
                 {
@@ -891,115 +842,57 @@ namespace backend.Data
                 new Section
                 {
                     Id = 1,
-                    SectionlessState = false,
                     AffiliatedCourseId = 1,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 2,
-                    SectionlessState = false,
                     AffiliatedCourseId = 1,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 3,
-                    SectionlessState = true,
                     AffiliatedCourseId = 2,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 4,
-                    SectionlessState = true,
                     AffiliatedCourseId = 2,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 5,
-                    SectionlessState = false,
                     AffiliatedCourseId = 3,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 6,
-                    SectionlessState = false,
                     AffiliatedCourseId = 4,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 7,
-                    SectionlessState = false,
                     AffiliatedCourseId = 4,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 8,
-                    SectionlessState = false,
                     AffiliatedCourseId = 5,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 9,
-                    SectionlessState = false,
                     AffiliatedCourseId = 6,
                     SectionNo = 1
-                }/*,
-                new Section
-                {
-                    Id = 10,
-                    SectionlessState = true,
-                    AffiliatedCourseId = 7,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 11,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 8,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 12,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 8,
-                    SectionNo = 2
-                },
-                new Section
-                {
-                    Id = 13,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 8,
-                    SectionNo = 3
-                },
-                new Section
-                {
-                    Id = 14,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 9,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 15,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 10,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 16,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 10,
-                    SectionNo = 2
-                }*/
+                }
             );
             modelBuilder.Entity<ProjectGroup>().HasData(
                 new ProjectGroup
@@ -1359,7 +1252,7 @@ namespace backend.Data
                     ProjectGroupId = 20,
                 }
             );
-
+            
         }
     }
 }

@@ -304,6 +304,7 @@ namespace backend.Services.ProjectGroupServices
                     while ( dbProjectGroup.GroupMembers.Count > 0 )
                     {
                         _context.ProjectGroupUsers.Remove ( dbProjectGroup.GroupMembers.ElementAt(0)  );
+                        dbProjectGroup.GroupMembers.Remove( dbProjectGroup.GroupMembers.ElementAt(0) );
                         cnt++;
                         if ( cnt > 15 ) {
                             Console.WriteLine("Aga bug aga");
@@ -322,7 +323,7 @@ namespace backend.Services.ProjectGroupServices
             return serviceResponse;
         }
 
-        private async Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection ( int userId, int sectionId )
+        public async Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection ( int userId, int sectionId )
         {
             ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
             Section dbSection = await _context.Sections
