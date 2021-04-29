@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form, Icon, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import * as actions from '../../store';
 
 import './Settings.css';
 
@@ -55,12 +56,18 @@ class Settings extends Component {
     updateEmail = () => {
         const newEmail = this.state.email;
 
+        for (var i = 0; i < newEmail.length; i++)
+            if (newEmail[i] === '@' && i + 1 < newEmail.length && newEmail.indexOf('bilkent', i + 1) === -1) {
+                this.setError('Please use your bilkent email');
+                return;
+            }
+
         const request = {
             newEmail: newEmail,
             userId: this.props.userId,
         };
 
-        if (false) {
+        if (true) {
             this.setState({
                 sendConformation: true,
             });
@@ -83,7 +90,7 @@ class Settings extends Component {
             this.setState({
                 sendConformation: false,
             });
-            this.setInformation('Your email is changed');
+            this.props.logout();
         } else {
             this.setError('Conformation Code is Wrong');
         }
@@ -313,7 +320,13 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Settings);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logout: () => dispatch(actions.logout()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);
 
 const dummyUser = {
     userInformation:
