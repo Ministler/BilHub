@@ -1,22 +1,48 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import { AppLayout } from './components';
-// prettier-ignore
 import {
-    Logout, Login, Signup, Course, CourseAssignment, CourseCreation, CourseSettings,
-    Home, Project, ProjectAssignment, Profile, Settings, Notifications
-} from './containers';
+    Login,
+    Signup,
+    Course,
+    CourseCreation,
+    CourseSettings,
+    Home,
+    Project,
+    Profile,
+    Settings,
+    Notifications,
+    NewPassword,
+} from './routes';
+import * as actions from './store';
+import { checkAuthRequest } from './API';
 
 class App extends Component {
+    componentDidMount() {
+        const token = localStorage.getItem('token');
+
+        checkAuthRequest(token)
+            .then((response) => {
+                const userData = response.data.users[0];
+                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'student');
+            })
+            .catch((error) => {
+                console.log(error.response);
+                this.props.logout();
+            });
+    }
+
     render() {
-        const user_info = JSON.parse(localStorage.getItem('user-info'));
-        //const user_token = user_info ? user_info.token : null;
-        const user_type = user_info ? user_info.user_type : null;
+        if (this.props.appLoading) {
+            return <>Loading...</>;
+        }
 
         const unauthenticatedRoutes = (
             <Switch>
                 <Route exact path={'/login'} component={Login} />
+                <Route exact path={'/newPassword'} component={NewPassword} />
                 <Route exact path={'/signup'} component={Signup} />
                 <Redirect to={'/login'} />
             </Switch>
@@ -26,28 +52,42 @@ class App extends Component {
             <AppLayout>
                 <Switch>
                     <Route exact path={'/notifications'} component={Notifications} />
-                    <Route exact path={'/project/:id/assignment/:id'} component={ProjectAssignment} />
-                    <Route exact path={'/project/:id'} component={Project} />
+                    <Route exact path={'/project/:projectId/submission/:submissionId'} component={Project} />
+                    <Route exact path={'/project/:projectId'} component={Project} />
                     <Route exact path={'/profile'} component={Profile} />
                     <Route exact path={'/profile/:id'} component={Profile} />
-                    <Route exact path={'/course/:id'} component={Course} />
-                    <Route exact path={'/course/:id/assignment/:id'} component={CourseAssignment} />
+                    <Route exact path={'/course/:courseId'} component={Course} />
+                    <Route exact path={'/course/:courseId/assignment/:assignmentId'} component={Course} />
                     <Route exact path={'/settings'} component={Settings} />
-                    <Route exact path={'/logout'} component={Logout} />
-                    {user_type === 'instructor' ? (
-                        <>
-                            <Route exact path={'/create-new-course'} component={CourseCreation} />
-                            <Route exact path={'/course/:id/settings'} component={CourseSettings} />
-                        </>
+                    {this.props.userType === 'instructor' ? (
+                        <Route exact path={'/create-new-course'} component={CourseCreation} />
+                    ) : null}
+                    {this.props.userType === 'instructor' ? (
+                        <Route exact path={'/course/:id/settings'} component={CourseSettings} />
                     ) : null}
                     <Route exact path={'/'} component={Home} />
                     <Redirect to={'/'} />
                 </Switch>
             </AppLayout>
         );
-
-        return true ? authenticatedRoutes : unauthenticatedRoutes;
+        return this.props.token ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        userType: state.userType,
+        appLoading: state.appLoading,
+        token: state.token,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        authSuccess: (token, userId, email, name, userType) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType)),
+        logout: () => dispatch(actions.logout()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

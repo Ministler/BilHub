@@ -1,0 +1,17 @@
+body {
+    margin: 0px 60px;
+}
+
+.HomeDivLeft {
+    padding-right: 50px;
+    width: 25%;
+    height: 100%;
+    position: fixed;
+}
+
+.HomeDivRight {
+    padding-right: 50px;
+    width: 25%;
+    height: 100%;
+    position: fixed;
+}

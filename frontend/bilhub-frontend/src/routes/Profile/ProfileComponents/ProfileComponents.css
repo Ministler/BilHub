@@ -1,0 +1,15 @@
+.ProjectCardExtra {
+    display: flex;
+}
+
+.ProjectCardExtra > .content > .header {
+    margin-top: 5px !important;
+}
+
+.ProjectDate {
+    margin-left: auto;
+}
+
+.ProjectCardElement {
+    width: 95% !important;
+}

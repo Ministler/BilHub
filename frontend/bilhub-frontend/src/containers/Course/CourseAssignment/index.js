@@ -1,1 +1,0 @@
-export { CourseAssignment } from './CourseAssignment';

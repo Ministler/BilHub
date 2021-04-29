@@ -2,16 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 
-import './index.css';
-import './containers/genericLayout.css';
+import './styles/genericElement.css';
+import './styles/genericLayout.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { authReducer } from './store';
+
+const store = createStore(authReducer);
 
 const app = (
     <React.StrictMode>
         <BrowserRouter>
-            <App />
+            <Provider store={store}>
+                <App />
+            </Provider>
         </BrowserRouter>
     </React.StrictMode>
 );
