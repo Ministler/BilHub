@@ -26,7 +26,14 @@ class App extends Component {
         checkAuthRequest(token)
             .then((response) => {
                 const userData = response.data.users[0];
-                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'instructor');
+                this.props.authSuccess(
+                    token,
+                    userData.localId,
+                    userData.email,
+                    userData.displayName,
+                    'instructor',
+                    true
+                );
             })
             .catch((error) => {
                 this.props.logout();
@@ -83,8 +90,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authSuccess: (token, userId, email, name, userType) =>
-            dispatch(actions.authSuccess(token, userId, email, name, userType)),
+        authSuccess: (token, userId, email, name, userType, darkMode) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType, darkMode)),
         logout: () => dispatch(actions.logout()),
     };
 };

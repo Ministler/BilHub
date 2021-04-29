@@ -38,7 +38,8 @@ class Login extends Component {
                     userData.localId,
                     userData.email,
                     userData.displayName,
-                    'student'
+                    'student',
+                    false
                 );
             })
             .catch(() => {
@@ -84,8 +85,8 @@ class Login extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authSuccess: (token, userId, email, name, userType) =>
-            dispatch(actions.authSuccess(token, userId, email, name, userType)),
+        authSuccess: (token, userId, email, name, userType, darkMode) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType, darkMode)),
     };
 };
 

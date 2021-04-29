@@ -7,6 +7,7 @@ const initialState = {
     name: null,
     userType: null,
     email: null,
+    darkMode: false,
 
     appLoading: true,
 };
@@ -15,10 +16,10 @@ const authSuccess = (state, action) => {
     return updateObject(state, {
         token: action.token,
         userId: action.userId,
-        email: action.email,
         name: action.name,
         userType: action.userType,
-        checkAuthError: null,
+        email: action.email,
+        darkMode: action.darkMode,
         appLoading: false,
     });
 };
