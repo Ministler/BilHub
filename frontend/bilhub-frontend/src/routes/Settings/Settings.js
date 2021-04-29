@@ -13,6 +13,9 @@ class Settings extends Component {
             error: '',
             information: '',
             userInformation: '',
+
+            email: '',
+            verifyCode: '',
             sendConformation: false,
         };
     }
@@ -49,19 +52,42 @@ class Settings extends Component {
         console.log(request);
     };
 
-    updateEmail = (e) => {
-        const newEmail = e.target.email?.value;
-        const reNewEmail = e.target.emailRe?.value;
-        if (newEmail !== reNewEmail) {
-            this.setInformation(null);
-            this.setError('Email do not match');
-            return;
-        }
+    updateEmail = () => {
+        const newEmail = this.state.email;
 
         const request = {
-            newEmail: e.target.email?.value,
+            newEmail: newEmail,
             userId: this.props.userId,
         };
+
+        if (false) {
+            this.setState({
+                sendConformation: true,
+            });
+        } else {
+            this.setError('Something wrong');
+        }
+
+        console.log(request);
+    };
+
+    onVerifyEmail = () => {
+        const code = this.state.code;
+
+        const request = {
+            code: code,
+            userId: this.props.userId,
+        };
+
+        if (true) {
+            this.setState({
+                sendConformation: false,
+            });
+            this.setInformation('Your email is changed');
+        } else {
+            this.setError('Conformation Code is Wrong');
+        }
+
         console.log(request);
     };
 
@@ -94,6 +120,12 @@ class Settings extends Component {
 
     onErrorClosed = (event) => {
         this.setState({ error: '' });
+    };
+
+    onInputChange = (event, name, value) => {
+        this.setState({
+            [name]: value,
+        });
     };
 
     sendConformation = (event) => {
@@ -151,6 +183,36 @@ class Settings extends Component {
                             {props.information}
                         </div>
                     )}
+                    <div class="field">
+                        <label style={{ fontSize: '12px' }}>Change Bilkent Email</label>
+                        <Form.Input
+                            type="email"
+                            name="email"
+                            disabled={this.state.sendConformation}
+                            style={{ width: '60%' }}
+                            onChange={(e, { name, value }) => this.onInputChange(e, name, value)}
+                            action={{
+                                content: 'Change',
+                                onClick: () => this.updateEmail(),
+                            }}
+                        />
+                    </div>
+                    {props.sendConformation && (
+                        <div class="field">
+                            <label style={{ fontSize: '12px' }}>Conformation Code</label>
+                            <Form.Input
+                                type="text"
+                                name="code"
+                                style={{ width: '60%' }}
+                                onChange={(e, { name, value }) => this.onInputChange(e, name, value)}
+                            />
+                        </div>
+                    )}
+                    {props.sendConformation && (
+                        <button class="ui teal button" onClick={this.onVerifyEmail}>
+                            Update
+                        </button>
+                    )}
                     <Form class="Sign in form" onSubmit={this.updatePassword}>
                         <div class="field">
                             <label style={{ fontSize: '12px' }}>Change Password</label>
@@ -162,26 +224,6 @@ class Settings extends Component {
                         </div>
                         <button class="ui teal button">Update Password</button>
                     </Form>
-                    <div class="field">
-                        <label style={{ fontSize: '12px' }}>Change Bilkent Email</label>
-                        <Form.Input
-                            type="email"
-                            name="email"
-                            style={{ width: '60%' }}
-                            action={{ content: 'Change', onClick: () => this.sendConformation() }}
-                        />
-                    </div>
-                    {props.sendConformation && (
-                        <div class="field">
-                            <label style={{ fontSize: '12px' }}>Conformation Code</label>
-                            <Form.Input type="text" name="code" style={{ width: '60%' }} />
-                        </div>
-                    )}
-                    {props.sendConformation && (
-                        <button class="ui teal button" onClick={this.updateEmail}>
-                            Update
-                        </button>
-                    )}
                 </>
             );
         } else if (props.segment === 'Appearance') {
