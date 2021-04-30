@@ -234,8 +234,7 @@ export const convertRequestsToRequestsList = (
     requestsType,
     requestStatus,
     onUserClicked,
-    onRequestApproved,
-    onRequestDisapproved
+    onRequestAction
 ) => {
     return (
         <Card.Group as="div" className="AssignmentCardGroup">
@@ -276,12 +275,26 @@ export const convertRequestsToRequestsList = (
                                 <>
                                     <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                     <Icon
-                                        onClick={() => onRequestApproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isApprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="checkmark"
                                         color="blue"
                                     />
                                     <Icon
-                                        onClick={() => onRequestDisapproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isDisapprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="x"
                                         color="red"
                                     />
@@ -291,7 +304,25 @@ export const convertRequestsToRequestsList = (
 
                         if (requestStatus === 'unresolved') {
                             titleStart = 'You approved ' + request.type + ' request of ';
-                            voteIcons = <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>;
+                            voteIcons = (
+                                <p style={{ display: 'inline' }}>
+                                    Approved: {request.voteStatus}&nbsp;
+                                    {
+                                        <Icon
+                                            onClick={() =>
+                                                onRequestAction(
+                                                    'isUndoModalOpen',
+                                                    request.requestId,
+                                                    request.type,
+                                                    userName
+                                                )
+                                            }
+                                            name="undo"
+                                            color="purple"
+                                        />
+                                    }
+                                </p>
+                            );
                         }
 
                         if (requestStatus === 'resolved') {
@@ -322,12 +353,26 @@ export const convertRequestsToRequestsList = (
                                 <>
                                     <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                     <Icon
-                                        onClick={() => onRequestApproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isApprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="checkmark"
                                         color="blue"
                                     />
                                     <Icon
-                                        onClick={() => onRequestDisapproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isDisapprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="x"
                                         color="red"
                                     />
@@ -340,7 +385,36 @@ export const convertRequestsToRequestsList = (
 
                             voteIcons = (
                                 <>
-                                    <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
+                                    <p style={{ display: 'inline' }}>
+                                        Approved: {request.voteStatus}&nbsp;{' '}
+                                        {request.type === 'Merge' ? (
+                                            <Icon
+                                                onClick={() =>
+                                                    onRequestAction(
+                                                        'isUndoModalOpen',
+                                                        request.requestId,
+                                                        request.type,
+                                                        userName
+                                                    )
+                                                }
+                                                name="undo"
+                                                color="purple"
+                                            />
+                                        ) : (
+                                            <Icon
+                                                onClick={() =>
+                                                    onRequestAction(
+                                                        'isDeleteModalOpen',
+                                                        request.requestId,
+                                                        request.type,
+                                                        userName
+                                                    )
+                                                }
+                                                name="remove circle"
+                                                color="black"
+                                            />
+                                        )}
+                                    </p>
                                 </>
                             );
                         }

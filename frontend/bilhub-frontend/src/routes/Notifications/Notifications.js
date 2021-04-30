@@ -11,7 +11,12 @@ import {
     Tab,
     getNewFeedbacksAsAccordion,
 } from '../../components';
-import { RequestApprovalModal, RequestDisapprovalModal } from './NotificationsComponents';
+import {
+    RequestApprovalModal,
+    RequestDisapprovalModal,
+    RequestUndoModal,
+    RequestDeleteModal,
+} from './NotificationsComponents';
 
 class Notifications extends Component {
     constructor(props) {
@@ -27,6 +32,8 @@ class Notifications extends Component {
 
             isApprovalModalOpen: false,
             isDisapprovalModalOpen: false,
+            isUndoModalOpen: false,
+            isDeleteModalOpen: false,
 
             currentRequestId: null,
             currentRequestType: null,
@@ -40,15 +47,28 @@ class Notifications extends Component {
         });
         if (!isSuccess) return;
 
-        let isApproved = false;
-        if (modalType === 'isApprovalModalOpen') {
-            isApproved = true;
-        }
+        let request = 'error';
+        if (modalType === 'isApprovalModalOpen' || modalType === 'isDisapprovalModalOpen') {
+            let isApproved = false;
+            if (modalType === 'isApprovalModalOpen') {
+                isApproved = true;
+            }
 
-        const request = {
-            requestId: this.state.currentRequestId,
-            isApproved: isApproved,
-        };
+            request = {
+                requestId: this.state.currentRequestId,
+                isApproved: isApproved,
+            };
+        } else if (modalType === 'isUndoModalOpen') {
+            request = {
+                requestId: this.state.currentRequestId,
+                undoVote: true,
+            };
+        } else if (modalType === 'isDeleteModalOpen') {
+            request = {
+                requestId: this.state.currentRequestId,
+                deleteRequest: true,
+            };
+        }
 
         console.log(request);
     };
@@ -76,21 +96,12 @@ class Notifications extends Component {
         this.props.history.push('/profile/' + userId);
     };
 
-    onRequestApproved = (requestId, requestType, userName) => {
+    onRequestAction = (requestModal, requestId, requestType, userName) => {
         this.setState({
             currentRequestId: requestId,
             currentRequestType: requestType,
             currentRequestUserName: userName,
-            isApprovalModalOpen: true,
-        });
-    };
-
-    onRequestDisapproved = (requestId, requestType, userName) => {
-        this.setState({
-            currentRequestId: requestId,
-            currentRequestType: requestType,
-            currentRequestUserName: userName,
-            isDisapprovalModalOpen: true,
+            [requestModal]: true,
         });
     };
 
@@ -105,8 +116,7 @@ class Notifications extends Component {
                 this.state.incomingRequests,
                 'incoming',
                 this.onUserClicked,
-                this.onRequestApproved,
-                this.onRequestDisapproved
+                this.onRequestAction
             ),
         };
     };
@@ -118,8 +128,7 @@ class Notifications extends Component {
                 this.state.outgoingRequests,
                 'outgoing',
                 this.onUserClicked,
-                this.onRequestApproved,
-                this.onRequestDisapproved
+                this.onRequestAction
             ),
         };
     };
@@ -151,6 +160,18 @@ class Notifications extends Component {
                 <RequestDisapprovalModal
                     isOpen={this.state.isDisapprovalModalOpen}
                     closeModal={(isSuccess) => this.onModalClosed('isDisapprovalModalOpen', isSuccess)}
+                    requestType={this.state.currentRequestType}
+                    userName={this.state.currentRequestUserName}
+                />
+                <RequestUndoModal
+                    isOpen={this.state.isUndoModalOpen}
+                    closeModal={(isSuccess) => this.onModalClosed('isUndoModalOpen', isSuccess)}
+                    requestType={this.state.currentRequestType}
+                    userName={this.state.currentRequestUserName}
+                />
+                <RequestDeleteModal
+                    isOpen={this.state.isDeleteModalOpen}
+                    closeModal={(isSuccess) => this.onModalClosed('isDeleteModalOpen', isSuccess)}
                     requestType={this.state.currentRequestType}
                     userName={this.state.currentRequestUserName}
                 />
@@ -457,6 +478,7 @@ const dummyOutgoingRequests = {
     pending: [
         {
             type: 'Merge',
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 3,
             yourGroup: [
                 {
@@ -489,7 +511,7 @@ const dummyOutgoingRequests = {
     unresolved: [
         {
             type: 'Join',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             otherGroup: [
                 {
@@ -509,7 +531,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Merge',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             isRequestOwner: true,
             yourGroup: [
@@ -539,11 +561,43 @@ const dummyOutgoingRequests = {
             formationDate: '22 March 2021',
             voteStatus: '2/5',
         },
+        {
+            type: 'Merge',
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
+            requestId: 1,
+            isRequestOwner: false,
+            yourGroup: [
+                {
+                    name: 'Hasan Kaya',
+                    userId: 1,
+                    requestOwner: true,
+                },
+                {
+                    name: 'Ayşe Kaya',
+                    userId: 2,
+                },
+            ],
+            otherGroup: [
+                {
+                    name: 'Hasan Kaya',
+                    userId: 1,
+                },
+                {
+                    name: 'Ayşe Kaya',
+                    userId: 2,
+                },
+            ],
+            course: 'CS315-Spring2020',
+            courseId: 1,
+            requestDate: '12 March 2021',
+            formationDate: '22 March 2021',
+            voteStatus: '2/5',
+        },
     ],
     resolved: [
         {
             type: 'Join',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             status: 'Approved',
             otherGroup: [
@@ -562,7 +616,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Merge',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             status: 'Approved',
             isRequestOwner: false,
@@ -593,7 +647,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Join',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             status: 'Disapproved',
             otherGroup: [
@@ -612,7 +666,7 @@ const dummyOutgoingRequests = {
         },
         {
             type: 'Merge',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             status: 'Disapproved',
             isRequestOwner: true,

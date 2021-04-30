@@ -95,13 +95,7 @@ export const getNewFeedbacksAsAccordion = (feedbacks, onSubmissionClicked, onPro
     return <MyAccordion accordionSections={accordionElements} />;
 };
 
-export const getRequestsAsAccordion = (
-    requests,
-    requestsType,
-    onUserClicked,
-    onRequestApproved,
-    onRequestDisapproved
-) => {
+export const getRequestsAsAccordion = (requests, requestsType, onUserClicked, onRequestAction) => {
     const accordionElements = [
         {
             title: 'Pending',
@@ -110,13 +104,18 @@ export const getRequestsAsAccordion = (
                 requestsType,
                 'pending',
                 onUserClicked,
-                onRequestApproved,
-                onRequestDisapproved
+                onRequestAction
             ),
         },
         {
             title: 'Unresolved',
-            content: convertRequestsToRequestsList(requests?.unresolved, requestsType, 'unresolved', onUserClicked),
+            content: convertRequestsToRequestsList(
+                requests?.unresolved,
+                requestsType,
+                'unresolved',
+                onUserClicked,
+                onRequestAction
+            ),
         },
         {
             title: 'Resolved',
