@@ -18,9 +18,7 @@ import {
 
 import './CourseSettings.css';
 
-import { GroupsTab } from '../GroupsTab';
-
-import { FormedGroupModal, FormationGroupModal } from '../CourseComponents';
+import { FormedGroupModal, FormationGroupModal, GroupsTab } from '../CourseComponents';
 
 import { convertFormedGroupsToBriefList, convertUnformedGroupsToBriefList } from '../../../components';
 

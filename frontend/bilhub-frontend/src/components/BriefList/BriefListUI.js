@@ -40,7 +40,7 @@ export const TitledDatedBriefElement = (props) => {
 export const MemberBriefElement = (props) => {
     return (
         <div className="clickableHighlightBack" onClick={props.onClick}>
-            {props.member.name} - {props.member.information}
+            {props.member.name}
         </div>
     );
 };

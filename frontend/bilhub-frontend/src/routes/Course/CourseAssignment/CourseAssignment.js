@@ -35,8 +35,8 @@ class CourseAssignment extends Component {
         if (this.props.isCourseActive && this.state.assignment?.isUserTAorInstructor) {
             controlIcons = (
                 <>
-                    <Icon name="edit" />
-                    <Icon name="close" />
+                    <Icon name="edit" onClick={this.props.onDeleteAssignmentModalOpened} />
+                    <Icon name="close" onClick={this.props.onEditAssignmentModalOpened} />
                 </>
             );
         }

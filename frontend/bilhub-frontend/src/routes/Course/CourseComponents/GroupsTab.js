@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Grid, Segment, Tab, Icon, Accordion } from 'semantic-ui-react';
-import './Course.css';
 
 export const GroupsTab = (props) => {
-    const divGroupFormed = dummyGroupsFormed.map((group, index) => {
+    console.log(props);
+    const divGroupFormed = props.groupsFormed?.map((group, index) => {
         const contentGroup = group.map((content) => {
             return <p style={{ textAlign: 'center' }}>{content}</p>;
         });
@@ -81,7 +81,7 @@ export const GroupsTab = (props) => {
             );
     });
 
-    const divGroupUnformed = dummyGroupsUnformed.map((group, index) => {
+    const divGroupUnformed = props.groupsUnformed?.map((group, index) => {
         const contentGroup = group.map((content) => {
             return <p style={{ textAlign: 'center' }}>{content}</p>;
         });
@@ -94,7 +94,7 @@ export const GroupsTab = (props) => {
         );
     });
 
-    if (divGroupUnformed.length !== 0)
+    if (props.groupsUnformed?.length !== 0)
         return (
             <div class="accordion ui fluid">
                 <div class="active title">
@@ -122,35 +122,3 @@ export const GroupsTab = (props) => {
             </Grid>
         );
 };
-
-const dummyGroupsFormed = [
-    ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
-    ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. onErrorCleaned'],
-    ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'],
-    ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
-    ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. onErrorCleaned'],
-    ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'],
-];
-
-const dummyGroupsUnformed = [
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Yusuf Uyar', 'Barış Ogün Yörük', 'Oğuzhan Özçelik'],
-    ['Yusuf Uyar', 'Barış Ogün Yörük', 'Oğuzhan Özçelik'],
-    ['Keke. One', 'Keke. Three', 'Keke. Five'],
-    ['Ahmet Demir', 'Muhammed Arshellov'],
-    ['Ahmet Demir', 'Muhammed Arshellov'],
-    ['Ahmet Demir', 'Muhammed Arshellov'],
-    ['Mr. One'],
-    ['Keke. Five'],
-    ['Mr. One'],
-    ['Mr. One'],
-    ['Mr. One'],
-    ['Dummy. Two'],
-    ['Dummy. Two'],
-    ['Keke. Five'],
-];

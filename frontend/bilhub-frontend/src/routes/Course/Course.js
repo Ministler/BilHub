@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import { Segment, TextArea, Icon, Button } from 'semantic-ui-react';
+import { Segment, TextArea, Icon, Button, Dropdown } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Course.css';
-import { InformationSection } from './CourseComponents';
-import { GroupsTab } from './GroupsTab';
+import {
+    InformationSection,
+    NewAssignmentModal,
+    EditAssignmentModal,
+    DeleteAssignmentModal,
+    GroupsTab,
+} from './CourseComponents';
 import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
 
@@ -15,17 +20,72 @@ class Course extends Component {
             courseInformation: null,
             informationEditMode: false,
             newInformation: '',
+
             assignments: null,
+
+            isNewAssignmentOpen: false,
+            isEditAssignmentOpen: false,
+            isDeleteAssignmentOpen: false,
+
+            currentSection: 1,
         };
     }
 
+    changeCourseInformation = (newInformation) => {
+        const request = {
+            newInformation: newInformation,
+            courseId: this.state.courseInformation?.courseId,
+        };
+
+        console.log(request);
+    };
+
+    onAssignmentFileClicked = () => {
+        console.log('file');
+    };
+
+    onNewAssignmentModalClosed = (isSuccess) => {
+        this.setState({
+            isNewAssignmentOpen: false,
+        });
+    };
+    onEditAssignmentModalClosed = (isSuccess) => {
+        this.setState({
+            isEditAssignmentOpen: false,
+        });
+    };
+    onDeleteAssignmentModalClosed = (isSuccess) => {
+        this.setState({
+            isDeleteAssignmentOpen: false,
+        });
+    };
+
     componentDidMount() {
         this.setState({
+            groups: dummyGroups,
             courseInformation: dummyCourseInformation,
             newInformation: dummyCourseInformation.information,
             assignments: dummyCourseAssignments,
         });
     }
+
+    onNewAssignmentModalOpened = () => {
+        this.setState({
+            isNewAssignmentOpen: true,
+        });
+    };
+
+    onEditAssignmentModalOpened = () => {
+        this.setState({
+            isEditAssignmentOpen: true,
+        });
+    };
+
+    onDeleteAssignmentModalOpened = () => {
+        this.setState({
+            isDeleteAssignmentOpen: true,
+        });
+    };
 
     onUserClicked = (userId) => {
         this.props.history.push('/profile/' + userId);
@@ -46,20 +106,8 @@ class Course extends Component {
         });
     };
 
-    onAssignmentClicked = (assignmentId) => {
+    onAssignmentClicked = (courseId, assignmentId) => {
         this.props.history.push('/course/' + this.props.match.params.courseId + '/assignment/' + assignmentId);
-    };
-
-    onAssignmentFileClicked = () => {
-        console.log('file');
-    };
-
-    changeCourseInformation = (newInformation) => {
-        let courseInformation = { ...this.state.courseInformation };
-        courseInformation.information = newInformation;
-        this.setState({
-            courseInformation: courseInformation,
-        });
     };
 
     getCourseInformationItem = () => {
@@ -107,10 +155,16 @@ class Course extends Component {
         this.props.history.push('/course/' + this.props.match.params.courseId + '/settings');
     };
 
+    onSectionChanged = (dropdownValues) => {
+        this.setState({
+            currentSection: dropdownValues.value,
+        });
+    };
+
     getCourseSettingsIcon = () => {
         let icon = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
-            icon = <Icon name="setting" onClick={this.onCourseSettingsClicked} color="grey"/>;
+            icon = <Icon name="setting" onClick={this.onCourseSettingsClicked} color="grey" />;
         }
         return icon;
     };
@@ -130,10 +184,46 @@ class Course extends Component {
         );
     };
 
+    getDropdownForSections = () => {
+        if (this.state.courseInformation?.numberOfSections) {
+            const sectionOptions = [];
+            for (let i = 1; i <= this.state.courseInformation?.numberOfSections; i++) {
+                sectionOptions.push({
+                    key: i,
+                    text: 'Section ' + i,
+                    value: i,
+                });
+            }
+            return (
+                <Dropdown
+                    defaultValue={0}
+                    fluid
+                    selection
+                    options={sectionOptions}
+                    onChange={(e, dropdownValues) => this.onSectionChanged(dropdownValues)}
+                />
+            );
+        }
+
+        return null;
+    };
+
     getGroupsPane = () => {
         return {
             title: 'Groups',
-            content: <GroupsTab groupsFormed={dummyGroupsFormed} groupsUnformed={dummyGroupsUnformed} />,
+            content: (
+                <>
+                    {this.getDropdownForSections()}
+                    {/* {this.state.groups &&
+                    (1 <= this.state.currentSection ||
+                        this.state.currentSection <= this.state.courseInformation.numberOfSections) ? (
+                        <GroupsTab
+                            groupsFormed={this.state.groups['section' + this.state.currentSection].formed}
+                            groupsUnformed={this.state.groups['section' + this.state.currentSection].unformed}
+                        />
+                    ) : null} */}
+                </>
+            ),
         };
     };
 
@@ -147,7 +237,16 @@ class Course extends Component {
     getNewAssignmentButton = () => {
         let button = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
-            button = <Button content="New Assignment" labelPosition="right" icon="add" primary style={{ marginTop: "20px"}}/>;
+            button = (
+                <Button
+                    content="New Assignment"
+                    labelPosition="right"
+                    icon="add"
+                    primary
+                    style={{ marginTop: '20px' }}
+                    onClick={this.onNewAssignmentModalOpened}
+                />
+            );
         }
         return button;
     };
@@ -167,7 +266,10 @@ class Course extends Component {
                     {this.getNewAssignmentButton()}
                 </>
             ) : (
-                <div>No Assignments</div>
+                <>
+                    <div>No Assignments</div>
+                    {this.getNewAssignmentButton()}
+                </>
             ),
         };
     };
@@ -177,8 +279,20 @@ class Course extends Component {
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
             controlIcons = (
                 <>
-                    <Icon name="close" color='red' size="small" style={{float: "right"}}/>
-                    <Icon name="edit" color='blue' size="small" style={{float: "right"}}/>
+                    <Icon
+                        name="close"
+                        color="red"
+                        size="small"
+                        style={{ float: 'right' }}
+                        onClick={this.onDeleteAssignmentModalOpened}
+                    />
+                    <Icon
+                        name="edit"
+                        color="blue"
+                        size="small"
+                        style={{ float: 'right' }}
+                        onClick={this.onEditAssignmentModalOpened}
+                    />
                 </>
             );
         }
@@ -195,26 +309,52 @@ class Course extends Component {
             <CourseAssignment
                 isCourseActive={this.state.courseInformation?.isCourseActive}
                 courseName={this.state.courseInformation?.courseName}
+                onEditAssignmentModalOpened={this.onEditAssignmentModalClosed}
+                onEditAssignmentModalClosed={this.onEditAssignmentModalClosed}
+                onDeleteAssignmentModalOpened={this.onDeleteAssignmentModalOpened}
+                onDeleteAssignmentModalClosed={this.onDeleteAssignmentModalClosed}
             />
+        );
+    };
+
+    getModals = () => {
+        return (
+            <>
+                <NewAssignmentModal
+                    onClosed={this.onNewAssignmentModalClosed}
+                    isOpen={this.state.isNewAssignmentOpen}
+                />
+                <EditAssignmentModal
+                    onClosed={this.onEditAssignmentModalClosed}
+                    isOpen={this.state.isEditAssignmentOpen}
+                />
+                <DeleteAssignmentModal
+                    onClosed={this.onDeleteAssignmentModalClosed}
+                    isOpen={this.state.isDeleteAssignmentOpen}
+                />
+            </>
         );
     };
 
     render() {
         return (
-            <div class="ui centered grid">
-                <div class="row">
-                    <div class="four wide column">
-                        <Segment>{this.getInformationSection()}</Segment>
-                    </div>
-                    <div class="twelve wide column">
-                        {this.props.match.params.assignmentId ? (
-                            this.getAssignmentPage()
-                        ) : (
-                            <Tab tabPanes={this.getCoursePanes()} />
-                        )}
+            <>
+                <div class="ui centered grid">
+                    <div class="row">
+                        <div class="four wide column">
+                            <Segment>{this.getInformationSection()}</Segment>
+                        </div>
+                        <div class="twelve wide column">
+                            {this.props.match.params.assignmentId ? (
+                                this.getAssignmentPage()
+                            ) : (
+                                <Tab tabPanes={this.getCoursePanes()} />
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+                {this.getModals()}
+            </>
         );
     }
 }
@@ -230,37 +370,152 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(Course);
 
-const dummyGroupsFormed = [
-    ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
-    ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
-    ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. onErrorCleaned'],
-    ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'],
-    ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. onErrorCleaned'],
-    ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'],
-];
-
-const dummyGroupsUnformed = [
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
-    ['Yusuf Uyar', 'Barış Ogün Yörük', 'Oğuzhan Özçelik'],
-    ['Yusuf Uyar', 'Barış Ogün Yörük', 'Oğuzhan Özçelik'],
-    ['Keke. One', 'Keke. Three', 'Keke. Five'],
-    ['Ahmet Demir', 'Muhammed Arshellov'],
-    ['Ahmet Demir', 'Muhammed Arshellov'],
-    ['Ahmet Demir', 'Muhammed Arshellov'],
-    ['Mr. One'],
-    ['Keke. Five'],
-    ['Mr. One'],
-    ['Mr. One'],
-    ['Mr. One'],
-    ['Dummy. Two'],
-    ['Dummy. Two'],
-    ['Keke. Five'],
-];
+const dummyGroups = {
+    section1: {
+        formed: [
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+        unformed: [
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+    },
+    section2: {
+        formed: [
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+        unformed: [
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+    },
+};
 
 const dummyCourseInformation = {
     courseName: 'CS319-2021Spring',
@@ -269,30 +524,31 @@ const dummyCourseInformation = {
     instructors: [
         {
             name: 'Eray Tüzün',
-            information: 'eraytuzun@gmail.com',
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            information: 'alpersarikan@gmail.com',
             userId: 2,
         },
     ],
     TAs: [
         {
             name: 'Erdem Tuna',
-            information: 'erdemtuan@gmail.com',
             userId: 1,
         },
         {
             name: 'Kraliçe Irmak',
-            information: 'kraliceirmak@gmail.com',
             userId: 2,
         },
     ],
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
     isTAorInstructorOfCourse: true,
+    usersSection: 4,
+    isUserInFormedGroup: true,
+    isLocked: true,
+    formationDate: '15/24/2020',
+    numberOfSections: 5,
 };
 
 const dummyCourseAssignments = [

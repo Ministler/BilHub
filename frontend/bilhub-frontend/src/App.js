@@ -68,10 +68,8 @@ class App extends Component {
                     {this.props.userType === 'instructor' ? (
                         <Route exact path={'/create-new-course'} component={CourseCreation} />
                     ) : null}
-                    {this.props.userType === 'instructor' ? (
-                        <Route exact path={'/course/:id/settings'} component={CourseSettings} />
-                    ) : null}
                     <Route exact path={'/'} component={Home} />
+                    <Route exact path={'/course/:id/settings'} component={CourseSettings} />
                     <Redirect to={'/'} />
                 </Switch>
             </AppLayout>
