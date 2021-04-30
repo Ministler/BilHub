@@ -438,6 +438,7 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<List<GetCommentDto>>> GetTaComments(int submissionId)
         {
             ServiceResponse<List<GetCommentDto>> response = new ServiceResponse<List<GetCommentDto>>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
             Submission submission = await _context.Submissions
                 .Include(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse).ThenInclude(c => c.Instructors)
                 .Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
@@ -449,18 +450,21 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            bool isInstructor = submission.AffiliatedAssignment.AfilliatedCourse.Instructors.Any(u => u.UserId == GetUserId());
+            Course course = submission.AffiliatedAssignment.AfilliatedCourse;
             if (!submission.AffiliatedAssignment.VisibilityOfSubmission
-                && submission.AffiliatedAssignment.AfilliatedCourse.Instructors.Any(cu => cu.UserId == GetUserId()
-                && isInstructor))
+                && course.Instructors.Any(cu => cu.UserId == GetUserId())
+                && user.UserType == UserTypeClass.Student)
             {
                 response.Data = null;
-                response.Message = "You are not authorized to see this submission";
+                response.Message = "You are not authorized for this endpoint";
                 response.Success = false;
                 return response;
             }
+            List<int> intrs = new List<int>();
+            intrs = course.Instructors.Select(cu => cu.UserId).ToList();
             List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
-                .Where(c => c.CommentedUser.UserType == UserTypeClass.Student && isInstructor)
+                .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
+                .Where(c => intrs.Contains(c.CommentedUserId))
                 .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
 
             response.Data = comments;
@@ -488,16 +492,92 @@ namespace backend.Services.SubmissionServices
                 && user.UserType == UserTypeClass.Student)
             {
                 response.Data = null;
-                response.Message = "You are not authorized to see this submission";
+                response.Message = "You are not authorized for this endpoint";
                 response.Success = false;
                 return response;
             }
+            List<int> intrs = new List<int>();
+            intrs = course.Instructors.Select(cu => cu.UserId).ToList();
             List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
                 .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
+                .Where(c => !intrs.Contains(c.CommentedUserId))
                 .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
 
             response.Data = comments;
             return response;
         }
+
+        public async Task<ServiceResponse<decimal>> GetGradeWithGraderId(int submissionId, int graderId)
+        {
+            ServiceResponse<decimal> response = new ServiceResponse<decimal>();
+            Submission submission = await _context.Submissions.Include(s => s.Comments).FirstOrDefaultAsync(c => c.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = -1;
+                response.Message = "There is no submission with this Id";
+                response.Success = false;
+                return response;
+            }
+            if (graderId == -1)
+            {
+                return await getStudentsAverage(submissionId);
+            }
+            else
+            {
+                User grader = await _context.Users.FirstOrDefaultAsync(c => c.Id == graderId);
+                if (grader == null)
+                {
+                    response.Data = -1;
+                    response.Message = "There is no user with this Id";
+                    response.Success = false;
+                    return response;
+                }
+                Comment comment = submission.Comments.FirstOrDefault(c => c.CommentedUserId == grader.Id);
+                if (comment == null || comment.MaxGrade == 0)
+                {
+                    response.Data = -1;
+                    response.Message = "This user did not send his feedback grade for this assignment";
+                    response.Success = false;
+                    return response;
+                }
+                response.Data = Decimal.Round(comment.Grade / comment.MaxGrade * 100, 2);
+                return response;
+            }
+        }
+
+        public async Task<ServiceResponse<decimal>> getStudentsAverage(int submissionId)
+        {
+            ServiceResponse<decimal> response = new ServiceResponse<decimal>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Submission submission = await _context.Submissions
+                .Include(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse).ThenInclude(c => c.Instructors)
+                .Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
+                .Include(s => s.Comments).Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = -1;
+                response.Message = "There is no such submission";
+                response.Success = false;
+                return response;
+            }
+            Course course = submission.AffiliatedAssignment.AfilliatedCourse;
+            List<int> intrs = new List<int>();
+            intrs = course.Instructors.Select(cu => cu.UserId).ToList();
+            List<decimal> grades = _context.Comments.Include(c => c.CommentedUser)
+                .Where(c => c.CommentedSubmissionId == submissionId)
+                .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
+                .Where(c => !intrs.Contains(c.CommentedUserId))
+                .Where(c => c.MaxGrade != 0)
+                .Select(c => c.Grade / c.MaxGrade * 100).ToList();
+            if (grades.Count > 0)
+            {
+                response.Data = Decimal.Round(grades.Average(), 2);
+                return response;
+            }
+            response.Data = -1;
+            return response;
+        }
+
+
     }
 }

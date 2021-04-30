@@ -202,7 +202,7 @@ namespace backend.Controllers
         [Route("TAComments/{submissionId}")]
         public async Task<IActionResult> GetTAComments(int submissionId)
         {
-            ServiceResponse<List<GetCommentDto>> response = await _submissionService.GetStudentComments(submissionId);
+            ServiceResponse<List<GetCommentDto>> response = await _submissionService.GetTaComments(submissionId);
             if (response.Success)
             {
                 return Ok(response);
@@ -221,6 +221,20 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpGet]
+        [Route("Grade/{submissionId}/{graderId}")]
+        public async Task<IActionResult> GetGradeById(int submissionId, int graderId)
+        {
+            ServiceResponse<decimal> response = await _submissionService.GetGradeWithGraderId(submissionId, graderId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+
         [HttpPut]
         public async Task<IActionResult> UpdateAssignment([FromForm] UpdateSubmissionWithAttachment updateSubmissionWithAttachment)
         {

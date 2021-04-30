@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using backend.Dtos.ProjectGroup;
+using backend.Models;
 using backend.Services.ProjectGroupServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,63 +20,74 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProjectGroupById ( int id ) 
+        public async Task<IActionResult> GetProjectGroupById(int id)
         {
-            return Ok( await _projectGroupService.GetProjectGroupById(id) );
+            return Ok(await _projectGroupService.GetProjectGroupById(id));
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateProjectGroupInformation ( UpdateProjectGroupDto updateProjectGroupDto ) 
+        public async Task<ActionResult> UpdateProjectGroupInformation(UpdateProjectGroupDto updateProjectGroupDto)
         {
-            return Ok ( await _projectGroupService.UpdateProjectGroupInformation(updateProjectGroupDto) );
+            return Ok(await _projectGroupService.UpdateProjectGroupInformation(updateProjectGroupDto));
         }
 
         [HttpPost("ConfirmationState")]
-        public async Task<ActionResult> ConfirmationOfStudent ( ConfirmationAnswerDto confirmationAnswerDto ) 
+        public async Task<ActionResult> ConfirmationOfStudent(ConfirmationAnswerDto confirmationAnswerDto)
         {
-            return Ok ( await _projectGroupService.ConfirmationOfStudent (confirmationAnswerDto) );
+            return Ok(await _projectGroupService.ConfirmationOfStudent(confirmationAnswerDto));
         }
 
         [HttpPost("LeftGroup")]
-        public async Task<ActionResult> LeaveGroup ( int projectGroupId ) 
+        public async Task<ActionResult> LeaveGroup(int projectGroupId)
         {
-            return Ok ( await _projectGroupService.LeaveGroup(projectGroupId) );
+            return Ok(await _projectGroupService.LeaveGroup(projectGroupId));
         }
 
         [HttpGet("ProjectGroupsOfSection")]
-        public async Task<ActionResult> GetProjectGroupsOfSection ( int sectionId ) 
+        public async Task<ActionResult> GetProjectGroupsOfSection(int sectionId)
         {
-            return Ok ( await _projectGroupService.GetProjectGroupsOfSection (sectionId) );
+            return Ok(await _projectGroupService.GetProjectGroupsOfSection(sectionId));
         }
 
         [HttpDelete("SilmeDeneme")]
-        public async Task<ActionResult>  DeleteProjectGroup ( int projectGroupId )
+        public async Task<ActionResult> DeleteProjectGroup(int projectGroupId)
         {
-            return Ok ( await _projectGroupService.DeleteProjectGroup( projectGroupId ) );
+            return Ok(await _projectGroupService.DeleteProjectGroup(projectGroupId));
         }
 
         [HttpPost("ForceCancelProjectGroup")]
-        public async Task<ActionResult>  ForceCancelProjectGroup ( int projectGroupId )
+        public async Task<ActionResult> ForceCancelProjectGroup(int projectGroupId)
         {
-            return Ok ( await _projectGroupService.ForceCancelGroup ( projectGroupId ) );
+            return Ok(await _projectGroupService.ForceCancelGroup(projectGroupId));
         }
 
         [HttpPost("KickStudentFromGroup")]
-        public async Task<ActionResult> KickStudentFromGroup ( int projectGroupId, int userId )
-        {  
-            return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId ) );
+        public async Task<ActionResult> KickStudentFromGroup(int projectGroupId, int userId)
+        {
+            return Ok(await _projectGroupService.KickStudentFromGroup(projectGroupId, userId));
         }
 
         [HttpPost("CompleteJoinRequest")]
-        public async Task<ActionResult> CompleteJoinRequest ( int joinRequestId )
-        {  
-            return Ok ( await _projectGroupService.CompleteJoinRequest ( joinRequestId ) );
+        public async Task<ActionResult> CompleteJoinRequest(int joinRequestId)
+        {
+            return Ok(await _projectGroupService.CompleteJoinRequest(joinRequestId));
         }
 
         [HttpPost("CompleteMergeRequest")]
-        public async Task<ActionResult> CompleteMergeRequest ( int mergeRequestId )
-        {  
-            return Ok ( await _projectGroupService.CompleteMergeRequest ( mergeRequestId ) );
+        public async Task<ActionResult> CompleteMergeRequest(int mergeRequestId)
+        {
+            return Ok(await _projectGroupService.CompleteMergeRequest(mergeRequestId));
+        }
+        [HttpGet]
+        [Route("OZGUR/{groupId}")]
+        public async Task<IActionResult> GetOzgur(int groupId)
+        {
+            ServiceResponse<GetOzgurDto> response = await _projectGroupService.GetOzgur(groupId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
         }
     }
 }

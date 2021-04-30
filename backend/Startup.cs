@@ -46,20 +46,8 @@ namespace backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-            // services.AddSingleton(emailConfig);
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
-            services.AddCors(
-                options => options.AddDefaultPolicy(
-                    builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
-                )
-            );
-            // .AddJsonOptions(options =>
-            // {
-            //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            // });
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BilHub", Version = "v1" });
@@ -113,6 +101,11 @@ namespace backend
                     ValidateAudience = false
                 };
             });
+            services.AddCors(
+                builder => builder.AddDefaultPolicy(
+                     a => a.AllowAnyMethod()
+               )
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,7 +121,14 @@ namespace backend
             //app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors(c => c.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+
+            app.UseCors(builder =>
+              builder
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
 
             app.UseAuthentication();
 

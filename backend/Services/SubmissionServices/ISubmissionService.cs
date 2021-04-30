@@ -21,8 +21,8 @@ namespace backend.Services.SubmissionServices
         Task<ServiceResponse<GetSubmissionDto>> UpdateSubmission(UpdateSubmissionDto submissionDto);
         // Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetInstructorComments(int submissionId);
         Task<ServiceResponse<List<GetCommentDto>>> GetInstructorComments(int submissionId);
-
         Task<ServiceResponse<List<GetCommentDto>>> GetTaComments(int submissionId);
         Task<ServiceResponse<List<GetCommentDto>>> GetStudentComments(int submissionId);
+        Task<ServiceResponse<decimal>> GetGradeWithGraderId(int submissionId, int graderId);
     }
 }
