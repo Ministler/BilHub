@@ -18,6 +18,7 @@ export {
     getSubmissionsAsAccordion,
     getAssignmentStatistics,
     getCourseStatistics,
+    Accordion,
 } from './Accordion';
 export { ProfilePrompt } from './ProfilePrompt';
 export {

@@ -25,7 +25,7 @@ function GroupReady() {
                                     float: 'right',
                                 }}
                                 to="/notifications">
-                                Chek join requests
+                                Check join requests
                             </Link>
                         </Form.Field>
                         <Button

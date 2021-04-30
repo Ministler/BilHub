@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
-import { Grid, Segment, Tab, Icon, Accordion } from 'semantic-ui-react';
+import React from 'react';
+import { Grid, Segment } from 'semantic-ui-react';
+
+import { Accordion } from '../../../components';
 
 export const GroupsTab = (props) => {
     const divGroupFormed = props.groupsFormed?.map((group, index) => {
@@ -93,31 +95,39 @@ export const GroupsTab = (props) => {
         );
     });
 
-    if (props.groupsUnformed?.length !== 0)
-        return (
-            <div class="accordion ui fluid">
-                <div class="active title">
-                    <i aria-hidden="true" class="dropdown icon"></i>Formed Groups
-                </div>
-                <div class="content active">
-                    <Grid columns="equal">
-                        <Grid.Row>{divGroupFormed}</Grid.Row>
-                    </Grid>
-                </div>
-                <div class="active title">
-                    <i aria-hidden="true" class="dropdown icon"></i>Unformed Groups
-                </div>
-                <div class="content active">
+    if (divGroupUnformed) {
+        let accordionPanes = [];
+        if (divGroupFormed) {
+            accordionPanes.push({
+                title: 'Formed Groups',
+                content: (
+                    <div>
+                        <Grid columns="equal">
+                            <Grid.Row>{divGroupFormed}</Grid.Row>
+                        </Grid>
+                    </div>
+                ),
+            });
+        }
+        accordionPanes.push({
+            title: 'Unformed Groups',
+            content: (
+                <div>
                     <Grid columns="equal">
                         <Grid.Row>{divGroupUnformed}</Grid.Row>
                     </Grid>
                 </div>
-            </div>
-        );
-    else
-        return (
-            <Grid columns="equal">
-                <Grid.Row>{divGroupFormed}</Grid.Row>
-            </Grid>
-        );
+            ),
+        });
+
+        return <Accordion accordionSections={accordionPanes} />;
+    } else {
+        if (divGroupFormed) {
+            return (
+                <Grid columns="equal" style={{ 'margin-top': '10px' }}>
+                    <Grid.Row>{divGroupFormed}</Grid.Row>
+                </Grid>
+            );
+        }
+    }
 };

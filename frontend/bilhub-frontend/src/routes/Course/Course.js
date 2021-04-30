@@ -66,6 +66,7 @@ class Course extends Component {
             courseInformation: dummyCourseInformation,
             newInformation: dummyCourseInformation.information,
             assignments: dummyCourseAssignments,
+            currentSection: dummyCourseInformation.currentUserSection ? dummyCourseInformation.currentUserSection : 0,
         });
     }
 
@@ -210,6 +211,21 @@ class Course extends Component {
     };
 
     getGroupsPane = () => {
+        let groupsTab = null;
+
+        if (this.state.courseInformation?.isLocked) {
+            groupsTab = this.state.groups ? (
+                <GroupsTab groupsFormed={this.state.groups[this.state.currentSection].formed} />
+            ) : null;
+        } else {
+            groupsTab = this.state.groups ? (
+                <GroupsTab
+                    groupsFormed={this.state.groups[this.state.currentSection].formed}
+                    groupsUnformed={this.state.groups[this.state.currentSection].unformed}
+                />
+            ) : null;
+        }
+
         return {
             title: 'Groups',
             content: (
@@ -217,12 +233,9 @@ class Course extends Component {
                     {this.getDropdownForSections()}
                     {this.state.groups &&
                     (0 <= this.state.currentSection ||
-                        this.state.currentSection < this.state.courseInformation.numberOfSections) ? (
-                        <GroupsTab
-                            groupsFormed={this.state.groups[this.state.currentSection].formed}
-                            groupsUnformed={this.state.groups[this.state.currentSection].unformed}
-                        />
-                    ) : null}
+                        this.state.currentSection < this.state.courseInformation.numberOfSections)
+                        ? groupsTab
+                        : null}
                 </>
             ),
         };
@@ -595,15 +608,15 @@ const dummyGroups = [
             {
                 members: [
                     {
-                        name: 'Yusuf Uyar',
+                        name: '9Yusuf Uyar',
                         userId: 1,
                     },
                     {
-                        name: 'Halil Özgür Demir',
+                        name: '9Halil Özgür Demir',
                         userId: 2,
                     },
                     {
-                        name: 'Barış Ogün Yörük',
+                        name: '9Barış Ogün Yörük',
                         userId: 3,
                     },
                 ],
@@ -612,15 +625,15 @@ const dummyGroups = [
             {
                 members: [
                     {
-                        name: 'Yusuf Uyar',
+                        name: '10Yusuf Uyar',
                         userId: 1,
                     },
                     {
-                        name: 'Halil Özgür Demir',
+                        name: '10Halil Özgür Demir',
                         userId: 2,
                     },
                     {
-                        name: 'Barış Ogün Yörük',
+                        name: '10Barış Ogün Yörük',
                         userId: 3,
                     },
                 ],
@@ -630,15 +643,15 @@ const dummyGroups = [
             {
                 members: [
                     {
-                        name: 'Yusuf Uyar',
+                        name: '11Yusuf Uyar',
                         userId: 1,
                     },
                     {
-                        name: 'Halil Özgür Demir',
+                        name: '11Halil Özgür Demir',
                         userId: 2,
                     },
                     {
-                        name: 'Barış Ogün Yörük',
+                        name: '11Barış Ogün Yörük',
                         userId: 3,
                     },
                 ],
@@ -647,15 +660,15 @@ const dummyGroups = [
             {
                 members: [
                     {
-                        name: 'Yusuf Uyar',
+                        name: '12Yusuf Uyar',
                         userId: 1,
                     },
                     {
-                        name: 'Halil Özgür Demir',
+                        name: '12Halil Özgür Demir',
                         userId: 2,
                     },
                     {
-                        name: 'Barış Ogün Yörük',
+                        name: '12Barış Ogün Yörük',
                         userId: 3,
                     },
                 ],
