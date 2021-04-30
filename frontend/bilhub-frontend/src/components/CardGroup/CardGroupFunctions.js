@@ -15,11 +15,11 @@ export const convertAssignmentsToAssignmentList = (
 
         let statusIcon = null;
         if (assignment.status === 'graded') {
-            statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} />;
+            statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} color="blue"/>;
         } else if (assignment.status === 'submitted') {
-            statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px' }} />;
+            statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px', color: "rgb(251, 178, 4)" }} />;
         } else if (assignment.status === 'notsubmitted') {
-            statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} />;
+            statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} color="red"/>;
         }
 
         const fileIcon = assignment.file ? <Icon name="file" color="grey" /> : null;

@@ -325,6 +325,7 @@ class Project extends Component {
                     }}
                     name={'check'}
                     color="blue"
+                    style={{float: "right", marginTop: "-10px"}}
                 />
             ) : (
                 <Icon
@@ -334,6 +335,7 @@ class Project extends Component {
                     }}
                     name={'edit'}
                     color="blue"
+                    style={{float: "right", marginTop: "-15px"}}
                 />
             );
         }
@@ -478,9 +480,9 @@ class Project extends Component {
     render() {
         return (
             <div class="ui centered grid">
-                <div class="row">
-                    <div class="four wide column">
-                        <Segment>{this.getInformationPart()}</Segment>
+                <Grid.Row divided >
+                    <div class="four wide column" >
+                        <Segment style={{ boxShadow: "none", border: "0"}}>{this.getInformationPart()}</Segment>
                     </div>
                     <div class="twelve wide column">
                         {!this.props.match.params.submissionId ? (
@@ -494,7 +496,7 @@ class Project extends Component {
                             />
                         )}
                     </div>
-                </div>
+                </Grid.Row>
                 {this.getModals()}
             </div>
         );

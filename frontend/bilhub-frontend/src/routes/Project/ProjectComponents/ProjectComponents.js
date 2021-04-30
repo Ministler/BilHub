@@ -7,22 +7,24 @@ import { Modal } from '../../../components';
 export const InformationSection = (props) => {
     return (
         <div>
-            <div className="clickableChangeColor" onClick={props.onCourseClicked}>
-                <h1>{props.courseName}</h1>
-            </div>
-            <h2 className="ProjectName" style={{ display: 'inline' }}>
-                {props.groupNameElement}
-            </h2>
-            <span className="GroupNameEdit"> {props.nameEditIcon} </span>
+            <div style={{textAlign: "center"}}>
+                <div className="clickableChangeColor" onClick={props.onCourseClicked}>
+                    <h1>{props.courseName}</h1>
+                </div>
+                <h2 className="ProjectName" style={{ display: 'inline' }}>
+                    {props.groupNameElement}
+                </h2>
+                <span className="GroupNameEdit"> {props.nameEditIcon} </span>
+            </div>    
             <div className="MembersBlock">
                 <div>
-                    <h3>Members</h3>
+                    <h4 style={{ marginLeft: '20px' }}>Members</h4>
                 </div>
                 {props.memberElements}
             </div>
             <div className="InformationBlock">
                 <div>
-                    <h3>Information</h3>
+                    <h4 style={{ marginLeft: '20px', marginBottom: "10px" }}>Information</h4>
                 </div>
                 <p className="InformationText" style={{ display: 'inline-block' }}>
                     {props.informationElement} &nbsp;

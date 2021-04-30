@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TextArea, Icon } from 'semantic-ui-react';
+import { TextArea, Icon, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Profile.css';
@@ -87,6 +87,7 @@ class Profile extends Component {
                     }}
                     name={'check'}
                     color="blue"
+                    style={{float: "right", marginTop: "-10px"}}
                 />
             ) : (
                 <Icon
@@ -96,6 +97,7 @@ class Profile extends Component {
                     }}
                     name={'edit'}
                     color="blue"
+                    style={{float: "right", marginTop: "-15px"}}
                 />
             );
         }
@@ -105,7 +107,7 @@ class Profile extends Component {
     render() {
         return (
             <div class="ui centered grid">
-                <div class="row">
+                <Grid.Row divided>
                     <div class="four wide column">
                         <ProfilePrompt
                             name={this.props.name}
@@ -124,7 +126,7 @@ class Profile extends Component {
                             onCourseClicked={(courseId) => this.onCourseClicked(courseId)}
                         />
                     </div>
-                </div>
+                </Grid.Row>
             </div>
         );
     }
