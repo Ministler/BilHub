@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Icon } from 'semantic-ui-react';
+
 import './BriefListUI.css';
 
 export const BriefList = (props) => {
@@ -47,12 +49,13 @@ export const MemberBriefElement = (props) => {
 
 export const SubmissionBriefElement = (props) => {
     return (
-        <div style={{marginTop: "10px", marginLeft: "25px"}}>
-            <Link onClick={props.onSubmissionFileClicked}>
+        <div style={{ marginTop: '10px', marginLeft: '25px' }}>
+            <Link onClick={props.onSubmissionPageClicked}>
                 {props.submission?.groupName} {props.submission?.fileName} &nbsp;
             </Link>
+            {props.submission?.file ? <Icon name="file" onClick={props.onSubmissionFileClicked} /> : null}
             {props.submission?.grade ? <span>Grade: {props.submission?.grade}</span> : null}
-            <span style={{float:"right"}}>{props.submission?.submissionDate}</span>
+            <span style={{ float: 'right' }}>{props.submission?.submissionDate}</span>
         </div>
     );
 };

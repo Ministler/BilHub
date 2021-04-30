@@ -15,19 +15,32 @@ class CourseAssignment extends Component {
         };
     }
 
+    onSubmissionFileClicked = () => {
+        console.log('CLICKED');
+    };
+
+    onFileClicked = () => {
+        console.log('File');
+    };
+
+    onDownloadAllFiles = () => {
+        console.log('File');
+    };
+
+    onDownloadNotGradedFiles = () => {
+        console.log('file');
+    };
+
     componentDidMount() {
         this.setState({
             assignment: dummyAssignment,
             submissions: dummyGroupSubmissions,
+            currentSection: dummyAssignment.currentUserSection ? dummyAssignment.currentUserSection - 1 : 0,
         });
     }
 
     onReturnProjectPage = () => {
         this.props.history.replace('/course/' + this.props.match.params.courseId);
-    };
-
-    onFileClicked = () => {
-        console.log('File');
     };
 
     getAssignmentControlIcons = () => {
@@ -36,14 +49,14 @@ class CourseAssignment extends Component {
             controlIcons = (
                 <>
                     <Icon
-                        name="edit"
-                        color="blue"
+                        name="close"
+                        color="red"
                         style={{ float: 'right' }}
                         onClick={this.props.onDeleteAssignmentModalOpened}
                     />
                     <Icon
-                        name="close"
-                        color="red"
+                        name="edit"
+                        color="blue"
                         style={{ float: 'right' }}
                         onClick={this.props.onEditAssignmentModalOpened}
                     />
@@ -95,9 +108,9 @@ class CourseAssignment extends Component {
             }
             return (
                 <Dropdown
-                    defaultValue={0}
                     selection
                     options={sectionOptions}
+                    value={this.state.currentSection}
                     onChange={(e, dropdownValues) => this.onSectionChanged(dropdownValues)}
                 />
             );
@@ -110,17 +123,15 @@ class CourseAssignment extends Component {
         this.props.history.push('/project/' + projectId + '/submission/' + submissionId);
     };
 
-    onSubmissionFileClicked = () => {
-        console.log('CLICKED');
-    };
-
     getSubmissionsPane = () => {
         return {
             title: 'Submissions',
             content: (
                 <>
                     {this.getDropdownForSection()}
-                    {this.state.submissions?.length >= 1
+                    {this.state.submissions?.length >= 1 &&
+                    this.state.currentSection < this.state.submissions?.length &&
+                    0 <= this.state.submissions?.length
                         ? getSubmissionsAsAccordion(
                               this.state.submissions[this.state.currentSection],
                               this.onSubmissionPageClicked,
@@ -149,8 +160,12 @@ class CourseAssignment extends Component {
         if (this.state.assignment?.isUserTAorInstructor) {
             buttons = (
                 <>
-                    <Button icon={'download'}>Download All Files</Button>
-                    <Button icon={'download'}>Donwload Only Submitted Files</Button>
+                    <Button icon={'download'} onClick={this.onDownloadAllFiles}>
+                        Download All Files
+                    </Button>
+                    <Button icon={'download'} onClick={this.onDownloadNotGradedFiles}>
+                        Donwload Only Not Graded Files
+                    </Button>
                 </>
             );
         }
@@ -187,7 +202,8 @@ const dummyAssignment = {
     isUserTAorInstructor: true,
     publishmentDate: '12 March 2021 12:00',
     dueDate: '12 March 2021 12:00',
-    numberOfSections: 5,
+    numberOfSections: 3,
+    currentUserSection: 2,
 };
 
 const dummyGroupSubmissions = [
@@ -199,6 +215,58 @@ const dummyGroupSubmissions = [
                 file: 'file',
                 grade: '7/10',
                 submissionDate: '15 March 2021',
+                projectId: 1,
+                submissionId: 1,
+            },
+            {
+                groupName: 'Classroom Helper',
+                fileName: '1_1_analysisReport.pdf',
+                file: 'file',
+                grade: '7/10',
+                submissionDate: '15 March 2021',
+                projectId: 2,
+                submissionId: 2,
+            },
+        ],
+        submitted: [
+            {
+                groupName: 'BilHub',
+                fileName: '1_1_analysisReport.pdf',
+                file: 'file',
+                submissionDate: '15 March 2021',
+                projectId: 1,
+                submissionId: 1,
+            },
+            {
+                groupName: 'Classroom Helper',
+                fileName: '1_1_analysisReport.pdf',
+                file: 'file',
+                submissionDate: '15 March 2021',
+                projectId: 2,
+                submissionId: 2,
+            },
+        ],
+        notSubmitted: [
+            {
+                groupName: 'BilHub',
+                projectId: 1,
+                submissionId: 1,
+            },
+            {
+                groupName: 'Classroom Helper',
+                projectId: 2,
+                submissionId: 2,
+            },
+        ],
+    },
+    {
+        graded: [
+            {
+                groupName: 'BilHub2',
+                fileName: '21_1_analysisReport.pdf',
+                file: '2file',
+                grade: '2/10',
+                submissionDate: '2 March 2021',
                 projectId: 1,
                 submissionId: 1,
             },

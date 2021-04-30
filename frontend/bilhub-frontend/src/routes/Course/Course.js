@@ -310,7 +310,7 @@ class Course extends Component {
             <CourseAssignment
                 isCourseActive={this.state.courseInformation?.isCourseActive}
                 courseName={this.state.courseInformation?.courseName}
-                onEditAssignmentModalOpened={this.onEditAssignmentModalClosed}
+                onEditAssignmentModalOpened={this.onEditAssignmentModalOpened}
                 onEditAssignmentModalClosed={this.onEditAssignmentModalClosed}
                 onDeleteAssignmentModalOpened={this.onDeleteAssignmentModalOpened}
                 onDeleteAssignmentModalClosed={this.onDeleteAssignmentModalClosed}
