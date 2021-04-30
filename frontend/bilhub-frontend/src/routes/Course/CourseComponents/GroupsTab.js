@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { Grid, Segment, Tab, Icon, Accordion } from 'semantic-ui-react';
 
 export const GroupsTab = (props) => {
-    console.log(props);
     const divGroupFormed = props.groupsFormed?.map((group, index) => {
-        const contentGroup = group.map((content) => {
-            return <p style={{ textAlign: 'center' }}>{content}</p>;
+        const contentGroup = group?.members?.map((member) => {
+            return <p style={{ textAlign: 'center' }}>{member.name}</p>;
         });
         if (index % 9 === 0)
             return (
@@ -81,9 +80,9 @@ export const GroupsTab = (props) => {
             );
     });
 
-    const divGroupUnformed = props.groupsUnformed?.map((group, index) => {
-        const contentGroup = group.map((content) => {
-            return <p style={{ textAlign: 'center' }}>{content}</p>;
+    const divGroupUnformed = props.groupsUnformed?.map((group) => {
+        const contentGroup = group?.members?.map((member) => {
+            return <p style={{ textAlign: 'center' }}>{member.name}</p>;
         });
         return (
             <div class="four wide column">

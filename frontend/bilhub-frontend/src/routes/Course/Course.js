@@ -27,7 +27,7 @@ class Course extends Component {
             isEditAssignmentOpen: false,
             isDeleteAssignmentOpen: false,
 
-            currentSection: 1,
+            currentSection: 0,
         };
     }
 
@@ -188,19 +188,19 @@ class Course extends Component {
     getDropdownForSections = () => {
         if (this.state.courseInformation?.numberOfSections) {
             const sectionOptions = [];
-            for (let i = 1; i <= this.state.courseInformation?.numberOfSections; i++) {
+            for (let i = 0; i < this.state.courseInformation?.numberOfSections; i++) {
                 sectionOptions.push({
                     key: i,
-                    text: 'Section ' + i,
+                    text: 'Section ' + (i + 1),
                     value: i,
                 });
             }
             return (
                 <Dropdown
-                    defaultValue={0}
                     fluid
                     selection
                     options={sectionOptions}
+                    value={this.state.currentSection}
                     onChange={(e, dropdownValues) => this.onSectionChanged(dropdownValues)}
                 />
             );
@@ -215,14 +215,14 @@ class Course extends Component {
             content: (
                 <>
                     {this.getDropdownForSections()}
-                    {/* {this.state.groups &&
-                    (1 <= this.state.currentSection ||
-                        this.state.currentSection <= this.state.courseInformation.numberOfSections) ? (
+                    {this.state.groups &&
+                    (0 <= this.state.currentSection ||
+                        this.state.currentSection < this.state.courseInformation.numberOfSections) ? (
                         <GroupsTab
-                            groupsFormed={this.state.groups['section' + this.state.currentSection].formed}
-                            groupsUnformed={this.state.groups['section' + this.state.currentSection].unformed}
+                            groupsFormed={this.state.groups[this.state.currentSection].formed}
+                            groupsUnformed={this.state.groups[this.state.currentSection].unformed}
                         />
-                    ) : null} */}
+                    ) : null}
                 </>
             ),
         };
@@ -371,153 +371,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(Course);
 
-const dummyGroups = {
-    section1: {
-        formed: [
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                isUserInGroup: true,
-            },
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-            },
-        ],
-        unformed: [
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                isUserInGroup: true,
-            },
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-            },
-        ],
-    },
-    section2: {
-        formed: [
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                isUserInGroup: true,
-            },
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-            },
-        ],
-        unformed: [
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                isUserInGroup: true,
-            },
-            {
-                members: [
-                    {
-                        name: 'Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: 'Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: 'Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-            },
-        ],
-    },
-};
-
 const dummyCourseInformation = {
     courseName: 'CS319-2021Spring',
     description: 'Object-Oriented Software Engineering',
@@ -545,11 +398,11 @@ const dummyCourseInformation = {
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
     isTAorInstructorOfCourse: true,
-    usersSection: 4,
     isUserInFormedGroup: true,
     isLocked: true,
     formationDate: '15/24/2020',
-    numberOfSections: 5,
+    numberOfSections: 3,
+    currentUserSection: 2,
 };
 
 const dummyCourseAssignments = [
@@ -589,6 +442,225 @@ const dummyCourseAssignments = [
         publisher: 'Erdem Tuna',
         publishmentDate: '12 March 2021 12:00',
         dueDate: '12 April 2021 12:00',
+    },
+];
+
+const dummyGroups = [
+    {
+        formed: [
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: '2Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '2Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '2Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+        unformed: [
+            {
+                members: [
+                    {
+                        name: '3Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '3Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '3Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: '4Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '4Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '4Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        formed: [
+            {
+                members: [
+                    {
+                        name: '5Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '5Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '5Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: '6Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '6Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '6Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+        unformed: [
+            {
+                members: [
+                    {
+                        name: '7Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '7Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '7Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: '8Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '8Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '8Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        formed: [
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
+        unformed: [
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                isUserInGroup: true,
+            },
+            {
+                members: [
+                    {
+                        name: 'Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: 'Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: 'Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+            },
+        ],
     },
 ];
 

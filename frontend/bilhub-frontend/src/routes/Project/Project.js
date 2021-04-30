@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Icon, Input, TextArea, Segment, Button, Form, Divider, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 import './Project.css';
 import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal } from './ProjectComponents';
@@ -84,12 +85,10 @@ class Project extends Component {
                 request = {
                     grade: this.state.currentFeedbackGrade,
                     maxGrade: this.state.currentMaxFeedbackGrade,
-                    commentId: this.state.currentFeedbackId,
                     userId: this.props.userId,
                 };
             } else if (modalType === 'isDeleteFeedbackOpen') {
                 request = {
-                    commentId: this.state.currentFeedbackId,
                     userId: this.props.userId,
                 };
             }
@@ -393,6 +392,23 @@ class Project extends Component {
         return newCommentButton;
     };
 
+    onFeedbackFileClicked = (feedbackId) => {
+        let headers = new Headers();
+
+        headers.append(
+            'Authorization',
+            'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJjYWdyaUBkdXJndXQiLCJuYmYiOjE2MTk3ODAwODUsImV4cCI6MTYxOTg2NjQ4NSwiaWF0IjoxNjE5NzgwMDg1fQ.eOGYYn_ZCDarcW2v73y-CFr8esM5cQCl4LeGdi_H08Zmwkk_Oi24FhlmQ8MRJyc6XphdLH7mao-ESzkmjun00g'
+        );
+
+        axios
+            .get('https://bb63990cfdb4.ngrok.io/Comment/2', {
+                headers: headers,
+            })
+            .then((response) => {
+                console.log(response);
+            });
+    };
+
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
@@ -417,6 +433,7 @@ class Project extends Component {
                             this.onModalOpenedWithComment,
                             this.onAuthorClicked,
                             this.props.userId,
+                            this.onFeedbackFileClicked,
                             this.onModalOpened
                         )}
                     />
@@ -643,10 +660,10 @@ const dummyGrades = {
 };
 
 const dummyFeedbacks = {
-    SRSResult: {
-        grade: '9.5',
-        maxGrade: '11',
-    },
+    // SRSResult: {
+    //     grade: '9.5',
+    //     maxGrade: '11',
+    // },
     InstructorComments: [
         {
             name: 'Eray Tüzün',
@@ -664,6 +681,7 @@ const dummyFeedbacks = {
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',
+            commentId: 3,
             userId: 2,
         },
     ],

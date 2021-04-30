@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Grid } from 'semantic-ui-react';
+import { Card, Grid, Icon } from 'semantic-ui-react';
 
 import './CardGroupUI.css';
 
@@ -41,6 +41,7 @@ export const FeedbackCardElement = (props) => {
                 </Card.Header>
                 <Card.Description>
                     {props.caption}
+                    {props.file ? <Icon name="file" onClick={props.onFeedbackFileClicked} /> : null}
                     {props.icons}
                 </Card.Description>
             </Card.Content>
@@ -60,10 +61,12 @@ export const RequestCardElement = (props) => {
     return (
         <Card className="FeedbackCardElement">
             <Card.Content>
-                 <Card.Header>
+                <Card.Header>
                     <div>{props.courseName}</div>
                 </Card.Header>
-                <p style={{ fontSize: '15px', fontWeight: 'bold' }}>{props.titleStart} {props.userName} {props.titleMid}</p>
+                <p style={{ fontSize: '15px', fontWeight: 'bold' }}>
+                    {props.titleStart} {props.userName} {props.titleMid}
+                </p>
                 <Card.Description>
                     <Grid columns={2}>
                         <Grid.Column>
@@ -83,18 +86,14 @@ export const RequestCardElement = (props) => {
                             ) : null}
                         </Grid.Column>
                     </Grid>
-                    <p style={{ marginTop: '15px' }}>
-                        {props.message}
-                    </p>
+                    <p style={{ marginTop: '15px' }}>{props.message}</p>
                 </Card.Description>
             </Card.Content>
             <Card.Content>
-                <div style={{float: "left"}}>
-                    <span style={{marginLeft: "10px"}}>    
-                        {props.voteIcons}
-                    </span>
+                <div style={{ float: 'left' }}>
+                    <span style={{ marginLeft: '10px' }}>{props.voteIcons}</span>
                 </div>
-                <div style={{float: "right"}}>
+                <div style={{ float: 'right' }}>
                     {props.requestDate ? (
                         <span>
                             Request Date: {props.requestDate} / Formation Date: {props.formationDate}

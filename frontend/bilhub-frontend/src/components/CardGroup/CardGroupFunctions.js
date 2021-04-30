@@ -96,7 +96,13 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
     return newFeedbackCardElements;
 };
 
-export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModal, onAuthorClicked, userId) => {
+export const convertFeedbacksToFeedbackList = (
+    feedbacks,
+    onOpenModal,
+    onAuthorClicked,
+    userId,
+    onFeedbackFileClicked
+) => {
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;
@@ -135,6 +141,8 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenModal, onAuthorC
                 <FeedbackCardElement
                     author={feedback.name ? feedback.name : 'Comment is anonymous'}
                     caption={feedback.caption}
+                    file={feedback.file}
+                    onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId)}
                     grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
                     date={feedback.date}
                     icons={icons}

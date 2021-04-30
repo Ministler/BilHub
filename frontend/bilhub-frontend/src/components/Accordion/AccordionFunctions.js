@@ -9,33 +9,55 @@ import { MyAccordion } from './AccordionUI';
 import { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from '../Statistics';
 import React from 'react';
 
-export const getFeedbacksAsAccordion = (feedbacks, isTAorInstructor, onOpenModal, onAuthorClicked, userId) => {
+export const getFeedbacksAsAccordion = (
+    feedbacks,
+    isTAorInstructor,
+    onOpenModalWithComments,
+    onAuthorClicked,
+    userId,
+    onFeedbackFileClicked,
+    onOpenModal
+) => {
     const accordionElements = [
         {
             title: 'SRS Feedback',
             content: convertSRSFeedbackToSRSCardElement(
                 feedbacks?.SRSResult,
                 isTAorInstructor,
-                onOpenModal,
-                onAuthorClicked
+                onOpenModalWithComments,
+                onAuthorClicked,
+                onOpenModal
             ),
         },
         {
             title: 'Instructor Feedbacks',
             content: convertFeedbacksToFeedbackList(
                 feedbacks?.InstructorComments,
-                onOpenModal,
+                onOpenModalWithComments,
                 onAuthorClicked,
-                userId
+                userId,
+                onFeedbackFileClicked
             ),
         },
         {
             title: 'TA Feedbacks',
-            content: convertFeedbacksToFeedbackList(feedbacks?.TAComments, onOpenModal, onAuthorClicked, userId),
+            content: convertFeedbacksToFeedbackList(
+                feedbacks?.TAComments,
+                onOpenModalWithComments,
+                onAuthorClicked,
+                userId,
+                onFeedbackFileClicked
+            ),
         },
         {
             title: 'Student Feedbacks',
-            content: convertFeedbacksToFeedbackList(feedbacks?.StudentComments, onOpenModal, onAuthorClicked, userId),
+            content: convertFeedbacksToFeedbackList(
+                feedbacks?.StudentComments,
+                onOpenModalWithComments,
+                onAuthorClicked,
+                userId,
+                onFeedbackFileClicked
+            ),
         },
     ];
 
