@@ -381,18 +381,18 @@ export class CourseCreation extends Component {
                 </Form.Group>
                 <Divider />
                 <Grid>
-                    <Grid.Row columns={4}>
-                        <GridColumn width={2}>Add Instructor:</GridColumn>
-                        <GridColumn width={6}>
+                    <Grid.Row>
+                        <GridColumn width="3">Add Instructor:</GridColumn>
+                        <GridColumn width="5">
                             {this.createUserList(this.state.instructorList, 'currentInstructor', 'instructorList')}
                         </GridColumn>
-                        <GridColumn width={3}>Add Teaching Assistants</GridColumn>
-                        <GridColumn width={6}>
+                        <GridColumn width="3">Add Teaching Assistants</GridColumn>
+                        <GridColumn width="5">
                             {this.createUserList(this.state.TAList, 'currentTA', 'TAList')}
                         </GridColumn>
                     </Grid.Row>
-                    <Grid.Row columns={4}>
-                        <GridColumn width={4}>
+                    <Grid.Row>
+                        <GridColumn width="3">
                             <div>Add Student as .txt file:</div>
                             {this.state.isSectionless !== true && (
                                 <div>
@@ -408,7 +408,7 @@ export class CourseCreation extends Component {
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn width={3}>
+                        <GridColumn width="5">
                             <input
                                 className="FileInput"
                                 type="file"
@@ -417,7 +417,7 @@ export class CourseCreation extends Component {
                                 onChange={(e) => this.readFile(e)}
                             />
                         </GridColumn>
-                        <GridColumn>
+                        <GridColumn width="3">
                             <div>Add Student as a list:</div>
                             {this.state.isSectionless !== true && (
                                 <div>
@@ -433,7 +433,7 @@ export class CourseCreation extends Component {
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn width={5}>
+                        <GridColumn width="5">
                             {this.createUserList(
                                 this.state.studentManualList,
                                 'currentStudent',
