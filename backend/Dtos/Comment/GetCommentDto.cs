@@ -5,7 +5,7 @@ namespace backend.Dtos.Comment
     public class GetCommentDto
     {
         public int CommentedSubmissionId { get; set; }
-        public int CommentId { get; set; }
+        public int Id { get; set; }
         public GetCommentorDto CommentedUser { get; set; }
         public string CommentText { get; set; }
         public decimal MaxGrade { get; set; }

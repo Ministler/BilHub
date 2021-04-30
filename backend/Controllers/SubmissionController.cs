@@ -13,6 +13,7 @@ using System;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using ICSharpCode.SharpZipLib.Zip;
+using backend.Dtos.Comment;
 
 namespace backend.Controllers
 {
@@ -185,6 +186,41 @@ namespace backend.Controllers
             return NotFound(response);
         }
 
+        [HttpGet]
+        [Route("InstructorComments/{submissionId}")]
+        public async Task<IActionResult> GetInstructorComments(int submissionId)
+        {
+            ServiceResponse<List<GetCommentDto>> response = await _submissionService.GetInstructorComments(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet]
+        [Route("TAComments/{submissionId}")]
+        public async Task<IActionResult> GetTAComments(int submissionId)
+        {
+            ServiceResponse<List<GetCommentDto>> response = await _submissionService.GetStudentComments(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet]
+        [Route("StudentComments/{submissionId}")]
+        public async Task<IActionResult> GetStudentComments(int submissionId)
+        {
+            ServiceResponse<List<GetCommentDto>> response = await _submissionService.GetStudentComments(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
         [HttpPut]
         public async Task<IActionResult> UpdateAssignment([FromForm] UpdateSubmissionWithAttachment updateSubmissionWithAttachment)
         {

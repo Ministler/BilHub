@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,14 +45,8 @@ namespace backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-            // services.AddSingleton(emailConfig);
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
-            // .AddJsonOptions(options =>
-            // {
-            //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            // });
 
             services.AddSwaggerGen(c =>
             {
@@ -82,6 +75,10 @@ namespace backend
                         },
                         new List<string>()
                     } });
+                services.AddCors(
+                    options => options.AddDefaultPolicy(
+                        builder => builder.AllowAnyOrigin()
+                    ));
             });
 
             services.AddAutoMapper(typeof(Startup));
@@ -92,10 +89,10 @@ namespace backend
             services.AddScoped<IAssignmentService, AssignmentService>();
             services.AddScoped<IProjectGroupService, ProjectGroupService>();
             services.AddScoped<IMergeRequestService, MergeRequestService>();
-            services.AddScoped<ICourseService,CourseService>();
-            services.AddScoped<ISectionService,SectionService>();
-            services.AddScoped<IPeerGradeService,PeerGradeService>();
-            services.AddScoped<IProjectGradeService,ProjectGradeService>();
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IPeerGradeService, PeerGradeService>();
+            services.AddScoped<IProjectGradeService, ProjectGradeService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -120,13 +117,18 @@ namespace backend
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BilHub v1"));
             }
 
+
+
             //app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthentication();
 
+            app.UseCors(builder => builder.AllowAnyOrigin());
+
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {

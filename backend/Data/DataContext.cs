@@ -85,6 +85,7 @@ namespace backend.Data
                     VisibilityOfSubmission = true,
                     CanBeGradedByStudents = true,
                     IsItGraded = true,
+                    Title = "Design Report iteration 1"
                 }, new Assignment
                 {
                     Id = 2,
@@ -97,6 +98,7 @@ namespace backend.Data
                     VisibilityOfSubmission = false,
                     CanBeGradedByStudents = false,
                     IsItGraded = false,
+                    Title = "Language design"
                 }, new Assignment
                 {
                     Id = 3,

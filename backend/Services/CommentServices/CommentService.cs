@@ -290,7 +290,7 @@ namespace backend.Services.CommentServices
                 return response;
             }
             //&& user.UserType == UserTypeClass.Student && submission.AffiliatedAssignment
-            if (!course.Instructors.Any(cu => cu.UserId == user.Id))
+            if (!course.Instructors.Any(cu => cu.UserId == user.Id) && !submission.AffiliatedAssignment.CanBeGradedByStudents)
             {
                 response.Data = null;
                 response.Message = "You are not authorized to make comment";
@@ -311,7 +311,6 @@ namespace backend.Services.CommentServices
             await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetCommentDto>(comment);
-            response.Data.CommentId = comment.Id;
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             return response;
         }
@@ -334,7 +333,6 @@ namespace backend.Services.CommentServices
             _context.Comments.Update(comment);
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetCommentDto>(comment);
-            response.Data.CommentId = comment.Id;
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             response.Data.HasFile = comment.FileAttachmentAvailability;
             return response;
@@ -369,7 +367,6 @@ namespace backend.Services.CommentServices
                 }
             }
             response.Data = _mapper.Map<GetCommentDto>(comment);
-            response.Data.CommentId = comment.Id;
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             response.Data.HasFile = comment.FileAttachmentAvailability;
             return response;

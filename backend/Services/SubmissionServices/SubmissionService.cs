@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Web;
 using backend.Services.CommentServices;
 using backend.Dtos.Comment;
+using System.Collections.ObjectModel;
 
 namespace backend.Services.SubmissionServices
 {
@@ -405,9 +406,9 @@ namespace backend.Services.SubmissionServices
             return response;
         }
 
-        public async Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetInstructorComments(int submissionId)
+        public async Task<ServiceResponse<List<GetCommentDto>>> GetInstructorComments(int submissionId)
         {
-            ServiceResponse<IEnumerable<GetCommentDto>> response = new ServiceResponse<IEnumerable<GetCommentDto>>();
+            ServiceResponse<List<GetCommentDto>> response = new ServiceResponse<List<GetCommentDto>>();
             Submission submission = await _context.Submissions.Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
                 .Include(s => s.Comments).Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == submissionId);
             if (submission == null)
@@ -428,17 +429,75 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
+            List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser).Where(c => c.CommentedUser.UserType == UserTypeClass.Instructor).Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
+
+            response.Data = comments;
             return response;
         }
 
-        public Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetTaComments(int submissionId)
+        public async Task<ServiceResponse<List<GetCommentDto>>> GetTaComments(int submissionId)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<GetCommentDto>> response = new ServiceResponse<List<GetCommentDto>>();
+            Submission submission = await _context.Submissions
+                .Include(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse).ThenInclude(c => c.Instructors)
+                .Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
+                .Include(s => s.Comments).Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such submission";
+                response.Success = false;
+                return response;
+            }
+            bool isInstructor = submission.AffiliatedAssignment.AfilliatedCourse.Instructors.Any(u => u.UserId == GetUserId());
+            if (!submission.AffiliatedAssignment.VisibilityOfSubmission
+                && submission.AffiliatedAssignment.AfilliatedCourse.Instructors.Any(cu => cu.UserId == GetUserId()
+                && isInstructor))
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to see this submission";
+                response.Success = false;
+                return response;
+            }
+            List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
+                .Where(c => c.CommentedUser.UserType == UserTypeClass.Student && isInstructor)
+                .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
+
+            response.Data = comments;
+            return response;
         }
 
-        public Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetStudentComments(int submissionId)
+        public async Task<ServiceResponse<List<GetCommentDto>>> GetStudentComments(int submissionId)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<GetCommentDto>> response = new ServiceResponse<List<GetCommentDto>>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Submission submission = await _context.Submissions
+                .Include(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse).ThenInclude(c => c.Instructors)
+                .Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
+                .Include(s => s.Comments).Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (submission == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such submission";
+                response.Success = false;
+                return response;
+            }
+            Course course = submission.AffiliatedAssignment.AfilliatedCourse;
+            if (!submission.AffiliatedAssignment.VisibilityOfSubmission
+                && course.Instructors.Any(cu => cu.UserId == GetUserId())
+                && user.UserType == UserTypeClass.Student)
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to see this submission";
+                response.Success = false;
+                return response;
+            }
+            List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
+                .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
+                .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
+
+            response.Data = comments;
+            return response;
         }
     }
 }

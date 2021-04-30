@@ -36,19 +36,21 @@ namespace backend.Services.ProjectGradeServices
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        private bool IsUserInGroup ( ProjectGroup projectGroup, int userId ) 
+        private bool IsUserInGroup(ProjectGroup projectGroup, int userId)
         {
-            foreach ( var i in projectGroup.GroupMembers ) {
-                if ( i.UserId == userId )
+            foreach (var i in projectGroup.GroupMembers)
+            {
+                if (i.UserId == userId)
                     return true;
             }
             return false;
         }
 
-        private bool doesUserInstruct ( User user, int courseId ) 
+        private bool doesUserInstruct(User user, int courseId)
         {
-            foreach ( var i in user.InstructedCourses ) {
-                if ( i.CourseId == courseId )
+            foreach (var i in user.InstructedCourses)
+            {
+                if (i.CourseId == courseId)
                     return true;
             }
             return false;
@@ -58,12 +60,12 @@ namespace backend.Services.ProjectGradeServices
         {
             ServiceResponse<AddProjectGradeDto> response = new ServiceResponse<AddProjectGradeDto>();
             User user = await _context.Users
-                                .Include( u => u.InstructedCourses)
+                                .Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup projectGroup = await _context.ProjectGroups
-                                            .FirstOrDefaultAsync(rg => rg.Id == addProjectGradeDto.GradedProjectGroupID );
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(pg => pg.AffiliatedCourse)
+                                            .FirstOrDefaultAsync(rg => rg.Id == addProjectGradeDto.GradedProjectGroupID);
 
-            if( projectGroup == null )
+            if (projectGroup == null)
             {
                 response.Data = null;
                 response.Message = "There is no project group with this id";
@@ -80,7 +82,7 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }*/
 
-            if( addProjectGradeDto.MaxGrade < addProjectGradeDto.Grade )
+            if (addProjectGradeDto.MaxGrade < addProjectGradeDto.Grade)
             {
                 response.Data = null;
                 response.Message = "Grade should be less than or equal to the max grade";
@@ -88,26 +90,27 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            if( addProjectGradeDto.MaxGrade < 0 )
+            if (addProjectGradeDto.MaxGrade < 0)
             {
                 response.Data = null;
                 response.Message = "Max grade should not be negative";
                 response.Success = false;
                 return response;
-            }            
+            }
 
-            
+
             ProjectGrade projectGrade = await _context.ProjectGrades
-                .FirstOrDefaultAsync( pg => pg.GradingUserId == GetUserId() && pg.GradedProjectGroupID == addProjectGradeDto.GradedProjectGroupID );
+                .FirstOrDefaultAsync(pg => pg.GradingUserId == GetUserId() && pg.GradedProjectGroupID == addProjectGradeDto.GradedProjectGroupID);
 
             //herkes bir kez gradelemek?????
-            if( projectGrade != null) {
+            if (projectGrade != null)
+            {
                 response.Data = null;
                 response.Message = "You have already graded this group ";
                 response.Success = false;
                 return response;
             }
-            
+
             ProjectGrade createdProjectGrade = new ProjectGrade
             {
                 MaxGrade = addProjectGradeDto.MaxGrade,
@@ -121,17 +124,17 @@ namespace backend.Services.ProjectGradeServices
             };
 
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "ProjectGradeFiles", projectGroup.AffiliatedCourseId,
-                projectGroup.AffiliatedSection, projectGroup.Id, user.Id ));
+                "StaticFiles/ProjectGradeFiles", projectGroup.AffiliatedCourseId,
+                projectGroup.AffiliatedSection, projectGroup.Id, user.Id));
 
             Directory.CreateDirectory(target);
-            if (addProjectGradeDto.File.Length > 0) 
+            if (addProjectGradeDto.File.Length > 0)
             {
                 string oldfile = Directory.GetFiles(target).FirstOrDefault();
                 string extension = Path.GetExtension(addProjectGradeDto.File.FileName);
-                var filePath = Path.Combine(target, string.Format("Course{0}-Section{1}-Group{2}-Grader{3}"
-                    , projectGroup.AffiliatedCourseId, projectGroup.AffiliatedSection, 
-                     projectGroup.Id, user.Id) + extension);
+                var filePath = Path.Combine(target, string.Format("{0}_Section{1}_Group{2}_{3}_GroupFeedback"
+                    , projectGroup.AffiliatedCourse.Name.Trim().Replace(" ", "_"), projectGroup.AffiliatedSection,
+                     projectGroup.Id, user.Name.Trim().Replace(" ", "_")) + extension);
                 createdProjectGrade.FilePath = filePath;
                 if (File.Exists(oldfile))
                 {
@@ -144,12 +147,12 @@ namespace backend.Services.ProjectGradeServices
             }
 
 
-            
 
-            _context.ProjectGrades.Add( createdProjectGrade );
+
+            _context.ProjectGrades.Add(createdProjectGrade);
             await _context.SaveChangesAsync();
 
-            projectGroup.ProjectGrades.Add( createdProjectGrade );
+            projectGroup.ProjectGrades.Add(createdProjectGrade);
 
             response.Data = addProjectGradeDto;
             response.Message = "You successfully entered project grade";
@@ -163,12 +166,13 @@ namespace backend.Services.ProjectGradeServices
             ServiceResponse<ProjectGradeInfoDto> response = new ServiceResponse<ProjectGradeInfoDto>();
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-           
-            ProjectGrade projectGrade = await _context.ProjectGrades
-                                .Include( pg => pg.GradedProjectGroup )
-                                .FirstOrDefaultAsync( pg => pg.Id == editProjectGradeDto.Id );
 
-            if( projectGrade == null) {
+            ProjectGrade projectGrade = await _context.ProjectGrades
+                                .Include(pg => pg.GradedProjectGroup)
+                                .FirstOrDefaultAsync(pg => pg.Id == editProjectGradeDto.Id);
+
+            if (projectGrade == null)
+            {
                 response.Data = null;
                 response.Message = "There is no project grade with this Id.";
                 response.Success = false;
@@ -184,7 +188,7 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }*/
 
-             if( editProjectGradeDto.MaxGrade < editProjectGradeDto.Grade )
+            if (editProjectGradeDto.MaxGrade < editProjectGradeDto.Grade)
             {
                 response.Data = null;
                 response.Message = "Grade should be less than or equal to the max grade";
@@ -198,16 +202,15 @@ namespace backend.Services.ProjectGradeServices
             projectGrade.CreatedAt = editProjectGradeDto.CreatedAt; // ask
 
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
-                projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id ));
+                "StaticFiles/ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
+                projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id));
 
             Directory.CreateDirectory(target);
-            if (editProjectGradeDto.File.Length > 0) 
+            if (editProjectGradeDto.File.Length > 0)
             {
                 string oldfile = Directory.GetFiles(target).FirstOrDefault();
                 string extension = Path.GetExtension(editProjectGradeDto.File.FileName);
-                var filePath = Path.Combine(target, string.Format("Course{0}-Section{1}-Group{2}-Grader{3}", projectGrade.GradedProjectGroup.AffiliatedCourseId,
-                                        projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id) + extension);
+                var filePath = oldfile;
                 projectGrade.FilePath = filePath;
                 if (File.Exists(oldfile))
                 {
@@ -218,7 +221,7 @@ namespace backend.Services.ProjectGradeServices
                     await editProjectGradeDto.File.CopyToAsync(stream);
                 }
             }
-           
+
 
             ProjectGradeInfoDto projectGradeInfoDto = new ProjectGradeInfoDto
             {
@@ -247,8 +250,8 @@ namespace backend.Services.ProjectGradeServices
                 GradedProjectGroupID = projectGrade.GradedProjectGroup.Id
             };
 
-            
-            _context.ProjectGrades.Update( projectGrade );
+
+            _context.ProjectGrades.Update(projectGrade);
             await _context.SaveChangesAsync();
 
             response.Data = projectGradeInfoDto;
@@ -263,9 +266,9 @@ namespace backend.Services.ProjectGradeServices
             ServiceResponse<string> response = new ServiceResponse<string>();
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGrade projectGrade = await _context.ProjectGrades.Include( pg => pg.GradedProjectGroup)
+            ProjectGrade projectGrade = await _context.ProjectGrades.Include(pg => pg.GradedProjectGroup)
                                             .FirstOrDefaultAsync(pg => pg.Id == deleteProjectGradeDto.Id);
-            
+
             if (projectGrade == null)
             {
                 response.Data = "Not allowed";
@@ -275,24 +278,24 @@ namespace backend.Services.ProjectGradeServices
             }
 
 
-            if( user == null || projectGrade.GradingUserId != user.Id )
+            if (user == null || projectGrade.GradingUserId != user.Id)
             {
                 response.Data = null;
                 response.Message = "You are not authorized to delete the grade of this group";
                 response.Success = false;
                 return response;
             }
-            
+
             var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
-                projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id ));
+                "StaticFiles/ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
+                projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id));
 
             var filePath = Directory.GetFiles(target).FirstOrDefault();
             projectGrade.FilePath = null;
-            if( filePath != null )
+            if (filePath != null)
                 File.Delete(filePath);
 
-            _context.ProjectGrades.Remove( projectGrade );
+            _context.ProjectGrades.Remove(projectGrade);
             await _context.SaveChangesAsync();
 
             response.Data = "Successful";
@@ -306,21 +309,21 @@ namespace backend.Services.ProjectGradeServices
         {
             ServiceResponse<ProjectGradeInfoDto> response = new ServiceResponse<ProjectGradeInfoDto>();
             User user = await _context.Users
-                                .Include( u => u.InstructedCourses )
+                                .Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGrade projectGrade = await _context.ProjectGrades
-                                            .Include( pg => pg.GradedProjectGroup )
-                                            .Include( pg => pg.GradingUser )
-                                            .FirstOrDefaultAsync( pg => pg.Id == getProjectGradeDto.Id );
-            
-            if( projectGrade == null)
+                                            .Include(pg => pg.GradedProjectGroup)
+                                            .Include(pg => pg.GradingUser)
+                                            .FirstOrDefaultAsync(pg => pg.Id == getProjectGradeDto.Id);
+
+            if (projectGrade == null)
             {
                 response.Data = null;
                 response.Message = "There is no project grade with this id";
-                response.Success =false;
+                response.Success = false;
                 return response;
             }
-            
+
             ProjectGradeInfoDto dto = new ProjectGradeInfoDto
             {
                 Id = projectGrade.Id,
@@ -373,16 +376,16 @@ namespace backend.Services.ProjectGradeServices
         {
             ServiceResponse<ProjectGradeInfoDto> response = new ServiceResponse<ProjectGradeInfoDto>();
             User user = await _context.Users
-                                .Include( u => u.InstructedCourses )
+                                .Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGroup projectGroup = await _context.ProjectGroups
-                                            .Include( pg => pg.GroupMembers )
-                                            .FirstOrDefaultAsync(rg => rg.Id == getProjectGradeDto.GradedProjectGroupID );
+                                            .Include(pg => pg.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == getProjectGradeDto.GradedProjectGroupID);
             User grader = await _context.Users
-                                .Include( u => u.InstructedCourses )
+                                .Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == getProjectGradeDto.GradingUserId);
 
-            if( projectGroup == null )
+            if (projectGroup == null)
             {
                 response.Data = null;
                 response.Message = "There is no project group with this id";
@@ -390,7 +393,7 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            if( grader == null )
+            if (grader == null)
             {
                 response.Data = null;
                 response.Message = "There is no grader with this id";
@@ -414,18 +417,19 @@ namespace backend.Services.ProjectGradeServices
                 response.Success = false;
                 return response;
             }*/
-            
 
-            ProjectGrade projectGrade = await _context.ProjectGrades.Include( pg => pg.GradingUser)
-                .FirstOrDefaultAsync( pg => pg.GradingUserId == getProjectGradeDto.GradingUserId && pg.GradedProjectGroupID == getProjectGradeDto.GradedProjectGroupID );
 
-            if( projectGrade == null) {
+            ProjectGrade projectGrade = await _context.ProjectGrades.Include(pg => pg.GradingUser)
+                .FirstOrDefaultAsync(pg => pg.GradingUserId == getProjectGradeDto.GradingUserId && pg.GradedProjectGroupID == getProjectGradeDto.GradedProjectGroupID);
+
+            if (projectGrade == null)
+            {
                 response.Data = null;
                 response.Message = "There is no such project grade";
                 response.Success = false;
                 return response;
             }
-            
+
             ProjectGradeInfoDto dto = new ProjectGradeInfoDto
             {
                 Id = projectGrade.Id,
@@ -464,21 +468,21 @@ namespace backend.Services.ProjectGradeServices
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             ProjectGrade projectGrade = await _context.ProjectGrades
-                                            .FirstOrDefaultAsync( pg => pg.Id == dto.Id );
-            
-            if( projectGrade == null)
+                                            .FirstOrDefaultAsync(pg => pg.Id == dto.Id);
+
+            if (projectGrade == null)
             {
                 response.Data = null;
                 response.Message = "There is no project grade with this id";
-                response.Success =false;
+                response.Success = false;
                 return response;
             }
 
-            if( projectGrade.FilePath == "" || projectGrade.FilePath == null)
+            if (projectGrade.FilePath == "" || projectGrade.FilePath == null)
             {
                 response.Data = null;
                 response.Message = "There is no file in this project grade";
-                response.Success =false;
+                response.Success = false;
                 return response;
             }
 
@@ -487,21 +491,21 @@ namespace backend.Services.ProjectGradeServices
             return response;
         }
 
-        
+
         public async Task<ServiceResponse<string>> DownloadProjectGradeByGroupAndUser(GetProjectGradeDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             User user = await _context.Users
-                                .Include( u => u.InstructedCourses )
+                                .Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGroup projectGroup = await _context.ProjectGroups
-                                            .Include( pg => pg.GroupMembers )
-                                            .FirstOrDefaultAsync(rg => rg.Id == dto.GradedProjectGroupID );
+                                            .Include(pg => pg.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == dto.GradedProjectGroupID);
             User grader = await _context.Users
-                                .Include( u => u.InstructedCourses )
+                                .Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == dto.GradingUserId);
 
-            if( projectGroup == null )
+            if (projectGroup == null)
             {
                 response.Data = null;
                 response.Message = "There is no project group with this id";
@@ -509,23 +513,25 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            ProjectGrade projectGrade = await _context.ProjectGrades.Include( pg => pg.GradingUser)
-                .FirstOrDefaultAsync( pg => pg.GradingUserId == dto.GradingUserId && pg.GradedProjectGroupID == dto.GradedProjectGroupID );
+            ProjectGrade projectGrade = await _context.ProjectGrades.Include(pg => pg.GradingUser)
+                .FirstOrDefaultAsync(pg => pg.GradingUserId == dto.GradingUserId && pg.GradedProjectGroupID == dto.GradedProjectGroupID);
 
-            if( projectGrade == null) {
+            if (projectGrade == null)
+            {
                 response.Data = null;
                 response.Message = "There is no such project grade";
                 response.Success = false;
                 return response;
             }
 
-            if( projectGrade.FilePath == "" || projectGrade.FilePath == null) {
+            if (projectGrade.FilePath == "" || projectGrade.FilePath == null)
+            {
                 response.Data = null;
                 response.Message = "There is no file in this grade";
                 response.Success = false;
                 return response;
             }
-   
+
             response.Data = projectGrade.FilePath;
             response.Message = "Success";
             response.Success = true;
