@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, GridColumn } from 'semantic-ui-react';
+import { Grid, GridColumn, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Home.css';
@@ -87,22 +87,39 @@ class Home extends Component {
         );
 
         return (
-            <Grid>
+            <Grid><Grid.Row divided>
                 <GridColumn width={4}>
                     <div>
                         <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
-                        {myProjectsComponent}
-                        {instructedCoursesComponent}
+                        {myProjectsComponent && (
+                            <div className="MyProjectsBlock">
+                                <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
+                                {myProjectsComponent}
+                            </div>
+                        )}
+                        {(myProjectsComponent && instructedCoursesComponent) && (
+                            <Divider style={{ width: "70%", margin: "auto", marginTop:"20px"}}/>
+                        )}
+                        {instructedCoursesComponent && (
+                            <div className="InstructedCoursesBlock">
+                                <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
+                                {instructedCoursesComponent}
+                            </div>
+                        )}
                     </div>
                 </GridColumn>
-                <GridColumn width={9}>{feedsComponent}</GridColumn>
-                <GridColumn width={3}>
-                    <div>
-                        {upcomingAssignmentsComponent}
-                        {notGradedAssignmentsComponent}
-                    </div>
+                <GridColumn width={12}>
+                    <Grid><Grid.Row>
+                        <GridColumn width={12}>{feedsComponent}</GridColumn>
+                        <GridColumn width={4}>
+                            <div>
+                                {upcomingAssignmentsComponent}
+                                {notGradedAssignmentsComponent}
+                            </div>
+                        </GridColumn>
+                    </Grid.Row></Grid>
                 </GridColumn>
-            </Grid>
+            </Grid.Row></Grid>
         );
     }
 }

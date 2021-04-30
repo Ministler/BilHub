@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, GridColumn } from 'semantic-ui-react';
+import { Grid, GridColumn, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Notifications.css';
@@ -197,8 +197,21 @@ class Notifications extends Component {
                     <GridColumn width={4}>
                         <div className={'HomeDivLeft'}>
                             <ProfilePrompt name={this.props.name} onClick={this.onProfilePromptClicked} />
-                            {myProjectsComponent}
-                            {instructedCoursesComponent}
+                            {myProjectsComponent && (
+                                <div className="MyProjectsBlock">
+                                    <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
+                                    {myProjectsComponent}
+                                </div>
+                            )}
+                            {(myProjectsComponent && instructedCoursesComponent) && (
+                                <Divider style={{ width: "70%", margin: "auto", marginTop:"20px"}}/>
+                            )}
+                            {instructedCoursesComponent && (
+                                <div className="InstructedCoursesBlock">
+                                    <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
+                                    {instructedCoursesComponent}
+                                </div>
+                            )}
                         </div>
                     </GridColumn>
                     <GridColumn width={12}>

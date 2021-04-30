@@ -5,7 +5,7 @@ import { convertMembersToMemberElement, Tab } from '../../../components';
 
 export const ProfilePrompt = (props) => {
     return (
-        <Segment>
+        <Segment style={{ boxShadow: "none", border: "0"}}>
             <h2 className="ui center aligned icon header">
                 <Icon circular name="user" size="Massive" />
                 {props.name}

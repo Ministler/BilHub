@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 import {
     BriefList,
     TitledIconedBriefElement,
@@ -8,27 +8,30 @@ import {
     SubmissionBriefElement,
     GroupBriefElement,
 } from './BriefListUI';
+import './BriefListUI.css';
 import { Icon, Segment, Label, Popup, Header, Grid, Button, Dropdown } from 'semantic-ui-react';
 export const convertMyProjectsToBriefList = (myProjects, onProjectClicked) => {
     const myProjectBriefElements = myProjects.map((project) => {
-        const icon = project.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
+        const icon = project.isActive ? <Icon name="lock open" style={{color: "rgb(196, 126, 5)"}}/> : <Icon name="lock" style={{color: "rgb(196, 126, 5)"}}/>;
         const title = project.courseCode + '/' + project.projectName;
         return (
-            <TitledIconedBriefElement icon={icon} title={title} onClick={() => onProjectClicked(project.projectId)} />
+            <p className={'BriefListElements'}>
+            <Link style={{fontWeight: "bold"}} onClick={() => onProjectClicked(project.projectId)}>{icon}{title}</Link>
+            </p>
         );
     });
 
-    return <BriefList title={'My Projects'}>{myProjectBriefElements}</BriefList>;
+    return <div>{myProjectBriefElements}</div>;
 };
 
 export const convertInstructedCoursesToBriefList = (instructedCourses, onCourseClicked) => {
     const instructedCourseBriefElements = instructedCourses.map((course) => {
-        const icon = course.isActive ? <Icon name="lock open" /> : <Icon name="lock" />;
+        const icon = course.isActive ? <Icon name="lock open" style={{color: "rgb(196, 126, 5)"}}/> : <Icon name="lock" style={{color: "rgb(196, 126, 5)"}}/>;
         const title = course.courseCode;
-        return <TitledIconedBriefElement icon={icon} title={title} onClick={() => onCourseClicked(course.courseId)} />;
+        return (<p className={'BriefListElements'}><Link  style={{fontWeight: "bold"}} onClick={() => onCourseClicked(course.courseId)}>{icon}{title}</Link></p>);
     });
 
-    return <BriefList title={'Instructed Courses'}>{instructedCourseBriefElements}</BriefList>;
+    return <div>{instructedCourseBriefElements}</div>;
 };
 
 export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAssignmentClicked) => {
@@ -36,39 +39,57 @@ export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAss
         upcomingAssignments.map((assignment) => {
             const title = assignment.courseCode + '/' + assignment.assignmentName;
             return (
-                <TitledDatedBriefElement
-                    title={title}
-                    date={assignment.dueDate}
-                    onClick={() => onAssignmentClicked(assignment.projectId, assignment.submissionId)}
-                />
+                <Segment>
+                    <Link onClick={() => onAssignmentClicked(assignment.projectId, assignment.submissionId)}
+                    >{title}</Link>
+                    <div align="right" className="DueDate">{assignment.dueDate}</div>
+                </Segment>
             );
         })
     ) : (
-        <div>You Have No Upcoming Assignments</div>
+        <div></div>
     );
 
-    return <BriefList title={'Upcoming Assignments'}>{upcomingAssignmentsBriefElements}</BriefList>;
+    return (
+        <Segment.Group raised>
+            <Label attached='top' style={{backgroundColor: "rgb(33,133,208)", color: "white", textAlign: "center"}}>Upcoming Assignments</Label>
+            {upcomingAssignmentsBriefElements}
+        </Segment.Group>
+        );
 };
 
 export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onAssignmentClicked) => {
-    const notGradedAssignmentsBriefElements = notGradedAssignments.map((assignment) => {
+    const notGradedAssignmentsBriefElements = notGradedAssignments ? (notGradedAssignments.map((assignment) => {
         const title = assignment.courseCode + '/' + assignment.assignmentName;
         return (
-            <TitledDatedBriefElement
-                title={title}
-                date={assignment.dueDate}
-                onClick={() => onAssignmentClicked(assignment.courseId, assignment.assignmentId)}
-            />
+            <Segment>
+                <Link onClick={() => onAssignmentClicked(assignment.courseId, assignment.assignmentId)}
+                >{title}</Link>
+                <div align="right" className="DueDate">{assignment.dueDate}</div>
+            </Segment>
         );
-    });
-
-    return <BriefList title={'Not Graded Assignments'}>{notGradedAssignmentsBriefElements}</BriefList>;
+    })) : (
+        <div></div>
+    );
+    
+    return (
+        <Segment.Group raised>
+            <Label attached='top' style={{backgroundColor: "rgb(219,40,40)", color: "white", textAlign: "center"}}>Not Graded Assignments</Label>
+            {notGradedAssignmentsBriefElements}
+        </Segment.Group>
+        );
 };
 
-export const convertMembersToMemberElement = (members, onUserClicked) => {
-    return members?.map((member) => {
-        return <MemberBriefElement onClick={() => onUserClicked(member.userId)} member={member} />;
+export const convertMembersToMemberElement = (members, onUserClicked, title="") => {
+    const convertedList = members?.map((member) => {
+        
+        return (
+            <p ><Link style={{fontWeight: "bold"}} onClick={() => onUserClicked(member.userId)}>
+                 {member.name}
+            </Link></p>
+            )
     });
+    return (<div><h4 style={{ marginLeft: '20px' }}>{title}</h4>{convertedList}</div>);
 };
 
 export const convertSubmissionsToSubmissionElement = (

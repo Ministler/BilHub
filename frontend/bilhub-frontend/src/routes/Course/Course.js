@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Segment, TextArea, Icon, Button, Dropdown } from 'semantic-ui-react';
+import { Segment, TextArea, Icon, Button, Dropdown, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Course.css';
@@ -208,6 +208,7 @@ class Course extends Component {
                     }}
                     name={'check'}
                     color="blue"
+                    style={{float: "right", marginTop: "-10px"}}
                 />
             ) : (
                 <Icon
@@ -217,6 +218,7 @@ class Course extends Component {
                     }}
                     name={'edit'}
                     color="blue"
+                    style={{float: "right", marginTop: "-15px"}}
                 />
             );
         }
@@ -455,9 +457,9 @@ class Course extends Component {
         return (
             <>
                 <div class="ui centered grid">
-                    <div class="row">
+                    <Grid.Row divided>
                         <div class="four wide column">
-                            <Segment>{this.getInformationSection()}</Segment>
+                            <Segment style={{ boxShadow: "none", border: "0"}}>{this.getInformationSection()}</Segment>
                         </div>
                         <div class="twelve wide column">
                             {this.props.match.params.assignmentId ? (
@@ -466,7 +468,7 @@ class Course extends Component {
                                 <Tab tabPanes={this.getCoursePanes()} />
                             )}
                         </div>
-                    </div>
+                    </Grid.Row>
                 </div>
                 {this.getModals()}
             </>

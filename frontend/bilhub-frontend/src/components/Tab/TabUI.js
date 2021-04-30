@@ -20,10 +20,10 @@ export const MyTab = (props) => {
 
 export const FeedbacksPane = (props) => {
     return (
-        <>
+        <div>
             {props.feedbacksAccordion}
             {props.newCommentButton}
-        </>
+        </div>
     );
 };
 

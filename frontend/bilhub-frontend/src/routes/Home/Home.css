@@ -2,16 +2,21 @@ body {
     margin: 0px 60px;
 }
 
-.HomeDivLeft {
-    padding-right: 50px;
-    width: 25%;
-    height: 100%;
-    position: fixed;
+.MyProjectsBlock {
+    margin-top: 20px;
+    padding-left: 25px;
 }
 
-.HomeDivRight {
-    padding-right: 50px;
-    width: 25%;
-    height: 100%;
-    position: fixed;
+.MyProjectsBlock > div {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.InstructedCoursesBlock {
+    margin-top: 20px;
+    padding-left: 25px;
+}
+
+.InstructedCoursesBlock > div {
+    padding-bottom: 10px;
 }

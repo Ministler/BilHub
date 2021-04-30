@@ -172,7 +172,7 @@ class Settings extends Component {
                             name="information"
                             style={{ width: '60%' }}></textarea>
                     </div>
-                    <button class="ui teal button">Update</button>
+                    <button class="ui primary button">Update</button>
                 </Form>
             );
         } else if (props.segment === 'Account Settings') {
@@ -190,37 +190,38 @@ class Settings extends Component {
                             {props.information}
                         </div>
                     )}
-                    <div class="field">
-                        <label style={{ fontSize: '12px' }}>Change Bilkent Email</label>
-                        <Form.Input
-                            type="email"
-                            name="email"
-                            disabled={this.state.sendConformation}
-                            style={{ width: '60%' }}
-                            onChange={(e, { name, value }) => this.onInputChange(e, name, value)}
-                            action={{
-                                content: 'Change',
-                                onClick: () => this.updateEmail(),
-                            }}
-                        />
-                    </div>
-                    {props.sendConformation && (
+                    <Form class="Sign in form" onSubmit={this.updatePassword}>
                         <div class="field">
-                            <label style={{ fontSize: '12px' }}>Conformation Code</label>
+                            <label style={{ fontSize: '12px' }}>Change Bilkent Email</label>
                             <Form.Input
-                                type="text"
-                                name="code"
+                                type="email"
+                                name="email"
+                                disabled={this.state.sendConformation}
                                 style={{ width: '60%' }}
                                 onChange={(e, { name, value }) => this.onInputChange(e, name, value)}
+                                action={{
+                                    content: 'Change',
+                                    onClick: () => this.updateEmail(),
+                                }}
                             />
                         </div>
-                    )}
-                    {props.sendConformation && (
-                        <button class="ui teal button" onClick={this.onVerifyEmail}>
-                            Update
-                        </button>
-                    )}
-                    <Form class="Sign in form" onSubmit={this.updatePassword}>
+                        {props.sendConformation && (
+                            <div class="field">
+                                <label style={{ fontSize: '12px' }}>Conformation Code</label>
+                                <Form.Input
+                                    type="text"
+                                    name="code"
+                                    style={{ width: '60%' }}
+                                    onChange={(e, { name, value }) => this.onInputChange(e, name, value)}
+                                />
+                            </div>
+                        )}
+                        {props.sendConformation && (
+                            <button class="ui primary button" onClick={this.onVerifyEmail} style={{marginBottom: "10px"}}>
+                                Update
+                            </button>
+                        )}
+
                         <div class="field">
                             <label style={{ fontSize: '12px' }}>Change Password</label>
                             <Form.Input type="password" name="password" style={{ width: '60%' }} />
@@ -229,7 +230,7 @@ class Settings extends Component {
                             <label style={{ fontSize: '12px' }}>Retype New Password</label>
                             <Form.Input type="password" name="passwordRe" style={{ width: '60%' }} />
                         </div>
-                        <button class="ui teal button">Update Password</button>
+                        <button class="ui primary button">Update Password</button>
                     </Form>
                 </>
             );
@@ -254,12 +255,15 @@ class Settings extends Component {
     render() {
         return (
             <div class="ui centered grid">
-                <div class="eleven wide column" style={{ marginLeft: '50px', marginTop: '-30px' }}>
-                    <div class="row">
-                        <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
+                <div class="row" style={{ marginTop: '-30px' }}>
+                    <div class="three wide column">
+                            <div style={{textAlign:"center"}}>
+                                <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
+                            </div>
                     </div>
+                    <div class="eight wide column"></div>
                 </div>
-                <div class="row">
+                <div class="row" style={{ marginTop: '-10px' }}>
                     <div class="three wide column">
                         <div class="ui segments">
                             <Segment

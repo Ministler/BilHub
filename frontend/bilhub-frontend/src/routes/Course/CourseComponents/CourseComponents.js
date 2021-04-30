@@ -8,21 +8,19 @@ import { Form, Button, Grid, TextArea, Checkbox, Modal, Dropdown, Menu } from 's
 export const InformationSection = (props) => {
     return (
         <div>
-            <div>
-                <h1 style={{ display: 'inline' }}>{props.courseName}</h1>
+            <div style={{textAlign: "center"}}>
+                <h1 style={{ display: 'inline', marginLeft: "0px" }}>{props.courseName}</h1>
                 <span className="CourseNameEdit"> {props.courseSettingsIcon} </span>
-                <p>{props.description}</p>
+                <p style={{ marginLeft: "-30px" }}>{props.description}</p>
             </div>
             <div className="InstructorsBlock">
-                <h3>Instructors</h3>
-                {convertMembersToMemberElement(props.instructors, props.onUserClicked)}
+                {convertMembersToMemberElement(props.instructors, props.onUserClicked, "Instructors")}
             </div>
             <div className="TAsBlock">
-                <h3>TA's</h3>
-                {convertMembersToMemberElement(props.TAs, props.onUserClicked)}
+                {convertMembersToMemberElement(props.TAs, props.onUserClicked, "TA's")}
             </div>
             <div className="InformationBlock">
-                <h3>Information</h3>
+                <h4 style={{ marginLeft: '20px' }}>Information</h4>
                 <p className="InformationText" style={{ display: 'inline-block' }}>
                     {props.informationElement} &nbsp;
                 </p>
