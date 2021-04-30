@@ -83,12 +83,12 @@ export const GroupsTab = (props) => {
             );
     });
 
-    const divGroupUnformed = props.groupsUnformed?.map((group) => {
+    const divGroupUnformed = props.groupsUnformed?.map((group, index) => {
         const contentGroup = group?.members?.map((member) => {
             return <p style={{ textAlign: 'center' }}>{member.name}</p>;
         });
         let groupClickedHandler = null;
-        if (!props.isUserInFormedGroup) {
+        if (!props.isUserInFormedGroup && props.isUserInThisSection) {
             if (group.isUserInGroup) {
                 groupClickedHandler = () =>
                     props.onUnformedGroupModalOpened(

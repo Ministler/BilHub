@@ -36,6 +36,7 @@ class Course extends Component {
             currentMembers: null,
             currentIsUserReady: null,
             currentIsFormable: null,
+            currentMessage: '',
 
             currentSection: 0,
         };
@@ -71,16 +72,42 @@ class Course extends Component {
         });
     };
 
-    onSendRequestModalClosed = (isSuccess) => {
+    onSendRequestModalClosed = (isSuccess, type) => {
         this.setState({
             isSendRequestModalOpen: false,
+            currentMessage: '',
         });
+        if (!isSuccess) return;
+
+        const request = {
+            groupId: this.state.currentGroupId,
+            message: this.state.currentMessage,
+            type: type, // merge or join
+        };
+
+        console.log(request);
     };
 
-    onUnformedGroupModalClosed = (isSuccess) => {
+    onUnformedGroupModalClosed = (e, isSuccess, type) => {
         this.setState({
             isUnformedGroupModalOpen: false,
         });
+        if (!isSuccess) return;
+
+        let request = 'error';
+        if (type === 'exit') {
+            request = {
+                groupId: this.state.currentGroupId,
+                exit: true,
+            };
+        } else if (type === 'update') {
+            request = {
+                groupId: this.state.currentGroupId,
+                isUserReady: e.target.isReady.checked,
+            };
+        }
+
+        console.log(request);
     };
 
     componentDidMount() {
@@ -207,6 +234,12 @@ class Course extends Component {
         });
     };
 
+    onTextChanged = (e) => {
+        this.setState({
+            currentMessage: e.target.value,
+        });
+    };
+
     getCourseSettingsIcon = () => {
         let icon = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
@@ -267,6 +300,9 @@ class Course extends Component {
                     isUserInFormedGroup={this.state.courseInformation?.isUserInFormedGroup}
                     groupsFormed={this.state.groups[this.state.currentSection].formed}
                     groupsUnformed={this.state.groups[this.state.currentSection].unformed}
+                    isUserInThisSection={
+                        this.state.courseInformation?.currentUserSection === this.state.currentSection + 1
+                    }
                     onSendRequestModalOpened={this.onSendRequestModalOpened}
                     onUnformedGroupModalOpened={this.onUnformedGroupModalOpened}
                 />
@@ -396,14 +432,16 @@ class Course extends Component {
                 <SendRequestModal
                     onClosed={this.onSendRequestModalClosed}
                     isOpen={this.state.isSendRequestModalOpen}
+                    onTextChange={this.onTextChanged}
+                    text={this.state.currentMessage}
                     isUserAlone={this.state.courseInformation?.isUserAlone}
                     members={this.state.currentMembers}
                     onUserClicked={this.onUserClicked}
                 />
                 <UnformedGroupModal
                     onClosed={this.onUnformedGroupModalClosed}
-                    onUserClicked={this.onUserClicked}
                     isOpen={this.state.isUnformedGroupModalOpen}
+                    onUserClicked={this.onUserClicked}
                     members={this.state.currentMembers}
                     isFormable={this.state.currentIsFormable}
                     isUserReady={this.state.currentIsUserReady}
@@ -473,7 +511,7 @@ const dummyCourseInformation = {
     ],
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
-    isTAorInstructorOfCourse: true,
+    isTAorInstructorOfCourse: false,
     isUserInFormedGroup: false,
     isUserAlone: false,
     isLocked: false,
@@ -637,7 +675,6 @@ const dummyGroups = [
                     },
                 ],
                 groupId: 1,
-                isUserInGroup: true,
             },
             {
                 members: [
@@ -674,7 +711,6 @@ const dummyGroups = [
                     },
                 ],
                 groupId: 1,
-                isUserInGroup: true,
             },
             {
                 members: [
@@ -713,7 +749,6 @@ const dummyGroups = [
                     },
                 ],
                 groupId: 1,
-                isUserInGroup: true,
             },
             {
                 members: [
@@ -750,7 +785,6 @@ const dummyGroups = [
                     },
                 ],
                 groupId: 1,
-                isUserInGroup: true,
             },
             {
                 members: [

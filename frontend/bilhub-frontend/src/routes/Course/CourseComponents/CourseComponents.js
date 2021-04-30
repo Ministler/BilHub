@@ -223,10 +223,24 @@ export const UnformedGroupModal = (props) => {
             <Modal.Header style={{ fontSize: '16px' }}>Ready Status</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
-                    {props.members}
-                    <Form>
+                    {props.isFormable ? (
+                        <div className="ui negative message" style={{ fontSize: '12px', width: '95%' }}>
+                            ONCE GROUP FINALIZED, YOU CANNOT EXIT OR DISSOLVE GROUP
+                        </div>
+                    ) : null}
+                    <div className="ui information message" style={{ fontSize: '12px', width: '95%' }}>
+                        Group Members
+                    </div>
+                    {convertMembersToMemberElement(props.members, props.onUserClicked)}
+                    <Form onSubmit={(e) => props.onClosed(e, true, 'update')}>
                         <Form.Field>
-                            <Checkbox label={props.voteStatus} />
+                            {props.isFormable ? (
+                                <Checkbox
+                                    name="isReady"
+                                    label={'Ready ' + props.voteStatus}
+                                    defaultChecked={props.isUserReady}
+                                />
+                            ) : null}
                             <Link
                                 style={{
                                     fontSize: '14px',
@@ -236,10 +250,27 @@ export const UnformedGroupModal = (props) => {
                                 Check join requests
                             </Link>
                         </Form.Field>
+                        {props.isFormable ? (
+                            <Button
+                                floated="right"
+                                type="submit"
+                                positive
+                                style={{
+                                    borderRadius: '10px',
+                                    padding: '5px 16px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    lineHeight: '20px',
+                                    whiteSpace: 'nowrap',
+                                    marginBottom: '10px',
+                                }}>
+                                Update Ready
+                            </Button>
+                        ) : null}
                         <Button
                             floated="right"
                             negative
-                            onClick={() => props.onClosed(true)}
+                            onClick={() => props.onClosed(true, 'exit')}
                             style={{
                                 borderRadius: '10px',
                                 padding: '5px 16px',
@@ -276,7 +307,11 @@ export const SendRequestModal = (props) => {
                     <div className="ui warning message" style={{ fontSize: '12px', width: '95%' }}>
                         Please write a note and send a request
                     </div>
-                    <TextArea placeholder="Your message here" style={{ minHeight: 100, width: '95%' }} />
+                    <TextArea
+                        value={props.text}
+                        onChange={props.onTextChange}
+                        style={{ minHeight: 100, width: '95%' }}
+                    />
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>
