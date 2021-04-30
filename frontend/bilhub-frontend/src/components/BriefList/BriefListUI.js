@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 import './BriefListUI.css';
 
 export const BriefList = (props) => {
@@ -47,15 +47,12 @@ export const MemberBriefElement = (props) => {
 
 export const SubmissionBriefElement = (props) => {
     return (
-        <div>
-            <span className="clickableHighlightBack" onClick={props.onSubmissionPageClicked}>
-                {props.submission?.groupName}
-            </span>
-            <span className="clickableHighlightBack" onClick={props.onSubmissionFileClicked}>
-                {props.submission?.fileName}
-            </span>
+        <div style={{marginTop: "10px", marginLeft: "25px"}}>
+            <Link onClick={props.onSubmissionFileClicked}>
+                {props.submission?.groupName} {props.submission?.fileName} &nbsp;
+            </Link>
             {props.submission?.grade ? <span>Grade: {props.submission?.grade}</span> : null}
-            <span>{props.submission?.submissionDate}</span>
+            <span style={{float:"right"}}>{props.submission?.submissionDate}</span>
         </div>
     );
 };
