@@ -654,7 +654,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -673,7 +673,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -693,7 +693,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -712,7 +712,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -733,7 +733,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -754,7 +754,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -776,7 +776,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -797,7 +797,7 @@ const dummyNewFeedbacks = {
                 caption: 'Please download the complete feedback file',
                 date: '11 March 2021',
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',

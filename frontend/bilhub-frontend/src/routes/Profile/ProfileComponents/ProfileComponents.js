@@ -12,7 +12,9 @@ export const ProfilePrompt = (props) => {
             </h2>
             <p align="center">{props.email}</p>
             <h4 style={{ marginLeft: '20px' }}>Information</h4>
-            {props.informationElement}
+            <p className="InformationText" style={{ display: 'inline-block' }}>
+                {props.informationElement}
+            </p>
             {props.icon}
         </Segment>
     );
@@ -69,7 +71,7 @@ export const TabExampleSecondaryPointing = (props) => {
 
 export const ProjectCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement" fluid link style={{width: "95%"}}>
+        <Card className="ProjectCardElement" fluid link style={{ width: '95%' }}>
             <Card.Content>
                 <Card.Header>
                     <div onClick={props.onProjectClicked}>{props.title}</div>
@@ -77,10 +79,16 @@ export const ProjectCardElement = (props) => {
                 <Card.Description>
                     <Grid columns={2} divided>
                         <Grid.Column>
-                            {convertMembersToMemberElement(props.members.slice(0, Math.ceil(props.members.length/2)), props.onUserClicked)}
+                            {convertMembersToMemberElement(
+                                props.members.slice(0, Math.ceil(props.members.length / 2)),
+                                props.onUserClicked
+                            )}
                         </Grid.Column>
                         <Grid.Column>
-                            {convertMembersToMemberElement(props.members.slice(Math.ceil(props.members.length/2)), props.onUserClicked)}
+                            {convertMembersToMemberElement(
+                                props.members.slice(Math.ceil(props.members.length / 2)),
+                                props.onUserClicked
+                            )}
                         </Grid.Column>
                     </Grid>
                     <p style={{ marginTop: '15px' }}>
@@ -101,7 +109,7 @@ export const ProjectCardElement = (props) => {
 
 export const CourseCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement" fluid link style={{width: "95%"}}>
+        <Card className="ProjectCardElement" fluid link style={{ width: '95%' }}>
             <Card.Content>
                 <Card.Header>
                     <div onClick={props.onCourseClicked}>{props.title}</div>

@@ -115,6 +115,7 @@ class Course extends Component {
         if (this.state.informationEditMode) {
             courseInformationElement = (
                 <TextArea
+                    className="InformationText"
                     onChange={(e) => this.onInputChanged(e, 'newInformation')}
                     value={this.state.newInformation}
                 />

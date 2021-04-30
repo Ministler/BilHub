@@ -259,7 +259,13 @@ class Project extends Component {
     getGroupNameElement = () => {
         let groupNameElement = this.state.projectGroup.name;
         if (this.state.nameEditMode) {
-            groupNameElement = <Input onChange={(e) => this.onInputChanged(e, 'newName')} value={this.state.newName} />;
+            groupNameElement = (
+                <Input
+                    className="GroupNameChangeInput"
+                    onChange={(e) => this.onInputChanged(e, 'newName')}
+                    value={this.state.newName}
+                />
+            );
         }
 
         return groupNameElement;

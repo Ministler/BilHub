@@ -22,7 +22,9 @@ export const InformationSection = (props) => {
             </div>
             <div className="InformationBlock">
                 <h3>Information</h3>
-                <p style={{ display: 'inline' }}>{props.informationElement} &nbsp;</p>
+                <p className="InformationText" style={{ display: 'inline-block' }}>
+                    {props.informationElement} &nbsp;
+                </p>
                 {props.informationEditIcon}
             </div>
         </div>
