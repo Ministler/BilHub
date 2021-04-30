@@ -5,19 +5,7 @@ import _ from 'lodash';
 
 import { convertMembersToMemberElement } from '../../../components';
 import './CourseComponents.css';
-import {
-    Form,
-    Search,
-    Header,
-    Segment,
-    Button,
-    Grid,
-    TextArea,
-    Modal,
-    Dropdown,
-    GridColumn,
-    Input,
-} from 'semantic-ui-react';
+import { Form, Search, Button, Grid, TextArea, Modal, Dropdown, GridColumn } from 'semantic-ui-react';
 
 export const InformationSection = (props) => {
     return (
@@ -67,7 +55,7 @@ export class NewAssignmentModal extends Component {
         event.preventDefault();
         console.log(event);
         const name = event.target.name;
-        var value = event.target.value;
+        let value = event.target.value;
         if (value === 'true') {
             value = true;
         } else if (value === 'false') {
@@ -366,9 +354,9 @@ function studentSearchReducer(state, action) {
 export const UserSearchBar = (props) => {
     const [state, dispatch] = React.useReducer(studentSearchReducer, initialState);
     const { loading, results, value } = state;
-    var searchUsers = [];
-    for (var i = 0; i < props.users.length; i++) {
-        var temp = { title: props.users[i].mail, description: props.users[i].type };
+    let searchUsers = [];
+    for (let i = 0; i < props.users.length; i++) {
+        let temp = { title: props.users[i].mail, description: props.users[i].type };
         searchUsers.push(temp);
     }
 

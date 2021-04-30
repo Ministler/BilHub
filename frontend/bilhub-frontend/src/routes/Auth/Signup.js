@@ -28,7 +28,7 @@ export default class Signup extends Component {
             return;
         }
 
-        for (var i = 0; i < this.state.form.email.length; i++)
+        for (let i = 0; i < this.state.form.email.length; i++)
             if (
                 this.state.form.email[i] === '@' &&
                 i + 1 < this.state.form.email.length &&

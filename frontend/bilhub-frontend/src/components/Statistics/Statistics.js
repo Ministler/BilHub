@@ -25,10 +25,10 @@ function tableReducer(state, action) {
 }
 
 export const GradesTabel = (props) => {
-    var tempData = [];
-    for (var i = 0; i < props.groups.length; i++) {
+    let tempData = [];
+    for (let i = 0; i < props.groups.length; i++) {
         tempData.push({ group: props.groups[i].name });
-        for (var k = 0; k < props.graders.length; k++) {
+        for (let k = 0; k < props.graders.length; k++) {
             tempData[i][k] = props.groups[i].grades[k];
         }
     }
@@ -79,9 +79,9 @@ const data = [
     ['Platinum', 21.45, 'color: #e5e4e2'], // CSS-style declaration
 ];
 export const GradeGroupGraph = (props) => {
-    var data = [['Group', 'Grade', { role: 'style' }]];
-    for (var i = 0; i < props.groups.length; i++) {
-        var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    let data = [['Group', 'Grade', { role: 'style' }]];
+    for (let i = 0; i < props.groups.length; i++) {
+        let randomColor = Math.floor(Math.random() * 16777215).toString(16);
         data.push([props.groups[i].group, props.groups[i].grade, randomColor]);
     }
 
@@ -93,13 +93,13 @@ export const GradeGroupGraph = (props) => {
 };
 
 export const GroupNoGradeGraph = (props) => {
-    var data = [['Grade', 'Group Number', { role: 'style' }]];
-    for (var i = 5; i <= 100; i += 5) {
-        var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    let data = [['Grade', 'Group Number', { role: 'style' }]];
+    for (let i = 5; i <= 100; i += 5) {
+        let randomColor = Math.floor(Math.random() * 16777215).toString(16);
         data.push([i - 5 + '-' + i, 0, randomColor]);
     }
 
-    for (var i = 0; i < props.groups.length; i++) {
+    for (let i = 0; i < props.groups.length; i++) {
         data[Math.floor((props.groups[i].grade - 1) / 5 + 1)][1]++;
     }
     return (

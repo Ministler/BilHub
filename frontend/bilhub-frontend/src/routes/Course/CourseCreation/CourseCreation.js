@@ -37,24 +37,6 @@ const semesterOptions = [
     },
 ];
 
-const groupFormationSettings = [
-    {
-        key: 'By Group Size',
-        text: 'By Group Size',
-        value: 'By Group Size',
-    },
-    {
-        key: 'By Group Number',
-        text: 'By Group Number',
-        value: 'By Group Number',
-    },
-    {
-        key: 'By Hard Coded',
-        text: 'By Hard Coded',
-        value: 'By Hard Coded',
-    },
-];
-
 export class CourseCreation extends Component {
     constructor(props) {
         super(props);
@@ -95,11 +77,45 @@ export class CourseCreation extends Component {
         };
     }
 
+    onFormSubmit = () => {
+        for (let i = 0; i < this.state.sectionNumber; i++) {
+            for (let k = 0; k < this.state.studentManualList[i].length; k++) {
+                this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
+            }
+        }
+        let dateArr = this.state.groupFormationDate.split(/-/);
+        //System.DateTime
+        let date = new Date(dateArr[0], dateArr[1], dateArr[2]);
+
+        const request = {
+            courseName: this.state.code + '/' + this.state.year + this.state.semester,
+            description: this.state.shortDescription,
+
+            isSectionless: this.state.isSectionless,
+            numberOfSection: this.state.sectionNumber, // If sectionless this field is 1
+            instructorList: this.state.instructorList,
+            TAList: this.state.TAList,
+            studentManualList: this.state.studentManualList,
+            studentAutoList: this.state.studentAutoList,
+
+            minSize: this.state.minSize,
+            maxSize: this.state.maxSize,
+            groupFormationDate: date,
+        };
+        console.log(request);
+
+        if (true) {
+            this.props.history.push('/home');
+        }
+    };
+
     validations = (data) => {
         const name = data.name;
         switch (name) {
             case 'code':
                 if (String(data.value).length > 7) return false;
+                break;
+            default:
                 break;
         }
 
@@ -113,7 +129,7 @@ export class CourseCreation extends Component {
             return;
         }
         const name = data.name;
-        var value = '';
+        let value = '';
         if (data.type === 'checkbox') {
             value = data.checked;
             this.setState({
@@ -140,10 +156,10 @@ export class CourseCreation extends Component {
     };
 
     changeSection = (event, data) => {
-        var sections = [];
-        var studentManualList = [];
-        var studentAutoList = [];
-        for (var i = 1; i <= data.value; i++) {
+        let sections = [];
+        let studentManualList = [];
+        let studentAutoList = [];
+        for (let i = 1; i <= data.value; i++) {
             sections.push({
                 key: i,
                 text: i,
@@ -159,7 +175,7 @@ export class CourseCreation extends Component {
     };
 
     removeUser = (element, listType, section) => {
-        var ary = this.state[listType];
+        let ary = this.state[listType];
         if (section === 0) {
             ary = _.without(ary, element);
         } else {
@@ -169,9 +185,9 @@ export class CourseCreation extends Component {
     };
 
     createUserList(members, userType, listType, section = 0) {
-        var list = section === 0 ? members : members[section - 1];
+        let list = section === 0 ? members : members[section - 1];
         return (
-            <Segment style={{ height: '200px' }}>
+            <Segment style={{ height: '200px', width: '100%' }}>
                 <List selection className="UserList" items={list}>
                     {list.map((element) => {
                         return (
@@ -216,7 +232,7 @@ export class CourseCreation extends Component {
     }
 
     checkIfExists = (list, element) => {
-        for (var i = 0; i < list.length; i++) {
+        for (let i = 0; i < list.length; i++) {
             if (element === list[i]) {
                 return true;
             }
@@ -228,7 +244,7 @@ export class CourseCreation extends Component {
         if (this.state[userType] === '') {
             return;
         }
-        for (var i = 0; i < this.state[userType].length; i++)
+        for (let i = 0; i < this.state[userType].length; i++)
             if (
                 this.state[userType][i] === '@' &&
                 i + 1 < this.state[userType].length &&
@@ -245,7 +261,7 @@ export class CourseCreation extends Component {
             }
             curList.push(this.state[userType]);
         } else {
-            for (var i = 0; i < curList.length; i++) {
+            for (let i = 0; i < curList.length; i++) {
                 if (this.checkIfExists(curList[i], this.state[userType])) {
                     window.alert("You can't add already existing user.");
                     return;
@@ -256,37 +272,11 @@ export class CourseCreation extends Component {
         this.setState({ [listType]: curList, [userType]: '' });
     };
 
-    onFormSubmit = (e) => {
-        for (var i = 0; i < this.state.sectionNumber; i++) {
-            for (var k = 0; k < this.state.studentManualList[i].length; k++) {
-                this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
-            }
-        }
-        var dateArr = this.state.groupFormationDate.split(/-/);
-        //System.DateTime
-        var d = new Date(dateArr[0], dateArr[1], dateArr[2]);
-        return {
-            courseName: this.state.code + '/' + this.state.year + this.state.semester,
-            description: this.state.shortDescription,
-            isSectionless: this.state.isSectionless,
-            numberOfSection: this.state.sectionNumber, // If sectionless this field is 1
-
-            groupFormationType: this.state.groupFormationType,
-            newStudents: this.state.studentAutoList,
-            newTAs: this.state.TAList,
-            newinstructors: this.state.instructorList,
-
-            minSize: this.state.minSize,
-            maxSize: this.state.maxSize,
-            groupFormationDate: d,
-        };
-    };
-
     readFile = (e) => {
         const reader = new FileReader();
-        var students;
+        let students;
         reader.onload = async (file) => {
-            var curList = this.state.studentAutoList;
+            let curList = this.state.studentAutoList;
             const text = file.target.result;
             students = text.split(/\n/);
             curList[this.state.autoSection - 1] = students;
@@ -295,9 +285,16 @@ export class CourseCreation extends Component {
         reader.readAsText(e.target.files[0]);
     };
 
+    onKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    };
+
     render() {
         return (
-            <Form className="CreationForm" onSubmit={this.onFormSubmit}>
+            <Form className="CreationForm" onSubmit={this.onFormSubmit} onKeyDown={this.onKeyDown}>
                 <Form.Group>
                     <h1>Create New Course</h1>
                 </Form.Group>
@@ -309,7 +306,7 @@ export class CourseCreation extends Component {
                             value={this.state.code}
                             onChange={this.handleChange}
                             name="code"
-                            style={{ width: '50%' }}
+                            style={{ width: '100%' }}
                         />
                     </Form.Field>
                     <Form.Field width={3}>
@@ -319,7 +316,7 @@ export class CourseCreation extends Component {
                             min="0"
                             max="9999"
                             name="year"
-                            style={{ width: '50%' }}
+                            style={{ width: '100%' }}
                             onChange={this.handleChange}
                             type="number"
                         />
@@ -339,7 +336,7 @@ export class CourseCreation extends Component {
                     <Form.Field className="newCourseName" width={7} textAlign="center">
                         <h2>
                             {this.state.code}
-                            {(this.state.code != '' || this.state.code != '') && '-'}
+                            {(this.state.code !== '' || this.state.code !== '') && '-'}
                             {this.state.year} {this.state.semester}
                         </h2>
                     </Form.Field>
@@ -351,7 +348,7 @@ export class CourseCreation extends Component {
                         value={this.state.shortDescription}
                         onChange={this.handleChange}
                         name="shortDescription"
-                        style={{ width: '50%', height: '42px' }}
+                        style={{ width: '100%', height: '42px' }}
                     />
                 </Form.Group>
                 <Divider />
@@ -371,7 +368,7 @@ export class CourseCreation extends Component {
                                 label="Number of Sections: "
                                 name="sectionNumber"
                                 onChange={this.changeSection}
-                                style={{ width: '25%' }}
+                                style={{ width: '50%' }}
                                 value={this.state.sectionNumber}
                             />
                         )}
@@ -385,15 +382,17 @@ export class CourseCreation extends Component {
                 <Divider />
                 <Grid>
                     <Grid.Row columns={4}>
-                        <GridColumn>Add Instructor:</GridColumn>
-                        <GridColumn>
+                        <GridColumn width={2}>Add Instructor:</GridColumn>
+                        <GridColumn width={6}>
                             {this.createUserList(this.state.instructorList, 'currentInstructor', 'instructorList')}
                         </GridColumn>
-                        <GridColumn>Add Teaching Assistants</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.TAList, 'currentTA', 'TAList')}</GridColumn>
+                        <GridColumn width={3}>Add Teaching Assistants</GridColumn>
+                        <GridColumn width={6}>
+                            {this.createUserList(this.state.TAList, 'currentTA', 'TAList')}
+                        </GridColumn>
                     </Grid.Row>
                     <Grid.Row columns={4}>
-                        <GridColumn>
+                        <GridColumn width={4}>
                             <div>Add Student as .txt file:</div>
                             {this.state.isSectionless !== true && (
                                 <div>
@@ -409,7 +408,7 @@ export class CourseCreation extends Component {
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn>
+                        <GridColumn width={3}>
                             <input
                                 className="FileInput"
                                 type="file"
@@ -434,7 +433,7 @@ export class CourseCreation extends Component {
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn>
+                        <GridColumn width={5}>
                             {this.createUserList(
                                 this.state.studentManualList,
                                 'currentStudent',
@@ -470,7 +469,7 @@ export class CourseCreation extends Component {
                     </Form.Field>
                 </Form.Group>
                 <Divider />
-                <Button>Create New Course</Button>
+                <Button type="submit">Create New Course</Button>
             </Form>
         );
     }

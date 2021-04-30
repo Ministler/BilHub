@@ -56,7 +56,7 @@ class Settings extends Component {
     updateEmail = () => {
         const newEmail = this.state.email;
 
-        for (var i = 0; i < newEmail.length; i++)
+        for (let i = 0; i < newEmail.length; i++)
             if (newEmail[i] === '@' && i + 1 < newEmail.length && newEmail.indexOf('bilkent', i + 1) === -1) {
                 this.setError('Please use your bilkent email');
                 return;
@@ -217,7 +217,10 @@ class Settings extends Component {
                             </div>
                         )}
                         {props.sendConformation && (
-                            <button class="ui primary button" onClick={this.onVerifyEmail} style={{marginBottom: "10px"}}>
+                            <button
+                                class="ui primary button"
+                                onClick={this.onVerifyEmail}
+                                style={{ marginBottom: '10px' }}>
                                 Update
                             </button>
                         )}
@@ -257,9 +260,9 @@ class Settings extends Component {
             <div class="ui centered grid">
                 <div class="row" style={{ marginTop: '-30px' }}>
                     <div class="three wide column">
-                            <div style={{textAlign:"center"}}>
-                                <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
-                            </div>
+                        <div style={{ textAlign: 'center' }}>
+                            <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
+                        </div>
                     </div>
                     <div class="eight wide column"></div>
                 </div>

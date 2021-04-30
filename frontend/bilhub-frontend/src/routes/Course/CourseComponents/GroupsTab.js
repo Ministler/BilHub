@@ -81,6 +81,7 @@ export const GroupsTab = (props) => {
                     </Segment>
                 </div>
             );
+        return null;
     });
 
     const divGroupUnformed = props.groupsUnformed?.map((group, index) => {

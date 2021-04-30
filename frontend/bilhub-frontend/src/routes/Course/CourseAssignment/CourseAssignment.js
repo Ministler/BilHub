@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon, Dropdown, Button, Accordion } from 'semantic-ui-react';
+import { Icon, Dropdown, Button } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 
 import './CourseAssignment.css';

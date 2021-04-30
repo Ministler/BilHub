@@ -38,53 +38,41 @@ const semesterOptions = [
     },
 ];
 
-const groupFormationSettings = [
-    {
-        key: 'By Group Size',
-        text: 'By Group Size',
-        value: 'By Group Size',
-    },
-    {
-        key: 'By Group Number',
-        text: 'By Group Number',
-        value: 'By Group Number',
-    },
-];
 export class CourseSettings extends Component {
     constructor(props) {
         super(props);
         this.settingTitle = 'Course Settings ' + dummyCourseInformation.courseName;
-        var code;
-        var year;
-        var semester;
-        var dash = 0;
-        for (var i = 0; i < dummyCourseInformation.courseName.length; i++) {
-            if (dummyCourseInformation.courseName.charAt(i) == '-') {
+        let code;
+        let year;
+        let semester;
+        let dash = 0;
+        for (let i = 0; i < dummyCourseInformation.courseName.length; i++) {
+            if (dummyCourseInformation.courseName.charAt(i) === '-') {
                 code = dummyCourseInformation.courseName.substring(0, i);
                 dash = i;
-            } else if (dummyCourseInformation.courseName.charAt(i) == ' ') {
+            } else if (dummyCourseInformation.courseName.charAt(i) === ' ') {
                 year = parseInt(dummyCourseInformation.courseName.substring(dash + 1, i));
                 dash = i;
-            } else if (i + 1 == dummyCourseInformation.courseName.length) {
+            } else if (i + 1 === dummyCourseInformation.courseName.length) {
                 semester = dummyCourseInformation.courseName.substring(dash + 1);
             }
         }
-        var sectionNumber = dummyCourseInformation.sectionNumber;
-        var studentManualList = [];
-        var studentAutoList = [];
-        for (var i = 0; i < sectionNumber; i++) {
+        let sectionNumber = dummyCourseInformation.sectionNumber;
+        let studentManualList = [];
+        let studentAutoList = [];
+        for (let i = 0; i < sectionNumber; i++) {
             studentAutoList.push([]);
             studentManualList.push([]);
         }
-        var sections = [];
-        for (var i = 1; i <= sectionNumber; i++) {
+        let sections = [];
+        for (let i = 1; i <= sectionNumber; i++) {
             sections.push({
                 key: i,
                 text: i,
                 value: i,
             });
         }
-        var date =
+        let date =
             dummyCourseInformation.groupFormationDate.getFullYear() +
             '-' +
             dummyCourseInformation.groupFormationDate.getMonth() +
@@ -112,7 +100,6 @@ export class CourseSettings extends Component {
             maxSize: dummyCourseInformation.maxSize,
             groupFormationDate: date,
         };
-        console.log(this.state.groupFormationDate);
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -123,7 +110,7 @@ export class CourseSettings extends Component {
             return;
         }
         const name = data.name;
-        var value = '';
+        let value = '';
         value = data.value;
         this.setState({
             [name]: value,
@@ -136,13 +123,15 @@ export class CourseSettings extends Component {
             case 'code':
                 if (String(data.value).length > 7) return false;
                 break;
+            default:
+                break;
         }
 
         return true;
     };
 
     removeUser = (element, listType, section) => {
-        var ary = this.state[listType];
+        let ary = this.state[listType];
         if (section === 0) {
             ary = _.without(ary, element);
         } else {
@@ -152,7 +141,7 @@ export class CourseSettings extends Component {
     };
 
     createUserList(members, userType, listType, section = 0) {
-        var list = section === 0 ? members : members[section - 1];
+        let list = section === 0 ? members : members[section - 1];
         return (
             <Segment style={{ height: '200px' }}>
                 <List selection className="UserList" items={list}>
@@ -202,7 +191,7 @@ export class CourseSettings extends Component {
         if (this.state[userType] === '') {
             return;
         }
-        for (var i = 0; i < this.state[userType].length; i++)
+        for (let i = 0; i < this.state[userType].length; i++)
             if (
                 this.state[userType][i] === '@' &&
                 i + 1 < this.state[userType].length &&
@@ -219,7 +208,7 @@ export class CourseSettings extends Component {
             }
             curList.push(this.state[userType]);
         } else {
-            for (var i = 0; i < curList.length; i++) {
+            for (let i = 0; i < curList.length; i++) {
                 if (this.checkIfExists(curList[i], this.state[userType])) {
                     window.alert("You can't add already existing user.");
                     return;
@@ -231,7 +220,7 @@ export class CourseSettings extends Component {
     };
 
     checkIfExists = (list, element) => {
-        for (var i = 0; i < list.length; i++) {
+        for (let i = 0; i < list.length; i++) {
             if (element === list[i]) {
                 return true;
             }
@@ -241,14 +230,14 @@ export class CourseSettings extends Component {
 
     onFormSubmit = (e) => {
         console.log(this.state.groupFormationDate);
-        for (var i = 0; i < this.state.sectionNumber; i++) {
-            for (var k = 0; k < this.state.studentManualList[i].length; k++) {
+        for (let i = 0; i < this.state.sectionNumber; i++) {
+            for (let k = 0; k < this.state.studentManualList[i].length; k++) {
                 this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
             }
         }
-        var dateArr = this.state.groupFormationDate.split(/-/);
+        let dateArr = this.state.groupFormationDate.split(/-/);
         //System.DateTime
-        var d = new Date(dateArr[0], dateArr[1], dateArr[2]);
+        let d = new Date(dateArr[0], dateArr[1], dateArr[2]);
         return {
             courseName: this.state.code + '/' + this.state.year + this.state.semester,
             description: this.state.shortDescription,
@@ -268,9 +257,9 @@ export class CourseSettings extends Component {
 
     readFile = (e) => {
         const reader = new FileReader();
-        var students;
+        let students;
         reader.onload = async (file) => {
-            var curList = this.state.studentAutoList;
+            let curList = this.state.studentAutoList;
             const text = file.target.result;
             students = text.split(/\n/);
             curList[this.state.autoSection - 1] = students;
@@ -327,7 +316,7 @@ export class CourseSettings extends Component {
                         <Form.Field className="newCourseName" width={7} textAlign="center">
                             <h2>
                                 {this.state.code}
-                                {(this.state.code != '' || this.state.code != '') && '-'}
+                                {(this.state.code !== '' || this.state.code !== '') && '-'}
                                 {this.state.year} {this.state.semester}
                             </h2>
                         </Form.Field>
