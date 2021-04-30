@@ -87,39 +87,43 @@ class Home extends Component {
         );
 
         return (
-            <Grid><Grid.Row divided>
-                <GridColumn width={4}>
-                    <div>
-                        <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
-                        {myProjectsComponent && (
-                            <div className="MyProjectsBlock">
-                                <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
-                                {myProjectsComponent}
-                            </div>
-                        )}
-                        {(myProjectsComponent && instructedCoursesComponent) && (
-                            <Divider style={{ width: "70%", margin: "auto", marginTop:"20px"}}/>
-                        )}
-                        {instructedCoursesComponent && (
-                            <div className="InstructedCoursesBlock">
-                                <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
-                                {instructedCoursesComponent}
-                            </div>
-                        )}
-                    </div>
-                </GridColumn>
-                <GridColumn width={12}>
-                    <Grid><Grid.Row>
-                        <GridColumn width={12}>{feedsComponent}</GridColumn>
-                        <GridColumn width={4}>
-                            <div>
-                                {upcomingAssignmentsComponent}
-                                {notGradedAssignmentsComponent}
-                            </div>
-                        </GridColumn>
-                    </Grid.Row></Grid>
-                </GridColumn>
-            </Grid.Row></Grid>
+            <Grid>
+                <Grid.Row divided>
+                    <GridColumn width={4}>
+                        <div>
+                            <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
+                            {myProjectsComponent && (
+                                <div className="MyProjectsBlock">
+                                    <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
+                                    {myProjectsComponent}
+                                </div>
+                            )}
+                            {myProjectsComponent && instructedCoursesComponent && (
+                                <Divider style={{ width: '70%', margin: 'auto', marginTop: '20px' }} />
+                            )}
+                            {instructedCoursesComponent && (
+                                <div className="InstructedCoursesBlock">
+                                    <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
+                                    {instructedCoursesComponent}
+                                </div>
+                            )}
+                        </div>
+                    </GridColumn>
+                    <GridColumn width={12}>
+                        <Grid>
+                            <Grid.Row>
+                                <GridColumn width={12}>{feedsComponent}</GridColumn>
+                                <GridColumn width={4}>
+                                    <div>
+                                        {upcomingAssignmentsComponent}
+                                        {notGradedAssignmentsComponent}
+                                    </div>
+                                </GridColumn>
+                            </Grid.Row>
+                        </Grid>
+                    </GridColumn>
+                </Grid.Row>
+            </Grid>
         );
     }
 }
@@ -175,7 +179,7 @@ const dummyInstructedCoursesList = [
 const dummyFeedsList = [
     {
         title: 'CS319-2021Spring / Desing Report Assignment',
-        status: 'graded',
+        status: 'submitted',
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',

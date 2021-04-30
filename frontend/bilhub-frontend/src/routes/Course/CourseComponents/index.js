@@ -1,4 +1,5 @@
 export {
+    UserSearchBar,
     InformationSection,
     NewAssignmentModal,
     EditAssignmentModal,

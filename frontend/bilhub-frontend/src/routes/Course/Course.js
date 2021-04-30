@@ -208,7 +208,7 @@ class Course extends Component {
                     }}
                     name={'check'}
                     color="blue"
-                    style={{float: "right", marginTop: "-10px"}}
+                    style={{ float: 'right', marginTop: '-10px' }}
                 />
             ) : (
                 <Icon
@@ -218,7 +218,7 @@ class Course extends Component {
                     }}
                     name={'edit'}
                     color="blue"
-                    style={{float: "right", marginTop: "-15px"}}
+                    style={{ float: 'right', marginTop: '-15px' }}
                 />
             );
         }
@@ -459,7 +459,7 @@ class Course extends Component {
                 <div class="ui centered grid">
                     <Grid.Row divided>
                         <div class="four wide column">
-                            <Segment style={{ boxShadow: "none", border: "0"}}>{this.getInformationSection()}</Segment>
+                            <Segment style={{ boxShadow: 'none', border: '0' }}>{this.getInformationSection()}</Segment>
                         </div>
                         <div class="twelve wide column">
                             {this.props.match.params.assignmentId ? (
@@ -513,7 +513,7 @@ const dummyCourseInformation = {
     ],
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
-    isTAorInstructorOfCourse: false,
+    isTAorInstructorOfCourse: true,
     isUserInFormedGroup: false,
     isUserAlone: false,
     isLocked: false,

@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import {
     Divider,
     Input,
     Dropdown,
     Grid,
-    Checkbox,
     Segment,
     GridColumn,
     Button,
-    GridRow,
     Icon,
     Form,
-    Message,
     List,
     Popup,
     TextArea,
 } from 'semantic-ui-react';
+import { UserSearchBar } from '../CourseComponents';
 
 import './CourseSettings.css';
 
@@ -142,11 +141,35 @@ export class CourseSettings extends Component {
         return true;
     };
 
+    removeUser = (element, listType, section) => {
+        var ary = this.state[listType];
+        if (section === 0) {
+            ary = _.without(ary, element);
+        } else {
+            ary[section - 1] = _.without(ary[section - 1], element);
+        }
+        this.setState({ [listType]: ary });
+    };
+
     createUserList(members, userType, listType, section = 0) {
         var list = section === 0 ? members : members[section - 1];
         return (
             <Segment style={{ height: '200px' }}>
-                <List className="UserList" items={list}></List>
+                <List selection className="UserList" items={list}>
+                    {list.map((element) => {
+                        return (
+                            <Popup
+                                on="click"
+                                content={
+                                    <Button onClick={() => this.removeUser(element, listType, section)} color="red">
+                                        Remove User
+                                    </Button>
+                                }
+                                trigger={<List.Item>{element}</List.Item>}
+                            />
+                        );
+                    })}
+                </List>
                 <Segment.Inline className="AddSegment">
                     <Form.Input
                         name={userType}
@@ -179,13 +202,41 @@ export class CourseSettings extends Component {
         if (this.state[userType] === '') {
             return;
         }
+        for (var i = 0; i < this.state[userType].length; i++)
+            if (
+                this.state[userType][i] === '@' &&
+                i + 1 < this.state[userType].length &&
+                this.state[userType].indexOf('bilkent', i + 1) === -1
+            ) {
+                window.alert('Please enter bilkent email');
+                return;
+            }
         let curList = this.state[listType];
         if (section === 0) {
+            if (this.checkIfExists(curList, this.state[userType])) {
+                window.alert("You can't add already existing user.");
+                return;
+            }
             curList.push(this.state[userType]);
         } else {
+            for (var i = 0; i < curList.length; i++) {
+                if (this.checkIfExists(curList[i], this.state[userType])) {
+                    window.alert("You can't add already existing user.");
+                    return;
+                }
+            }
             curList[section - 1].push(this.state[userType]);
         }
         this.setState({ [listType]: curList, [userType]: '' });
+    };
+
+    checkIfExists = (list, element) => {
+        for (var i = 0; i < list.length; i++) {
+            if (element === list[i]) {
+                return true;
+            }
+        }
+        return false;
     };
 
     onFormSubmit = (e) => {
@@ -226,6 +277,10 @@ export class CourseSettings extends Component {
             this.setState({ studentAutoList: curList /* currentFile: */ });
         };
         reader.readAsText(e.target.files[0]);
+    };
+
+    removeUserFromCourse = (userMail) => {
+        console.log(userMail + ' will be removed');
     };
 
     render() {
@@ -390,6 +445,9 @@ export class CourseSettings extends Component {
                         }}
                     />
                     <Divider />
+                    <h2>Remove Students From Course</h2>
+                    <UserSearchBar users={dummyUsers} removeUserFromCourse={this.removeUserFromCourse} />
+                    <Divider />
                     <h1>Change Groups</h1>
                     Section:
                     <Form.Field>
@@ -477,4 +535,26 @@ const dummyGroupsFormed = [
     ['Mr. One', 'Mr. Two', 'Miss. Three', 'Mr. Four', 'Miss. Five'],
     ['Dummy. One', 'Dummy. Two', 'Dummy. Three', 'Dummy. Four', 'Dummy. Five'],
     ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'],
+];
+
+const dummyUsers = [
+    { type: 'student', mail: 'yusuf@bilkent.edu.tr' },
+    { type: 'student', mail: 'baris@bilkent.edu.tr' },
+    { type: 'student', mail: 'aybala@bilkent.edu.tr' },
+    { type: 'student', mail: 'ozgur@bilkent.edu.tr' },
+    { type: 'student', mail: 'ozco@bilkent.edu.tr' },
+    { type: 'student', mail: 'mert@bilkent.edu.tr' },
+    { type: 'student', mail: 'ata@bilkent.edu.tr' },
+    { type: 'student', mail: 'asd@bilkent.edu.tr' },
+    { type: 'student', mail: 'fgh@bilkent.edu.tr' },
+    { type: 'student', mail: 'jkl@bilkent.edu.tr' },
+    { type: 'student', mail: 'qwe@bilkent.edu.tr' },
+    { type: 'student', mail: 'rety@bilkent.edu.tr' },
+    { type: 'student', mail: 'werrd@bilkent.edu.tr' },
+    { type: 'student', mail: 'xcccxs@bilkent.edu.tr' },
+    { type: 'student', mail: 'bvbvbvb@bilkent.edu.tr' },
+    { type: 'student', mail: 'fdgggggw@bilkent.edu.tr' },
+    { type: 'TA', mail: 'TA@bilkent.edu.tr' },
+    { type: 'TA', mail: 'TA22@bilkent.edu.tr' },
+    { type: 'instructor', mail: 'hoca@bilkent.edu.tr' },
 ];

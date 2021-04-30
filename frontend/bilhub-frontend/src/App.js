@@ -31,7 +31,7 @@ class App extends Component {
                     userData.localId,
                     userData.email,
                     userData.displayName,
-                    'student',
+                    'instructor',
                     true
                 );
             })
