@@ -18,7 +18,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("AddStudentToSection")]
-        public async Task<ActionResult> CreateCourse ( int userId, int sectionId )
+        public async Task<ActionResult> AddStudentToSection ( int userId, int sectionId )
         {
             return Ok ( await _sectionService.AddStudentToSection ( userId, sectionId ) );
         }
@@ -27,6 +27,12 @@ namespace backend.Controllers
         public async Task<ActionResult> RemoveStudentFromSection ( int userId, int sectionId )
         {
             return Ok ( await _sectionService.RemoveStudentFromSection ( userId, sectionId ) );
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetSectionInfo ( int sectionId )
+        {
+            return Ok ( await _sectionService.GetSectionInfo ( sectionId ) );
         }
 
     }

@@ -71,7 +71,8 @@ namespace backend.Services.CourseServices
                 LockDate = createCourseDto.LockDate,
                 MinGroupSize = createCourseDto.MinGroupSize,
                 MaxGroupSize = createCourseDto.MaxGroupSize,
-                StartDate = DateTime.Now
+                StartDate = DateTime.Now,
+                IsSectionless = createCourseDto.IsSectionless
             };
 
             CourseUser founderInstructor = new CourseUser

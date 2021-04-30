@@ -131,7 +131,7 @@ namespace backend.Services.SectionServices
 
             int currentProjectGroupId = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedSectionId == sectionId ).ProjectGroupId ;
 
-            await _projectGroupService.KickStudentFromGroup ( userId, currentProjectGroupId );
+            await _projectGroupService.KickStudentFromGroup ( userId, currentProjectGroupId, true );
 
             int newProjectGroupId = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedSectionId == sectionId ).ProjectGroupId ;
 
@@ -140,6 +140,25 @@ namespace backend.Services.SectionServices
             _context.Sections.Update ( dbSection );
             await _context.SaveChangesAsync();
             
+            serviceResponse.Data = _mapper.Map<GetSectionDto> ( dbSection );
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetSectionDto>> GetSectionInfo(int sectionId)
+        {
+            ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto>();
+
+            Section dbSection = await _context.Sections
+                .Include(c => c.AffiliatedCourse).ThenInclude ( cs => cs.Instructors )
+                .Include(c => c.ProjectGroups)
+                .FirstOrDefaultAsync(c => c.Id == sectionId);
+            
+            if ( dbSection == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Section not found.";
+                return serviceResponse;
+            }
+
             serviceResponse.Data = _mapper.Map<GetSectionDto> ( dbSection );
             return serviceResponse;
         }

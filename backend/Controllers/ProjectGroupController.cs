@@ -48,7 +48,7 @@ namespace backend.Controllers
             return Ok ( await _projectGroupService.GetProjectGroupsOfSection (sectionId) );
         }
 
-        [HttpDelete("SilmeDeneme")]
+        [HttpDelete("DeleteProjectGroup")]
         public async Task<ActionResult>  DeleteProjectGroup ( int projectGroupId )
         {
             return Ok ( await _projectGroupService.DeleteProjectGroup( projectGroupId ) );
@@ -63,7 +63,7 @@ namespace backend.Controllers
         [HttpPost("KickStudentFromGroup")]
         public async Task<ActionResult> KickStudentFromGroup ( int projectGroupId, int userId )
         {  
-            return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId ) );
+            return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId, false ) );
         }
 
         [HttpPost("CompleteJoinRequest")]

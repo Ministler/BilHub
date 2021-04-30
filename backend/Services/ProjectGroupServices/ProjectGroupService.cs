@@ -177,11 +177,18 @@ namespace backend.Services.ProjectGroupServices
             if ( confirmationAnswerDto.ConfirmationState ) {
                 newConfirmedGroupMembers = AddUserToString ( dbProjectGroup.ConfirmedGroupMembers, GetUserId() );
                 dbProjectGroup.ConfirmedUserNumber++;
-                if ( dbProjectGroup.ConfirmedUserNumber == dbProjectGroup.GroupMembers.Count ) {
+                if ( dbProjectGroup.ConfirmedUserNumber == dbProjectGroup.GroupMembers.Count 
+                    && dbProjectGroup.ConfirmedUserNumber >= dbProjectGroup.AffiliatedCourse.MinGroupSize
+                    && dbProjectGroup.ConfirmedUserNumber <= dbProjectGroup.AffiliatedCourse.MaxGroupSize ) {
+
                     dbProjectGroup.ConfirmationState = true;
-
-                    // tum merge ve join requestleri cikarmayi implemente et
-
+                    _context.JoinRequests.RemoveRange ( _context.JoinRequests.Where( c => c.RequestedGroupId == dbProjectGroup.Id ) );
+                    _context.MergeRequests.RemoveRange ( _context.MergeRequests.Where( c => c.ReceiverGroupId == dbProjectGroup.Id || c.SenderGroupId == dbProjectGroup.Id ) );
+                    foreach ( var i in dbProjectGroup.GroupMembers )
+                    {
+                        _context.JoinRequests.RemoveRange ( _context.JoinRequests.Where( c => c.RequestingStudentId == i.UserId ) );
+                    }
+                    await _context.SaveChangesAsync();
                 }
             }
             else {
@@ -392,7 +399,7 @@ namespace backend.Services.ProjectGroupServices
 
             while ( dbProjectGroup.GroupMembers.Count > 1 )
             {
-                await KickStudentFromGroup ( projectGroupId, dbProjectGroup.GroupMembers.ElementAt(0).UserId );
+                await KickStudentFromGroup ( projectGroupId, dbProjectGroup.GroupMembers.ElementAt(0).UserId, true );
             }
 
             int lastUserId = dbProjectGroup.GroupMembers.ElementAt(0).UserId, sectionIdForNew = dbProjectGroup.AffiliatedSectionId;
@@ -405,7 +412,7 @@ namespace backend.Services.ProjectGroupServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetProjectGroupDto>> KickStudentFromGroup(int projectGroupId, int userId)
+        public async Task<ServiceResponse<GetProjectGroupDto>> KickStudentFromGroup(int projectGroupId, int userId, bool fromInside)
         {
             ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
             ProjectGroup dbProjectGroup = await _context.ProjectGroups
@@ -419,7 +426,7 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
-            if ( !(await isUserInstructorOfGroup ( projectGroupId )) ) {
+            if ( !(await isUserInstructorOfGroup ( projectGroupId )) && !fromInside ) {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User is not authorized to kick the student from this group.";
                 return serviceResponse;
@@ -516,7 +523,21 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
-            await DeleteProjectGroup ( singleUsersGroup.Id );
+            if ( singleUsersGroup.GroupMembers.Count == 1 )
+                await DeleteProjectGroup ( singleUsersGroup.Id );
+            else {
+                singleUsersGroup.ConfirmationState = false;
+                singleUsersGroup.ConfirmedUserNumber = 0;
+                singleUsersGroup.ConfirmedGroupMembers = "";
+
+                foreach ( var i in singleUsersGroup.GroupMembers ) {
+                    if ( i.UserId == dbJoinRequest.RequestingStudentId ) {
+                        _context.ProjectGroupUsers.Remove(i);
+                        break;
+                    }
+                }
+                _context.ProjectGroups.Update ( singleUsersGroup );
+            }
 
             ProjectGroupUser newProjectGroupUser = new ProjectGroupUser {
                 User = dbJoinRequest.RequestingStudent,
@@ -527,7 +548,26 @@ namespace backend.Services.ProjectGroupServices
             dbJoinRequest.RequestedGroup.GroupMembers.Add(newProjectGroupUser);
             _context.ProjectGroups.Update( dbJoinRequest.RequestedGroup );
 
-            // BUNDAN SONRA DIGER REQUESTLER VS NASIL OLACAK
+            List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
+                .Where( c => c.RequestedGroupId == dbJoinRequest.RequestedGroupId  ).ToListAsync() ;
+            
+            foreach ( var i in resetedJoinRequests )
+            {
+                i.VotedStudents = "";
+                i.AcceptedNumber = 0;
+                i.Accepted = false;
+            }
+            _context.JoinRequests.UpdateRange ( resetedJoinRequests );
+
+            List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
+                .Where( c => c.ReceiverGroupId == dbJoinRequest.RequestedGroupId || c.SenderGroupId == dbJoinRequest.RequestedGroupId  ).ToListAsync() ;
+            
+            foreach ( var i in resetedMergeRequests )
+            {
+                i.VotedStudents = "";
+                i.Accepted = false;
+            }
+            _context.MergeRequests.UpdateRange ( resetedMergeRequests );
 
             await _context.SaveChangesAsync();
             serviceResponse.Data = _mapper.Map<GetProjectGroupDto> (dbJoinRequest.RequestedGroup);
@@ -573,14 +613,22 @@ namespace backend.Services.ProjectGroupServices
 
             while ( dbMergeRequest.SenderGroup.GroupMembers.Count > 1 )
             {
+                int currentUserId = dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).User.Id;
                 User tmpUser = dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).User;
-                await KickStudentFromGroup ( dbMergeRequest.SenderGroupId, dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).UserId );
+
+                dbMergeRequest.SenderGroup.ConfirmationState = false;
+                dbMergeRequest.SenderGroup.ConfirmedUserNumber = 0;
+                dbMergeRequest.SenderGroup.ConfirmedGroupMembers = "";
+
                 foreach ( var i in dbMergeRequest.SenderGroup.GroupMembers ) {
                     if ( i.UserId == dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).UserId ) {
                         _context.ProjectGroupUsers.Remove(i);
                         break;
                     }
                 }
+
+                if ( dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).User.Id == currentUserId )
+                    dbMergeRequest.SenderGroup.GroupMembers.Remove ( dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0) );
 
                 ProjectGroupUser newProjectGroupUserTmp = new ProjectGroupUser {
                     User = tmpUser,
@@ -604,7 +652,31 @@ namespace backend.Services.ProjectGroupServices
             dbMergeRequest.ReceiverGroup.GroupMembers.Add(newProjectGroupUser);
             _context.ProjectGroups.Update( dbMergeRequest.ReceiverGroup );
 
-            // BUNDAN SONRA DIGER REQUESTLER VS NASIL OLACAK
+            // TEST ETMEK LAZIM
+            List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
+                .Where( c => c.RequestedGroupId == dbMergeRequest.SenderGroupId || c.RequestedGroupId == dbMergeRequest.ReceiverGroupId  ).ToListAsync() ;
+            
+            foreach ( var i in resetedJoinRequests )
+            {
+                i.VotedStudents = "";
+                i.AcceptedNumber = 0;
+                i.Accepted = false;
+            }
+            _context.JoinRequests.UpdateRange ( resetedJoinRequests );
+
+            List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
+                .Where( c => c.ReceiverGroupId == dbMergeRequest.ReceiverGroupId 
+                    || c.ReceiverGroupId == dbMergeRequest.SenderGroupId
+                    || c.SenderGroupId == dbMergeRequest.ReceiverGroupId 
+                    || c.SenderGroupId == dbMergeRequest.SenderGroupId ).ToListAsync() ;
+            
+            foreach ( var i in resetedMergeRequests )
+            {
+                i.VotedStudents = "";
+                i.Accepted = false;
+            }
+            _context.MergeRequests.UpdateRange ( resetedMergeRequests );
+            //
 
             await _context.SaveChangesAsync();
             serviceResponse.Data = _mapper.Map<GetProjectGroupDto> (dbMergeRequest.ReceiverGroup);
