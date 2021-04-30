@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import {
     Divider,
     Input,
@@ -157,11 +158,35 @@ export class CourseCreation extends Component {
         this.handleChange(event, data);
     };
 
+    removeUser = (element, listType, section) => {
+        var ary = this.state[listType];
+        if (section === 0) {
+            ary = _.without(ary, element);
+        } else {
+            ary[section - 1] = _.without(ary[section - 1], element);
+        }
+        this.setState({ [listType]: ary });
+    };
+
     createUserList(members, userType, listType, section = 0) {
         var list = section === 0 ? members : members[section - 1];
         return (
             <Segment style={{ height: '200px' }}>
-                <List className="UserList" items={list}></List>
+                <List selection className="UserList" items={list}>
+                    {list.map((element) => {
+                        return (
+                            <Popup
+                                on="click"
+                                content={
+                                    <Button onClick={() => this.removeUser(element, listType, section)} color="red">
+                                        Remove User
+                                    </Button>
+                                }
+                                trigger={<List.Item>{element}</List.Item>}
+                            />
+                        );
+                    })}
+                </List>
                 <Segment.Inline className="AddSegment">
                     <Form.Input
                         name={userType}
@@ -190,14 +215,42 @@ export class CourseCreation extends Component {
         );
     }
 
+    checkIfExists = (list, element) => {
+        for (var i = 0; i < list.length; i++) {
+            if (element === list[i]) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     addUser = (userType, listType, section) => {
         if (this.state[userType] === '') {
             return;
         }
+        for (var i = 0; i < this.state[userType].length; i++)
+            if (
+                this.state[userType][i] === '@' &&
+                i + 1 < this.state[userType].length &&
+                this.state[userType].indexOf('bilkent', i + 1) === -1
+            ) {
+                window.alert('Please enter bilkent email');
+                return;
+            }
         let curList = this.state[listType];
         if (section === 0) {
+            if (this.checkIfExists(curList, this.state[userType])) {
+                window.alert("You can't add already existing user.");
+                return;
+            }
             curList.push(this.state[userType]);
         } else {
+            for (var i = 0; i < curList.length; i++) {
+                if (this.checkIfExists(curList[i], this.state[userType])) {
+                    window.alert("You can't add already existing user.");
+                    return;
+                }
+            }
             curList[section - 1].push(this.state[userType]);
         }
         this.setState({ [listType]: curList, [userType]: '' });
