@@ -35,8 +35,18 @@ class CourseAssignment extends Component {
         if (this.props.isCourseActive && this.state.assignment?.isUserTAorInstructor) {
             controlIcons = (
                 <>
-                    <Icon name="edit" onClick={this.props.onDeleteAssignmentModalOpened} />
-                    <Icon name="close" onClick={this.props.onEditAssignmentModalOpened} />
+                    <Icon
+                        name="edit"
+                        color="blue"
+                        style={{ float: 'right' }}
+                        onClick={this.props.onDeleteAssignmentModalOpened}
+                    />
+                    <Icon
+                        name="close"
+                        color="red"
+                        style={{ float: 'right' }}
+                        onClick={this.props.onEditAssignmentModalOpened}
+                    />
                 </>
             );
         }
@@ -52,7 +62,7 @@ class CourseAssignment extends Component {
                     title={this.props.courseName + ' / ' + this.state.assignment?.title}
                     caption={this.state.assignment?.caption}
                     publisher={this.state.assignment?.publisher}
-                    fileIcon={this.state.assignment?.file ? <Icon name="file" /> : null}
+                    fileIcon={this.state.assignment?.file ? <Icon name="file" color="grey" /> : null}
                     fileClicked={this.onFileClicked}
                     date={
                         'Publishment Date: ' +
@@ -86,7 +96,6 @@ class CourseAssignment extends Component {
             return (
                 <Dropdown
                     defaultValue={0}
-                    fluid
                     selection
                     options={sectionOptions}
                     onChange={(e, dropdownValues) => this.onSectionChanged(dropdownValues)}
@@ -150,8 +159,19 @@ class CourseAssignment extends Component {
 
     render() {
         return (
-            <div>
-                <Icon onClick={this.onReturnProjectPage} size="huge" name="angle left" />
+            <div class="inline">
+                <Icon
+                    onClick={this.onReturnProjectPage}
+                    size="big"
+                    name="angle left"
+                    color="blue"
+                    style={{ display: 'inline' }}
+                />
+                <p
+                    onClick={this.onReturnProjectPage}
+                    style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
+                    Back To Course Page
+                </p>
                 <Tab tabPanes={this.getPaneElements()} />
             </div>
         );

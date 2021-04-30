@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea, Segment, Button } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Segment, Button, Form, Divider, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Project.css';
@@ -396,17 +396,32 @@ class Project extends Component {
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
-            <FeedbacksPane
-                feedbacksAccordion={getFeedbacksAsAccordion(
-                    this.state.feedbacks,
-                    this.state.projectGroup?.isTAorInstructor,
-                    this.onModalOpenedWithComment,
-                    this.onAuthorClicked,
-                    this.props.userId,
-                    this.onModalOpened
-                )}
-                newCommentButton={newCommentButton}
-            />
+            <Grid>
+                <div class="sixteen wide column">
+                    <p>Your Feedback:</p>
+                    <Form reply style={{width: "95%"}}>
+                        <Form.TextArea rows="5"/>
+                        <Button content='Upload File' floated='left' Compact icon labelPosition='right'>Upload File<Icon name='file' /></Button>
+                        <Button content='Grade Placeholder' floated='left'/>
+                        <Button content='Give Feedback' primary floated='right' Compact/>
+                    </Form>
+                </div>
+                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                    <Divider/>
+                </div>
+                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                    <FeedbacksPane
+                        feedbacksAccordion={getFeedbacksAsAccordion(
+                            this.state.feedbacks,
+                            this.state.projectGroup?.isTAorInstructor,
+                            this.onModalOpenedWithComment,
+                            this.onAuthorClicked,
+                            this.props.userId,
+                            this.onModalOpened
+                        )}
+                    />
+                </div>
+            </Grid>
         );
         return {
             title: 'Feedbacks',

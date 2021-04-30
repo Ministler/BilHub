@@ -68,7 +68,7 @@ export const SubmissionPane = (props) => {
             <AssignmentCardElement
                 title={props.assignment.title}
                 titleIcon={statusIcon}
-                fileIcon={props.assignment.file ? <Icon name="file" /> : null}
+                fileIcon={props.assignment.file ? <Icon name="file" color="grey"/> : null}
                 fileClicked={props.onAssignmentFileClicked}
                 status={props.assignment.status}
                 date={props.assignment.date}
