@@ -76,9 +76,8 @@ namespace backend.Data
                 new Assignment
                 {
                     Id = 1,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Odev",
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "Odev",
                     DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
                     AcceptedTypes = "pdf,doc,docx",
@@ -89,9 +88,8 @@ namespace backend.Data
                 }, new Assignment
                 {
                     Id = 2,
-                    AffiliatedSectionId = 3,
-                    CourseId = 2,
-                    AssignmentDescriptionFile = "315 proje",
+                    AfilliatedCourseId = 2,
+                    AssignmentDescription = "315 proje",
                     DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
                     AcceptedTypes = "pdf,doc,docx",

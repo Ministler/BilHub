@@ -29,6 +29,32 @@ namespace backend.Controllers
             _projectGradeService = projectGradeService;
             _hostingEnvironment = hostingEnvironment;
         }
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            if (types.ContainsKey(ext))
+                return types[ext];
+            return null;
+        }
+
+         private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".zip", "application/zip"},
+                {".csv", "text/csv"}
+            };
+        }
 
         
         [HttpPost]
@@ -86,7 +112,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        [Route("{projectGradeId}")]
+        [Route("GetById/{projectGradeId}")]
         public async Task<IActionResult> GetById( int projectGradeId )
         {
             GetProjectGradeByIdDto dto = new GetProjectGradeByIdDto { Id = projectGradeId };
@@ -99,20 +125,30 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        [Route("{projectGradeId}")]
-        public async Task<IActionResult> DownloadById( int projectGradeId )
+        [Route("DownloadById/{gradeId}")]
+        public async Task<IActionResult> DownloadById( int gradeId )
         {
-            GetProjectGradeByIdDto dto = new GetProjectGradeByIdDto { Id = projectGradeId };
-            ServiceResponse<ProjectGradeFileDownloadDto> response = await _projectGradeService.DownloadProjectGradeById( dto );
+            GetProjectGradeByIdDto dto = new GetProjectGradeByIdDto { Id = gradeId };
+            ServiceResponse<string> response = await _projectGradeService.DownloadProjectGradeById( dto );
             if (response.Success)
             {   
-                return Ok(response);
+                string path = response.Data;
+                string type = GetContentType(path);
+                if (type == null)
+                    return BadRequest("this file type is not supported");
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return File(memory, type, Path.GetFileName(path));
             }
             return NotFound(response);
         }
 
         [HttpGet]
-        [Route("{gradedProjectGroupId}/{gradingUserId}")]
+        [Route("GetByUsersAndGroup/{gradedProjectGroupId}/{gradingUserId}")]
         public async Task<IActionResult> GetByUsersAndGroup( int gradedProjectGroupId, int gradingUserId )
         {
             GetProjectGradeDto dto = new GetProjectGradeDto { GradedProjectGroupID = gradedProjectGroupId, GradingUserId = gradingUserId };
@@ -127,14 +163,24 @@ namespace backend.Controllers
         
 
         [HttpGet]
-        [Route("{gradedProjectGroupId}/{gradingUserId}")]
-        public async Task<IActionResult> DownloadByGroup( int gradedProjectGroupId, int gradingUserId )
+        [Route("DownloadByUserAndGroup/{projectGroupId}/{gradingUserId}")]
+        public async Task<IActionResult> DownloadByGroup( int projectGroupId, int gradingUserId )
         {
-            GetProjectGradeDto dto = new GetProjectGradeDto { GradedProjectGroupID = gradedProjectGroupId, GradingUserId = gradingUserId };
-            ServiceResponse<ProjectGradeFileDownloadDto> response = await _projectGradeService.DownloadProjectGradeByGroupAndUser( dto );
+            GetProjectGradeDto dto = new GetProjectGradeDto { GradedProjectGroupID = projectGroupId, GradingUserId = gradingUserId };
+            ServiceResponse<string> response = await _projectGradeService.DownloadProjectGradeByGroupAndUser( dto );
             if (response.Success)
             {
-                return Ok(response);
+                string path = response.Data;
+                string type = GetContentType(path);
+                if (type == null)
+                    return BadRequest("this file type is not supported");
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return File(memory, type, Path.GetFileName(path));
             }
             return NotFound(response);
         }

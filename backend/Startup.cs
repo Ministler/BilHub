@@ -94,6 +94,8 @@ namespace backend
             services.AddScoped<IMergeRequestService, MergeRequestService>();
             services.AddScoped<ICourseService,CourseService>();
             services.AddScoped<ISectionService,SectionService>();
+            services.AddScoped<IPeerGradeService,PeerGradeService>();
+            services.AddScoped<IProjectGradeService,ProjectGradeService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

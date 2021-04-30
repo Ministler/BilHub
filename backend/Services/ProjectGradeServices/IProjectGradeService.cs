@@ -11,6 +11,8 @@ namespace backend.Services.ProjectGradeServices
         Task<ServiceResponse<ProjectGradeInfoDto>> EditProjectGrade(EditProjectGradeDto editProjectGradeDto);
         Task<ServiceResponse<string>> DeleteProjectGrade(DeleteProjectGradeDto deleteProjectGradeDto); 
         Task<ServiceResponse<ProjectGradeInfoDto>> GetProjectGradeById(GetProjectGradeByIdDto getProjectGradeDto);
+        Task<ServiceResponse<string>> DownloadProjectGradeById(GetProjectGradeByIdDto dto);
         Task<ServiceResponse<ProjectGradeInfoDto>> GetProjectGradeByUserAndGroup(GetProjectGradeDto getProjectGradeDto);
+        Task<ServiceResponse<string>> DownloadProjectGradeByGroupAndUser(GetProjectGradeDto dto);
     }
-}
+}           

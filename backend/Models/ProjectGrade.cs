@@ -7,6 +7,6 @@ namespace backend.Models
         public string Description { get; set; }
         public ProjectGroup GradedProjectGroup { get; set; }
         public int GradedProjectGroupID { get; set; }
-        //public string FilePath { get; set; }
+        public string FilePath { get; set; }
     }
 }
