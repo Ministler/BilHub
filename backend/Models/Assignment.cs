@@ -11,10 +11,11 @@ namespace backend.Models
             Submissions = new Collection<Submission>();
         }
         public int Id { get; set; }
-        public Section AffiliatedSection { get; set; }
-        public int AffiliatedSectionId { get; set; }
-        public int CourseId { get; set; }
-        public string AssignmentDescriptionFile { get; set; }
+        public string Title { get; set; }
+        public Course AfilliatedCourse { get; set; }
+        public int AfilliatedCourseId { get; set; }
+        public string AssignmentDescription { get; set; }
+        public string FilePath { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public string AcceptedTypes { get; set; }
@@ -22,6 +23,7 @@ namespace backend.Models
         public bool VisibilityOfSubmission { get; set; }
         public bool CanBeGradedByStudents { get; set; }
         public bool IsItGraded { get; set; }
+        public bool HasFile { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         // public User PublishedUser { get; set; }
         // public int UserId { get; set; }

@@ -1,0 +1,9 @@
+.ProfilePrompt {
+    width: 120%;
+    height: auto;
+    margin-left: -35px;
+}
+
+.ProfilePrompt span {
+    display: inline-block;
+}

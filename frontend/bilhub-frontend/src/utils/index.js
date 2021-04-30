@@ -1,0 +1,1 @@
+export { updateObject } from './updateObject';

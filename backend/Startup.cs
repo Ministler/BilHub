@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using backend.Data;
 using backend.Data.Auth;
+using backend.Services.AssignmentServices;
 using backend.Services.CommentServices;
 using backend.Services.JoinRequestServices;
 using backend.Services.ProjectGroupServices;
@@ -28,6 +29,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using backend.Services.CourseServices;
+using backend.Services.SectionServices;
 
 namespace backend
 {
@@ -46,10 +49,11 @@ namespace backend
             // var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
             // services.AddSingleton(emailConfig);
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            });
+            services.AddControllers();
+            // .AddJsonOptions(options =>
+            // {
+            //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            // });
 
             services.AddSwaggerGen(c =>
             {
@@ -85,8 +89,11 @@ namespace backend
             services.AddScoped<ISubmissionService, SubmissionService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IJoinRequestService, JoinRequestService>();
+            services.AddScoped<IAssignmentService, AssignmentService>();
             services.AddScoped<IProjectGroupService, ProjectGroupService>();
             services.AddScoped<IMergeRequestService, MergeRequestService>();
+            services.AddScoped<ICourseService,CourseService>();
+            services.AddScoped<ISectionService,SectionService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

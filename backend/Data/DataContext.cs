@@ -24,11 +24,12 @@ namespace backend.Data
         public DbSet<ProjectGroupUser> ProjectGroupUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Submission>()
-                .HasOne(s => s.AffiliatedAssignment)
-                .WithMany(a => a.Submissions)
-                .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.NoAction);
-            
+
+            modelBuilder.Entity<Assignment>()
+                .HasMany(a => a.Submissions)
+                .WithOne(s => s.AffiliatedAssignment)
+                .HasForeignKey(s => s.AffiliatedAssignmentId).OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Submission>()
                 .HasOne(s => s.AffiliatedGroup)
                 .WithMany(a => a.Submissions)
@@ -39,6 +40,7 @@ namespace backend.Data
                 .WithMany(s => s.ProjectGroups)
                 .HasForeignKey(pg => pg.AffiliatedSectionId)
                 .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<CourseUser>().HasKey(cu => new { cu.UserId, cu.CourseId });
             modelBuilder.Entity<CourseUser>()
             .HasOne(bc => bc.Course)
@@ -69,6 +71,7 @@ namespace backend.Data
 
             byte[] hash, salt;
             Utility.CreatePasswordHash("31", out hash, out salt);
+
             modelBuilder.Entity<Assignment>().HasData(
                 new Assignment
                 {
@@ -99,302 +102,29 @@ namespace backend.Data
                 }, new Assignment
                 {
                     Id = 3,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Odev iteration 1",
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "Odev iteration 2",
                     DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
                     AcceptedTypes = "pdf-doc-docx",
                     MaxFileSizeInBytes = 4096,
                     VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = false
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true,
+                    Title = "Design Report iteration 2"
                 }, new Assignment
                 {
                     Id = 4,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Odev iteration 2",
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "Odev iteration 3",
                     DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
                     CreatedAt = DateTime.Now,
                     AcceptedTypes = "pdf-doc-docx",
                     MaxFileSizeInBytes = 4096,
                     VisibilityOfSubmission = true,
                     CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 5,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Bi sey raporu",
-                    DueDate = new DateTime(2021, 5, 12, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 6,
-                    AffiliatedSectionId = 1,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Presentation slides",
-                    DueDate = new DateTime(2021, 5, 5, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 7,
-                    AffiliatedSectionId = 2,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Requirements report",
-                    DueDate = new DateTime(2021, 3, 1, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 8,
-                    AffiliatedSectionId = 2,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Design report",
-                    DueDate = new DateTime(2021, 4, 2, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 9,
-                    AffiliatedSectionId = 2,
-                    CourseId = 1,
-                    AssignmentDescriptionFile = "Final report",
-                    DueDate = new DateTime(2021, 5, 10, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 10,
-                    AffiliatedSectionId = 3,
-                    CourseId = 2,
-                    AssignmentDescriptionFile = "Dil yazmaca",
-                    DueDate = new DateTime(2021, 3, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 11,
-                    AffiliatedSectionId = 3,
-                    CourseId = 2,
-                    AssignmentDescriptionFile = "Bu odev withdraw attirir",
-                    DueDate = new DateTime(2021, 4, 10, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 12,
-                    AffiliatedSectionId = 4,
-                    CourseId = 2,
-                    AssignmentDescriptionFile = "sadece bir hafta verilen proje",
-                    DueDate = new DateTime(2021, 5, 5, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 13,
-                    AffiliatedSectionId = 4,
-                    CourseId = 2,
-                    AssignmentDescriptionFile = "dummy odev",
-                    DueDate = new DateTime(2021, 2, 28, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = false
-                }, new Assignment
-                {
-                    Id = 14,
-                    AffiliatedSectionId = 5,
-                    CourseId = 3,
-                    AssignmentDescriptionFile = "sorting",
-                    DueDate = new DateTime(2021, 2, 26, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 15,
-                    AffiliatedSectionId = 5,
-                    CourseId = 3,
-                    AssignmentDescriptionFile = "treeler",
-                    DueDate = new DateTime(2021, 3, 20, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 16,
-                    AffiliatedSectionId = 5,
-                    CourseId = 3,
-                    AssignmentDescriptionFile = "avl tree",
-                    DueDate = new DateTime(2021, 4, 22, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 17,
-                    AffiliatedSectionId = 5,
-                    CourseId = 3,
-                    AssignmentDescriptionFile = "worde agac cizmece",
-                    DueDate = new DateTime(2021, 5, 5, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 18,
-                    AffiliatedSectionId = 6,
-                    CourseId = 4,
-                    AssignmentDescriptionFile = "mips basics",
-                    DueDate = new DateTime(2021, 3, 4, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 19,
-                    AffiliatedSectionId = 6,
-                    CourseId = 4,
-                    AssignmentDescriptionFile = "ungraded quiz",
-                    DueDate = new DateTime(2021, 3, 4, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = false
-                }, new Assignment
-                {
-                    Id = 20,
-                    AffiliatedSectionId = 6,
-                    CourseId = 4,
-                    AssignmentDescriptionFile = "mips recursion",
-                    DueDate = new DateTime(2021, 5, 5, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 21,
-                    AffiliatedSectionId = 7,
-                    CourseId = 4,
-                    AssignmentDescriptionFile = "verilog labi igrenc",
-                    DueDate = new DateTime(2021, 5, 5, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 22,
-                    AffiliatedSectionId = 7,
-                    CourseId = 4,
-                    AssignmentDescriptionFile = "graded quiz",
-                    DueDate = new DateTime(2021, 5, 5, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 23,
-                    AffiliatedSectionId = 8,
-                    CourseId = 5,
-                    AssignmentDescriptionFile = "hist rapor-iteration 1",
-                    DueDate = new DateTime(2021, 3, 17, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = false
-                }, new Assignment
-                {
-                    Id = 24,
-                    AffiliatedSectionId = 8,
-                    CourseId = 5,
-                    AssignmentDescriptionFile = "hist rapor-iteration 21",
-                    DueDate = new DateTime(2021, 4, 17, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true
-                }, new Assignment
-                {
-                    Id = 25,
-                    AffiliatedSectionId = 9,
-                    CourseId = 6,
-                    AssignmentDescriptionFile = "math homework",
-                    DueDate = new DateTime(2021, 4, 17, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = true
+                    IsItGraded = true,
+                    Title = "Design Report 3"
                 }
             );
             modelBuilder.Entity<Submission>().HasData(
@@ -733,10 +463,10 @@ namespace backend.Data
                     Id = 1,
                     Name = "CS 319",
                     CourseInformation = "Object Oriented Software Engineering",
+                    CourseSemester = SemesterType.Fall,
+                    Year = 2021,
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
                     MinGroupSize = 5,
                     MaxGroupSize = 6
                 }, new Course
@@ -746,8 +476,8 @@ namespace backend.Data
                     CourseInformation = "Programming Languages",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Fall,
+                    Year = 2021,
                     MinGroupSize = 2,
                     MaxGroupSize = 3
                 }, new Course
@@ -757,8 +487,8 @@ namespace backend.Data
                     CourseInformation = "Data Structures and Algorithms",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Fall,
+                    Year = 2021,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
                 }, new Course
@@ -768,8 +498,8 @@ namespace backend.Data
                     CourseInformation = "Computer Organization and Architecture",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Fall,
+                    Year = 2019,
                     MinGroupSize = 2,
                     MaxGroupSize = 3
                 }, new Course
@@ -779,8 +509,8 @@ namespace backend.Data
                     CourseInformation = "History",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Fall,
+                    Year = 2020,
                     MinGroupSize = 4,
                     MaxGroupSize = 5
                 }, new Course
@@ -790,8 +520,8 @@ namespace backend.Data
                     CourseInformation = "Calculus",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CourseSemester = "spring",
+                    CourseSemester = SemesterType.Spring,
+                    Year = 2021,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
                 }/*, new Course
@@ -891,63 +621,54 @@ namespace backend.Data
                 new Section
                 {
                     Id = 1,
-                    SectionlessState = false,
                     AffiliatedCourseId = 1,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 2,
-                    SectionlessState = false,
                     AffiliatedCourseId = 1,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 3,
-                    SectionlessState = true,
                     AffiliatedCourseId = 2,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 4,
-                    SectionlessState = true,
                     AffiliatedCourseId = 2,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 5,
-                    SectionlessState = false,
                     AffiliatedCourseId = 3,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 6,
-                    SectionlessState = false,
                     AffiliatedCourseId = 4,
                     SectionNo = 1
                 },
                 new Section
                 {
                     Id = 7,
-                    SectionlessState = false,
                     AffiliatedCourseId = 4,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 8,
-                    SectionlessState = false,
                     AffiliatedCourseId = 5,
                     SectionNo = 2
                 },
                 new Section
                 {
                     Id = 9,
-                    SectionlessState = false,
                     AffiliatedCourseId = 6,
                     SectionNo = 1
                 }/*,
@@ -1041,7 +762,7 @@ namespace backend.Data
                 }, new ProjectGroup
                 {
                     Id = 4,
-                    AffiliatedSectionId = 4,
+                    AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
@@ -1253,110 +974,6 @@ namespace backend.Data
                 {
                     UserId = 7,
                     ProjectGroupId = 4,
-                }, new ProjectGroupUser
-                {
-                    UserId = 8,
-                    ProjectGroupId = 4,
-                }, new ProjectGroupUser
-                {
-                    UserId = 5,
-                    ProjectGroupId = 6,
-                }, new ProjectGroupUser
-                {
-                    UserId = 3,
-                    ProjectGroupId = 7,
-                }, new ProjectGroupUser
-                {
-                    UserId = 1,
-                    ProjectGroupId = 8,
-                }, new ProjectGroupUser
-                {
-                    UserId = 4,
-                    ProjectGroupId = 8,
-                }, new ProjectGroupUser
-                {
-                    UserId = 5,
-                    ProjectGroupId = 8,
-                }, new ProjectGroupUser
-                {
-                    UserId = 6,
-                    ProjectGroupId = 8,
-                }, new ProjectGroupUser
-                {
-                    UserId = 7,
-                    ProjectGroupId = 8,
-                }, new ProjectGroupUser
-                {
-                    UserId = 5,
-                    ProjectGroupId = 9,
-                }, new ProjectGroupUser
-                {
-                    UserId = 8,
-                    ProjectGroupId = 9,
-                }, new ProjectGroupUser
-                {
-                    UserId = 25,
-                    ProjectGroupId = 9,
-                }, new ProjectGroupUser
-                {
-                    UserId = 11,
-                    ProjectGroupId = 10,
-                }, new ProjectGroupUser
-                {
-                    UserId = 7,
-                    ProjectGroupId = 11,
-                }, new ProjectGroupUser
-                {
-                    UserId = 2,
-                    ProjectGroupId = 12,
-                }, new ProjectGroupUser
-                {
-                    UserId = 17,
-                    ProjectGroupId = 12,
-                }, new ProjectGroupUser
-                {
-                    UserId = 10,
-                    ProjectGroupId = 13,
-                }, new ProjectGroupUser
-                {
-                    UserId = 24,
-                    ProjectGroupId = 13,
-                }, new ProjectGroupUser
-                {
-                    UserId = 6,
-                    ProjectGroupId = 14,
-                }, new ProjectGroupUser
-                {
-                    UserId = 3,
-                    ProjectGroupId = 14,
-                }, new ProjectGroupUser
-                {
-                    UserId = 7,
-                    ProjectGroupId = 15,
-                }, new ProjectGroupUser
-                {
-                    UserId = 4,
-                    ProjectGroupId = 15,
-                }, new ProjectGroupUser
-                {
-                    UserId = 8,
-                    ProjectGroupId = 16,
-                }, new ProjectGroupUser
-                {
-                    UserId = 9,
-                    ProjectGroupId = 17,
-                }, new ProjectGroupUser
-                {
-                    UserId = 10,
-                    ProjectGroupId = 18,
-                }, new ProjectGroupUser
-                {
-                    UserId = 12,
-                    ProjectGroupId = 19,
-                }, new ProjectGroupUser
-                {
-                    UserId = 13,
-                    ProjectGroupId = 20,
                 }
             );
 

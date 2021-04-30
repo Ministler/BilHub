@@ -1,0 +1,33 @@
+.GroupNameEdit i {
+    margin-left: 5px;
+}
+
+.MembersBlock {
+    margin-top: 20px;
+}
+
+.MembersBlock > div {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 2px;
+}
+
+.InformationBlock {
+    margin-top: 15px;
+}
+
+.InformationBlock > div {
+    padding-bottom: 10px;
+}
+
+.InformationText {
+    text-align: justify;
+}
+
+.InformationText textArea {
+    max-width: 100%;
+    min-width: 100%;
+    max-height: 500px;
+    min-height: 100px;
+    height: 300px;
+}

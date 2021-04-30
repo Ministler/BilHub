@@ -29,7 +29,7 @@ namespace backend.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDto request)
         {
-            ServiceResponse<string> response = await _authRepo.Login(request);
+            ServiceResponse<GetUserDto> response = await _authRepo.Login(request);
             if (!response.Success)
             {
                 return BadRequest(response);
@@ -59,6 +59,16 @@ namespace backend.Controllers
             return Ok(response);
         }
 
+        [HttpPost("Resend")]
+        public async Task<IActionResult> Resend(string email)
+        {
+            ServiceResponse<string> response = await _authRepo.Resend(email);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(UserChangeDto request)
         {

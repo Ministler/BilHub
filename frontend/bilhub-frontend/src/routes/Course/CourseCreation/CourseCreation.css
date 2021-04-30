@@ -1,0 +1,12 @@
+.AddSegment {
+    position: relative;
+    bottom: -72%;
+}
+
+.PlusButton {
+    border: 1px;
+    border-color: black;
+    border-radius: 3px;
+    float: right;
+    margin-top: 5px !important;
+}

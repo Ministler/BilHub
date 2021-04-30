@@ -300,6 +300,18 @@ namespace backend.Services.ProjectGroupServices
                     _context.JoinRequests.RemoveRange ( _context.JoinRequests.Where( c => c.RequestedGroupId == dbProjectGroup.Id ) );
                     _context.MergeRequests.RemoveRange ( _context.MergeRequests.Where( c => c.ReceiverGroupId == dbProjectGroup.Id || c.SenderGroupId == dbProjectGroup.Id ) );
 
+                    int cnt = 0;
+                    while ( dbProjectGroup.GroupMembers.Count > 0 )
+                    {
+                        _context.ProjectGroupUsers.Remove ( dbProjectGroup.GroupMembers.ElementAt(0)  );
+                        dbProjectGroup.GroupMembers.Remove( dbProjectGroup.GroupMembers.ElementAt(0) );
+                        cnt++;
+                        if ( cnt > 15 ) {
+                            Console.WriteLine("Aga bug aga");
+                            break;
+                        }
+                    }
+
                     _context.ProjectGroups.Remove ( dbProjectGroup );
                     await _context.SaveChangesAsync();
                     serviceResponse.Data = "Project Group Deleted";
@@ -311,7 +323,7 @@ namespace backend.Services.ProjectGroupServices
             return serviceResponse;
         }
 
-        private async Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection ( int userId, int sectionId )
+        public async Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection ( int userId, int sectionId )
         {
             ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
             Section dbSection = await _context.Sections
@@ -461,6 +473,142 @@ namespace backend.Services.ProjectGroupServices
 
             serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             serviceResponse.Message = "Successfully applied the kicking operation";
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetProjectGroupDto>> CompleteJoinRequest(int joinRequestId)
+        {
+            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+
+            JoinRequest dbJoinRequest = await _context.JoinRequests
+                .Include( c => c.RequestedGroup ).ThenInclude( cs => cs.GroupMembers ).ThenInclude( css => css.User )
+                .Include ( c => c.RequestingStudent )
+                .FirstOrDefaultAsync ( c => c.Id == joinRequestId );
+
+            if ( dbJoinRequest == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Cannot find join request by the given id.";
+                return serviceResponse;
+            }
+
+            if ( !dbJoinRequest.Accepted && !(await isUserInstructorOfGroup( dbJoinRequest.RequestedGroupId )) ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Neither user is not an instructor of this course nor the request is accepted by all people.";
+                return serviceResponse;
+            }
+
+            if ( ((dbJoinRequest.RequestedGroup.GroupMembers.Count + 1 ) > ( await _context.Courses.FirstOrDefaultAsync(c => c.Id == dbJoinRequest.RequestedGroup.AffiliatedCourseId) ).MaxGroupSize) 
+                // && !(await isUserInstructorOfGroup( dbJoinRequest.RequestedGroupId ))
+                ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "This operation exceeds the maximum group size allowed. Thus, it is not permitted.";
+                return serviceResponse;
+            }
+
+            ProjectGroup singleUsersGroup = await _context.ProjectGroups
+                .Include( c => c.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.AffiliatedCourseId == dbJoinRequest.RequestedGroup.AffiliatedCourseId && c.GroupMembers.Any( cs => cs.UserId == dbJoinRequest.RequestingStudentId ) );
+            
+            if ( singleUsersGroup == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "An error occured while trying to find user's group.";
+                return serviceResponse;
+            }
+
+            await DeleteProjectGroup ( singleUsersGroup.Id );
+
+            ProjectGroupUser newProjectGroupUser = new ProjectGroupUser {
+                User = dbJoinRequest.RequestingStudent,
+                UserId = dbJoinRequest.RequestingStudentId,
+                ProjectGroup = dbJoinRequest.RequestedGroup,
+                ProjectGroupId = dbJoinRequest.RequestedGroup.Id
+            };
+            dbJoinRequest.RequestedGroup.GroupMembers.Add(newProjectGroupUser);
+            _context.ProjectGroups.Update( dbJoinRequest.RequestedGroup );
+
+            // BUNDAN SONRA DIGER REQUESTLER VS NASIL OLACAK
+
+            await _context.SaveChangesAsync();
+            serviceResponse.Data = _mapper.Map<GetProjectGroupDto> (dbJoinRequest.RequestedGroup);
+            serviceResponse.Message = "Join request is completed.";
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetProjectGroupDto>> CompleteMergeRequest(int mergeRequestId)
+        {
+            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+
+            MergeRequest dbMergeRequest = await _context.MergeRequests
+                .Include( c => c.SenderGroup ).ThenInclude( cs => cs.GroupMembers ).ThenInclude( css => css.User )
+                .Include( c => c.ReceiverGroup ).ThenInclude( cs => cs.GroupMembers ).ThenInclude( css => css.User )
+                .FirstOrDefaultAsync ( c => c.Id == mergeRequestId );
+
+            if ( dbMergeRequest == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Cannot find merge request by the given id.";
+                return serviceResponse;
+            }
+
+            if ( dbMergeRequest.SenderGroup == null || dbMergeRequest.ReceiverGroup == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Cannot find the merge request groups. Make sure the MergeRequest object is in correct form.";
+                return serviceResponse;
+            }
+
+            if ( !dbMergeRequest.Accepted && !(await isUserInstructorOfGroup( dbMergeRequest.ReceiverGroupId )) ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Neither user is not an instructor of this course nor the request is accepted by all people.";
+                return serviceResponse;
+            }
+
+            if ( ((dbMergeRequest.ReceiverGroup.GroupMembers.Count + dbMergeRequest.SenderGroup.GroupMembers.Count ) > ( await _context.Courses.FirstOrDefaultAsync(c => c.Id == dbMergeRequest.ReceiverGroup.AffiliatedCourseId) ).MaxGroupSize) 
+                // && !(await isUserInstructorOfGroup( dbMergeRequest.ReceiverGroupId ))
+                ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "This operation exceeds the maximum group size allowed. Thus, it is not permitted.";
+                return serviceResponse;
+            }
+
+            while ( dbMergeRequest.SenderGroup.GroupMembers.Count > 1 )
+            {
+                User tmpUser = dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).User;
+                await KickStudentFromGroup ( dbMergeRequest.SenderGroupId, dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).UserId );
+                foreach ( var i in dbMergeRequest.SenderGroup.GroupMembers ) {
+                    if ( i.UserId == dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).UserId ) {
+                        _context.ProjectGroupUsers.Remove(i);
+                        break;
+                    }
+                }
+
+                ProjectGroupUser newProjectGroupUserTmp = new ProjectGroupUser {
+                    User = tmpUser,
+                    UserId = tmpUser.Id,
+                    ProjectGroup = dbMergeRequest.ReceiverGroup,
+                    ProjectGroupId = dbMergeRequest.ReceiverGroupId
+                };
+                dbMergeRequest.ReceiverGroup.GroupMembers.Add(newProjectGroupUserTmp);
+                _context.ProjectGroups.Update( dbMergeRequest.ReceiverGroup );
+            }
+
+            User lastUser = dbMergeRequest.SenderGroup.GroupMembers.ElementAt(0).User;
+            await DeleteProjectGroup ( dbMergeRequest.SenderGroup.Id );
+
+            ProjectGroupUser newProjectGroupUser = new ProjectGroupUser {
+                User = lastUser,
+                UserId = lastUser.Id,
+                ProjectGroup = dbMergeRequest.ReceiverGroup,
+                ProjectGroupId = dbMergeRequest.ReceiverGroupId
+            };
+            dbMergeRequest.ReceiverGroup.GroupMembers.Add(newProjectGroupUser);
+            _context.ProjectGroups.Update( dbMergeRequest.ReceiverGroup );
+
+            // BUNDAN SONRA DIGER REQUESTLER VS NASIL OLACAK
+
+            await _context.SaveChangesAsync();
+            serviceResponse.Data = _mapper.Map<GetProjectGroupDto> (dbMergeRequest.ReceiverGroup);
+            serviceResponse.Message = "Merge request is completed.";
             return serviceResponse;
         }
     }

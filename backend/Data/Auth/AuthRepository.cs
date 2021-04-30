@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
 
 namespace backend.Data.Auth
 {
@@ -17,10 +18,12 @@ namespace backend.Data.Auth
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public AuthRepository(DataContext context, IConfiguration configuration)
+        public AuthRepository(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _configuration = configuration;
+            _mapper = mapper;
             _context = context;
         }
 
@@ -101,9 +104,9 @@ namespace backend.Data.Auth
             return response;
         }
 
-        public async Task<ServiceResponse<string>> Login(UserLoginDto userLoginDto)
+        public async Task<ServiceResponse<GetUserDto>> Login(UserLoginDto userLoginDto)
         {
-            ServiceResponse<string> response = new ServiceResponse<string>();
+            ServiceResponse<GetUserDto> response = new ServiceResponse<GetUserDto>();
             User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.ToLower().Equals(userLoginDto.Email.ToLower()));
             if (user == null)
             {
@@ -122,9 +125,10 @@ namespace backend.Data.Auth
             }
             else
             {
-                response.Data = CreateToken(user);
+                response.Data = _mapper.Map<GetUserDto>(user);
+                response.Data.Token = CreateToken(user);
+                response.Data.UserType = user.UserType;
             }
-
             return response;
         }
 
@@ -221,5 +225,23 @@ namespace backend.Data.Auth
             return tokenHandler.WriteToken(token);
         }
 
+        public async Task<ServiceResponse<string>> Resend(string email)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+
+            User user = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            if (user == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+                return response;
+            }
+            user.VerificationCode = Utility.GenerateRandomCode();
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            Utility.SendMail(email, user.VerificationCode, false);
+            response.Data = "new verification code has been sent to your email";
+            return response;
+        }
     }
 }

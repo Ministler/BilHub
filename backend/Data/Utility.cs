@@ -65,9 +65,24 @@ namespace backend.Data
         public static void SendMail(string mailaddress, string content, bool recovery)
         {
             string subject = recovery ? "BilHub Password Recovery" : "BilHub Email Verification";
-            //Etheral.mail diye bi site, 1 2saat dayaniyo patlarsa yenisini alin
+            content = recovery ? "Your recovery password for BilHub is: " + content : "Your verification code for BilHub is: " + content;
+
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse("johnathan.schuppe73@ethereal.email"));
+            //^^^^^^^^^^^^^^^^ sadece productionda bu emaile gecicez ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            // email.From.Add(MailboxAddress.Parse("bilhub@bilkent.edu.tr"));
+            // email.To.Add(MailboxAddress.Parse(mailaddress));
+            // email.Subject = subject;
+            // email.Body = new TextPart(TextFormat.Plain) { Text = content };
+
+            // // send email
+            // SmtpClient smtp = new SmtpClient();
+            // smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            // smtp.Authenticate("bilhubapp@gmail.com", "BilHubApp-Ministler");
+            // smtp.Send(email);
+            // smtp.Disconnect(true);
+
+            ///^^^^^^^^^^^ testing icin etheral mail ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            email.From.Add(MailboxAddress.Parse("felix.kihn39@ethereal.email"));
             email.To.Add(MailboxAddress.Parse(mailaddress));
             email.Subject = subject;
             email.Body = new TextPart(TextFormat.Plain) { Text = content };
@@ -75,7 +90,7 @@ namespace backend.Data
             // send email
             SmtpClient smtp = new SmtpClient();
             smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate("johnathan.schuppe73@ethereal.email", "y1p4kZBr312UCjC2Vt");
+            smtp.Authenticate("felix.kihn39@ethereal.email", "v2pPMTNgnQhdB3muC1");
             smtp.Send(email);
             smtp.Disconnect(true);
         }
