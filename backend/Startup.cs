@@ -10,6 +10,8 @@ using backend.Services.JoinRequestServices;
 using backend.Services.ProjectGroupServices;
 using backend.Services.MergeRequestServices;
 using backend.Services.SubmissionServices;
+using backend.Services.PeerGradeServices;
+using backend.Services.ProjectGradeServices;
 // using backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
