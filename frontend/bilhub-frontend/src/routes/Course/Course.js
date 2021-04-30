@@ -424,6 +424,7 @@ class Course extends Component {
                     isOpen={this.state.isNewAssignmentOpen}
                 />
                 <EditAssignmentModal
+                    curAssignment={dummyCourseAssignments[0]}
                     onClosed={this.onEditAssignmentModalClosed}
                     isOpen={this.state.isEditAssignmentOpen}
                 />
@@ -528,6 +529,7 @@ const dummyCourseAssignments = [
         caption:
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 1,
+        type: 1,
         publisher: 'Elgun Jabrayilzade',
         file: 'file',
         publishmentDate: '12 March 2021 12:00',

@@ -65,20 +65,54 @@ export class NewAssignmentModal extends Component {
     }
     handleChange = (event, data) => {
         event.preventDefault();
-        console.log(event);
-        const name = event.target.name;
-        var value = event.target.value;
-        if (value === 'true') {
-            value = true;
-        } else if (value === 'false') {
-            value = false;
+        var name = data.name;
+        var value = data.value;
+        if (data.type === 'checkbox') {
+            value = data.checked;
+            if (data.name === 'isStudentComments') {
+                this.setState({
+                    [name]: value,
+                    isCommentsAnonymous: false,
+                    isCommentsGraded: false,
+                });
+            } else {
+                this.setState({
+                    [name]: value,
+                });
+            }
+        } else if (data.name === 'type') {
+            this.setState({
+                [name]: value,
+                isStudentComments: false,
+                isCommentsAnonymous: false,
+                isCommentsGraded: false,
+                isSubmissionVisible: false,
+                isLateSubmissionsAllowed: false,
+            });
+        } else {
+            this.setState({
+                [name]: value,
+            });
         }
-        this.setState({
-            [name]: value,
-        });
     };
     onFormSubmit() {
-        console.log('submited');
+        let dateArr = this.state.dueDate.split(/-/);
+        dateArr[2] = dateArr[2].split(/T/);
+        dateArr[2][1] = dateArr[2][1].split(/:/);
+        let d = new Date(dateArr[0], dateArr[1], dateArr[2][0], dateArr[2][1][0], dateArr[2][1][1]);
+        console.log(d);
+        return {
+            title: this.state.title,
+            description: this.state.description,
+            type: this.state.type,
+            isStudentComments: this.state.isStudentComments,
+            isCommentsAnonymous: this.state.isCommentsAnonymous,
+            isCommentsGraded: this.state.isCommentsGraded,
+            isSubmissionVisible: this.state.isSubmissionVisible,
+            isLateSubmissionsAllowed: this.state.isLateSubmissionsAllowed,
+            dueDate: d,
+            file: this.state.file,
+        };
     }
     render() {
         return (
@@ -102,7 +136,7 @@ export class NewAssignmentModal extends Component {
                                         name="type"
                                         style={{ display: 'flex' }}
                                         item
-                                        simple
+                                        selection
                                         text="Assignment Type"
                                         direction="right"
                                         options={options}
@@ -130,67 +164,75 @@ export class NewAssignmentModal extends Component {
                                 <Form.Group grouped>
                                     <Grid columns={2}>
                                         <GridColumn>
-                                            <Form.Field
-                                                name="isStudentComments"
-                                                value={this.state.isStudentComments}
-                                                label="Student Comments"
-                                                control="input"
-                                                type="checkbox"
-                                                onChange={this.handleChange}
-                                            />
-                                            {this.state.isStudentComments && (
+                                            {(this.state.type === 1 || this.state.type === 2) && (
                                                 <>
-                                                    <Form.Field
+                                                    <Checkbox
+                                                        className="AssignmentCheckbox"
                                                         onChange={this.handleChange}
-                                                        style={{ marginLeft: '30px' }}
-                                                        name="isCommentsAnonymous"
-                                                        value={this.state.isCommentsAnonymous}
-                                                        label="Anonymous Student Comments"
-                                                        control="input"
+                                                        name="isSubmissionVisible"
+                                                        checked={this.state.isSubmissionVisible}
+                                                        label="Groups' Submission Visable"
                                                         type="checkbox"
                                                     />
-                                                    <Form.Field
+                                                    <Checkbox
+                                                        className="AssignmentCheckbox"
                                                         onChange={this.handleChange}
-                                                        style={{ marginLeft: '30px' }}
-                                                        name="isCommentsGraded"
-                                                        value={this.state.isCommentsGraded}
-                                                        label="Graded Comments"
-                                                        control="input"
+                                                        name="isLateSubmissionsAllowed"
+                                                        checked={this.state.isLateSubmissionsAllowed}
+                                                        label="Late Submission"
                                                         type="checkbox"
                                                     />
                                                 </>
                                             )}
                                         </GridColumn>
                                         <GridColumn>
-                                            <Form.Field
-                                                onChange={this.handleChange}
-                                                name="isSubmissionVisible"
-                                                value={this.state.isSubmissionVisible}
-                                                label="Groups' Submission Visable"
-                                                control="input"
-                                                type="checkbox"
-                                            />
-                                            <Form.Field
-                                                onChange={this.handleChange}
-                                                name="isLateSubmissionsAllowed"
-                                                value={this.state.isLateSubmissionsAllowed}
-                                                label="Late Submission"
-                                                control="input"
-                                                type="checkbox"
-                                            />
+                                            {this.state.type === 1 && (
+                                                <>
+                                                    <Checkbox
+                                                        className="AssignmentCheckbox"
+                                                        name="isStudentComments"
+                                                        checked={this.state.isStudentComments}
+                                                        label="Student Comments"
+                                                        type="checkbox"
+                                                        onChange={this.handleChange}
+                                                    />
+                                                    {this.state.isStudentComments && (
+                                                        <>
+                                                            <Checkbox
+                                                                className="AssignmentCheckbox"
+                                                                onChange={this.handleChange}
+                                                                style={{ marginLeft: '30px' }}
+                                                                name="isCommentsAnonymous"
+                                                                checked={this.state.isCommentsAnonymous}
+                                                                label="Anonymous Student Comments"
+                                                                type="checkbox"
+                                                            />
+                                                            <Checkbox
+                                                                className="AssignmentCheckbox"
+                                                                onChange={this.handleChange}
+                                                                style={{ marginLeft: '30px' }}
+                                                                name="isCommentsGraded"
+                                                                checked={this.state.isCommentsGraded}
+                                                                label="Graded Comments"
+                                                                type="checkbox"
+                                                            />
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
                                         </GridColumn>
                                     </Grid>
-                                    <Form.Field
+                                    <Form.Input
                                         onChange={this.handleChange}
                                         name="dueDate"
-                                        control="input"
-                                        type="date"
-                                        label="Due Date"></Form.Field>
-                                    <Form.Field
+                                        type="datetime-local"
+                                        value={this.state.dueDate}
+                                        label="Due Date"></Form.Input>
+                                    <Form.Input
                                         onChange={this.handleChange}
                                         name="file"
-                                        control="input"
                                         type="file"
+                                        value={this.state.file}
                                         label="Add File"
                                     />
                                 </Form.Group>
@@ -221,65 +263,218 @@ export class NewAssignmentModal extends Component {
     }
 }
 
-export const EditAssignmentModal = (props) => {
-    return (
-        <Modal closeIcon onClose={() => props.onClosed(false)} open={props.isOpen} size={'small'}>
-            <Modal.Header style={{ fontSize: '16px' }}>New Assignment</Modal.Header>
-            <Modal.Content>
-                <Modal.Description>
-                    <Grid>
-                        <Form>
-                            <Form.Group inline>
-                                <p style={{ fontSize: '14px', float: 'left', marginBottom: '0px', display: 'inline' }}>
-                                    Title
-                                </p>
-                                <Dropdown
-                                    item
-                                    simple
-                                    text="Assignment Type"
-                                    direction="right"
-                                    options={options}
-                                    style={{ marginLeft: '510px', float: 'right', display: 'inline' }}
+export class EditAssignmentModal extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            title: props.curAssignment.title,
+            description: props.curAssignment.caption,
+            type: props.curAssignment.type,
+            isStudentComments: false,
+            isCommentsAnonymous: false,
+            isCommentsGraded: false,
+            isSubmissionVisible: false,
+            isLateSubmissionsAllowed: false,
+            dueDate: '',
+            file: '',
+        };
+    }
+    handleChange = (event, data) => {
+        event.preventDefault();
+        var name = data.name;
+        var value = data.value;
+        if (data.type === 'checkbox') {
+            value = data.checked;
+            if (data.name === 'isStudentComments') {
+                this.setState({
+                    [name]: value,
+                    isCommentsAnonymous: false,
+                    isCommentsGraded: false,
+                });
+            } else {
+                this.setState({
+                    [name]: value,
+                });
+            }
+        } else if (data.name === 'type') {
+            this.setState({
+                [name]: value,
+                isStudentComments: false,
+                isCommentsAnonymous: false,
+                isCommentsGraded: false,
+                isSubmissionVisible: false,
+                isLateSubmissionsAllowed: false,
+            });
+        } else {
+            this.setState({
+                [name]: value,
+            });
+        }
+    };
+    onFormSubmit() {
+        let dateArr = this.state.dueDate.split(/-/);
+        let d = new Date(dateArr[0], dateArr[1], dateArr[2]);
+        return {
+            title: this.state.title,
+            description: this.state.description,
+            type: this.state.type,
+            isStudentComments: this.state.isStudentComments,
+            isCommentsAnonymous: this.state.isCommentsAnonymous,
+            isCommentsGraded: this.state.isCommentsGraded,
+            isSubmissionVisible: this.state.isSubmissionVisible,
+            isLateSubmissionsAllowed: this.state.isLateSubmissionsAllowed,
+            dueDate: d,
+            file: this.state.file,
+        };
+    }
+    render() {
+        return (
+            <Modal closeIcon onClose={() => this.props.onClosed(false)} open={this.props.isOpen} size={'small'}>
+                <Modal.Header style={{ fontSize: '16px' }}>Edit Assignment</Modal.Header>
+                <Modal.Content>
+                    <Modal.Description>
+                        <Grid style={{ flexDirection: 'column' }}>
+                            <Form>
+                                <Form.Group inline style={{ justifyContent: 'space-between' }}>
+                                    <p
+                                        style={{
+                                            fontSize: '14px',
+                                            float: 'left',
+                                            marginBottom: '0px',
+                                            display: 'flex',
+                                        }}>
+                                        Title
+                                    </p>
+                                    <Dropdown
+                                        name="type"
+                                        style={{ display: 'flex' }}
+                                        item
+                                        selection
+                                        text="Assignment Type"
+                                        direction="right"
+                                        options={options}
+                                        onChange={this.handleChange}
+                                        value={this.state.type}
+                                    />
+                                </Form.Group>
+                                <Form.Input
+                                    name="title"
+                                    onChange={this.handleChange}
+                                    type="text"
+                                    style={{ width: '40%', height: '35px', marginTop: '-15px' }}
+                                    value={this.state.title}
                                 />
-                            </Form.Group>
-                            <Form.Input
-                                type="text"
-                                name="groupName"
-                                style={{ width: '40%', height: '35px', marginTop: '-15px' }}
-                            />
-                            <label style={{ fontSize: '14px', float: 'left', marginBottom: '5px' }}>Description</label>
-                            <TextArea placeholder="Your message here" style={{ minHeight: 100, width: '95%' }} />
-                            <Form.Group grouped>
-                                <Form.Field label="Student Comments" control="input" type="checkbox" />
-                                <Form.Field label="Anonymous Student Comments" control="input" type="checkbox" />
-                                <Form.Field label="Graded Comments" control="input" type="checkbox" />
-                                <Form.Field label="Groups' Submission Visable" control="input" type="checkbox" />
-                                <Form.Field label="Late Submission" control="input" type="checkbox" />
-                                <Form.Field label="Due Date" />
-                                <Form.Field label="Add File" />
-                            </Form.Group>
-                        </Form>
-                    </Grid>
-                </Modal.Description>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button
-                    color="blue"
-                    onClick={() => props.onClosed(false)}
-                    style={{
-                        borderRadius: '10px',
-                        padding: '5px 16px',
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        lineHeight: '20px',
-                        whiteSpace: 'nowrap',
-                    }}>
-                    Send
-                </Button>
-            </Modal.Actions>
-        </Modal>
-    );
-};
+                                <label style={{ fontSize: '14px', float: 'left', marginBottom: '5px' }}>
+                                    Description
+                                </label>
+                                <TextArea
+                                    value={this.state.description}
+                                    name="description"
+                                    onChange={this.handleChange}
+                                    placeholder="Your message here"
+                                    style={{ minHeight: 100, width: '95%' }}
+                                />
+                                <Form.Group grouped>
+                                    <Grid columns={2}>
+                                        <GridColumn>
+                                            {(this.state.type === 1 || this.state.type === 2) && (
+                                                <>
+                                                    <Checkbox
+                                                        className="AssignmentCheckbox"
+                                                        onChange={this.handleChange}
+                                                        name="isSubmissionVisible"
+                                                        checked={this.state.isSubmissionVisible}
+                                                        label="Groups' Submission Visable"
+                                                        type="checkbox"
+                                                    />
+                                                    <Checkbox
+                                                        className="AssignmentCheckbox"
+                                                        onChange={this.handleChange}
+                                                        name="isLateSubmissionsAllowed"
+                                                        checked={this.state.isLateSubmissionsAllowed}
+                                                        label="Late Submission"
+                                                        type="checkbox"
+                                                    />
+                                                </>
+                                            )}
+                                        </GridColumn>
+                                        <GridColumn>
+                                            {this.state.type === 1 && (
+                                                <>
+                                                    <Checkbox
+                                                        className="AssignmentCheckbox"
+                                                        name="isStudentComments"
+                                                        checked={this.state.isStudentComments}
+                                                        label="Student Comments"
+                                                        type="checkbox"
+                                                        onChange={this.handleChange}
+                                                    />
+                                                    {this.state.isStudentComments && (
+                                                        <>
+                                                            <Checkbox
+                                                                className="AssignmentCheckbox"
+                                                                onChange={this.handleChange}
+                                                                style={{ marginLeft: '30px' }}
+                                                                name="isCommentsAnonymous"
+                                                                checked={this.state.isCommentsAnonymous}
+                                                                label="Anonymous Student Comments"
+                                                                type="checkbox"
+                                                            />
+                                                            <Checkbox
+                                                                className="AssignmentCheckbox"
+                                                                onChange={this.handleChange}
+                                                                style={{ marginLeft: '30px' }}
+                                                                name="isCommentsGraded"
+                                                                checked={this.state.isCommentsGraded}
+                                                                label="Graded Comments"
+                                                                type="checkbox"
+                                                            />
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </GridColumn>
+                                    </Grid>
+                                    <Form.Input
+                                        onChange={this.handleChange}
+                                        name="dueDate"
+                                        type="datetime-local"
+                                        value={this.state.dueDate}
+                                        label="Due Date"></Form.Input>
+                                    <Form.Input
+                                        onChange={this.handleChange}
+                                        name="file"
+                                        type="file"
+                                        value={this.state.file}
+                                        label="Add File"
+                                    />
+                                </Form.Group>
+                            </Form>
+                        </Grid>
+                    </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button
+                        color="blue"
+                        onClick={() => {
+                            this.onFormSubmit();
+                            this.props.onClosed(false);
+                        }}
+                        style={{
+                            borderRadius: '10px',
+                            padding: '5px 16px',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            lineHeight: '20px',
+                            whiteSpace: 'nowrap',
+                        }}>
+                        Send
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+        );
+    }
+}
 
 export const DeleteAssignmentModal = (props) => {
     return (

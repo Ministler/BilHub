@@ -19,3 +19,7 @@
 .TAsBlock > div {
     padding-bottom: 10px;
 }
+
+.AssignmentCheckbox {
+    margin: 5px;
+}
