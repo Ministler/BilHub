@@ -22,6 +22,7 @@
 
 .InformationText {
     text-align: justify;
+    width: 100%;
 }
 
 .InformationText textArea {
@@ -29,7 +30,7 @@
     min-width: 100%;
     max-height: 500px;
     min-height: 100px;
-    height: 300px;
+    height: fit-content;
 }
 
 .FeedbackText {

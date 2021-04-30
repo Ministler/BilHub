@@ -24,3 +24,11 @@
     overflow-y: scroll;
     height: 120px;
 }
+
+.FileInput {
+    border: 0px !important;
+}
+
+.Description {
+    margin-left: 5px !important;
+}

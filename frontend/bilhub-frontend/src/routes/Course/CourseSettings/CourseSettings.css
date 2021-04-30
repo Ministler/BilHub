@@ -1,0 +1,33 @@
+.SettingsForm {
+    width: 60%;
+    margin: auto;
+}
+.newCourseName {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.AddSegment {
+    position: relative;
+}
+
+.PlusButton {
+    border: 1px;
+    border-color: black;
+    border-radius: 3px;
+    float: right;
+    margin-top: 5px !important;
+}
+
+.UserList {
+    overflow-y: scroll;
+    height: 120px;
+}
+
+.FileInput {
+    border: 0px !important;
+}
+
+.Description {
+    margin-left: 5px !important;
+}

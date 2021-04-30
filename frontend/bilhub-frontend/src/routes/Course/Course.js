@@ -67,6 +67,7 @@ class Course extends Component {
         if (this.state.informationEditMode) {
             courseInformationElement = (
                 <TextArea
+                    className="InformationText"
                     onChange={(e) => this.onInputChanged(e, 'newInformation')}
                     value={this.state.newInformation}
                 />
@@ -110,7 +111,7 @@ class Course extends Component {
     getCourseSettingsIcon = () => {
         let icon = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
-            icon = <Icon name="setting" onClick={this.onCourseSettingsClicked} color="grey"/>;
+            icon = <Icon name="setting" onClick={this.onCourseSettingsClicked} color="grey" />;
         }
         return icon;
     };
@@ -147,7 +148,15 @@ class Course extends Component {
     getNewAssignmentButton = () => {
         let button = null;
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
-            button = <Button content="New Assignment" labelPosition="right" icon="add" primary style={{ marginTop: "20px"}}/>;
+            button = (
+                <Button
+                    content="New Assignment"
+                    labelPosition="right"
+                    icon="add"
+                    primary
+                    style={{ marginTop: '20px' }}
+                />
+            );
         }
         return button;
     };
@@ -177,8 +186,8 @@ class Course extends Component {
         if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
             controlIcons = (
                 <>
-                    <Icon name="close" color='red' size="small" style={{float: "right"}}/>
-                    <Icon name="edit" color='blue' size="small" style={{float: "right"}}/>
+                    <Icon name="close" color="red" size="small" style={{ float: 'right' }} />
+                    <Icon name="edit" color="blue" size="small" style={{ float: 'right' }} />
                 </>
             );
         }

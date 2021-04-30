@@ -15,14 +15,14 @@ export const convertAssignmentsToAssignmentList = (
 
         let statusIcon = null;
         if (assignment.status === 'graded') {
-            statusIcon = <Icon name="check circle outline" style={{marginLeft: "5px"}}/>;
+            statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} />;
         } else if (assignment.status === 'submitted') {
-            statusIcon = <Icon name="clock outline" style={{marginLeft: "5px"}}/>;
+            statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px' }} />;
         } else if (assignment.status === 'notsubmitted') {
-            statusIcon = <Icon name="remove circle" style={{marginLeft: "5px"}}/>;
+            statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} />;
         }
 
-        const fileIcon = assignment.file ? <Icon name="file" color='grey'/> : null;
+        const fileIcon = assignment.file ? <Icon name="file" color="grey" /> : null;
 
         let onAssignmentClickedId = assignment.submissionId
             ? () => onSubmissionClicked(assignment.projectId, assignment.submissionId)
@@ -65,8 +65,8 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                                 onSubmissionClicked(feedback.submission?.projectId, feedback.submission?.submissionId)
                             }>
                             {' '}
-                            {feedback.user?.name} Commented to Your {feedback.submission?.assignmentName} Submission in{' '}
-                            {feedback.course?.courseName}{' '}
+                            {feedback.course?.courseName} / {feedback.user?.name} /{' '}
+                            {feedback.submission?.assignmentName}{' '}
                         </span>
                     </>
                 );
@@ -74,7 +74,8 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                 titleElement = (
                     <>
                         <span onClick={() => onProjectClicked(feedback.project?.projectId)}>
-                            Commented to Your {feedback.project?.projectName} Project in {feedback.course?.courseName}{' '}
+                            {' '}
+                            {feedback.course?.courseName} / {feedback.user?.name} / {feedback.project?.projectName}{' '}
                         </span>
                     </>
                 );
@@ -84,7 +85,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                     titleElement={titleElement}
                     caption={feedback.feedback?.caption}
                     grade={feedback.feedback?.grade}
-                    date={feedback.date}
+                    date={feedback.feedback?.date}
                 />
             );
         })
@@ -167,7 +168,7 @@ export const convertSRSFeedbackToSRSCardElement = (
                     <Icon
                         name="delete"
                         color="red"
-                        style={{float:"right"}}
+                        style={{ float: 'right' }}
                         onClick={() =>
                             onModalOpenedWithComments(
                                 'isDeleteFeedbackOpen',
@@ -183,7 +184,7 @@ export const convertSRSFeedbackToSRSCardElement = (
                     <Icon
                         name="edit"
                         color="blue"
-                        style={{float: "right"}}
+                        style={{ float: 'right' }}
                         onClick={() =>
                             onModalOpenedWithComments(
                                 'isEditFeedbackOpen',
@@ -265,7 +266,7 @@ export const convertRequestsToRequestsList = (
 
                             voteIcons = (
                                 <>
-                                    <p style={{ display: 'inline', }}>Approved: {request.voteStatus}&nbsp;</p>
+                                    <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                     <Icon
                                         onClick={() => onRequestApproved(request.requestId, request.type, userName)}
                                         name="checkmark"
@@ -282,14 +283,11 @@ export const convertRequestsToRequestsList = (
 
                         if (requestStatus === 'unresolved') {
                             titleStart = 'You approved ' + request.type + ' request of ';
-                            voteIcons = (
-                                <p style={{ display: 'inline', }}>Approved: {request.voteStatus}&nbsp;</p>
-                            );
+                            voteIcons = <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>;
                         }
 
                         if (requestStatus === 'resolved') {
-                            titleStart =
-                                request.type + ' request of ';
+                            titleStart = request.type + ' request of ';
                             titleMid = ' ' + request.status;
                         }
                     } else if (requestsType === 'outgoing') {
@@ -314,7 +312,7 @@ export const convertRequestsToRequestsList = (
 
                             voteIcons = (
                                 <>
-                                    <p style={{ display: 'inline', }}>Approved: {request.voteStatus}&nbsp;</p>
+                                    <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                     <Icon
                                         onClick={() => onRequestApproved(request.requestId, request.type, userName)}
                                         name="checkmark"
@@ -334,14 +332,13 @@ export const convertRequestsToRequestsList = (
 
                             voteIcons = (
                                 <>
-                                    <p style={{ display: 'inline', }}>Approved: {request.voteStatus}&nbsp;</p>
+                                    <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                 </>
                             );
                         }
 
                         if (requestStatus === 'resolved') {
-                            titleMid =
-                                ' ' + request.type + ' request ' + request.status;
+                            titleMid = ' ' + request.type + ' request ' + request.status;
                         }
                     }
 
