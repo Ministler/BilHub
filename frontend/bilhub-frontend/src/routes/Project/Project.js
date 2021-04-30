@@ -397,7 +397,7 @@ class Project extends Component {
         const newCommentButton = this.getNewCommentButton();
         const content = (
             <Grid>
-                <div class="sixteen wide column">
+                {/* <div class="sixteen wide column">
                     <p>Your Feedback:</p>
                     <Form reply style={{width: "95%"}}>
                         <Form.TextArea rows="5"/>
@@ -408,8 +408,8 @@ class Project extends Component {
                 </div>
                 <div class="sixteen wide column" style={{marginTop: "-20px"}}>
                     <Divider/>
-                </div>
-                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                </div> */}
+                <div class="sixteen wide column">
                     <FeedbacksPane
                         feedbacksAccordion={getFeedbacksAsAccordion(
                             this.state.feedbacks,
@@ -421,6 +421,7 @@ class Project extends Component {
                         )}
                     />
                 </div>
+                {newCommentButton}
             </Grid>
         );
         return {
