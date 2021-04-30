@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { convertMembersToMemberElement } from '../../../components';
 import './CourseComponents.css';
@@ -210,6 +211,102 @@ export const DeleteAssignmentModal = (props) => {
                         whiteSpace: 'nowrap',
                     }}>
                     Send
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    );
+};
+
+export const UnformedGroupModal = (props) => {
+    return (
+        <Modal closeIcon onClose={() => props.onClosed(false)} open={props.isOpen} style={{ width: '38%' }}>
+            <Modal.Header style={{ fontSize: '16px' }}>Ready Status</Modal.Header>
+            <Modal.Content>
+                <Modal.Description>
+                    {props.members}
+                    <Form>
+                        <Form.Field>
+                            <Checkbox label={props.voteStatus} />
+                            <Link
+                                style={{
+                                    fontSize: '14px',
+                                    float: 'right',
+                                }}
+                                to="/notifications">
+                                Check join requests
+                            </Link>
+                        </Form.Field>
+                        <Button
+                            floated="right"
+                            negative
+                            onClick={() => props.onClosed(true)}
+                            style={{
+                                borderRadius: '10px',
+                                padding: '5px 16px',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                lineHeight: '20px',
+                                whiteSpace: 'nowrap',
+                                marginBottom: '10px',
+                            }}>
+                            Exit Group
+                        </Button>
+                    </Form>
+                </Modal.Description>
+            </Modal.Content>
+        </Modal>
+    );
+};
+
+export const SendRequestModal = (props) => {
+    return (
+        <Modal closeIcon onClose={() => props.onClosed(false)} open={props.isOpen} size={'mini'}>
+            <Modal.Header style={{ fontSize: '16px' }}>Request Group Join & Merge</Modal.Header>
+            <Modal.Content>
+                <Modal.Description>
+                    {!props.isUserAlone ? (
+                        <div className="ui negative message" style={{ fontSize: '12px', width: '95%' }}>
+                            IF YOUR JOIN REQUEST ACCEPTED, YOU WILL AUTOMATICALLY EXIT FROM YOUR CURRENT GROUP
+                        </div>
+                    ) : null}
+                    <div className="ui information message" style={{ fontSize: '12px', width: '95%' }}>
+                        Group Members
+                    </div>
+                    {convertMembersToMemberElement(props.members, props.onUserClicked)}
+                    <div className="ui warning message" style={{ fontSize: '12px', width: '95%' }}>
+                        Please write a note and send a request
+                    </div>
+                    <TextArea placeholder="Your message here" style={{ minHeight: 100, width: '95%' }} />
+                </Modal.Description>
+            </Modal.Content>
+            <Modal.Actions>
+                {!props.isUserAlone ? (
+                    <Button
+                        color="blue"
+                        onClick={() => props.onClosed(true, 'merge')}
+                        style={{
+                            borderRadius: '10px',
+                            padding: '5px 16px',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            lineHeight: '20px',
+                            whiteSpace: 'nowrap',
+                        }}>
+                        Merge Request
+                    </Button>
+                ) : null}
+                <Button
+                    color="blue"
+                    onClick={() => props.onClosed(true, 'join')}
+                    style={{
+                        borderRadius: '10px',
+                        padding: '5px 16px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        lineHeight: '20px',
+                        whiteSpace: 'nowrap',
+                    }}>
+                    Join Request
                 </Button>
             </Modal.Actions>
         </Modal>

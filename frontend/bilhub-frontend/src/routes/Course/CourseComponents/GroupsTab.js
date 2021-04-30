@@ -8,6 +8,7 @@ export const GroupsTab = (props) => {
         const contentGroup = group?.members?.map((member) => {
             return <p style={{ textAlign: 'center' }}>{member.name}</p>;
         });
+
         if (index % 9 === 0)
             return (
                 <div class="four wide column">
@@ -86,9 +87,24 @@ export const GroupsTab = (props) => {
         const contentGroup = group?.members?.map((member) => {
             return <p style={{ textAlign: 'center' }}>{member.name}</p>;
         });
+        let groupClickedHandler = null;
+        if (!props.isUserInFormedGroup) {
+            if (group.isUserInGroup) {
+                groupClickedHandler = () =>
+                    props.onUnformedGroupModalOpened(
+                        group.groupId,
+                        group.voteStatus,
+                        group.members,
+                        group.isUserReady,
+                        group.isFormable
+                    );
+            } else if (!group.notRequestable) {
+                groupClickedHandler = () => props.onSendRequestModalOpened(group.groupId, group.members);
+            }
+        }
         return (
             <div class="four wide column">
-                <Segment secondary style={{ marginBottom: '25px' }}>
+                <Segment onClick={groupClickedHandler} secondary style={{ marginBottom: '25px' }}>
                     {contentGroup}
                 </Segment>
             </div>

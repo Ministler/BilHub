@@ -9,6 +9,8 @@ import {
     EditAssignmentModal,
     DeleteAssignmentModal,
     GroupsTab,
+    SendRequestModal,
+    UnformedGroupModal,
 } from './CourseComponents';
 import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
@@ -26,6 +28,14 @@ class Course extends Component {
             isNewAssignmentOpen: false,
             isEditAssignmentOpen: false,
             isDeleteAssignmentOpen: false,
+
+            isSendRequestModalOpen: false,
+            isUnformedGroupModalOpen: false,
+            currentGroupId: null,
+            currentVoteStatus: null,
+            currentMembers: null,
+            currentIsUserReady: null,
+            currentIsFormable: null,
 
             currentSection: 0,
         };
@@ -54,9 +64,22 @@ class Course extends Component {
             isEditAssignmentOpen: false,
         });
     };
+
     onDeleteAssignmentModalClosed = (isSuccess) => {
         this.setState({
             isDeleteAssignmentOpen: false,
+        });
+    };
+
+    onSendRequestModalClosed = (isSuccess) => {
+        this.setState({
+            isSendRequestModalOpen: false,
+        });
+    };
+
+    onUnformedGroupModalClosed = (isSuccess) => {
+        this.setState({
+            isUnformedGroupModalOpen: false,
         });
     };
 
@@ -66,7 +89,9 @@ class Course extends Component {
             courseInformation: dummyCourseInformation,
             newInformation: dummyCourseInformation.information,
             assignments: dummyCourseAssignments,
-            currentSection: dummyCourseInformation.currentUserSection ? dummyCourseInformation.currentUserSection : 0,
+            currentSection: dummyCourseInformation.currentUserSection
+                ? dummyCourseInformation.currentUserSection - 1
+                : 0,
         });
     }
 
@@ -85,6 +110,25 @@ class Course extends Component {
     onDeleteAssignmentModalOpened = () => {
         this.setState({
             isDeleteAssignmentOpen: true,
+        });
+    };
+
+    onSendRequestModalOpened = (groupId, members) => {
+        this.setState({
+            currentGroupId: groupId,
+            isSendRequestModalOpen: true,
+            currentMembers: members,
+        });
+    };
+
+    onUnformedGroupModalOpened = (groupId, voteStatus, members, isUserReady, isFormable) => {
+        this.setState({
+            currentGroupId: groupId,
+            isUnformedGroupModalOpen: true,
+            currentVoteStatus: voteStatus,
+            currentMembers: members,
+            currentIsUserReady: isUserReady,
+            currentIsFormable: isFormable,
         });
     };
 
@@ -220,8 +264,11 @@ class Course extends Component {
         } else {
             groupsTab = this.state.groups ? (
                 <GroupsTab
+                    isUserInFormedGroup={this.state.courseInformation?.isUserInFormedGroup}
                     groupsFormed={this.state.groups[this.state.currentSection].formed}
                     groupsUnformed={this.state.groups[this.state.currentSection].unformed}
+                    onSendRequestModalOpened={this.onSendRequestModalOpened}
+                    onUnformedGroupModalOpened={this.onUnformedGroupModalOpened}
                 />
             ) : null;
         }
@@ -346,6 +393,22 @@ class Course extends Component {
                     onClosed={this.onDeleteAssignmentModalClosed}
                     isOpen={this.state.isDeleteAssignmentOpen}
                 />
+                <SendRequestModal
+                    onClosed={this.onSendRequestModalClosed}
+                    isOpen={this.state.isSendRequestModalOpen}
+                    isUserAlone={this.state.courseInformation?.isUserAlone}
+                    members={this.state.currentMembers}
+                    onUserClicked={this.onUserClicked}
+                />
+                <UnformedGroupModal
+                    onClosed={this.onUnformedGroupModalClosed}
+                    onUserClicked={this.onUserClicked}
+                    isOpen={this.state.isUnformedGroupModalOpen}
+                    members={this.state.currentMembers}
+                    isFormable={this.state.currentIsFormable}
+                    isUserReady={this.state.currentIsUserReady}
+                    voteStatus={this.state.currentVoteStatus}
+                />
             </>
         );
     };
@@ -411,11 +474,12 @@ const dummyCourseInformation = {
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
     isTAorInstructorOfCourse: true,
-    isUserInFormedGroup: true,
-    isLocked: true,
+    isUserInFormedGroup: false,
+    isUserAlone: false,
+    isLocked: false,
     formationDate: '15/24/2020',
     numberOfSections: 3,
-    currentUserSection: 2,
+    currentUserSection: 1,
 };
 
 const dummyCourseAssignments = [
@@ -476,7 +540,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
-                isUserInGroup: true,
+                groupId: 1,
             },
             {
                 members: [
@@ -493,6 +557,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
             },
         ],
         unformed: [
@@ -511,7 +576,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
-                isUserInGroup: true,
+                groupId: 1,
             },
             {
                 members: [
@@ -528,6 +593,29 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
+                isUserInGroup: true,
+                voteStatus: '2/3',
+                isUserReady: true,
+                isFormable: true,
+            },
+            {
+                members: [
+                    {
+                        name: '4Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '4Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '4Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+                notRequestable: true,
             },
         ],
     },
@@ -548,6 +636,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
                 isUserInGroup: true,
             },
             {
@@ -565,6 +654,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
             },
         ],
         unformed: [
@@ -583,6 +673,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
                 isUserInGroup: true,
             },
             {
@@ -600,6 +691,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
             },
         ],
     },
@@ -620,6 +712,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
                 isUserInGroup: true,
             },
             {
@@ -637,6 +730,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
             },
         ],
         unformed: [
@@ -655,6 +749,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
                 isUserInGroup: true,
             },
             {
@@ -672,6 +767,7 @@ const dummyGroups = [
                         userId: 3,
                     },
                 ],
+                groupId: 1,
             },
         ],
     },

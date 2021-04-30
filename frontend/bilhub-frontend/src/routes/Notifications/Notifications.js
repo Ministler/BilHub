@@ -96,6 +96,10 @@ class Notifications extends Component {
         this.props.history.push('/profile/' + userId);
     };
 
+    onProfilePromptClicked = () => {
+        this.props.history.push('/profile');
+    };
+
     onRequestAction = (requestModal, requestId, requestType, userName) => {
         this.setState({
             currentRequestId: requestId,
