@@ -1,4 +1,9 @@
-export {} from './authGET';
-export { loginRequest, checkAuthRequest, singupRequest } from './authPOST';
-export {} from './authPUT';
-export {} from './authDELETE';
+export {
+    checkRequest,
+    loginRequest,
+    registerRequest,
+    verifyRequest,
+    changePassword,
+    forgotPasswordRequest,
+    resendRequest,
+} from './authPOST';
