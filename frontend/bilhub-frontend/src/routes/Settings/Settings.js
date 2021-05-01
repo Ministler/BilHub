@@ -310,7 +310,7 @@ const ProfilePrompt = (props) => {
     return (
         <div className={'ProfilePrompt'} onClick={props.onClick}>
             <span className={'ProfileSpan'}>
-                <Icon name="user circle" size="huge" />
+                <Icon name="user circle" size="big" />
             </span>
             <Link style={{ fontSize: '24px' }} to="/profile">
                 {props.name}

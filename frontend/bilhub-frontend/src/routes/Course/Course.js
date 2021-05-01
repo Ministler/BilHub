@@ -112,7 +112,7 @@ class Course extends Component {
 
     componentDidMount() {
         this.setState({
-            groups: dummyGroups,
+            groups: dummyGroupsLocked,
             courseInformation: dummyCourseInformation,
             newInformation: dummyCourseInformation.information,
             assignments: dummyCourseAssignments,
@@ -289,12 +289,20 @@ class Course extends Component {
         return null;
     };
 
+    onGroupClicked = (projectId) => {
+        this.props.history.push('/project/' + projectId);
+    };
+
     getGroupsPane = () => {
         let groupsTab = null;
 
         if (this.state.courseInformation?.isLocked) {
             groupsTab = this.state.groups ? (
-                <GroupsTab groupsFormed={this.state.groups[this.state.currentSection].formed} />
+                <GroupsTab
+                    groupsFormed={this.state.groups[this.state.currentSection]}
+                    isLocked={this.state.courseInformation?.isLocked}
+                    onGroupClicked={this.onGroupClicked}
+                />
             ) : null;
         } else {
             groupsTab = this.state.groups ? (
@@ -307,6 +315,7 @@ class Course extends Component {
                     }
                     onSendRequestModalOpened={this.onSendRequestModalOpened}
                     onUnformedGroupModalOpened={this.onUnformedGroupModalOpened}
+                    isLocked={this.state.courseInformation?.isLocked}
                 />
             ) : null;
         }
@@ -517,7 +526,7 @@ const dummyCourseInformation = {
     isTAorInstructorOfCourse: true,
     isUserInFormedGroup: false,
     isUserAlone: false,
-    isLocked: false,
+    isLocked: true,
     formationDate: '15/24/2020',
     numberOfSections: 3,
     currentUserSection: 1,
@@ -562,6 +571,123 @@ const dummyCourseAssignments = [
         publishmentDate: '12 March 2021 12:00',
         dueDate: '12 April 2021 12:00',
     },
+];
+
+const dummyGroupsLocked = [
+    [
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilHub',
+        },
+        {
+            members: [
+                {
+                    name: '2Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '2Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '2Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 2,
+            groupName: 'Not Bilhub',
+        },
+    ],
+    [
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilHub',
+        },
+        {
+            members: [
+                {
+                    name: '2Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '2Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '2Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 2,
+            groupName: 'Not Bilhub',
+        },
+    ],
+    [
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilHub',
+        },
+        {
+            members: [
+                {
+                    name: '2Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '2Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '2Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 2,
+            groupName: 'Not Bilhub',
+        },
+    ],
 ];
 
 const dummyGroups = [

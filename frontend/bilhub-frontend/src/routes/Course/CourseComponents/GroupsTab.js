@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Segment } from 'semantic-ui-react';
+import { Grid, Segment, Label } from 'semantic-ui-react';
 
 import { Accordion } from '../../../components';
 
@@ -9,10 +9,20 @@ export const GroupsTab = (props) => {
             return <p style={{ textAlign: 'center' }}>{member.name}</p>;
         });
 
+        let onGroupClicked = null;
+        if (props.isLocked) {
+            onGroupClicked = () => props.onGroupClicked(group.groupId);
+        }
+
         if (index % 9 === 0)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(255, 0, 0, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(255, 0, 0, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -20,7 +30,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 1)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(162 , 167 , 0, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(162 , 167 , 0, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -28,7 +43,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 2)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(0, 0, 255, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(0, 0, 255, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -36,7 +56,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 3)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(255, 255, 0, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(255, 255, 0, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -44,7 +69,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 4)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(255, 0, 255, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(255, 0, 255, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -52,7 +82,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 5)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(0, 255, 255, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(0, 255, 255, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -60,7 +95,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 6)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(255, 150, 30, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(255, 150, 30, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -68,7 +108,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 7)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(0, 255, 0, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(0, 255, 0, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>
@@ -76,7 +121,12 @@ export const GroupsTab = (props) => {
         if (index % 9 === 8)
             return (
                 <div class="four wide column">
-                    <Segment style={{ backgroundColor: 'rgba(3 , 94 , 123, 0.2)', marginBottom: '25px' }}>
+                    <Segment
+                        onClick={onGroupClicked}
+                        style={{ backgroundColor: 'rgba(3 , 94 , 123, 0.2)', marginBottom: '25px' }}>
+                        <Label style={{ textAlign: 'center' }} attached="top">
+                            {group.groupName}
+                        </Label>
                         {contentGroup}
                     </Segment>
                 </div>

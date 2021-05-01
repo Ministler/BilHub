@@ -92,11 +92,10 @@ export class CourseCreation extends Component {
             description: this.state.shortDescription,
 
             isSectionless: this.state.isSectionless,
-            numberOfSection: this.state.sectionNumber, // If sectionless this field is 1
+            numberOfSection: this.state.sectionNumber,
             instructorList: this.state.instructorList,
             TAList: this.state.TAList,
-            studentManualList: this.state.studentManualList,
-            studentAutoList: this.state.studentAutoList,
+            studentList: this.state.studentAutoList,
 
             minSize: this.state.minSize,
             maxSize: this.state.maxSize,

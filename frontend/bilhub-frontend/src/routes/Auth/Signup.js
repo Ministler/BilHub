@@ -46,7 +46,7 @@ export default class Signup extends Component {
         singupRequest(
             this.state.form.email,
             this.state.form.password,
-            this.state.form.firstName + this.state.form.lastName
+            this.state.form.firstName + ' ' + this.state.form.lastName
         )
             .then((response) => {
                 this.setState({
