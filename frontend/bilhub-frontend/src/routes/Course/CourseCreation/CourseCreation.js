@@ -18,6 +18,7 @@ import {
 } from 'semantic-ui-react';
 
 import './CourseCreation.css';
+import { inputDateToDateObject } from '../../../utils/dateConversions';
 
 const semesterOptions = [
     {
@@ -83,9 +84,8 @@ export class CourseCreation extends Component {
                 this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
             }
         }
-        let dateArr = this.state.groupFormationDate.split(/-/);
         //System.DateTime
-        let date = new Date(dateArr[0], dateArr[1], dateArr[2]);
+        let date = inputDateToDateObject(this.state.groupFormationDate);
 
         const request = {
             courseName: this.state.code + '/' + this.state.year + this.state.semester,
@@ -154,9 +154,9 @@ export class CourseCreation extends Component {
     };
 
     changeSection = (event, data) => {
-        let sections = [];
-        let studentManualList = [];
-        let studentAutoList = [];
+        const sections = [];
+        const studentManualList = [];
+        const studentAutoList = [];
         for (let i = 1; i <= data.value; i++) {
             sections.push({
                 key: i,
@@ -166,17 +166,19 @@ export class CourseCreation extends Component {
             studentManualList.push([]);
             studentAutoList.push([]);
         }
-        this.state.studentAutoList = studentAutoList;
-        this.state.studentManualList = studentManualList;
-        this.state.sections = sections;
+        this.setState({ studentAutoList: studentAutoList, studentManualList: studentManualList, sections: sections });
+
         this.handleChange(event, data);
     };
 
     removeUser = (element, listType, section) => {
-        let ary = this.state[listType];
+        let ary = [...this.state[listType]];
         if (section === 0) {
             ary = _.without(ary, element);
         } else {
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                ary[i] = [...this.state[listType][i]];
+            }
             ary[section - 1] = _.without(ary[section - 1], element);
         }
         this.setState({ [listType]: ary });
@@ -251,7 +253,7 @@ export class CourseCreation extends Component {
                 window.alert('Please enter bilkent email');
                 return;
             }
-        let curList = this.state[listType];
+        let curList = [...this.state[listType]];
         if (section === 0) {
             if (this.checkIfExists(curList, this.state[userType])) {
                 window.alert("You can't add already existing user.");
@@ -265,6 +267,9 @@ export class CourseCreation extends Component {
                     return;
                 }
             }
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                curList[i] = [...this.state[listType][i]];
+            }
             curList[section - 1].push(this.state[userType]);
         }
         this.setState({ [listType]: curList, [userType]: '' });
@@ -274,10 +279,13 @@ export class CourseCreation extends Component {
         const reader = new FileReader();
         let students;
         reader.onload = async (file) => {
-            let curList = this.state.studentAutoList;
+            let curList = [...this.state.studentAutoList];
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                curList[i] = [...this.state.studentAutoList[i]];
+            }
             const text = file.target.result;
             students = text.split(/\n/);
-            curList[this.state.autoSection - 1] = students;
+            curList[this.state.autoSection - 1] = [...students];
             this.setState({ studentAutoList: curList /* currentFile: */ });
         };
         reader.readAsText(e.target.files[0]);
@@ -462,7 +470,7 @@ export class CourseCreation extends Component {
                                 onChange={this.handleChange}
                                 type="number"></Input>
                             Group Formation Date
-                            <Input type="date" name="groupFormationDate" onChange={this.handleChange}></Input>
+                            <Input type="datetime-local" name="groupFormationDate" onChange={this.handleChange}></Input>
                         </div>
                     </Form.Field>
                 </Form.Group>

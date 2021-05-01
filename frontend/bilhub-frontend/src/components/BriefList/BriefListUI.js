@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
+import { dateObjectToString } from '../../utils';
 
 import './BriefListUI.css';
 
@@ -32,7 +33,7 @@ export const TitledDatedBriefElement = (props) => {
             <span className="BriefListElements clickableHighlightBack" onClick={props.onClick}>
                 <div>{props.title}</div>
                 <div align="right" className="DueDate">
-                    {props.date}
+                    {typeof props.date === 'object' ? dateObjectToString(props.date) : props.date}
                 </div>
             </span>
         </div>
@@ -53,9 +54,13 @@ export const SubmissionBriefElement = (props) => {
             <Link onClick={props.onSubmissionPageClicked}>
                 {props.submission?.groupName} {props.submission?.fileName} &nbsp;
             </Link>
-            {props.submission?.file ? <Icon name="file" onClick={props.onSubmissionFileClicked} /> : null}
+            {props.submission?.hasFile ? <Icon name="file" onClick={props.onSubmissionFileClicked} /> : null}
             {props.submission?.grade ? <span>Grade: {props.submission?.grade}</span> : null}
-            <span style={{ float: 'right' }}>{props.submission?.submissionDate}</span>
+            <span style={{ float: 'right' }}>
+                {typeof props.submission?.submissionDate === 'object'
+                    ? dateObjectToString(props.submission?.submissionDate)
+                    : props.submission?.submissionDate}
+            </span>
         </div>
     );
 };
