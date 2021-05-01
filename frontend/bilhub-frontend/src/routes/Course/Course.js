@@ -359,9 +359,23 @@ class Course extends Component {
         return button;
     };
 
+    downloadFromSection = (value) => {
+        if (value === 0) {
+            window.alert('You have to enter section.');
+        } else {
+            const request = {
+                course: this.state.courseInformation,
+                section: value,
+                assignment: -1,
+            };
+            console.log(request);
+        }
+    };
+
     getDownloadSubmissionsPopup = () => {
+        let value = 0;
         let sectionNo = this.state.courseInformation.numberOfSections;
-        const sections = [{ key: 0, text: 'All Sections', value: 0 }];
+        const sections = [{ key: 0, text: 'All Sections', value: -1 }];
         for (var i = 0; i < sectionNo; i++) {
             sections.push({ key: i + 1, text: 'Section ' + (i + 1), value: i + 1 });
         }
@@ -374,8 +388,15 @@ class Course extends Component {
                         Download Submissions <Icon name="download" />
                     </Button>
                 }>
-                <Dropdown placeholder="Select Section" item selection options={sections}></Dropdown>
-                <Button style={{ marginLeft: '10px' }} icon>
+                <Dropdown
+                    onChange={(e, d) => {
+                        value = d.value;
+                    }}
+                    placeholder="Select Section"
+                    item
+                    selection
+                    options={sections}></Dropdown>
+                <Button onClick={() => this.downloadFromSection(value)} style={{ marginLeft: '10px' }} icon>
                     <Icon name="download" />
                 </Button>
             </Popup>
