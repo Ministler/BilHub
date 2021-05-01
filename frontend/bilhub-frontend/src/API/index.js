@@ -1,4 +1,4 @@
-export { loginRequest, checkAuthRequest, singupRequest } from './authAPI';
+export { loginRequest } from './authAPI';
 export {} from './courseAPI';
 export {} from './notificationsAPI';
 export {} from './projectAPI';

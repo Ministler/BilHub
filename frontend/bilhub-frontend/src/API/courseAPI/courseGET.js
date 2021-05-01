@@ -10,3 +10,14 @@ export const getCourseRequest = async (courseId) => {
             throw error;
         });
 };
+
+export const getCourseStatisticRequest = async (courseId) => {
+    const url = 'Statistic/' + courseId;
+
+    return authAxios
+        .get(BASE_COURSE_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

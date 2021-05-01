@@ -1,18 +1,18 @@
 import { authAxios, BASE_ASSIGNMENT_URL } from '../axiosConfigs';
 
-// export const postAssignmentFileRequest = async (assignmentId, file) => {
-//     const url = 'File/' + assignmentId;
-//     const body = {
-//         file: file,
-//     };
+export const postAssignmentFileRequest = async (assignmentId, file) => {
+    const url = 'File/' + assignmentId;
+    const body = {
+        file: file,
+    };
 
-//     return authAxios
-//         .post(BASE_ASSIGNMENT_URL + url, body)
-//         .then((response) => response)
-//         .catch((error) => {
-//             throw error;
-//         });
-// };
+    return authAxios
+        .post(BASE_ASSIGNMENT_URL + url, body)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
 
 export const postAssignmentRequest = async (
     file,

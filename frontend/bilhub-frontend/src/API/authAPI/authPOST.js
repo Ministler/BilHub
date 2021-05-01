@@ -1,9 +1,9 @@
 import { unauthAxios } from '../axiosConfigs';
 
-export const checkRequest = async (token) => {
-    const url = '/check';
+export const checkAuthRequest = async (token) => {
+    const url = 'Check';
     const body = {
-        idToken: token,
+        token: token,
     };
 
     return unauthAxios
