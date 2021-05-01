@@ -30,9 +30,9 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetSectionInfo ( int sectionId )
+        public async Task<ActionResult> GetSectionInfo ( int id )
         {
-            return Ok ( await _sectionService.GetSectionInfo ( sectionId ) );
+            return Ok ( await _sectionService.GetSectionInfo ( id ) );
         }
 
     }

@@ -11,7 +11,6 @@ namespace backend.Services.CourseServices
          Task<ServiceResponse<GetCourseDto>> EditCourse ( EditCourseDto editCourseDto );
          Task<ServiceResponse<GetCourseDto>> AddInstructorToCourse ( int userId, int courseId );
          Task<ServiceResponse<GetCourseDto>> RemoveInstructorFromCourse ( int userId, int courseId );
-
-         // delete course to-do
+         Task<ServiceResponse<string>> RemoveCourse ( int courseId );
     }
 }

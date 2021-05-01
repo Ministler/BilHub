@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using backend.Data;
+using backend.Dtos.Assignment;
 using backend.Dtos.Course;
 using backend.Models;
+using backend.Services.AssignmentServices;
+using backend.Services.ProjectGroupServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +20,12 @@ namespace backend.Services.CourseServices
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public CourseService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly IAssignmentService _assignmentService;
+        private readonly IProjectGroupService _projectGroupService;
+        public CourseService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IAssignmentService assignmentService, IProjectGroupService projectGroupService)
         {
+            _projectGroupService = projectGroupService;
+            _assignmentService = assignmentService;
             _httpContextAccessor = httpContextAccessor;
             _context = context;
             _mapper = mapper;
@@ -302,6 +310,66 @@ namespace backend.Services.CourseServices
             await _context.SaveChangesAsync();
 
             serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<string>> RemoveCourse(int courseId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+
+            Course dbCourse = await _context.Courses
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .Include(c => c.Assignments)
+                .Include(c => c.FinalGrade)
+                .Include(c => c.PeerGradeAssignment)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Course not found.";
+                return serviceResponse;
+            }
+
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User does not have authority on this course to remove the course.";
+                return serviceResponse;
+            }
+
+            _context.ProjectGrades.Remove(dbCourse.FinalGrade);
+
+            _context.PeerGradeAssignments.Remove(dbCourse.PeerGradeAssignment);
+
+            foreach (var i in dbCourse.Instructors)
+                _context.CourseUsers.Remove(i);
+
+            foreach (var i in dbCourse.Assignments)
+            {
+                await _assignmentService.DeleteAssignment(new DeleteAssignmentDto
+                {
+                    AssignmentId = i.Id
+                });
+            }
+
+            foreach (var i in dbCourse.Sections)
+            {
+                List<ProjectGroup> toBeDeletedGroups = await _context.ProjectGroups
+                    .Where ( c => c.AffiliatedSectionId == i.Id ).ToListAsync();
+                foreach ( var j in toBeDeletedGroups )
+                {
+                    await _projectGroupService.DeleteProjectGroup ( j.Id );
+                }
+            }
+            _context.Sections.RemoveRange( dbCourse.Sections );
+
+            _context.Courses.Remove(dbCourse);
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = "Successfully deleted the course";
+            serviceResponse.Message = "Successfully deleted the course";
             return serviceResponse;
         }
     }
