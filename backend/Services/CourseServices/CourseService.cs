@@ -347,6 +347,8 @@ namespace backend.Services.CourseServices
 
             foreach (var i in dbCourse.Assignments)
             {
+                await _assignmentService.DeleteWithForce (i.Id);
+                
                 await _assignmentService.DeleteAssignment(new DeleteAssignmentDto
                 {
                     AssignmentId = i.Id

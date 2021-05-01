@@ -51,6 +51,12 @@ namespace backend.Controllers
             return Ok(await _courseService.RemoveInstructorFromCourse(userId, courseId));
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> RemoveCourse(int id)
+        {
+            return Ok(await _courseService.RemoveCourse(id));
+        }
+
         [HttpGet]
         [Route("OZGUR/{courseId}")]
         public async Task<IActionResult> GetOzgur(int courseId)
