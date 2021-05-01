@@ -224,7 +224,7 @@ namespace backend.Controllers
             if (response.Success)
             {
                 if (acwadto.File != null)
-                    await _commentService.SubmitCommentFile(new AddCommentFileDto { CommentFile = acwadto.File, CommentId = response.Data.CommentId });
+                    await _commentService.SubmitCommentFile(new AddCommentFileDto { CommentFile = acwadto.File, CommentId = response.Data.Id });
                 return Ok(response);
             }
             return NotFound(response);

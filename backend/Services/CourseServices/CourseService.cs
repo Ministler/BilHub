@@ -7,6 +7,7 @@ using AutoMapper;
 using backend.Data;
 using backend.Dtos.Assignment;
 using backend.Dtos.Course;
+using backend.Dtos.ProjectGroup;
 using backend.Models;
 using backend.Services.AssignmentServices;
 using backend.Services.ProjectGroupServices;
@@ -27,6 +28,7 @@ namespace backend.Services.CourseServices
             _projectGroupService = projectGroupService;
             _assignmentService = assignmentService;
             _httpContextAccessor = httpContextAccessor;
+            _projectGroupService = projectGroupService;
             _context = context;
             _mapper = mapper;
         }
@@ -321,7 +323,6 @@ namespace backend.Services.CourseServices
                 .Include(c => c.Instructors).ThenInclude(cs => cs.User)
                 .Include(c => c.Sections)
                 .Include(c => c.Assignments)
-                .Include(c => c.FinalGrade)
                 .Include(c => c.PeerGradeAssignment)
                 .FirstOrDefaultAsync(c => c.Id == courseId);
 
@@ -338,8 +339,6 @@ namespace backend.Services.CourseServices
                 serviceResponse.Message = "User does not have authority on this course to remove the course.";
                 return serviceResponse;
             }
-
-            _context.ProjectGrades.Remove(dbCourse.FinalGrade);
 
             _context.PeerGradeAssignments.Remove(dbCourse.PeerGradeAssignment);
 
@@ -371,6 +370,69 @@ namespace backend.Services.CourseServices
             serviceResponse.Data = "Successfully deleted the course";
             serviceResponse.Message = "Successfully deleted the course";
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetOzgurDto>> GetOzgur(int courseId)
+        {
+            ServiceResponse<GetOzgurDto> response = new ServiceResponse<GetOzgurDto>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Course course = await _context.Courses
+                .Include(pg => pg.Sections).ThenInclude(s => s.ProjectGroups).ThenInclude(c => c.ProjectGrades).ThenInclude(pg => pg.GradingUser)
+                .Include(pg => pg.Instructors)//.ThenInclude(s => s.AffiliatedAssignment)
+                .FirstOrDefaultAsync(s => s.Id == courseId);
+            if (course == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such course";
+                response.Success = false;
+                return response;
+            }
+            List<Section> sections = course.Sections.ToList();
+            List<ProjectGroup> projectGroups = new List<ProjectGroup>();
+            foreach (Section s in sections)
+            {
+                List<ProjectGroup> tempGroups = s.ProjectGroups.ToList();
+                projectGroups.AddRange(tempGroups);
+            }
+
+            List<int> instrs = course.Instructors.Select(i => i.UserId).ToList();
+            HashSet<int> graderIds = new HashSet<int>();
+            foreach (ProjectGroup pg in projectGroups)
+            {
+                List<ProjectGrade> projectGrades = pg.ProjectGrades.ToList();
+                foreach (ProjectGrade pgrade in projectGrades)
+                {
+                    if (instrs.Contains(pgrade.GradingUserId))
+                        graderIds.Add(pgrade.GradingUserId);
+                }
+            }
+            List<string> graderNames = new List<string>();
+            foreach (int id in graderIds)
+            {
+                graderNames.Add(_context.Users.FirstOrDefault(u => u.Id == id).Name);
+            }
+            graderNames.Add("Students");
+            graderIds.Add(-1);
+
+            GetOzgurDto getOzgurDto = new GetOzgurDto();
+            getOzgurDto.graders = graderNames;
+            List<OzgurStatDto> ozgurStatDtos = new List<OzgurStatDto>();
+            foreach (ProjectGroup pg in projectGroups)
+            {
+                OzgurStatDto ozgurStatDto = new OzgurStatDto();
+                ozgurStatDto.StatName = pg.Name;
+                ozgurStatDto.Grades = new List<decimal>();
+                foreach (int id in graderIds)
+                {
+                    ServiceResponse<decimal> grade = await _projectGroupService.GetGradeWithGraderId(pg.Id, id);
+                    ozgurStatDto.Grades.Add(grade.Data);
+                }
+                ozgurStatDtos.Add(ozgurStatDto);
+            }
+            getOzgurDto.ozgurStatDtos = ozgurStatDtos;
+            // List<int> graderIds = submission.Comments.Select(c => c.CommentedUserId).ToList();
+            response.Data = getOzgurDto;
+            return response;
         }
     }
 }

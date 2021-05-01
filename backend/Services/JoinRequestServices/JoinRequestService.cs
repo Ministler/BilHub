@@ -501,7 +501,7 @@ namespace backend.Services.JoinRequestServices
             return response;
         }
 
-        
+        //////// ADD LOCK DATE
        
         // bi sekilde grupta 0 insan kalmasi durumu
         // rejectlenirse unvotedlarda gorunmeyec -- resolved

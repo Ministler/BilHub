@@ -19,8 +19,10 @@ namespace backend.Services.SubmissionServices
         Task<ServiceResponse<GetSubmissionDto>> AddSubmission(AddSubmissionDto addSubmissionDto);
         Task<ServiceResponse<GetSubmissionDto>> GetSubmission(int submissionId);
         Task<ServiceResponse<GetSubmissionDto>> UpdateSubmission(UpdateSubmissionDto submissionDto);
-        Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetInstructorComments(int submissionId);
-        Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetTaComments(int submissionId);
-        Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetStudentComments(int submissionId);
+        // Task<ServiceResponse<IEnumerable<GetCommentDto>>> GetInstructorComments(int submissionId);
+        Task<ServiceResponse<List<GetCommentDto>>> GetInstructorComments(int submissionId);
+        Task<ServiceResponse<List<GetCommentDto>>> GetTaComments(int submissionId);
+        Task<ServiceResponse<List<GetCommentDto>>> GetStudentComments(int submissionId);
+        Task<ServiceResponse<decimal>> GetGradeWithGraderId(int submissionId, int graderId);
     }
 }
