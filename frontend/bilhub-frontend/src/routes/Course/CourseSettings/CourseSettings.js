@@ -195,8 +195,16 @@ export class CourseSettings extends Component {
                 value: i,
             });
         }
-
-        let date = dummyCourseInformation.formationDate;
+        let date =
+            dummyCourseInformation.groupFormationDate.getFullYear() +
+            '-' +
+            (dummyCourseInformation.groupFormationDate.getMonth() / 10 < 1
+                ? '0' + dummyCourseInformation.groupFormationDate.getMonth()
+                : dummyCourseInformation.groupFormationDate.getMonth()) +
+            '-' +
+            (dummyCourseInformation.groupFormationDate.getDate() / 10 < 1
+                ? '0' + dummyCourseInformation.groupFormationDate.getDate()
+                : dummyCourseInformation.groupFormationDate.getDate());
 
         this.setState({
             settingTitle: 'Course Settings ' + dummyCourseInformation.courseName,
@@ -221,7 +229,7 @@ export class CourseSettings extends Component {
             minSize: dummyCourseInformation.minSize,
             maxSize: dummyCourseInformation.maxSize,
             groupFormationDate: date,
-            groups: dummyGroupsLocked,
+            groups: dummyGroups,
             users: dummyUsers,
         });
     }
@@ -619,11 +627,12 @@ const dummyCourseInformation = {
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
     isTAorInstructorOfCourse: true,
-    isLocked: true,
+    isLocked: false,
     formationDate: '15-24-2020',
     numberOfSections: 3,
     minSize: 3,
     maxSize: 5,
+    groupFormationDate: new Date(2022, 1, 2),
 };
 
 const dummyGroups = [
