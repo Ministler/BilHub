@@ -1,11 +1,9 @@
 import * as actionTypes from './actionTypes';
 
 export const authSuccess = (token, userId, email, name, userType, darkMode) => {
-    console.log(darkMode);
     localStorage.setItem('token', token);
     return {
         type: actionTypes.AUTH_SUCCESS,
-        token: token,
         userId: userId,
         name: name,
         userType: userType,
