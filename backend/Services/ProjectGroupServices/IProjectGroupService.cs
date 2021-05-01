@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using backend.Dtos.ProjectGrade;
 using backend.Dtos.ProjectGroup;
 using backend.Models;
 
@@ -18,8 +19,11 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<GetProjectGroupDto>> CompleteJoinRequest(int joinRequestId);
         Task<ServiceResponse<GetProjectGroupDto>> CompleteMergeRequest(int mergeRequestId);
         Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection(int userId, int sectionId);
-
-        Task<ServiceResponse<GetOzgurDto>> GetOzgur(int groupId);
+        Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetInstructorComments(int projectGroupId);
+        Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetTaComments(int projectGroupId);
+        Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetStudentComments(int projectGroupId);
+        Task<ServiceResponse<decimal>> GetGradeWithGraderId(int projectGroupId, int graderId);
+        Task<ServiceResponse<decimal>> GetStudentsAverage(int projectGroupId);
 
     }
 }

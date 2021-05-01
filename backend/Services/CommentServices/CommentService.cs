@@ -265,7 +265,9 @@ namespace backend.Services.CommentServices
         {
             ServiceResponse<GetCommentDto> response = new ServiceResponse<GetCommentDto>();
             User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
-            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == addCommentDto.CommentedSubmissionId);
+            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment)
+                .Include(s => s.Comments)
+                .FirstOrDefaultAsync(s => s.Id == addCommentDto.CommentedSubmissionId);
             if (submission == null)
             {
                 response.Data = null;

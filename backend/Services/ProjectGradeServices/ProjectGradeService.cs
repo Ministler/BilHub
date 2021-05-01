@@ -36,26 +36,6 @@ namespace backend.Services.ProjectGradeServices
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        private bool IsUserInGroup(ProjectGroup projectGroup, int userId)
-        {
-            foreach (var i in projectGroup.GroupMembers)
-            {
-                if (i.UserId == userId)
-                    return true;
-            }
-            return false;
-        }
-
-        private bool doesUserInstruct(User user, int courseId)
-        {
-            foreach (var i in user.InstructedCourses)
-            {
-                if (i.CourseId == courseId)
-                    return true;
-            }
-            return false;
-        }
-
         public async Task<ServiceResponse<AddProjectGradeDto>> AddProjectGrade(AddProjectGradeDto addProjectGradeDto)
         {
             ServiceResponse<AddProjectGradeDto> response = new ServiceResponse<AddProjectGradeDto>();
@@ -128,21 +108,25 @@ namespace backend.Services.ProjectGradeServices
                 projectGroup.AffiliatedSection, projectGroup.Id, user.Id));
 
             Directory.CreateDirectory(target);
-            if (addProjectGradeDto.File.Length > 0)
+            if (addProjectGradeDto.File != null)
             {
-                string oldfile = Directory.GetFiles(target).FirstOrDefault();
-                string extension = Path.GetExtension(addProjectGradeDto.File.FileName);
-                var filePath = Path.Combine(target, string.Format("{0}_Section{1}_Group{2}_{3}_GroupFeedback"
-                    , projectGroup.AffiliatedCourse.Name.Trim().Replace(" ", "_"), projectGroup.AffiliatedSection,
-                     projectGroup.Id, user.Name.Trim().Replace(" ", "_")) + extension);
-                createdProjectGrade.FilePath = filePath;
-                if (File.Exists(oldfile))
+                if (addProjectGradeDto.File.Length > 0)
                 {
-                    File.Delete(oldfile);
-                }
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await addProjectGradeDto.File.CopyToAsync(stream);
+                    createdProjectGrade.HasFile = true;
+                    string oldfile = Directory.GetFiles(target).FirstOrDefault();
+                    string extension = Path.GetExtension(addProjectGradeDto.File.FileName);
+                    var filePath = Path.Combine(target, string.Format("{0}_Section{1}_Group{2}_{3}_GroupFeedback"
+                        , projectGroup.AffiliatedCourse.Name.Trim().Replace(" ", "_"), projectGroup.AffiliatedSection,
+                         projectGroup.Id, user.Name.Trim().Replace(" ", "_")) + extension);
+                    createdProjectGrade.FilePath = filePath;
+                    if (File.Exists(oldfile))
+                    {
+                        File.Delete(oldfile);
+                    }
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await addProjectGradeDto.File.CopyToAsync(stream);
+                    }
                 }
             }
 
@@ -166,10 +150,11 @@ namespace backend.Services.ProjectGradeServices
             ServiceResponse<ProjectGradeInfoDto> response = new ServiceResponse<ProjectGradeInfoDto>();
             User user = await _context.Users
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-
             ProjectGrade projectGrade = await _context.ProjectGrades
                                 .Include(pg => pg.GradedProjectGroup)
                                 .FirstOrDefaultAsync(pg => pg.Id == editProjectGradeDto.Id);
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(pg => pg.AffiliatedCourse).Include(c => c.AffiliatedSection)
+                        .FirstOrDefaultAsync(rg => rg.Id == projectGrade.GradedProjectGroupID);
 
             if (projectGrade == null)
             {
@@ -178,15 +163,6 @@ namespace backend.Services.ProjectGradeServices
                 response.Success = false;
                 return response;
             }
-
-            /*
-            if( user == null || projectGrade.GradingUserId != user.Id )
-            {
-                response.Data = null;
-                response.Message = "You are not authorized to grade this group";
-                response.Success = false;
-                return response;
-            }*/
 
             if (editProjectGradeDto.MaxGrade < editProjectGradeDto.Grade)
             {
@@ -200,25 +176,30 @@ namespace backend.Services.ProjectGradeServices
             projectGrade.Grade = projectGrade.Grade;
             projectGrade.Description = editProjectGradeDto.Comment;
             projectGrade.CreatedAt = editProjectGradeDto.CreatedAt; // ask
-
-            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
-                "StaticFiles/ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
-                projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id));
-
-            Directory.CreateDirectory(target);
-            if (editProjectGradeDto.File.Length > 0)
+            if (editProjectGradeDto.File != null)
             {
-                string oldfile = Directory.GetFiles(target).FirstOrDefault();
-                string extension = Path.GetExtension(editProjectGradeDto.File.FileName);
-                var filePath = oldfile;
-                projectGrade.FilePath = filePath;
-                if (File.Exists(oldfile))
+                var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
+                    "StaticFiles/ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
+                    projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id));
+
+                Directory.CreateDirectory(target);
+                if (editProjectGradeDto.File.Length > 0)
                 {
-                    File.Delete(oldfile);
-                }
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await editProjectGradeDto.File.CopyToAsync(stream);
+                    projectGrade.HasFile = true;
+                    string oldfile = Directory.GetFiles(target).FirstOrDefault();
+                    string extension = Path.GetExtension(editProjectGradeDto.File.FileName);
+                    var filePath = Path.Combine(target, string.Format("{0}_Section{1}_Group{2}_{3}_GroupFeedback"
+                        , projectGroup.AffiliatedCourse.Name.Trim().Replace(" ", "_"), projectGroup.AffiliatedSection,
+                         projectGroup.Id, user.Name.Trim().Replace(" ", "_")) + extension);
+                    projectGrade.FilePath = filePath;
+                    if (File.Exists(oldfile))
+                    {
+                        File.Delete(oldfile);
+                    }
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await editProjectGradeDto.File.CopyToAsync(stream);
+                    }
                 }
             }
 
@@ -247,7 +228,9 @@ namespace backend.Services.ProjectGradeServices
                     ProjectInformation = projectGrade.GradedProjectGroup.ProjectInformation,
                     ConfirmedGroupMembers = projectGrade.GradedProjectGroup.ConfirmedGroupMembers
                 },
-                GradedProjectGroupID = projectGrade.GradedProjectGroup.Id
+                FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", projectGrade.Id),
+                GradedProjectGroupID = projectGrade.GradedProjectGroup.Id,
+                HasFile = projectGrade.HasFile
             };
 
 
@@ -294,9 +277,52 @@ namespace backend.Services.ProjectGradeServices
             projectGrade.FilePath = null;
             if (filePath != null)
                 File.Delete(filePath);
+            projectGrade.HasFile = false;
 
             _context.ProjectGrades.Remove(projectGrade);
             await _context.SaveChangesAsync();
+
+            response.Data = "Successful";
+            response.Message = "Project grade is successfully cancelled";
+            response.Success = true;
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<string>> DeleteWithForce(int projectGradeId)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            User user = await _context.Users
+                                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGrade projectGrade = await _context.ProjectGrades.Include(pg => pg.GradedProjectGroup)
+                                            .FirstOrDefaultAsync(pg => pg.Id == projectGradeId);
+
+            if (projectGrade == null)
+            {
+                response.Data = "Not allowed";
+                response.Message = "There is no project grade with this Id";
+                response.Success = false;
+                return response;
+            }
+
+
+            if (!projectGrade.HasFile)
+            {
+                response.Data = null;
+                response.Message = "There is no file to be deleted";
+                response.Success = true;
+                return response;
+            }
+
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
+                "StaticFiles/ProjectGradeFiles", projectGrade.GradedProjectGroup.AffiliatedCourseId,
+                projectGrade.GradedProjectGroup.AffiliatedSection, projectGrade.GradedProjectGroupID, user.Id));
+
+            var filePath = Directory.GetFiles(target).FirstOrDefault();
+            projectGrade.FilePath = null;
+            if (filePath != null)
+                File.Delete(filePath);
+            projectGrade.HasFile = false;
 
             response.Data = "Successful";
             response.Message = "Project grade is successfully cancelled";
@@ -329,8 +355,9 @@ namespace backend.Services.ProjectGradeServices
                 Id = projectGrade.Id,
                 MaxGrade = projectGrade.MaxGrade,
                 Grade = projectGrade.Grade,
-                Comment = projectGrade.Comment,
+                Comment = projectGrade.Description,
                 CreatedAt = projectGrade.CreatedAt,
+                FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", projectGrade.Id),
                 userInProjectGradeDto = new UserInProjectGradeDto
                 {
                     Id = projectGrade.GradingUser.Id,
@@ -348,15 +375,16 @@ namespace backend.Services.ProjectGradeServices
                     ProjectInformation = projectGrade.GradedProjectGroup.ProjectInformation,
                     ConfirmedGroupMembers = projectGrade.GradedProjectGroup.ConfirmedGroupMembers
                 },
-                GradedProjectGroupID = projectGrade.GradedProjectGroup.Id
+                GradedProjectGroupID = projectGrade.GradedProjectGroup.Id,
+                HasFile = projectGrade.HasFile
             };
 
             /*
             ProjectGroup projectGroup = await _context.ProjectGroups
                                             .Include( pg => pg.GroupMembers )
                                             .FirstOrDefaultAsync(rg => rg.Id == dto.GradedProjectGroupID );
-            
-            
+
+
             if( user == null || ( !doesUserInstruct( user, projectGroup.AffiliatedCourseId ) && user.Id != dto.GradingUserId && !IsUserInGroup( projectGroup, GetUserId() ) ) )
             {
                 response.Data = null;
@@ -435,7 +463,7 @@ namespace backend.Services.ProjectGradeServices
                 Id = projectGrade.Id,
                 MaxGrade = projectGrade.MaxGrade,
                 Grade = projectGrade.Grade,
-                Comment = projectGrade.Comment,
+                Comment = projectGrade.Description,
                 CreatedAt = projectGrade.CreatedAt,
                 userInProjectGradeDto = new UserInProjectGradeDto
                 {
@@ -454,7 +482,9 @@ namespace backend.Services.ProjectGradeServices
                     ProjectInformation = projectGrade.GradedProjectGroup.ProjectInformation,
                     ConfirmedGroupMembers = projectGrade.GradedProjectGroup.ConfirmedGroupMembers
                 },
-                GradedProjectGroupID = projectGrade.GradedProjectGroup.Id
+                GradedProjectGroupID = projectGrade.GradedProjectGroup.Id,
+                FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", projectGrade.Id),
+                HasFile = projectGrade.HasFile
             };
 
             response.Data = dto;
@@ -478,7 +508,7 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            if (projectGrade.FilePath == "" || projectGrade.FilePath == null)
+            if (projectGrade.HasFile)
             {
                 response.Data = null;
                 response.Message = "There is no file in this project grade";
@@ -524,7 +554,7 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            if (projectGrade.FilePath == "" || projectGrade.FilePath == null)
+            if (!projectGrade.HasFile)
             {
                 response.Data = null;
                 response.Message = "There is no file in this grade";

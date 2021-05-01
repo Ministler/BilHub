@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using backend.Dtos.ProjectGrade;
 using backend.Dtos.ProjectGroup;
 using backend.Models;
 using backend.Services.ProjectGroupServices;
@@ -79,10 +81,32 @@ namespace backend.Controllers
             return Ok(await _projectGroupService.CompleteMergeRequest(mergeRequestId));
         }
         [HttpGet]
-        [Route("OZGUR/{groupId}")]
-        public async Task<IActionResult> GetOzgur(int groupId)
+        [Route("InstructorComments/{groupId}")]
+        public async Task<IActionResult> GetInstructorComments(int groupId)
         {
-            ServiceResponse<GetOzgurDto> response = await _projectGroupService.GetOzgur(groupId);
+            ServiceResponse<List<ProjectGradeInfoDto>> response = await _projectGroupService.GetInstructorComments(groupId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+        [HttpGet]
+        [Route("TAComments/{groupId}")]
+        public async Task<IActionResult> GetTAComents(int groupId)
+        {
+            ServiceResponse<List<ProjectGradeInfoDto>> response = await _projectGroupService.GetTaComments(groupId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+        [HttpGet]
+        [Route("StudentComments/{groupId}")]
+        public async Task<IActionResult> GetStudentComments(int groupId)
+        {
+            ServiceResponse<List<ProjectGradeInfoDto>> response = await _projectGroupService.GetStudentComments(groupId);
             if (response.Success)
             {
                 return Ok(response);

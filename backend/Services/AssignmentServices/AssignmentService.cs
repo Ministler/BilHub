@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using backend.Data;
 using backend.Dtos.Assignment;
+using backend.Dtos.ProjectGroup;
 using backend.Models;
 using backend.Services.SubmissionServices;
 using Microsoft.AspNetCore.Hosting;
@@ -305,6 +307,96 @@ namespace backend.Services.AssignmentServices
             _context.Assignments.Update(assignment);
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetAssignmentDto>(assignment);
+            return response;
+        }
+        public async Task<ServiceResponse<string>> DeleteWithForce(int assignmentId)
+        {
+            ServiceResponse<string> response = new ServiceResponse<string>();
+            Assignment assignment = await _context.Assignments.Include(s => s.Submissions).FirstOrDefaultAsync(s => s.Id == assignmentId);
+            if (assignment == null)
+            {
+                response.Data = "Bad Request";
+                response.Message = "There is no submission with this Id";
+                response.Success = false;
+                return response;
+            }
+            foreach (int submissionId in assignment.Submissions.Select(c => c.Id))
+                await _submissionService.DeleteWithForce(submissionId);
+            if (!assignment.HasFile)
+            {
+                response.Data = "Not found";
+                response.Message = "There is no submission file for this submission";
+                response.Success = true;
+                return response;
+            }
+
+            var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}",
+                "StaticFiles/Assignments", assignment.AfilliatedCourseId, assignment.Id));
+            var filePath = Directory.GetFiles(target).FirstOrDefault();
+            assignment.FilePath = null;
+            assignment.HasFile = false;
+            File.Delete(filePath);
+            response.Data = target;
+            response.Message = "file succesfully deleted.";
+            _context.Assignments.Update(assignment);
+            await _context.SaveChangesAsync();
+            return response;
+        }
+        public async Task<ServiceResponse<GetOzgurDto>> GetOzgur(int groupId)
+        {
+            ServiceResponse<GetOzgurDto> response = new ServiceResponse<GetOzgurDto>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            Assignment assignment = await _context.Assignments
+                .Include(pg => pg.Submissions).ThenInclude(s => s.Comments).ThenInclude(c => c.CommentedUser)
+                .Include(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment)
+                .Include(pg => pg.Submissions).ThenInclude(s => s.AffiliatedGroup)
+                .Include(pg => pg.AfilliatedCourse).ThenInclude(c => c.Instructors)
+                .FirstOrDefaultAsync(s => s.Id == groupId);
+            if (assignment == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such project group";
+                response.Success = false;
+                return response;
+            }
+            List<int> instrs = assignment.AfilliatedCourse.Instructors.Select(i => i.UserId).ToList();
+            List<Submission> submissions = assignment.Submissions.ToList();
+            HashSet<int> graderIds = new HashSet<int>();
+            foreach (Submission s in submissions)
+            {
+                List<Comment> comments = s.Comments.ToList();
+                foreach (Comment c in comments)
+                {
+                    if (instrs.Contains(c.CommentedUserId))
+                        graderIds.Add(c.CommentedUserId);
+                }
+            }
+            List<string> graderNames = new List<string>();
+            foreach (int id in graderIds)
+            {
+                graderNames.Add(_context.Users.FirstOrDefault(u => u.Id == id).Name);
+            }
+            graderNames.Add("Students");
+            graderIds.Add(-1);
+
+            GetOzgurDto getOzgurDto = new GetOzgurDto();
+            getOzgurDto.graders = graderNames;
+            List<OzgurStatDto> ozgurStatDtos = new List<OzgurStatDto>();
+            foreach (Submission s in submissions)
+            {
+                OzgurStatDto ozgurStatDto = new OzgurStatDto();
+                ozgurStatDto.StatName = s.AffiliatedGroup.Name;
+                ozgurStatDto.Grades = new List<decimal>();
+                foreach (int id in graderIds)
+                {
+                    ServiceResponse<decimal> grade = await _submissionService.GetGradeWithGraderId(s.Id, id);
+                    ozgurStatDto.Grades.Add(grade.Data);
+                }
+                ozgurStatDtos.Add(ozgurStatDto);
+            }
+            getOzgurDto.ozgurStatDtos = ozgurStatDtos;
+            // List<int> graderIds = submission.Comments.Select(c => c.CommentedUserId).ToList();
+            response.Data = getOzgurDto;
             return response;
         }
     }

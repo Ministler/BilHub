@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace backend.Dtos.ProjectGroup
 {
-    public class OzgurSubmissionDto
+    public class OzgurStatDto
     {
-        public string SubmissionName { get; set; }
+        public string StatName { get; set; }
         public List<decimal> Grades { get; set; }
     }
 }

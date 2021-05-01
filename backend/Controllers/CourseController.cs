@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using backend.Dtos.Course;
+using backend.Dtos.ProjectGroup;
+using backend.Models;
 using backend.Services.CourseServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,33 +22,45 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCourse ( CreateCourseDto createCourseDto )
+        public async Task<ActionResult> CreateCourse(CreateCourseDto createCourseDto)
         {
-            return Ok ( await _courseService.CreateCourse( createCourseDto ) );
+            return Ok(await _courseService.CreateCourse(createCourseDto));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetCourse ( int id )
+        public async Task<ActionResult> GetCourse(int id)
         {
-            return Ok ( await _courseService.GetCourse( id ) );
+            return Ok(await _courseService.GetCourse(id));
         }
 
         [HttpPut]
-        public async Task<ActionResult> EditCourse ( EditCourseDto editCourseDto )
+        public async Task<ActionResult> EditCourse(EditCourseDto editCourseDto)
         {
-            return Ok ( await _courseService.EditCourse( editCourseDto ) );
+            return Ok(await _courseService.EditCourse(editCourseDto));
         }
 
         [HttpPost("AddInstructorToCourse")]
-        public async Task<ActionResult> AddInstructorToCourse ( int userId, int courseId )
+        public async Task<ActionResult> AddInstructorToCourse(int userId, int courseId)
         {
-            return Ok ( await _courseService.AddInstructorToCourse( userId, courseId ) );
+            return Ok(await _courseService.AddInstructorToCourse(userId, courseId));
         }
 
         [HttpDelete("RemoveInstructorFromCourse")]
-        public async Task<ActionResult> RemoveInstructorFromCourse ( int userId, int courseId )
+        public async Task<ActionResult> RemoveInstructorFromCourse(int userId, int courseId)
         {
-            return Ok ( await _courseService.RemoveInstructorFromCourse( userId, courseId ) );
+            return Ok(await _courseService.RemoveInstructorFromCourse(userId, courseId));
+        }
+
+        [HttpGet]
+        [Route("OZGUR/{courseId}")]
+        public async Task<IActionResult> GetOzgur(int courseId)
+        {
+            ServiceResponse<GetOzgurDto> response = await _courseService.GetOzgur(courseId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
         }
     }
 }

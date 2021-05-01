@@ -220,7 +220,7 @@ namespace backend.Services.SubmissionServices
             {
                 response.Data = "Not found";
                 response.Message = "There is no submission file for this submission";
-                response.Success = false;
+                response.Success = true;
                 return response;
             }
 
@@ -287,7 +287,8 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            Submission submission = await _context.Submissions.FirstOrDefaultAsync(s => s.AffiliatedAssignmentId == addSubmissionDto.AffiliatedAssignmentId);
+            Submission submission = await _context.Submissions
+                .FirstOrDefaultAsync(s => s.AffiliatedGroupId == projectGroup.Id);
             if (submission != null)
             {
                 response.Data = null;

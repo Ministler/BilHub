@@ -22,7 +22,6 @@ namespace backend.Models
         public DateTime StartDate { get; set; }
         public int MinGroupSize { get; set; }
         public int MaxGroupSize { get; set; }
-        public ProjectGrade FinalGrade { get; set; }
         public PeerGradeAssignment PeerGradeAssignment { get; set; }
         public ICollection<Section> Sections { get; set; }
         public ICollection<CourseUser> Instructors { get; set; }

@@ -5,8 +5,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using backend.Data;
+using backend.Dtos.ProjectGrade;
 using backend.Dtos.ProjectGroup;
 using backend.Models;
+using backend.Services.AssignmentServices;
+using backend.Services.ProjectGradeServices;
 using backend.Services.SubmissionServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -17,14 +20,17 @@ namespace backend.Services.ProjectGroupServices
     {
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISubmissionService _submissionService;
+        private readonly IAssignmentService _assignment;
+        private readonly IProjectGradeService _projectGradeService;
 
-        public ProjectGroupService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, ISubmissionService submissionService)
+        public ProjectGroupService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, ISubmissionService submissionService, IAssignmentService assignment, IProjectGradeService projectGradeService)
         {
             _httpContextAccessor = httpContextAccessor;
             _submissionService = submissionService;
+            _assignment = assignment;
+            _projectGradeService = projectGradeService;
             _context = context;
             _mapper = mapper;
         }
@@ -313,6 +319,7 @@ namespace backend.Services.ProjectGroupServices
             try
             {
                 ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                    .Include(pg => pg.ProjectGrades)
                     .FirstOrDefaultAsync(c => c.Id == projectGroupId);
 
                 if (dbProjectGroup == null)
@@ -322,6 +329,10 @@ namespace backend.Services.ProjectGroupServices
                 }
                 else
                 {
+                    foreach (ProjectGrade pg in dbProjectGroup.ProjectGrades)
+                    {
+                        await _projectGradeService.DeleteWithForce(pg.Id);
+                    }
                     _context.ProjectGrades.RemoveRange(_context.ProjectGrades.Where(c => c.GradedProjectGroupID == dbProjectGroup.Id));
                     _context.Submissions.RemoveRange(_context.Submissions.Where(c => c.AffiliatedGroupId == dbProjectGroup.Id));
                     _context.JoinRequests.RemoveRange(_context.JoinRequests.Where(c => c.RequestedGroupId == dbProjectGroup.Id));
@@ -664,61 +675,202 @@ namespace backend.Services.ProjectGroupServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetOzgurDto>> GetOzgur(int groupId)
+        public async Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetInstructorComments(int projectGroupId)
         {
-            ServiceResponse<GetOzgurDto> response = new ServiceResponse<GetOzgurDto>();
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup projectGroup = await _context.ProjectGroups
-                .Include(pg => pg.Submissions).ThenInclude(s => s.Comments).ThenInclude(c => c.CommentedUser)
-                .Include(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment)
-                .FirstOrDefaultAsync(s => s.Id == groupId);
+            ServiceResponse<List<ProjectGradeInfoDto>> response = new ServiceResponse<List<ProjectGradeInfoDto>>();
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(s => s.AffiliatedCourse).ThenInclude(pg => pg.Instructors)
+                .Include(s => s.ProjectGrades).Include(s => s.AffiliatedSection).FirstOrDefaultAsync(s => s.Id == projectGroupId);
             if (projectGroup == null)
             {
                 response.Data = null;
-                response.Message = "There is no such project group";
+                response.Message = "There is no such project Group";
                 response.Success = false;
                 return response;
             }
 
-            List<Submission> submissions = projectGroup.Submissions.ToList();
-            HashSet<int> graderIds = new HashSet<int>();
-            foreach (Submission s in submissions)
-            {
-                List<Comment> comments = s.Comments.ToList();
-                foreach (Comment c in comments)
+            List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
+                .Include(c => c.GradingUser).Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                .Select(c => new ProjectGradeInfoDto
                 {
-                    graderIds.Add(c.CommentedUserId);
-                }
-            }
-            List<string> graderNames = new List<string>();
-            foreach (int id in graderIds)
-            {
-                graderNames.Add(_context.Users.FirstOrDefault(u => u.Id == id).Name);
-            }
-            graderNames.Add("Students");
-            graderIds.Add(-1);
+                    Id = c.Id,
+                    MaxGrade = c.MaxGrade,
+                    Grade = c.Grade,
+                    Comment = c.Description,
+                    CreatedAt = c.CreatedAt,
+                    userInProjectGradeDto = new UserInProjectGradeDto
+                    {
+                        Id = c.GradingUser.Id,
+                        email = c.GradingUser.Email,
+                        name = c.GradingUser.Name
+                    },
+                    GradingUserId = c.GradingUserId,
 
-            GetOzgurDto getOzgurDto = new GetOzgurDto();
-            getOzgurDto.graders = graderNames;
-            List<OzgurSubmissionDto> ozgurSubmissionDtos = new List<OzgurSubmissionDto>();
-            foreach (Submission s in submissions)
-            {
-                OzgurSubmissionDto ozgurSubmissionDto = new OzgurSubmissionDto();
-                ozgurSubmissionDto.SubmissionName = s.AffiliatedAssignment.Title;
-                ozgurSubmissionDto.Grades = new List<decimal>();
-                foreach (int id in graderIds)
-                {
-                    ServiceResponse<decimal> grade = await _submissionService.GetGradeWithGraderId(s.Id, id);
-                    ozgurSubmissionDto.Grades.Add(grade.Data);
-                }
-                ozgurSubmissionDtos.Add(ozgurSubmissionDto);
-            }
-            getOzgurDto.ozgurSubmissionDtos = ozgurSubmissionDtos;
-            // List<int> graderIds = submission.Comments.Select(c => c.CommentedUserId).ToList();
-            response.Data = getOzgurDto;
+                    FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
+                    GradedProjectGroupID = c.GradedProjectGroup.Id
+                }).ToList();
+
+            response.Data = projectGrades;
             return response;
         }
 
+        public async Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetTaComments(int projectGroupId)
+        {
+            ServiceResponse<List<ProjectGradeInfoDto>> response = new ServiceResponse<List<ProjectGradeInfoDto>>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(s => s.AffiliatedCourse).ThenInclude(pg => pg.Instructors)
+                .Include(s => s.ProjectGrades).Include(s => s.AffiliatedSection).FirstOrDefaultAsync(s => s.Id == projectGroupId);
+            if (projectGroup == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such project Group";
+                response.Success = false;
+                return response;
+            }
+            Course course = projectGroup.AffiliatedCourse;
+            List<int> intrs = new List<int>();
+            intrs = course.Instructors.Select(cu => cu.UserId).ToList();
+            List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
+                .Include(c => c.GradingUser)
+                .Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
+                .Where(c => intrs.Contains(c.GradingUserId))
+                .Select(c => new ProjectGradeInfoDto
+                {
+                    Id = c.Id,
+                    MaxGrade = c.MaxGrade,
+                    Grade = c.Grade,
+                    Comment = c.Description,
+                    CreatedAt = c.CreatedAt,
+                    userInProjectGradeDto = new UserInProjectGradeDto
+                    {
+                        Id = c.GradingUser.Id,
+                        email = c.GradingUser.Email,
+                        name = c.GradingUser.Name
+                    },
+                    GradingUserId = c.GradingUserId,
 
+                    FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
+                    GradedProjectGroupID = c.GradedProjectGroup.Id
+                }).ToList();
+
+            response.Data = projectGrades;
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetStudentComments(int projectGroupId)
+        {
+            ServiceResponse<List<ProjectGradeInfoDto>> response = new ServiceResponse<List<ProjectGradeInfoDto>>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(s => s.AffiliatedCourse).ThenInclude(pg => pg.Instructors)
+                .Include(s => s.ProjectGrades).Include(s => s.AffiliatedSection).FirstOrDefaultAsync(s => s.Id == projectGroupId);
+            if (projectGroup == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such project Group";
+                response.Success = false;
+                return response;
+            }
+            Course course = projectGroup.AffiliatedCourse;
+            List<int> intrs = new List<int>();
+            intrs = course.Instructors.Select(cu => cu.UserId).ToList();
+            List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
+                .Include(c => c.GradingUser)
+                .Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
+                .Where(c => !intrs.Contains(c.GradingUserId))
+                .Select(c => new ProjectGradeInfoDto
+                {
+                    Id = c.Id,
+                    MaxGrade = c.MaxGrade,
+                    Grade = c.Grade,
+                    Comment = c.Description,
+                    CreatedAt = c.CreatedAt,
+                    userInProjectGradeDto = new UserInProjectGradeDto
+                    {
+                        Id = c.GradingUser.Id,
+                        email = c.GradingUser.Email,
+                        name = c.GradingUser.Name
+                    },
+                    GradingUserId = c.GradingUserId,
+
+                    FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
+                    GradedProjectGroupID = c.GradedProjectGroup.Id
+                }).ToList();
+
+            response.Data = projectGrades;
+            return response;
+        }
+
+        public async
+         Task<ServiceResponse<decimal>> GetGradeWithGraderId(int projectGroupId, int graderId)
+        {
+            ServiceResponse<decimal> response = new ServiceResponse<decimal>();
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(s => s.ProjectGrades).FirstOrDefaultAsync(c => c.Id == projectGroupId);
+            if (projectGroup == null)
+            {
+                response.Data = -1;
+                response.Message = "There is no project grade with this Id";
+                response.Success = false;
+                return response;
+            }
+            if (graderId == -1)
+            {
+                return await GetStudentsAverage(projectGroupId);
+            }
+            else
+            {
+                User grader = await _context.Users.FirstOrDefaultAsync(c => c.Id == graderId);
+                if (grader == null)
+                {
+                    response.Data = -1;
+                    response.Message = "There is no user with this Id";
+                    response.Success = false;
+                    return response;
+                }
+                ProjectGrade projectGrade = projectGroup.ProjectGrades.FirstOrDefault(c => c.GradingUserId == grader.Id);
+                if (projectGrade == null || projectGrade.MaxGrade == 0)
+                {
+                    response.Data = -1;
+                    response.Message = "This user did not send his feedback grade for this assignment";
+                    response.Success = false;
+                    return response;
+                }
+                response.Data = Decimal.Round(projectGrade.Grade / projectGrade.MaxGrade * 100, 2);
+                return response;
+            }
+
+        }
+
+        public async Task<ServiceResponse<decimal>> GetStudentsAverage(int projectGroupId)
+        {
+            ServiceResponse<decimal> response = new ServiceResponse<decimal>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(s => s.AffiliatedCourse).ThenInclude(pg => pg.Instructors)
+                .Include(s => s.ProjectGrades).Include(s => s.AffiliatedSection).FirstOrDefaultAsync(s => s.Id == projectGroupId);
+            if (projectGroup == null)
+            {
+                response.Data = -1;
+                response.Message = "There is no such project Group";
+                response.Success = false;
+                return response;
+            }
+            Course course = projectGroup.AffiliatedCourse;
+            List<int> intrs = new List<int>();
+            intrs = course.Instructors.Select(cu => cu.UserId).ToList();
+            List<decimal> projectGrades = _context.ProjectGrades
+                .Include(c => c.GradingUser)
+                .Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
+                .Where(c => !intrs.Contains(c.GradingUserId))
+                .Where(c => c.MaxGrade > 0)
+                .Select(c => decimal.Round(c.Grade / c.MaxGrade * 100, 2)).ToList();
+
+
+            if (projectGrades.Count > 0)
+                response.Data = projectGrades.Average();
+            else
+                response.Data = -1;
+            return response;
+        }
     }
 }
