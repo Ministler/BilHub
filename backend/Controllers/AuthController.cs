@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using backend.Data.Auth;
 using backend.Dtos.User;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
@@ -30,6 +31,19 @@ namespace backend.Controllers
         public async Task<IActionResult> Login(UserLoginDto request)
         {
             ServiceResponse<GetUserDto> response = await _authRepo.Login(request);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+
+        [Authorize]
+        [HttpGet("Check")]
+        public async Task<IActionResult> Check()
+        {
+            ServiceResponse<GetUserDto> response = await _authRepo.check();
             if (!response.Success)
             {
                 return BadRequest(response);

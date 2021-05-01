@@ -137,7 +137,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        [Route("OZGUR/{assignmentId}")]
+        [Route("Statistics/{assignmentId}")]
         public async Task<IActionResult> GetOzgur(int assignmentId)
         {
             ServiceResponse<GetOzgurDto> response = await _assignmentService.GetOzgur(assignmentId);

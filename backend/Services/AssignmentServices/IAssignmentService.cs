@@ -16,7 +16,5 @@ namespace backend.Services.AssignmentServices
         Task<ServiceResponse<GetAssignmentDto>> UpdateAssignment(UpdateAssignmentDto dto);
         Task<ServiceResponse<GetOzgurDto>> GetOzgur(int groupId);
         Task<ServiceResponse<string>> DeleteWithForce(int assignmentId);
-
-        Task<ServiceResponse<string>> DeleteWithForce(int assignmentId);
     }
 }
