@@ -18,6 +18,7 @@ import {
     Dropdown,
     GridColumn,
 } from 'semantic-ui-react';
+import { dateObjectToInputDate, inputDateToDateObject } from '../../../utils';
 
 export const InformationSection = (props) => {
     return (
@@ -60,7 +61,8 @@ export class NewAssignmentModal extends Component {
             isSubmissionVisible: false,
             isLateSubmissionsAllowed: false,
             dueDate: '',
-            file: '',
+            hasFile: '',
+            warning: false,
         };
     }
     handleChange = (event, data) => {
@@ -95,13 +97,15 @@ export class NewAssignmentModal extends Component {
             });
         }
     };
+
+    allEntered = () => {
+        return this.state.title !== '' && this.state.type !== 0 && this.state.dueDate !== '';
+    };
+
     onFormSubmit() {
-        let dateArr = this.state.dueDate.split(/-/);
-        dateArr[2] = dateArr[2].split(/T/);
-        dateArr[2][1] = dateArr[2][1].split(/:/);
-        let d = new Date(dateArr[0], dateArr[1], dateArr[2][0], dateArr[2][1][0], dateArr[2][1][1]);
+        let d = inputDateToDateObject(this.state.dueDate);
         console.log(d);
-        return {
+        const request = {
             title: this.state.title,
             description: this.state.description,
             type: this.state.type,
@@ -111,16 +115,46 @@ export class NewAssignmentModal extends Component {
             isSubmissionVisible: this.state.isSubmissionVisible,
             isLateSubmissionsAllowed: this.state.isLateSubmissionsAllowed,
             dueDate: d,
-            file: this.state.file,
+            hasFile: this.state.hasFile,
         };
+        console.log(request);
     }
+    closeModal = () => {
+        this.setState({
+            title: '',
+            description: '',
+            type: 0,
+            isStudentComments: false,
+            isCommentsAnonymous: false,
+            isCommentsGraded: false,
+            isSubmissionVisible: false,
+            isLateSubmissionsAllowed: false,
+            dueDate: '',
+            hasFile: '',
+            warning: false,
+        });
+    };
     render() {
         return (
-            <Modal closeIcon onClose={() => this.props.onClosed(false)} open={this.props.isOpen} size={'small'}>
+            <Modal
+                closeIcon
+                onClose={() => {
+                    this.closeModal();
+                    this.props.onClosed(false);
+                }}
+                open={this.props.isOpen}
+                size={'small'}>
                 <Modal.Header style={{ fontSize: '16px' }}>New Assignment</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
                         <Grid style={{ flexDirection: 'column' }}>
+                            {this.state.warning && (
+                                <Message negative>
+                                    <Message.Header>
+                                        Title, Assignment Type and Due Date must be selected
+                                    </Message.Header>
+                                </Message>
+                            )}
                             <Form>
                                 <Form.Group inline style={{ justifyContent: 'space-between' }}>
                                     <p
@@ -232,7 +266,7 @@ export class NewAssignmentModal extends Component {
                                         onChange={this.handleChange}
                                         name="file"
                                         type="file"
-                                        value={this.state.file}
+                                        value={this.state.hasFile}
                                         label="Add File"
                                     />
                                 </Form.Group>
@@ -244,8 +278,13 @@ export class NewAssignmentModal extends Component {
                     <Button
                         color="blue"
                         onClick={() => {
-                            this.onFormSubmit();
-                            this.props.onClosed(false);
+                            if (this.allEntered()) {
+                                this.onFormSubmit();
+                                this.closeModal();
+                                this.props.onClosed(true);
+                            } else {
+                                this.setState({ warning: true });
+                            }
                         }}
                         style={{
                             borderRadius: '10px',
@@ -276,22 +315,17 @@ export class EditAssignmentModal extends Component {
             isSubmissionVisible: false,
             isLateSubmissionsAllowed: false,
             dueDate: '',
-            file: '',
+            hasFile: '',
+            warning: false,
         };
     }
+
+    allEntered = () => {
+        return this.state.title !== '' && this.state.type !== 0 && this.state.dueDate !== '';
+    };
     componentDidMount() {
-        let date = this.props.curAssignment.dueDate;
-        let d =
-            '' +
-            date.getFullYear() +
-            '-' +
-            (date.getMonth() / 10 < 1 ? '0' + date.getMonth() : date.getMonth()) +
-            '-' +
-            (date.getDate() / 10 < 1 ? '0' + date.getDate() : date.getDate()) +
-            'T' +
-            (date.getHours() / 10 < 1 ? '0' + date.getHours() : date.getHours()) +
-            ':' +
-            (date.getMinutes() / 10 < 1 ? '0' + date.getMinutes() : date.getMinutes());
+        let d = dateObjectToInputDate(this.props.curAssignment.dueDate);
+
         this.setState({
             title: this.props.curAssignment.title,
             description: this.props.curAssignment.caption,
@@ -302,9 +336,28 @@ export class EditAssignmentModal extends Component {
             isSubmissionVisible: false,
             isLateSubmissionsAllowed: false,
             dueDate: d,
-            file: '',
+            hasFile: '',
+            warning: false,
         });
     }
+
+    onOpen = () => {
+        let d = dateObjectToInputDate(this.props.curAssignment.dueDate);
+        console.log(this.props.curAssignment.title);
+        this.setState({
+            title: this.props.curAssignment.title,
+            description: this.props.curAssignment.caption,
+            type: this.props.curAssignment.type,
+            isStudentComments: false,
+            isCommentsAnonymous: false,
+            isCommentsGraded: false,
+            isSubmissionVisible: false,
+            isLateSubmissionsAllowed: false,
+            dueDate: d,
+            hasFile: '',
+            warning: false,
+        });
+    };
 
     handleChange = (event, data) => {
         console.log(this.state.dueDate);
@@ -340,9 +393,9 @@ export class EditAssignmentModal extends Component {
         }
     };
     onFormSubmit() {
-        let dateArr = this.state.dueDate.split(/-/);
-        let d = new Date(dateArr[0], dateArr[1], dateArr[2]);
-        return {
+        let d = inputDateToDateObject(this.state.dueDate);
+        console.log(d);
+        const request = {
             title: this.state.title,
             description: this.state.description,
             type: this.state.type,
@@ -352,15 +405,26 @@ export class EditAssignmentModal extends Component {
             isSubmissionVisible: this.state.isSubmissionVisible,
             isLateSubmissionsAllowed: this.state.isLateSubmissionsAllowed,
             dueDate: d,
-            file: this.state.file,
+            hasFile: this.state.hasFile,
         };
+        console.log(request);
     }
     render() {
         return (
-            <Modal closeIcon onClose={() => this.props.onClosed(false)} open={this.props.isOpen} size={'small'}>
+            <Modal
+                closeIcon
+                onMount={() => this.onOpen()}
+                onClose={() => this.props.onClosed(false)}
+                open={this.props.isOpen}
+                size={'small'}>
                 <Modal.Header style={{ fontSize: '16px' }}>Edit Assignment</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
+                        {this.state.warning && (
+                            <Message negative>
+                                <Message.Header>Title, Assignment Type and Due Date must be selected</Message.Header>
+                            </Message>
+                        )}
                         <Grid style={{ flexDirection: 'column' }}>
                             <Form>
                                 <Form.Group inline style={{ justifyContent: 'space-between' }}>
@@ -473,7 +537,7 @@ export class EditAssignmentModal extends Component {
                                         onChange={this.handleChange}
                                         name="file"
                                         type="file"
-                                        value={this.state.file}
+                                        value={this.state.hasFile}
                                         label="Add File"
                                     />
                                 </Form.Group>
@@ -485,8 +549,10 @@ export class EditAssignmentModal extends Component {
                     <Button
                         color="blue"
                         onClick={() => {
-                            this.onFormSubmit();
-                            this.props.onClosed(false);
+                            if (this.allEntered()) {
+                                this.onFormSubmit();
+                                this.props.onClosed(false);
+                            } else this.setState({ warning: true });
                         }}
                         style={{
                             borderRadius: '10px',
@@ -533,7 +599,10 @@ export const DeleteAssignmentModal = (props) => {
                 </Button>
                 <Button
                     color="red"
-                    onClick={() => props.onClosed(false)}
+                    onClick={() => {
+                        props.deleteAssignment(props.curAssignment);
+                        props.onClosed(false);
+                    }}
                     style={{
                         borderRadius: '10px',
                         padding: '5px 16px',
