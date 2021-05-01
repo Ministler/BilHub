@@ -21,23 +21,17 @@ import { checkAuthRequest } from './API';
 
 class App extends Component {
     componentDidMount() {
-        const token = localStorage.getItem('token');
-
-        checkAuthRequest(token)
-            .then((response) => {
-                const userData = response.data.users[0];
-                this.props.authSuccess(
-                    token,
-                    userData.localId,
-                    userData.email,
-                    userData.displayName,
-                    'instructor',
-                    true
-                );
-            })
-            .catch((error) => {
-                this.props.logout();
-            });
+        checkAuthRequest().then((response) => {
+            const userData = response.data;
+            this.props.authSuccess(
+                localStorage.getItem('token'),
+                userData.id,
+                userData.email,
+                userData.name,
+                userData.userType,
+                userData.darkModeStatus
+            );
+        });
     }
 
     render() {
@@ -74,7 +68,8 @@ class App extends Component {
                 </Switch>
             </AppLayout>
         );
-        return this.props.token ? authenticatedRoutes : unauthenticatedRoutes;
+        const token = localStorage.getItem('token');
+        return token ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }
 

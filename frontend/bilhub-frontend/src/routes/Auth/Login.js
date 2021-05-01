@@ -32,14 +32,15 @@ class Login extends Component {
 
         loginRequest(this.state.form.email, this.state.form.password)
             .then((response) => {
-                const userData = response.data;
+                const userData = response.data.data;
+                console.log(userData);
                 this.props.authSuccess(
-                    userData.idToken,
-                    userData.localId,
+                    userData.token,
+                    userData.id,
                     userData.email,
-                    userData.displayName,
-                    'student',
-                    false
+                    userData.name,
+                    userData.userType,
+                    userData.darkModeStatus
                 );
             })
             .catch(() => {

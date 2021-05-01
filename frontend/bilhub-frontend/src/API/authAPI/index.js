@@ -1,5 +1,4 @@
 export {
-    checkRequest,
     loginRequest,
     registerRequest,
     verifyRequest,
@@ -7,3 +6,4 @@ export {
     forgotPasswordRequest,
     resendRequest,
 } from './authPOST';
+export { checkAuthRequest } from './authGET';

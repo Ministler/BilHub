@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+
+import { forgotPasswordRequest } from '../../API';
 import { NewPasswordUI } from './NewPasswordUI';
 
 export default class NewPassword extends Component {
@@ -18,14 +20,12 @@ export default class NewPassword extends Component {
         }
 
         if (true) {
-            if (true) {
+            forgotPasswordRequest(this.state.form.email).then((request) => {
                 this.props.history.push({
                     pathname: '/login',
                     state: { redirectedFrom: 'newPassword' },
                 });
-            } else {
-                this.setError('No Such Mail');
-            }
+            });
         }
     };
 

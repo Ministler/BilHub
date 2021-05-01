@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { SignupUI } from './SignupUI';
 import { ConformationUI } from './ConformationUI';
-import { singupRequest } from '../../API';
+import { registerRequest, verifyRequest, resendRequest } from '../../API';
 
 export default class Signup extends Component {
     constructor(props) {
@@ -42,35 +42,41 @@ export default class Signup extends Component {
             this.setError('Passwords dont match');
             return;
         }
+        console.log(this.state.form.firstName + ' ' + this.state.form.lastName);
 
-        singupRequest(
+        registerRequest(
             this.state.form.email,
             this.state.form.password,
             this.state.form.firstName + ' ' + this.state.form.lastName
         )
             .then((response) => {
-                this.setState({
-                    activationMode: true,
-                });
-                this.setError(null);
-                this.setInformation('Please Enter the Activation Code that is Sent to Your Bilkent Email');
+                if (response.data.success) {
+                    this.setState({
+                        activationMode: true,
+                        email: this.state.form.email,
+                    });
+                    this.setError(null);
+                    this.setInformation('Please Enter the Activation Code that is Sent to Your Bilkent Email');
+                }
             })
-            .catch(() => {
-                this.setInformation(null);
+            .catch((error) => {
                 this.setError('Server Error');
             });
     };
 
     onConformation = () => {
-        if (true) {
-            this.props.history.push({
-                pathname: '/login',
-                state: { redirectedFrom: 'signup' },
+        verifyRequest(this.state.email, this.state.form.conformationCode)
+            .then((response) => {
+                this.props.history.push({
+                    pathname: '/login',
+                    state: { redirectedFrom: 'signup' },
+                });
+            })
+            .catch((error) => {
+                console.log(error.response);
+                this.setInformation(null);
+                this.setError('Conformation Code is Not Correct');
             });
-        } else {
-            this.setInformation(null);
-            this.setError('Conformation Code is Not Correct');
-        }
     };
 
     setForm = (form) => {
@@ -88,8 +94,16 @@ export default class Signup extends Component {
     };
 
     onChange = (name, value) => {
+        console.log(name, value);
         this.setForm({ ...this.state.form, [name]: value });
-        console.log(this.state.form.conformationCode);
+    };
+
+    onResendCode = () => {
+        resendRequest(this.state.email)
+            .then((response) => {})
+            .catch((error) => {
+                console.log(error.response);
+            });
     };
 
     render() {
@@ -107,6 +121,7 @@ export default class Signup extends Component {
             />
         ) : (
             <ConformationUI
+                onResendCode={this.onResendCode}
                 onConformation={this.onConformation}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}

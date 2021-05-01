@@ -1,6 +1,6 @@
 import { authAxios, BASE_COMMENT_URL } from '../axiosConfigs';
 
-export const postCommentRequest = async (File, commentId) => {
+export const postCommentFileRequest = async (File, commentId) => {
     const url = commentId;
     const body = {
         File: File,

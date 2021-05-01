@@ -1,13 +1,17 @@
-import { unauthAxios } from '../axiosConfigs';
+import axios from 'axios';
 
-export const checkAuthRequest = async (token) => {
-    const url = 'Check';
+import { BASE_AUTH_URL, authAxios } from '../axiosConfigs';
+
+export const changePassword = async (email, password, newPassword) => {
+    const url = 'ChangePassword';
     const body = {
-        token: token,
+        email: email,
+        password: password,
+        newPassword: newPassword,
     };
 
-    return unauthAxios
-        .post(url, body)
+    return authAxios
+        .post(BASE_AUTH_URL + url, body)
         .then((response) => response)
         .catch((error) => {
             throw error;
@@ -20,8 +24,8 @@ export const forgotPasswordRequest = async (email) => {
         email: email,
     };
 
-    return unauthAxios
-        .post(url, body)
+    return axios
+        .post(BASE_AUTH_URL + url, body)
         .then((response) => response)
         .catch((error) => {
             throw error;
@@ -35,8 +39,8 @@ export const loginRequest = async (email, password) => {
         password: password,
     };
 
-    return unauthAxios
-        .post(url, body)
+    return axios
+        .post(BASE_AUTH_URL + url, body)
         .then((response) => response)
         .catch((error) => {
             throw error;
@@ -44,13 +48,10 @@ export const loginRequest = async (email, password) => {
 };
 
 export const resendRequest = async (email) => {
-    const url = 'Resend';
-    const body = {
-        email: email,
-    };
+    const url = 'Resend?email=' + email;
 
-    return unauthAxios
-        .post(url, body)
+    return axios
+        .post(BASE_AUTH_URL + url)
         .then((response) => response)
         .catch((error) => {
             throw error;
@@ -58,15 +59,15 @@ export const resendRequest = async (email) => {
 };
 
 export const registerRequest = async (email, password, name) => {
-    const url = '/Register';
+    const url = 'Register';
     const body = {
         email: email,
         password: password,
-        displayName: name,
+        name: name,
     };
 
-    return unauthAxios
-        .post(url, body)
+    return axios
+        .post(BASE_AUTH_URL + url, body)
         .then((response) => response)
         .catch((error) => {
             throw error;
@@ -74,29 +75,14 @@ export const registerRequest = async (email, password, name) => {
 };
 
 export const verifyRequest = async (email, code) => {
-    const url = '/Verify';
+    const url = 'Verify';
     const body = {
         email: email,
         code: code,
     };
 
-    return unauthAxios
-        .post(url, body)
-        .then((response) => response)
-        .catch((error) => {
-            throw error;
-        });
-};
-
-export const changePassword = async (email, password, newPassword) => {
-    const url = '/ChangePassword';
-    const body = {
-        email: email,
-        code: code,
-    };
-
-    return unauthAxios
-        .post(url, body)
+    return axios
+        .post(BASE_AUTH_URL + url, body)
         .then((response) => response)
         .catch((error) => {
             throw error;
