@@ -18,7 +18,7 @@ import { UserSearchBar } from '../CourseComponents';
 
 import './CourseSettings.css';
 
-import { convertFormedGroupsToBriefList, convertUnformedGroupsToBriefList } from '../../../components';
+import { FormedGroupsBriefList, convertUnformedGroupsToBriefList } from '../../../components';
 
 const semesterOptions = [
     {
@@ -41,51 +41,172 @@ const semesterOptions = [
 export class CourseSettings extends Component {
     constructor(props) {
         super(props);
-        this.settingTitle = 'Course Settings ' + dummyCourseInformation.courseName;
+
+        this.state = {
+            code: null,
+            year: null,
+            semester: null,
+            shortDescription: null,
+            sections: null,
+            instructorList: null,
+            currentInstructor: null,
+            TAList: null,
+            currentTA: null,
+            studentManualList: null,
+            manualSection: null,
+            currentStudent: null,
+            studentAutoList: null,
+            autoSection: null,
+            minSize: null,
+            maxSize: null,
+            groupFormationDate: null,
+            groups: null,
+            users: null,
+            isLocked: null,
+            isSectionless: null,
+        };
+    }
+
+    updateGeneralSettings = () => {
+        for (let i = 0; i < this.state.numberOfSections; i++) {
+            for (let k = 0; k < this.state.studentManualList[i].length; k++) {
+                this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
+            }
+        }
+        let dateArr = this.state.groupFormationDate.split(/-/);
+        //System.DateTime
+        let date = new Date(dateArr[0], dateArr[1], dateArr[2]);
+
+        let request = null;
+        if (this.state.courseInformation?.isLocked) {
+            request = {
+                courseName: this.state.code + '/' + this.state.year + this.state.semester,
+                description: this.state.shortDescription,
+
+                newStudents: this.state.studentAutoList,
+                newTAs: this.state.TAList,
+                newinstructors: this.state.instructorList,
+            };
+        } else {
+            request = {
+                courseName: this.state.code + '/' + this.state.year + this.state.semester,
+                description: this.state.shortDescription,
+
+                newStudents: this.state.studentAutoList,
+                newTAs: this.state.TAList,
+                newinstructors: this.state.instructorList,
+
+                minSize: this.state.minSize,
+                maxSize: this.state.maxSize,
+                groupFormationDate: date,
+            };
+        }
+
+        console.log(request);
+    };
+
+    deleteCourse = () => {
+        const request = {
+            delete: true,
+            courseId: this.props.match.params.courseId,
+        };
+
+        console.log(request);
+    };
+
+    deactiveCourse = () => {
+        const request = {
+            deactivate: true,
+            courseId: this.props.match.params.courseId,
+        };
+
+        console.log(request);
+    };
+
+    removeUserFromCourse = (userMail) => {
+        const request = {
+            userMail: userMail,
+            courseId: this.props.match.params.courseId,
+            remove: true,
+        };
+
+        console.log(request);
+    };
+
+    ungroup = (groupId) => {
+        const request = {
+            groupId: groupId,
+            courseId: this.props.match.params.courseId,
+            ungroup: true,
+        };
+
+        console.log(request);
+    };
+
+    removeStudent = (groupId, studentId) => {
+        const request = {
+            groupId: groupId,
+            studentId: studentId,
+            remove: true,
+        };
+
+        console.log(request);
+    };
+
+    mergeGroup = (groupId, otherGroupId) => {
+        const request = {
+            groupId: groupId,
+            otherGroupId: otherGroupId,
+            merge: true,
+        };
+
+        console.log(request);
+    };
+
+    componentDidMount() {
         let code;
         let year;
         let semester;
-        let dash = 0;
+        let delimitir = 0;
         for (let i = 0; i < dummyCourseInformation.courseName.length; i++) {
             if (dummyCourseInformation.courseName.charAt(i) === '-') {
                 code = dummyCourseInformation.courseName.substring(0, i);
-                dash = i;
+                delimitir = i;
             } else if (dummyCourseInformation.courseName.charAt(i) === ' ') {
-                year = parseInt(dummyCourseInformation.courseName.substring(dash + 1, i));
-                dash = i;
+                year = parseInt(dummyCourseInformation.courseName.substring(delimitir + 1, i));
+                delimitir = i;
             } else if (i + 1 === dummyCourseInformation.courseName.length) {
-                semester = dummyCourseInformation.courseName.substring(dash + 1);
+                semester = dummyCourseInformation.courseName.substring(delimitir + 1);
             }
         }
-        let sectionNumber = dummyCourseInformation.sectionNumber;
+
+        let numberOfSections = dummyCourseInformation.numberOfSections;
         let studentManualList = [];
         let studentAutoList = [];
-        for (let i = 0; i < sectionNumber; i++) {
+        for (let i = 0; i < numberOfSections; i++) {
             studentAutoList.push([]);
             studentManualList.push([]);
         }
         let sections = [];
-        for (let i = 1; i <= sectionNumber; i++) {
+        for (let i = 1; i <= numberOfSections; i++) {
             sections.push({
                 key: i,
                 text: i,
                 value: i,
             });
         }
-        let date =
-            dummyCourseInformation.groupFormationDate.getFullYear() +
-            '-' +
-            dummyCourseInformation.groupFormationDate.getMonth() +
-            '-' +
-            dummyCourseInformation.groupFormationDate.getDate();
 
-        this.state = {
+        let date = dummyCourseInformation.formationDate;
+
+        this.setState({
+            settingTitle: 'Course Settings ' + dummyCourseInformation.courseName,
             code: code,
             year: year,
             semester: semester,
             shortDescription: dummyCourseInformation.description,
             isSectionless: dummyCourseInformation.isSectionless,
-            sectionNumber: sectionNumber,
+            isLocked: dummyCourseInformation.isLocked,
+            numberOfSections: numberOfSections,
             sections: sections,
             instructorList: [],
             currentInstructor: '',
@@ -96,14 +217,16 @@ export class CourseSettings extends Component {
             currentStudent: '',
             studentAutoList: studentAutoList,
             autoSection: 1,
+            groupChangeSection: 1,
             minSize: dummyCourseInformation.minSize,
             maxSize: dummyCourseInformation.maxSize,
             groupFormationDate: date,
-        };
-        this.handleChange = this.handleChange.bind(this);
+            groups: dummyGroupsLocked,
+            users: dummyUsers,
+        });
     }
 
-    handleChange(event, data) {
+    handleChange = (event, data) => {
         event.preventDefault();
 
         if (!this.validations(data)) {
@@ -115,7 +238,7 @@ export class CourseSettings extends Component {
         this.setState({
             [name]: value,
         });
-    }
+    };
 
     validations = (data) => {
         const name = data.name;
@@ -141,11 +264,11 @@ export class CourseSettings extends Component {
     };
 
     createUserList(members, userType, listType, section = 0) {
-        let list = section === 0 ? members : members[section - 1];
+        let list = section === 0 ? members : members ? members[section - 1] : null;
         return (
             <Segment style={{ height: '200px' }}>
                 <List selection className="UserList" items={list}>
-                    {list.map((element) => {
+                    {list?.map((element) => {
                         return (
                             <Popup
                                 on="click"
@@ -228,33 +351,6 @@ export class CourseSettings extends Component {
         return false;
     };
 
-    onFormSubmit = (e) => {
-        console.log(this.state.groupFormationDate);
-        for (let i = 0; i < this.state.sectionNumber; i++) {
-            for (let k = 0; k < this.state.studentManualList[i].length; k++) {
-                this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
-            }
-        }
-        let dateArr = this.state.groupFormationDate.split(/-/);
-        //System.DateTime
-        let d = new Date(dateArr[0], dateArr[1], dateArr[2]);
-        return {
-            courseName: this.state.code + '/' + this.state.year + this.state.semester,
-            description: this.state.shortDescription,
-            isSectionless: this.state.isSectionless,
-            numberOfSection: this.state.sectionNumber, // If sectionless this field is 1
-
-            groupFormationType: this.state.groupFormationType,
-            newStudents: this.state.studentAutoList,
-            newTAs: this.state.TAList,
-            newinstructors: this.state.instructorList,
-
-            minSize: this.state.minSize,
-            maxSize: this.state.maxSize,
-            groupFormationDate: d,
-        };
-    };
-
     readFile = (e) => {
         const reader = new FileReader();
         let students;
@@ -268,16 +364,13 @@ export class CourseSettings extends Component {
         reader.readAsText(e.target.files[0]);
     };
 
-    removeUserFromCourse = (userMail) => {
-        console.log(userMail + ' will be removed');
-    };
-
     render() {
+        console.log(this.state.groups, this.state.groupChangeSection);
         return (
             <>
                 <Form className="SettingsForm" onSubmit={this.onFormSubmit}>
                     <Form.Group>
-                        <h1>{this.settingTitle}</h1>
+                        <h1>{this.state.settingTitle}</h1>
                     </Form.Group>
                     <Divider />
                     <Form.Group>
@@ -287,7 +380,7 @@ export class CourseSettings extends Component {
                                 value={this.state.code}
                                 onChange={this.handleChange}
                                 name="code"
-                                style={{ width: '50%' }}
+                                style={{ width: '100%' }}
                             />
                         </Form.Field>
                         <Form.Field width={3}>
@@ -296,7 +389,7 @@ export class CourseSettings extends Component {
                                 value={this.state.year}
                                 min="0"
                                 name="year"
-                                style={{ width: '50%' }}
+                                style={{ width: '100%' }}
                                 onChange={this.handleChange}
                                 type="number"
                             />
@@ -328,7 +421,7 @@ export class CourseSettings extends Component {
                             value={this.state.shortDescription}
                             onChange={this.handleChange}
                             name="shortDescription"
-                            style={{ width: '50%', height: '42px' }}
+                            style={{ width: '100%', height: '42px' }}
                         />
                     </Form.Group>
                     <Divider />
@@ -354,7 +447,13 @@ export class CourseSettings extends Component {
                                             fluid
                                             selection
                                             options={this.state.sections}
-                                            defaultValue={this.state.sections[0].value}
+                                            defaultValue={
+                                                this.state.sections
+                                                    ? this.state.sections[0]
+                                                        ? this.state.sections[0].value
+                                                        : 1
+                                                    : 1
+                                            }
                                             onChange={this.handleChange}
                                         />
                                     </div>
@@ -379,7 +478,13 @@ export class CourseSettings extends Component {
                                             fluid
                                             selection
                                             options={this.state.sections}
-                                            defaultValue={this.state.sections[0].value}
+                                            defaultValue={
+                                                this.state.sections
+                                                    ? this.state.sections[0]
+                                                        ? this.state.sections[0].value
+                                                        : 1
+                                                    : 1
+                                            }
                                             onChange={this.handleChange}
                                         />
                                     </div>
@@ -396,48 +501,57 @@ export class CourseSettings extends Component {
                         </Grid.Row>
                     </Grid>
                     <Divider />
-                    <Form.Group>
-                        <Form.Field>
-                            <h2>Group Formation Settings</h2>
-                            <div>
-                                Min Group Size:
-                                <Input
-                                    name="minSize"
-                                    value={this.state.minSize}
-                                    min={1}
-                                    max={this.state.maxSize}
-                                    onChange={this.handleChange}
-                                    type="number"></Input>{' '}
-                                Max Group Size:
-                                <Input
-                                    name="maxSize"
-                                    min={this.state.minSize}
-                                    value={this.state.maxSize}
-                                    onChange={this.handleChange}
-                                    type="number"></Input>
-                                Group Formation Date
-                                <Input
-                                    value={this.state.groupFormationDate}
-                                    type="date"
-                                    name="groupFormationDate"
-                                    onChange={this.handleChange}></Input>
-                            </div>
-                        </Form.Field>
-                    </Form.Group>
-                    <Divider />
-                    <Button>Change Group Settings</Button>
+                    {!this.state.isLocked ? (
+                        <>
+                            <Form.Group>
+                                <Form.Field>
+                                    <h2>Group Formation Settings</h2>
+                                    <div>
+                                        Min Group Size:
+                                        <Input
+                                            name="minSize"
+                                            value={this.state.minSize}
+                                            min={1}
+                                            max={this.state.maxSize}
+                                            onChange={this.handleChange}
+                                            type="number"></Input>{' '}
+                                        Max Group Size:
+                                        <Input
+                                            name="maxSize"
+                                            min={this.state.minSize}
+                                            value={this.state.maxSize}
+                                            onChange={this.handleChange}
+                                            type="number"></Input>
+                                        Group Formation Date
+                                        <Input
+                                            value={this.state.groupFormationDate}
+                                            type="date"
+                                            name="groupFormationDate"
+                                            onChange={this.handleChange}></Input>
+                                    </div>
+                                </Form.Field>
+                            </Form.Group>
+                            <Divider />
+                        </>
+                    ) : null}
+                    <Button onClick={this.updateGeneralSettings}>Update Above Settings</Button>
                     <Button
                         color="red"
                         content="Delete Course"
                         icon="exclamation"
                         style={{ marginLeft: '10px' }}
-                        onClick={() => {
-                            console.log('delete course');
-                        }}
+                        onClick={this.deleteCourse}
+                    />
+                    <Button
+                        color="red"
+                        content="Deactivate Course"
+                        icon="exclamation"
+                        style={{ marginLeft: '10px' }}
+                        onClick={this.deactiveCourse}
                     />
                     <Divider />
-                    <h2>Remove Students From Course</h2>
-                    <UserSearchBar users={dummyUsers} removeUserFromCourse={this.removeUserFromCourse} />
+                    <h2>Remove Instructors/TAs/Students From Course</h2>
+                    <UserSearchBar users={this.state.users} removeUserFromCourse={this.removeUserFromCourse} />
                     <Divider />
                     <h1>Change Groups</h1>
                     Section:
@@ -446,18 +560,31 @@ export class CourseSettings extends Component {
                             fluid
                             selection
                             options={this.state.sections}
-                            defaultValue={this.state.sections[0].value}
+                            defaultValue={
+                                this.state.sections ? (this.state.sections[0] ? this.state.sections[0].value : 1) : 1
+                            }
+                            name="groupChangeSection"
+                            onChange={this.handleChange}
                         />
                     </Form.Field>
                     <Divider />
-                    {dummyCourseInformation.courseState === 'formation' &&
-                        convertUnformedGroupsToBriefList({
-                            groups: dummyGroupsInFormation,
-                        })}
-                    {dummyCourseInformation.courseState === 'formed' &&
-                        convertFormedGroupsToBriefList({
-                            groups: dummyGroupsInFormation,
-                        })}
+                    {!this.state.isLocked &&
+                        convertUnformedGroupsToBriefList(
+                            this.state.groups
+                                ? this.state.groups[this.state.groupChangeSection - 1]
+                                    ? this.state.groups[this.state.groupChangeSection - 1].formed
+                                    : null
+                                : null,
+                            this.ungroup
+                        )}
+                    {this.state.isLocked && (
+                        <FormedGroupsBriefList
+                            removeStudent={this.removeStudent}
+                            mergeGroup={this.mergeGroup}
+                            ungroup={this.ungroup}
+                            groups={this.state.groups ? this.state.groups[this.state.groupChangeSection - 1] : null}
+                        />
+                    )}
                 </Form>
             </>
         );
@@ -472,52 +599,265 @@ const dummyCourseInformation = {
     instructors: [
         {
             name: 'Eray Tüzün',
-            information: 'eraytuzun@gmail.com',
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            information: 'alpersarikan@gmail.com',
             userId: 2,
         },
     ],
     TAs: [
         {
             name: 'Erdem Tuna',
-            information: 'erdemtuan@gmail.com',
             userId: 1,
         },
         {
             name: 'Kraliçe Irmak',
-            information: 'kraliceirmak@gmail.com',
             userId: 2,
         },
     ],
     information:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
-    isUserInstructorOfCourse: true,
-    isUserTAOfCourse: true,
-    sectionNumber: 3,
-    courseState: 'formed',
+    isTAorInstructorOfCourse: true,
+    isLocked: true,
+    formationDate: '15-24-2020',
+    numberOfSections: 3,
     minSize: 3,
     maxSize: 5,
-    groupFormationDate: new Date(2022, 11, 14),
 };
 
-const dummyGroupsInFormation = [
+const dummyGroups = [
     {
-        name: 'Bilhub',
-        members: ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
+        formed: [
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '2Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '2Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '2Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+        ],
     },
-    { name: 'Not Bilhub', members: ['Keke. One', 'Keke. Two', 'Keke. Three', 'Keke. Four', 'Keke. Five'] },
     {
-        name: 'Bilhub2',
-        members: ['Yusuf Uyar', 'Halil Özgür Demir', 'Barış Ogün Yörük', 'Aybala Karakaya', 'Oğuzhan Özçelik'],
+        formed: [
+            {
+                members: [
+                    {
+                        name: '5Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '5Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '5Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '6Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '6Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '6Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+        ],
     },
     {
-        name: 'Keke Yusuf',
-        members: ['Ahmet Demir', 'Altay Bastık', 'Cemre Güçlü', 'Muhammed Arshellov', 'Mr. onErrorCleaned'],
+        formed: [
+            {
+                members: [
+                    {
+                        name: '9Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '9Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '9Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '10Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '10Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '10Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+        ],
     },
+];
+
+const dummyGroupsLocked = [
+    [
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilHub',
+        },
+        {
+            members: [
+                {
+                    name: '2Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '2Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '2Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 2,
+            groupName: 'Not Bilhub',
+        },
+    ],
+    [
+        {
+            members: [
+                {
+                    name: '2Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '2Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '2Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilHub',
+        },
+        {
+            members: [
+                {
+                    name: '3Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '3Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '3Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 2,
+            groupName: 'Not Bilhub',
+        },
+    ],
+    [
+        {
+            members: [
+                {
+                    name: '4Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '4Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '4Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilHub',
+        },
+        {
+            members: [
+                {
+                    name: '5Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '5Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '5Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 2,
+            groupName: 'Not Bilhub',
+        },
+    ],
 ];
 
 const dummyUsers = [

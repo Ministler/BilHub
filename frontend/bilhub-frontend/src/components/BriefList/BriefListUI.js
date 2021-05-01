@@ -61,10 +61,11 @@ export const SubmissionBriefElement = (props) => {
 };
 
 export const GroupBriefElement = (props) => {
+    console.log(props.group);
     return (
         <>
             {props.group?.map((member) => {
-                return <p>{member}</p>;
+                return <p>{member.name}</p>;
             })}
         </>
     );

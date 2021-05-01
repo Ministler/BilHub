@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, Segment, Label, Popup, Header, Grid, Button, Dropdown } from 'semantic-ui-react';
 
@@ -139,8 +139,8 @@ export const convertSubmissionsToSubmissionElement = (
     });
 };
 
-export const convertUnformedGroupsToBriefList = (props) => {
-    return props.groups?.map((group) => {
+export const convertUnformedGroupsToBriefList = (groups, ungroup) => {
+    return groups?.map((group) => {
         return (
             <Popup
                 on="click"
@@ -150,30 +150,33 @@ export const convertUnformedGroupsToBriefList = (props) => {
                     </Segment>
                 }
                 flowing>
-                <Button>Unform Group</Button>
+                <Button onClick={() => ungroup(group.groupId)}>Unform Group</Button>
             </Popup>
         );
     });
 };
 
-export const convertFormedGroupsToBriefList = (props) => {
+export const FormedGroupsBriefList = (props) => {
+    const [currentStudentId, setCurrentStudentId] = useState(-1);
+    const [currentGroupId, setCurrentGroupId] = useState(-1);
+
     return props.groups?.map((group) => {
-        let groups = [];
+        let otherGroups = [];
         for (let i = 0; i < props.groups.length; i++) {
-            if (group.name !== props.groups[i].name) {
-                groups.push({
-                    key: props.groups[i].name,
-                    text: props.groups[i].name,
-                    value: props.groups[i].name,
+            if (group.groupName !== props.groups[i].groupName) {
+                otherGroups.push({
+                    key: props.groups[i].groupId,
+                    text: props.groups[i].groupName,
+                    value: props.groups[i].groupId,
                 });
             }
         }
         let students = [];
         for (let i = 0; i < group.members.length; i++) {
             students.push({
-                key: group.members[i],
-                text: group.members[i],
-                value: group.members[i],
+                key: group.members[i].userId,
+                text: group.members[i].name,
+                value: group.members[i].userId,
             });
         }
         return (
@@ -181,7 +184,7 @@ export const convertFormedGroupsToBriefList = (props) => {
                 trigger={
                     <Segment className="clickableHighlightBack" style={{ width: '15%', float: 'left', margin: '10px' }}>
                         <Label style={{ textAlign: 'center' }} attached="top">
-                            {group.name}
+                            {group.groupName}
                         </Label>
                         <GroupBriefElement group={group.members} />
                     </Segment>
@@ -191,17 +194,29 @@ export const convertFormedGroupsToBriefList = (props) => {
                 <Grid centered divided columns={3}>
                     <Grid.Column textAlign="center">
                         <Header as="h4">Ungroup This Group</Header>
-                        <Button>Ungroup</Button>
+                        <Button onClick={() => props.ungroup(group.groupId)}>Ungroup</Button>
                     </Grid.Column>
                     <Grid.Column textAlign="center">
                         <Header as="h4">Remove Student From Group</Header>
-                        <Dropdown placeholder="Select Student" fluid selection options={students} />
-                        <Button>Remove</Button>
+                        <Dropdown
+                            placeholder="Select Student"
+                            fluid
+                            selection
+                            options={students}
+                            onChange={(e, data) => setCurrentStudentId(data.value)}
+                        />
+                        <Button onClick={() => props.removeStudent(group.groupId, currentStudentId)}>Remove</Button>
                     </Grid.Column>
                     <Grid.Column textAlign="center">
                         <Header as="h4">Merge With Group</Header>
-                        <Dropdown placeholder="Select Group" fluid selection options={groups} />
-                        <Button>Merge</Button>
+                        <Dropdown
+                            placeholder="Select Group"
+                            fluid
+                            selection
+                            options={otherGroups}
+                            onChange={(e, data) => setCurrentGroupId(data.value)}
+                        />
+                        <Button onClick={() => props.mergeGroup(group.groupId, currentGroupId)}>Merge</Button>
                     </Grid.Column>
                 </Grid>
             </Popup>

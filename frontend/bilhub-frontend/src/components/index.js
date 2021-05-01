@@ -28,6 +28,6 @@ export {
     convertNotGradedAssignmentsToBriefList,
     convertMembersToMemberElement,
     convertUnformedGroupsToBriefList,
-    convertFormedGroupsToBriefList,
+    FormedGroupsBriefList,
 } from './BriefList';
 export { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from './Statistics';

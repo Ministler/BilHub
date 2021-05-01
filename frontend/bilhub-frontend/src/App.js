@@ -69,7 +69,7 @@ class App extends Component {
                         <Route exact path={'/create-new-course'} component={CourseCreation} />
                     ) : null}
                     <Route exact path={'/'} component={Home} />
-                    <Route exact path={'/course/:id/settings'} component={CourseSettings} />
+                    <Route exact path={'/course/:courseId/settings'} component={CourseSettings} />
                     <Redirect to={'/'} />
                 </Switch>
             </AppLayout>

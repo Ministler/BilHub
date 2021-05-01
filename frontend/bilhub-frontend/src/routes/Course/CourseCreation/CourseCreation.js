@@ -101,7 +101,6 @@ export class CourseCreation extends Component {
             maxSize: this.state.maxSize,
             groupFormationDate: date,
         };
-        console.log(request);
 
         if (true) {
             this.props.history.push('/home');

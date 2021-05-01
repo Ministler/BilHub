@@ -550,7 +550,7 @@ export const UserSearchBar = (props) => {
     const [state, dispatch] = React.useReducer(studentSearchReducer, initialState);
     const { loading, results, value } = state;
     let searchUsers = [];
-    for (let i = 0; i < props.users.length; i++) {
+    for (let i = 0; i < props.users?.length; i++) {
         let temp = { title: props.users[i].mail, description: props.users[i].type };
         searchUsers.push(temp);
     }
