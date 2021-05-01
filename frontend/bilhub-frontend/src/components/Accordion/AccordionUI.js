@@ -19,6 +19,7 @@ export class MyAccordion extends Component {
         this.setState({
             activeIndex: newIndex,
         });
+        console.log('asd');
     };
 
     render() {

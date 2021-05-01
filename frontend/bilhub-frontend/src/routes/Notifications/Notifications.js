@@ -203,8 +203,8 @@ class Notifications extends Component {
                                     {myProjectsComponent}
                                 </div>
                             )}
-                            {(myProjectsComponent && instructedCoursesComponent) && (
-                                <Divider style={{ width: "70%", margin: "auto", marginTop:"20px"}}/>
+                            {myProjectsComponent && instructedCoursesComponent && (
+                                <Divider style={{ width: '70%', margin: 'auto', marginTop: '20px' }} />
                             )}
                             {instructedCoursesComponent && (
                                 <div className="InstructedCoursesBlock">
@@ -295,8 +295,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
         {
@@ -325,8 +325,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
     ],
@@ -350,8 +350,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
         {
@@ -380,8 +380,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
     ],
@@ -406,7 +406,7 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2021, 3, 12, 4, 34),
         },
         {
             type: 'Merge',
@@ -435,7 +435,7 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2021, 3, 12, 4, 34),
         },
         {
             type: 'Join',
@@ -457,7 +457,7 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2021, 3, 12, 4, 34),
         },
         {
             type: 'Merge',
@@ -486,7 +486,7 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2021, 3, 12, 4, 34),
         },
     ],
 };
@@ -520,8 +520,8 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
     ],
@@ -542,8 +542,8 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
         {
@@ -574,8 +574,8 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
         {
@@ -606,8 +606,8 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
     ],
@@ -629,7 +629,7 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2020, 12, 14, 15, 54),
         },
         {
             type: 'Merge',
@@ -660,7 +660,7 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2020, 12, 14, 15, 54),
         },
         {
             type: 'Join',
@@ -679,7 +679,7 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2020, 12, 14, 15, 54),
         },
         {
             type: 'Merge',
@@ -710,7 +710,7 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2020, 12, 14, 15, 54),
         },
     ],
 };
@@ -723,7 +723,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -742,7 +742,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -762,7 +762,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -781,7 +781,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -802,7 +802,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -823,7 +823,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -845,7 +845,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },
@@ -866,7 +866,7 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
                 grade: '10',
             },

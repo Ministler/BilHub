@@ -7,7 +7,7 @@ import { Modal } from '../../../components';
 export const InformationSection = (props) => {
     return (
         <div>
-            <div style={{textAlign: "center"}}>
+            <div style={{ textAlign: 'center' }}>
                 <div className="clickableChangeColor" onClick={props.onCourseClicked}>
                     <h1>{props.courseName}</h1>
                 </div>
@@ -15,7 +15,7 @@ export const InformationSection = (props) => {
                     {props.groupNameElement}
                 </h2>
                 <span className="GroupNameEdit"> {props.nameEditIcon} </span>
-            </div>    
+            </div>
             <div className="MembersBlock">
                 <div>
                     <h4 style={{ marginLeft: '20px' }}>Members</h4>
@@ -24,7 +24,7 @@ export const InformationSection = (props) => {
             </div>
             <div className="InformationBlock">
                 <div>
-                    <h4 style={{ marginLeft: '20px', marginBottom: "10px" }}>Information</h4>
+                    <h4 style={{ marginLeft: '20px', marginBottom: '10px' }}>Information</h4>
                 </div>
                 <p className="InformationText" style={{ display: 'inline-block' }}>
                     {props.informationElement} &nbsp;
@@ -57,7 +57,7 @@ export const NewCommentModal = (props) => {
                 <TextArea className="FeedbackText" onChange={(e) => props.onTextChange(e)} value={props.text} />
                 <input type="file" />
                 {!props.isTitleSRS ? (
-                    <>
+                    <span style={{ float: 'right' }}>
                         <input
                             type="number"
                             max="10"
@@ -66,12 +66,23 @@ export const NewCommentModal = (props) => {
                             onChange={(e) => props.onGradeChange(e)}
                         />{' '}
                         out of 10
-                    </>
+                    </span>
                 ) : (
-                    <>
-                        <input type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)} /> out of{' '}
-                        <input type="number" value={props.maxGrade} onChange={(e) => props.onMaxGradeChange(e)} />
-                    </>
+                    <span style={{ float: 'right' }}>
+                        <input
+                            type="number"
+                            style={{ width: '30px' }}
+                            value={props.grade}
+                            onChange={(e) => props.onGradeChange(e)}
+                        />{' '}
+                        out of{' '}
+                        <input
+                            type="number"
+                            style={{ width: '30px' }}
+                            value={props.maxGrade}
+                            onChange={(e) => props.onMaxGradeChange(e)}
+                        />
+                    </span>
                 )}
             </>
         </Modal>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Segment, TextArea, Icon, Button, Dropdown, Grid } from 'semantic-ui-react';
+import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Course.css';
@@ -359,6 +359,50 @@ class Course extends Component {
         return button;
     };
 
+    downloadFromSection = (value) => {
+        if (value === 0) {
+            window.alert('You have to enter section.');
+        } else {
+            const request = {
+                course: this.state.courseInformation,
+                section: value,
+                assignment: -1,
+            };
+            console.log(request);
+        }
+    };
+
+    getDownloadSubmissionsPopup = () => {
+        let value = 0;
+        let sectionNo = this.state.courseInformation.numberOfSections;
+        const sections = [{ key: 0, text: 'All Sections', value: -1 }];
+        for (var i = 0; i < sectionNo; i++) {
+            sections.push({ key: i + 1, text: 'Section ' + (i + 1), value: i + 1 });
+        }
+        return (
+            <Popup
+                flowing
+                on="click"
+                trigger={
+                    <Button color="green" style={{ marginLeft: '10px' }} icon labelPosition="right">
+                        Download Submissions <Icon name="download" />
+                    </Button>
+                }>
+                <Dropdown
+                    onChange={(e, d) => {
+                        value = d.value;
+                    }}
+                    placeholder="Select Section"
+                    item
+                    selection
+                    options={sections}></Dropdown>
+                <Button onClick={() => this.downloadFromSection(value)} style={{ marginLeft: '10px' }} icon>
+                    <Icon name="download" />
+                </Button>
+            </Popup>
+        );
+    };
+
     getAssignmentPane = () => {
         return {
             title: 'Assignments',
@@ -372,6 +416,7 @@ class Course extends Component {
                         this.getAssignmentControlIcons()
                     )}
                     {this.getNewAssignmentButton()}
+                    {this.getDownloadSubmissionsPopup()}
                 </>
             ) : (
                 <>
@@ -424,7 +469,9 @@ class Course extends Component {
             />
         );
     };
-
+    deleteAssignment = (assignment) => {
+        console.log(assignment + ' will be deleted');
+    };
     getModals = () => {
         return (
             <>
@@ -441,6 +488,7 @@ class Course extends Component {
                     curAssignment={dummyCourseAssignments[0]}
                     onClosed={this.onDeleteAssignmentModalClosed}
                     isOpen={this.state.isDeleteAssignmentOpen}
+                    deleteAssignment={this.deleteAssignment}
                 />
                 <SendRequestModal
                     onClosed={this.onSendRequestModalClosed}
@@ -528,7 +576,7 @@ const dummyCourseInformation = {
     isUserInFormedGroup: false,
     isUserAlone: false,
     isLocked: true,
-    formationDate: '15/24/2020',
+    formationDate: new Date(2020, 12, 15, 15, 0),
     numberOfSections: 3,
     currentUserSection: 1,
 };
@@ -541,9 +589,9 @@ const dummyCourseAssignments = [
         assignmentId: 1,
         type: 1,
         publisher: 'Elgun Jabrayilzade',
-        file: 'file',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: new Date(2021, 3, 12, 12, 0),
+        hasFile: 'file',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
     {
         title: 'Design Report',
@@ -551,8 +599,8 @@ const dummyCourseAssignments = [
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 2,
         publisher: 'Erdem Tuna',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 April 2021 12:00',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
     {
         title: 'Design Report',
@@ -560,8 +608,8 @@ const dummyCourseAssignments = [
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 2,
         publisher: 'Erdem Tuna',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 April 2021 12:00',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
     {
         title: 'Design Report',
@@ -569,8 +617,8 @@ const dummyCourseAssignments = [
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 2,
         publisher: 'Erdem Tuna',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 April 2021 12:00',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
 ];
 

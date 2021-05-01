@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { Table } from 'semantic-ui-react';
 import React from 'react';
 import Chart from 'react-google-charts';
+import './Statistics.css';
 
 function tableReducer(state, action) {
     switch (action.type) {
@@ -71,13 +72,6 @@ export const GradesTabel = (props) => {
         </Table>
     );
 };
-const data = [
-    ['Element', 'Density', { role: 'style' }],
-    ['Copper', 8.94, '#b87333'], // RGB value
-    ['Silver', 10.49, 'silver'], // English color name
-    ['Gold', 19.3, 'gold'],
-    ['Platinum', 21.45, 'color: #e5e4e2'], // CSS-style declaration
-];
 export const GradeGroupGraph = (props) => {
     let data = [['Group', 'Grade', { role: 'style' }]];
     for (let i = 0; i < props.groups.length; i++) {
@@ -85,11 +79,7 @@ export const GradeGroupGraph = (props) => {
         data.push([props.groups[i].group, props.groups[i].grade, randomColor]);
     }
 
-    return (
-        <div className="App">
-            <Chart chartType="ColumnChart" width="100%" height="auto" data={data} />
-        </div>
-    );
+    return <Chart className="Graph" chartType="ColumnChart" width="100%" height="200px" data={data} />;
 };
 
 export const GroupNoGradeGraph = (props) => {
@@ -102,9 +92,5 @@ export const GroupNoGradeGraph = (props) => {
     for (let i = 0; i < props.groups.length; i++) {
         data[Math.floor((props.groups[i].grade - 1) / 5 + 1)][1]++;
     }
-    return (
-        <div className="App">
-            <Chart chartType="ColumnChart" width="80%" height="auto" data={data} />
-        </div>
-    );
+    return <Chart className="Graph" chartType="ColumnChart" width="100%" height="200px" data={data} />;
 };

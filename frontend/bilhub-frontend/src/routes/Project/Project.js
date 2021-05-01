@@ -558,8 +558,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 1,
         submissionId: 1,
     },
@@ -569,8 +569,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 2,
         submissionId: 2,
         file: 'dummyFile',
@@ -581,8 +581,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -592,8 +592,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -603,8 +603,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -614,8 +614,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -625,8 +625,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -672,13 +672,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 3,
             userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -693,13 +693,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 4,
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -713,14 +713,14 @@ const dummyFeedbacks = {
             caption:
                 'Lcaptionorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 5,
             userId: 1,
             userGroupName: 'ClassRoom Helper',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -733,12 +733,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -750,12 +750,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
