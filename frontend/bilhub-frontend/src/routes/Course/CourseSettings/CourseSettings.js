@@ -75,9 +75,13 @@ export class CourseSettings extends Component {
         let date =
             dummyCourseInformation.groupFormationDate.getFullYear() +
             '-' +
-            dummyCourseInformation.groupFormationDate.getMonth() +
+            (dummyCourseInformation.groupFormationDate.getMonth() / 10 < 1
+                ? '0' + dummyCourseInformation.groupFormationDate.getMonth()
+                : dummyCourseInformation.groupFormationDate.getMonth()) +
             '-' +
-            dummyCourseInformation.groupFormationDate.getDate();
+            (dummyCourseInformation.groupFormationDate.getDate() / 10 < 1
+                ? '0' + dummyCourseInformation.groupFormationDate.getDate()
+                : dummyCourseInformation.groupFormationDate.getDate());
 
         this.state = {
             code: code,
@@ -501,7 +505,7 @@ const dummyCourseInformation = {
     courseState: 'formed',
     minSize: 3,
     maxSize: 5,
-    groupFormationDate: new Date(2022, 11, 14),
+    groupFormationDate: new Date(2022, 1, 2),
 };
 
 const dummyGroupsInFormation = [

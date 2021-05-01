@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 import { convertMembersToMemberElement } from '../../../components';
 import './CourseComponents.css';
-import { Form, Search, Button, Grid, TextArea, Modal, Dropdown, GridColumn } from 'semantic-ui-react';
+import { Form, Search, Button, Grid, Message, TextArea, Modal, Dropdown, GridColumn } from 'semantic-ui-react';
 
 export const InformationSection = (props) => {
     return (
@@ -255,9 +255,9 @@ export class EditAssignmentModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: props.curAssignment.title,
-            description: props.curAssignment.caption,
-            type: props.curAssignment.type,
+            title: '',
+            description: '',
+            type: 0,
             isStudentComments: false,
             isCommentsAnonymous: false,
             isCommentsGraded: false,
@@ -267,7 +267,35 @@ export class EditAssignmentModal extends Component {
             file: '',
         };
     }
+    componentDidMount() {
+        let date = this.props.curAssignment.dueDate;
+        let d =
+            '' +
+            date.getFullYear() +
+            '-' +
+            (date.getMonth() / 10 < 1 ? '0' + date.getMonth() : date.getMonth()) +
+            '-' +
+            (date.getDate() / 10 < 1 ? '0' + date.getDate() : date.getDate()) +
+            'T' +
+            (date.getHours() / 10 < 1 ? '0' + date.getHours() : date.getHours()) +
+            ':' +
+            (date.getMinutes() / 10 < 1 ? '0' + date.getMinutes() : date.getMinutes());
+        this.setState({
+            title: this.props.curAssignment.title,
+            description: this.props.curAssignment.caption,
+            type: this.props.curAssignment.type,
+            isStudentComments: false,
+            isCommentsAnonymous: false,
+            isCommentsGraded: false,
+            isSubmissionVisible: false,
+            isLateSubmissionsAllowed: false,
+            dueDate: d,
+            file: '',
+        });
+    }
+
     handleChange = (event, data) => {
+        console.log(this.state.dueDate);
         event.preventDefault();
         let name = data.name;
         let value = data.value;
@@ -467,42 +495,14 @@ export class EditAssignmentModal extends Component {
 export const DeleteAssignmentModal = (props) => {
     return (
         <Modal closeIcon onClose={() => props.onClosed(false)} open={props.isOpen} size={'small'}>
-            <Modal.Header style={{ fontSize: '16px' }}>New Assignment</Modal.Header>
+            <Modal.Header style={{ fontSize: '16px' }}>Delete Assignment</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
-                    <Grid>
-                        <Form>
-                            <Form.Group inline>
-                                <p style={{ fontSize: '14px', float: 'left', marginBottom: '0px', display: 'inline' }}>
-                                    Title
-                                </p>
-                                <Dropdown
-                                    item
-                                    simple
-                                    text="Assignment Type"
-                                    direction="right"
-                                    options={options}
-                                    style={{ marginLeft: '510px', float: 'right', display: 'inline' }}
-                                />
-                            </Form.Group>
-                            <Form.Input
-                                type="text"
-                                name="groupName"
-                                style={{ width: '40%', height: '35px', marginTop: '-15px' }}
-                            />
-                            <label style={{ fontSize: '14px', float: 'left', marginBottom: '5px' }}>Description</label>
-                            <TextArea placeholder="Your message here" style={{ minHeight: 100, width: '95%' }} />
-                            <Form.Group grouped>
-                                <Form.Field label="Student Comments" control="input" type="checkbox" />
-                                <Form.Field label="Anonymous Student Comments" control="input" type="checkbox" />
-                                <Form.Field label="Graded Comments" control="input" type="checkbox" />
-                                <Form.Field label="Groups' Submission Visable" control="input" type="checkbox" />
-                                <Form.Field label="Late Submission" control="input" type="checkbox" />
-                                <Form.Field label="Due Date" />
-                                <Form.Field label="Add File" />
-                            </Form.Group>
-                        </Form>
-                    </Grid>
+                    <Message negative>
+                        <h2 style={{ color: 'red' }}>
+                            You are about to delete <i>{props.curAssignment.title}</i> assignment!!!
+                        </h2>
+                    </Message>
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>
@@ -517,7 +517,20 @@ export const DeleteAssignmentModal = (props) => {
                         lineHeight: '20px',
                         whiteSpace: 'nowrap',
                     }}>
-                    Send
+                    Cancel
+                </Button>
+                <Button
+                    color="red"
+                    onClick={() => props.onClosed(false)}
+                    style={{
+                        borderRadius: '10px',
+                        padding: '5px 16px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        lineHeight: '20px',
+                        whiteSpace: 'nowrap',
+                    }}>
+                    Delete
                 </Button>
             </Modal.Actions>
         </Modal>

@@ -429,6 +429,7 @@ class Course extends Component {
                     isOpen={this.state.isEditAssignmentOpen}
                 />
                 <DeleteAssignmentModal
+                    curAssignment={dummyCourseAssignments[0]}
                     onClosed={this.onDeleteAssignmentModalClosed}
                     isOpen={this.state.isDeleteAssignmentOpen}
                 />
@@ -533,7 +534,7 @@ const dummyCourseAssignments = [
         publisher: 'Elgun Jabrayilzade',
         file: 'file',
         publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 March 2021 12:00',
+        dueDate: new Date(2021, 3, 12, 12, 0),
     },
     {
         title: 'Design Report',
