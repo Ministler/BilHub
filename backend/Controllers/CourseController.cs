@@ -68,5 +68,17 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpPost("ActivateCourse")]
+        public async Task<IActionResult> ActivateCourse (int courseId)
+        {
+            return Ok(await _courseService.ActivateCourse(courseId));
+        }
+
+        [HttpPost("DeactivateCourse")]
+        public async Task<IActionResult> DeactivateCourse (int courseId)
+        {
+            return Ok(await _courseService.DeactivateCourse(courseId));
+        }
     }
 }

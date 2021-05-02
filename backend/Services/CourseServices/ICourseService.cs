@@ -15,6 +15,8 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<GetCourseDto>> RemoveInstructorFromCourse(int userId, int courseId);
         Task<ServiceResponse<GetOzgurDto>> GetOzgur(int courseId);
         Task<ServiceResponse<string>> RemoveCourse ( int courseId );
+        Task<ServiceResponse<GetCourseDto>> ActivateCourse(int courseId);
+        Task<ServiceResponse<GetCourseDto>> DeactivateCourse(int courseId);
 
     }
 }
