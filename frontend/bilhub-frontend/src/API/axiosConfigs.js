@@ -4,7 +4,7 @@ import { store } from '../index';
 import { logout } from '../store';
 
 // General Settings
-axios.defaults.baseURL = 'https://06619936890e.ngrok.io/';
+axios.defaults.baseURL = 'https://57b2663d01e7.ngrok.io/';
 
 // Authorized Requests
 export const authAxios = axios.create({
@@ -29,7 +29,7 @@ authAxios.interceptors.response.use(
     },
     (error) => {
         console.log(error.response);
-        if (error.response.status === 401) {
+        if (error.response?.status === 401) {
             store.dispatch(logout());
         }
 
