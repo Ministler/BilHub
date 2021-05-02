@@ -125,8 +125,20 @@ namespace backend.Controllers
             }
             memory.Position = 0;
             return File(memory, type, Path.GetFileName(path));
-
         }
+
+        [HttpGet]
+        [Route("Feeds")]
+        public async Task<IActionResult> GetFeeds()
+        {
+            ServiceResponse<List<GetFeedItemDto>> response = await _assignmentService.GetFeeds();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         private string GetContentType(string path)
         {
             var types = GetMimeTypes();

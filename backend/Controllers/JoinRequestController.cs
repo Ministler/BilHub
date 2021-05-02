@@ -83,5 +83,27 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpGet("OutgoingJoinRequestsOfUser")]
+        public async Task<IActionResult> GetOutgoingJoinRequestsOfUser ( )
+        {
+            ServiceResponse<List<GetJoinRequestDto>> response = await _joinRequestService.GetOutgoingJoinRequestsOfUser();
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet("IncomingJoinRequestsOfUser")]
+        public async Task<IActionResult> GetIncomingJoinRequestsOfUser ( )
+        {
+            ServiceResponse<List<GetJoinRequestDto>> response = await _joinRequestService.GetIncomingJoinRequestsOfUser();
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
     }
 }

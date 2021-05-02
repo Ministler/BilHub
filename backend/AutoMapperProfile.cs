@@ -8,6 +8,8 @@ using backend.Dtos.ProjectGroup;
 using backend.Dtos.Submission;
 using backend.Dtos.User;
 using backend.Models;
+using backend.Dtos.JoinRequest;
+using backend.Dtos.MergeRequest;
 
 namespace backend
 {
@@ -33,6 +35,13 @@ namespace backend
             CreateMap<Comment, GetCommentDto>();
             CreateMap<User, GetUserDto>();
             CreateMap<User, GetCommentorDto>();
+
+            CreateMap<User,UserInJoinRequestDto>();
+            CreateMap<ProjectGroup,ProjectGroupInJoinRequestDto>();
+            CreateMap<JoinRequest,GetJoinRequestDto>();
+
+            CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>();
+            CreateMap<MergeRequest,GetMergeRequestDto>();
         }
 
     }

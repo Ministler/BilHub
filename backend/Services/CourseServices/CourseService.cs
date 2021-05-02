@@ -522,5 +522,23 @@ namespace backend.Services.CourseServices
             serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<List<GetCourseDto>>> GetInstructedCoursesOfUser(int userId)
+        {
+            ServiceResponse<List<GetCourseDto>> serviceResponse = new ServiceResponse<List<GetCourseDto>> ();
+            User dbUser = await _context.Users
+                .Include ( c => c.InstructedCourses ).ThenInclude ( cs => cs.Course ).ThenInclude(css => css.Instructors).ThenInclude(csss => csss.User)
+                .Include ( c => c.InstructedCourses ).ThenInclude ( cs => cs.Course ).ThenInclude(css => css.Sections)
+                .FirstOrDefaultAsync ( c => c.Id == userId );
+            
+            if ( dbUser == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "No such user is found with given id";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = dbUser.InstructedCourses.Select(c => _mapper.Map<GetCourseDto>(c.Course)).ToList();
+            return serviceResponse;
+        }
     }
 }
