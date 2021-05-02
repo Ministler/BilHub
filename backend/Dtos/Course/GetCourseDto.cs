@@ -20,5 +20,6 @@ namespace backend.Dtos.Course
         public int MaxGroupSize { get; set; }
         public ICollection<GetSectionOfCourseDto> Sections { get; set; }
         public ICollection<InstructorInCourseDto> Instructors { get; set; }
+        public decimal SrsGrade { get; set; }
     }
 }

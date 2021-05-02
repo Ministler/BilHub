@@ -326,6 +326,9 @@ namespace backend.Services.ProjectGroupServices
             try
             {
                 ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                    .Include ( c => c.IncomingJoinRequests )
+                    .Include ( c => c.IncomingMergeRequest )
+                    .Include ( c => c.OutgoingMergeRequest )
                     .Include(pg => pg.ProjectGrades)
                     .FirstOrDefaultAsync(c => c.Id == projectGroupId);
 
@@ -348,8 +351,10 @@ namespace backend.Services.ProjectGroupServices
                     int cnt = 0;
                     while (dbProjectGroup.GroupMembers.Count > 0)
                     {
+                        int tmp = dbProjectGroup.GroupMembers.ElementAt(0).UserId;
                         _context.ProjectGroupUsers.Remove(dbProjectGroup.GroupMembers.ElementAt(0));
-                        dbProjectGroup.GroupMembers.Remove(dbProjectGroup.GroupMembers.ElementAt(0));
+                        if ( dbProjectGroup.GroupMembers.Count > 0 && dbProjectGroup.GroupMembers.ElementAt(0).UserId == tmp )
+                            dbProjectGroup.GroupMembers.Remove(dbProjectGroup.GroupMembers.ElementAt(0));
                         cnt++;
                         if (cnt > 15)
                         {
@@ -939,6 +944,95 @@ namespace backend.Services.ProjectGroupServices
             else
                 response.Data = -1;
             return response;
+        }
+
+        public async Task<ServiceResponse<GetProjectGroupDto>> UpdateSrsGrade(UpdateSrsGradeDto updateSrsGradeDto)
+        {
+            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                .FirstOrDefaultAsync(c => c.Id == updateSrsGradeDto.ProjectGroupId);
+            if (dbProjectGroup == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Project group not found.";
+                return serviceResponse;
+            }
+
+            if ( !(await isUserInstructorOfGroup(updateSrsGradeDto.ProjectGroupId)))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User is not an instructor of this group.";
+                return serviceResponse;
+            }
+
+            dbProjectGroup.SrsGrade = updateSrsGradeDto.SrsGrade;
+            dbProjectGroup.IsGraded = true;
+            _context.ProjectGroups.Update(dbProjectGroup);
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            serviceResponse.Message = "Successfully updated Srs grade";
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetSrsGradeDto>> GetSrsGrade(int projectGroupId)
+        {
+            ServiceResponse<GetSrsGradeDto> serviceResponse = new ServiceResponse<GetSrsGradeDto>();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                .Include( c => c.GroupMembers )
+                .FirstOrDefaultAsync(c => c.Id == projectGroupId);
+
+            if (dbProjectGroup == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Project group not found.";
+                return serviceResponse;
+            }
+
+            if ( !(await isUserInstructorOfGroup(projectGroupId)) && !( dbProjectGroup.GroupMembers.Any( c => c.UserId == GetUserId() ) ))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User is not an instructor of this group and not a part of this project group.";
+                return serviceResponse;
+            }
+
+            GetSrsGradeDto data = new GetSrsGradeDto
+            { 
+                SrsGrade = dbProjectGroup.SrsGrade,
+                IsGraded = dbProjectGroup.IsGraded
+            };
+
+            serviceResponse.Data = data;
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetProjectGroupDto>> DeleteSrsGrade(DeleteSrsGradeDto deleteSrsGradeDto)
+        {
+            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                .FirstOrDefaultAsync(c => c.Id == deleteSrsGradeDto.ProjectGroupId);
+            if (dbProjectGroup == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Project group not found.";
+                return serviceResponse;
+            }
+
+            if ( !(await isUserInstructorOfGroup(deleteSrsGradeDto.ProjectGroupId)))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User is not an instructor of this group.";
+                return serviceResponse;
+            }
+
+            dbProjectGroup.SrsGrade = 0;
+            dbProjectGroup.IsGraded = false;
+            _context.ProjectGroups.Update(dbProjectGroup);
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            serviceResponse.Message = "Successfully deleted the Srs grade";
+            return serviceResponse;
         }
     }
 }
