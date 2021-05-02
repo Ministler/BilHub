@@ -70,21 +70,26 @@ namespace backend.Controllers
         }
 
         [HttpPost("ActivateCourse")]
-        public async Task<IActionResult> ActivateCourse (int courseId)
+        public async Task<IActionResult> ActivateCourse(int courseId)
         {
             return Ok(await _courseService.ActivateCourse(courseId));
         }
 
         [HttpPost("DeactivateCourse")]
-        public async Task<IActionResult> DeactivateCourse (int courseId)
+        public async Task<IActionResult> DeactivateCourse(int courseId)
         {
             return Ok(await _courseService.DeactivateCourse(courseId));
         }
 
         [HttpGet("InstructedCoursesOfUser")]
-        public async Task<ActionResult> GetInstructedCoursesOfUser ( int userId )
+        public async Task<ActionResult> GetInstructedCoursesOfUser(int userId)
         {
-            return Ok ( await _courseService.GetInstructedCoursesOfUser( userId ) );
+            return Ok(await _courseService.GetInstructedCoursesOfUser(userId));
+        }
+        [HttpGet("Assignments/{courseId}")]
+        public async Task<ActionResult> GetAssignments(int courseId)
+        {
+            return Ok(await _courseService.GetAssignments(courseId));
         }
     }
 }

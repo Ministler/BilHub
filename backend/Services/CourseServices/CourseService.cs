@@ -143,7 +143,7 @@ namespace backend.Services.CourseServices
                 .Include(c => c.InstructedCourses)
                 .FirstOrDefaultAsync(c => c.Id == GetUserId());
 
-            if (dbUser == null )
+            if (dbUser == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Current user not found.";
@@ -349,8 +349,8 @@ namespace backend.Services.CourseServices
 
             foreach (var i in dbCourse.Assignments)
             {
-                await _assignmentService.DeleteWithForce (i.Id);
-                
+                await _assignmentService.DeleteWithForce(i.Id);
+
                 await _assignmentService.DeleteAssignment(new DeleteAssignmentDto
                 {
                     AssignmentId = i.Id
@@ -360,13 +360,13 @@ namespace backend.Services.CourseServices
             foreach (var i in dbCourse.Sections)
             {
                 List<ProjectGroup> toBeDeletedGroups = await _context.ProjectGroups
-                    .Where ( c => c.AffiliatedSectionId == i.Id ).ToListAsync();
-                foreach ( var j in toBeDeletedGroups )
+                    .Where(c => c.AffiliatedSectionId == i.Id).ToListAsync();
+                foreach (var j in toBeDeletedGroups)
                 {
-                    await _projectGroupService.DeleteProjectGroup ( j.Id );
+                    await _projectGroupService.DeleteProjectGroup(j.Id);
                 }
             }
-            _context.Sections.RemoveRange( dbCourse.Sections );
+            _context.Sections.RemoveRange(dbCourse.Sections);
 
             _context.Courses.Remove(dbCourse);
             await _context.SaveChangesAsync();
@@ -447,7 +447,7 @@ namespace backend.Services.CourseServices
                 .Include(c => c.InstructedCourses)
                 .FirstOrDefaultAsync(c => c.Id == GetUserId());
 
-            if (dbUser == null )
+            if (dbUser == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Current user is not found.";
@@ -489,7 +489,7 @@ namespace backend.Services.CourseServices
                 .Include(c => c.InstructedCourses)
                 .FirstOrDefaultAsync(c => c.Id == GetUserId());
 
-            if (dbUser == null )
+            if (dbUser == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Current user is not found.";
@@ -525,13 +525,14 @@ namespace backend.Services.CourseServices
 
         public async Task<ServiceResponse<List<GetCourseDto>>> GetInstructedCoursesOfUser(int userId)
         {
-            ServiceResponse<List<GetCourseDto>> serviceResponse = new ServiceResponse<List<GetCourseDto>> ();
+            ServiceResponse<List<GetCourseDto>> serviceResponse = new ServiceResponse<List<GetCourseDto>>();
             User dbUser = await _context.Users
-                .Include ( c => c.InstructedCourses ).ThenInclude ( cs => cs.Course ).ThenInclude(css => css.Instructors).ThenInclude(csss => csss.User)
-                .Include ( c => c.InstructedCourses ).ThenInclude ( cs => cs.Course ).ThenInclude(css => css.Sections)
-                .FirstOrDefaultAsync ( c => c.Id == userId );
-            
-            if ( dbUser == null ) {
+                .Include(c => c.InstructedCourses).ThenInclude(cs => cs.Course).ThenInclude(css => css.Instructors).ThenInclude(csss => csss.User)
+                .Include(c => c.InstructedCourses).ThenInclude(cs => cs.Course).ThenInclude(css => css.Sections)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+
+            if (dbUser == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "No such user is found with given id";
                 return serviceResponse;
@@ -540,5 +541,40 @@ namespace backend.Services.CourseServices
             serviceResponse.Data = dbUser.InstructedCourses.Select(c => _mapper.Map<GetCourseDto>(c.Course)).ToList();
             return serviceResponse;
         }
+        public async Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId)
+        {
+            ServiceResponse<List<GetFeedItemDto>> response = new ServiceResponse<List<GetFeedItemDto>>();
+            Course course = await _context.Courses.Include(c => c.Assignments).ThenInclude(a => a.AfilliatedCourse)
+            .FirstOrDefaultAsync(c => c.Id == courseId);
+            List<GetFeedItemDto> data = new List<GetFeedItemDto>();
+            if (course != null)
+            {
+                foreach (Assignment a in course.Assignments)
+                {
+                    data.Add(
+                        new GetFeedItemDto
+                        {
+                            assignmentId = a.Id,
+                            caption = a.AssignmentDescription,
+                            publisher = a.AfilliatedCourse.Name,
+                            publisherId = a.AfilliatedCourseId,
+                            publishmentDate = a.CreatedAt,
+                            dueDate = a.DueDate,
+                            hasFile = a.HasFile,
+                            fileEndpoint = "Assignment/File/" + a.Id,
+                            courseId = a.AfilliatedCourseId
+                        }
+                    );
+                }
+            }
+            return response;
+        }
     }
 }
+/*public string title { get; set; }
+        public int status { get; set; }
+        public string caption { get; set; }
+        public int? projectId { get; set; }
+        public int? submissionId { get; set; }
+        public int? courseId { get; set; }
+        public int? assignmentId { get; set; }*/

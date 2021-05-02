@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using backend.Dtos.Assignment;
 using backend.Dtos.ProjectGrade;
 using backend.Dtos.ProjectGroup;
 using backend.Models;
@@ -25,9 +26,10 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetStudentComments(int projectGroupId);
         Task<ServiceResponse<decimal>> GetGradeWithGraderId(int projectGroupId, int graderId);
         Task<ServiceResponse<decimal>> GetStudentsAverage(int projectGroupId);
-        Task<ServiceResponse<GetSrsGradeDto>> UpdateSrsGrade (UpdateSrsGradeDto updateSrsGradeDto);
-        Task<ServiceResponse<GetSrsGradeDto>> GetSrsGrade (int projectGroupId);
-        Task<ServiceResponse<GetProjectGroupDto>> DeleteSrsGrade (DeleteSrsGradeDto deleteSrsGradeDto);
+        Task<ServiceResponse<GetSrsGradeDto>> UpdateSrsGrade(UpdateSrsGradeDto updateSrsGradeDto);
+        Task<ServiceResponse<GetSrsGradeDto>> GetSrsGrade(int projectGroupId);
+        Task<ServiceResponse<GetProjectGroupDto>> DeleteSrsGrade(DeleteSrsGradeDto deleteSrsGradeDto);
+        Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId);
 
     }
 }
