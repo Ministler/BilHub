@@ -4,6 +4,7 @@ using backend.Dtos.Submission;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using backend.Dtos.Comment;
+using backend.Dtos.Comment.FeedbackItems;
 
 namespace backend.Services.SubmissionServices
 {
@@ -27,5 +28,6 @@ namespace backend.Services.SubmissionServices
         Task<ServiceResponse<string>> DeleteSrsGrade(int submissionId);
         Task<ServiceResponse<decimal>> GetSrsGrade(int submissionId);
         Task<ServiceResponse<decimal>> GetGradeWithGraderId(int submissionId, int graderId);
+        Task<ServiceResponse<FeedbacksDto>> GetNewFeedbacks();
     }
 }

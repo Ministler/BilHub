@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using backend.Data;
 using backend.Dtos.Comment;
+using backend.Dtos.Comment.FeedbackItems;
 using backend.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
