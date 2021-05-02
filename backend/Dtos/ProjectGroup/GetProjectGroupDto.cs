@@ -5,6 +5,7 @@ namespace backend.Dtos.ProjectGroup
     public class GetProjectGroupDto
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public SectionInProjectGroupDto AffiliatedSection { get; set; }
         public int AffiliatedSectionId { get; set; }
         public CourseInProjectGroupDto AffiliatedCourse { get; set; }
@@ -14,5 +15,7 @@ namespace backend.Dtos.ProjectGroup
         public string ProjectInformation { get; set; }
         public ICollection<UserInProjectGroupDto> GroupMembers { get; set; }
         public string ConfirmedGroupMembers { get; set; }
+        public bool IsActive { get; set; } = true;
+        public string AffiliatedCourseName { get; set; }
     }
 }
