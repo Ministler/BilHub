@@ -121,7 +121,11 @@ namespace backend.Services.ProjectGroupServices
                 serviceResponse.Message = "Project group not found.";
                 return serviceResponse;
             }
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             return serviceResponse;
         }
 
@@ -151,7 +155,10 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully updated project group information";
             return serviceResponse;
         }
@@ -224,7 +231,10 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the operation";
             return serviceResponse;
         }
@@ -297,7 +307,10 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            projectGroupDto.AffiliatedCourseName = newProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = newProjectGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the leaving operation";
             return serviceResponse;
         }
@@ -307,6 +320,8 @@ namespace backend.Services.ProjectGroupServices
             ServiceResponse<List<GetProjectGroupDto>> serviceResponse = new ServiceResponse<List<GetProjectGroupDto>>();
             Section dbSection = await _context.Sections
                 .Include(c => c.ProjectGroups).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(c => c.ProjectGroups).ThenInclude(cs => cs.AffiliatedCourse)
+                .Include( c => c.AffiliatedCourse )
                 .FirstOrDefaultAsync(c => c.Id == sectionId);
             if (dbSection == null)
             {
@@ -315,7 +330,12 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
-            serviceResponse.Data = dbSection.ProjectGroups.Select(c => _mapper.Map<GetProjectGroupDto>(c)).ToList();
+            List<GetProjectGroupDto> projectGroupDtos = dbSection.ProjectGroups.Select(c => _mapper.Map<GetProjectGroupDto>(c)).ToList();
+            foreach ( var i in projectGroupDtos ) {
+                i.AffiliatedCourseName = dbSection.AffiliatedCourse.Name;
+                i.IsActive = dbSection.AffiliatedCourse.IsActive;
+            }
+            serviceResponse.Data = projectGroupDtos;
             return serviceResponse;
         }
 
@@ -324,6 +344,8 @@ namespace backend.Services.ProjectGroupServices
             ServiceResponse<List<GetProjectGroupDto>> serviceResponse = new ServiceResponse<List<GetProjectGroupDto>>();
             User dbUser = await _context.Users
                 .Include(c => c.ProjectGroups).ThenInclude(cs => cs.ProjectGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(c => c.ProjectGroups).ThenInclude(cs => cs.ProjectGroup).ThenInclude(cs => cs.AffiliatedSection)
+                .Include(c => c.ProjectGroups).ThenInclude(cs => cs.ProjectGroup).ThenInclude(cs => cs.AffiliatedCourse)
                 .FirstOrDefaultAsync(c => c.Id == userId);
             if (dbUser == null)
             {
@@ -332,7 +354,12 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
-            serviceResponse.Data = dbUser.ProjectGroups.Select(c => _mapper.Map<GetProjectGroupDto>(c.ProjectGroup)).ToList();
+            List<GetProjectGroupDto> projectGroupDtos = dbUser.ProjectGroups.Select(c => _mapper.Map<GetProjectGroupDto>(c.ProjectGroup)).ToList();
+            foreach ( var i in projectGroupDtos ) {
+                i.AffiliatedCourseName = i.AffiliatedCourse.Name;
+                i.IsActive = i.AffiliatedCourse.IsActive;
+            }
+            serviceResponse.Data = projectGroupDtos;
             return serviceResponse;
         }
 
@@ -437,7 +464,10 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Add(newProjectGroup);
 
             await _context.SaveChangesAsync();
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(newProjectGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(newProjectGroup);
+            projectGroupDto.AffiliatedCourseName = newProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = newProjectGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "New project group for the student is created.";
             return serviceResponse;
         }
@@ -551,7 +581,10 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the kicking operation";
             return serviceResponse;
         }
@@ -562,6 +595,7 @@ namespace backend.Services.ProjectGroupServices
 
             JoinRequest dbJoinRequest = await _context.JoinRequests
                 .Include(c => c.RequestedGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(c => c.RequestedGroup).ThenInclude(cs => cs.AffiliatedCourse)
                 .Include(c => c.RequestingStudent)
                 .FirstOrDefaultAsync(c => c.Id == joinRequestId);
 
@@ -647,7 +681,10 @@ namespace backend.Services.ProjectGroupServices
             _context.MergeRequests.UpdateRange ( resetedMergeRequests );
 
             await _context.SaveChangesAsync();
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbJoinRequest.RequestedGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbJoinRequest.RequestedGroup);
+            projectGroupDto.AffiliatedCourseName = dbJoinRequest.RequestedGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbJoinRequest.RequestedGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Join request is completed.";
             return serviceResponse;
         }
@@ -659,6 +696,7 @@ namespace backend.Services.ProjectGroupServices
             MergeRequest dbMergeRequest = await _context.MergeRequests
                 .Include(c => c.SenderGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
                 .Include(c => c.ReceiverGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(c => c.ReceiverGroup).ThenInclude(cs => cs.AffiliatedCourse)
                 .FirstOrDefaultAsync(c => c.Id == mergeRequestId);
 
             if (dbMergeRequest == null)
@@ -760,7 +798,10 @@ namespace backend.Services.ProjectGroupServices
             //
 
             await _context.SaveChangesAsync();
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbMergeRequest.ReceiverGroup);
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbMergeRequest.ReceiverGroup);
+            projectGroupDto.AffiliatedCourseName = dbMergeRequest.ReceiverGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbMergeRequest.ReceiverGroup.AffiliatedCourse.IsActive;
+            serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Merge request is completed.";
             return serviceResponse;
         }
@@ -963,9 +1004,9 @@ namespace backend.Services.ProjectGroupServices
             return response;
         }
 
-        public async Task<ServiceResponse<GetProjectGroupDto>> UpdateSrsGrade(UpdateSrsGradeDto updateSrsGradeDto)
+        public async Task<ServiceResponse<GetSrsGradeDto>> UpdateSrsGrade(UpdateSrsGradeDto updateSrsGradeDto)
         {
-            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+            ServiceResponse<GetSrsGradeDto> serviceResponse = new ServiceResponse<GetSrsGradeDto>();
             ProjectGroup dbProjectGroup = await _context.ProjectGroups
                 .FirstOrDefaultAsync(c => c.Id == updateSrsGradeDto.ProjectGroupId);
             if (dbProjectGroup == null)
@@ -987,7 +1028,13 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            GetSrsGradeDto data = new GetSrsGradeDto
+            { 
+                SrsGrade = dbProjectGroup.SrsGrade,
+                IsGraded = dbProjectGroup.IsGraded
+            };
+
+            serviceResponse.Data = data;
             serviceResponse.Message = "Successfully updated Srs grade";
             return serviceResponse;
         }
