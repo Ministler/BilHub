@@ -19,12 +19,22 @@ namespace backend.Data.Auth
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthRepository(DataContext context, IConfiguration configuration, IMapper mapper)
+        public AuthRepository(DataContext context, IConfiguration configuration, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _mapper = mapper;
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
+        private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        public async Task<ServiceResponse<GetUserDto>> check()
+        {
+            ServiceResponse<GetUserDto> response = new ServiceResponse<GetUserDto>();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+            response.Data = _mapper.Map<GetUserDto>(user);
+            return response;
         }
 
         public async Task<ServiceResponse<string>> Verify(UserVerifyDto userVerifyDto)
@@ -242,6 +252,21 @@ namespace backend.Data.Auth
             Utility.SendMail(email, user.VerificationCode, false);
             response.Data = "new verification code has been sent to your email";
             return response;
+        }
+
+        public async Task<ServiceResponse<int>> IdOfUser(string email)
+        {
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int> ();
+            User dbUser = await _context.Users.FirstOrDefaultAsync ( x => x.Email.Equals ( email ) );
+            if ( dbUser == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "There is no such user";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = dbUser.Id;
+            return serviceResponse;
         }
     }
 }

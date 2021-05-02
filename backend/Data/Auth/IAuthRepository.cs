@@ -13,5 +13,7 @@ namespace backend.Data.Auth
         Task<ServiceResponse<string>> Verify(UserVerifyDto userVerifyDto);
         Task<ServiceResponse<string>> Resend(string email);
         Task<bool> UserExists(string username);
+        Task<ServiceResponse<GetUserDto>> check();
+        Task<ServiceResponse<int>> IdOfUser ( string email );
     }
 }

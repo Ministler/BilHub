@@ -27,8 +27,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
-using backend.Services.CourseServices;
 using backend.Services.SectionServices;
+using backend.Services.CourseServices;
+using backend.Services.PeerGradeServices;
+using backend.Services.ProjectGradeServices;
 
 namespace backend
 {
@@ -44,15 +46,8 @@ namespace backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
-            // services.AddSingleton(emailConfig);
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
-            // .AddJsonOptions(options =>
-            // {
-            //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            // });
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BilHub", Version = "v1" });
@@ -90,8 +85,10 @@ namespace backend
             services.AddScoped<IAssignmentService, AssignmentService>();
             services.AddScoped<IProjectGroupService, ProjectGroupService>();
             services.AddScoped<IMergeRequestService, MergeRequestService>();
-            services.AddScoped<ICourseService,CourseService>();
-            services.AddScoped<ISectionService,SectionService>();
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IPeerGradeService, PeerGradeService>();
+            services.AddScoped<IProjectGradeService, ProjectGradeService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -104,6 +101,11 @@ namespace backend
                     ValidateAudience = false
                 };
             });
+            services.AddCors(
+                builder => builder.AddDefaultPolicy(
+                     a => a.AllowAnyMethod()
+               )
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -119,6 +121,14 @@ namespace backend
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(builder =>
+              builder
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
 
             app.UseAuthentication();
 

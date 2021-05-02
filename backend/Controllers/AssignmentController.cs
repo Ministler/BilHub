@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using backend.Services.AssignmentServices;
 using backend.Dtos.Assignment;
+using backend.Dtos.ProjectGroup;
 
 namespace backend.Controllers
 {
@@ -133,6 +134,18 @@ namespace backend.Controllers
             if (types.ContainsKey(ext))
                 return types[ext];
             return null;
+        }
+
+        [HttpGet]
+        [Route("Statistics/{assignmentId}")]
+        public async Task<IActionResult> GetOzgur(int assignmentId)
+        {
+            ServiceResponse<GetOzgurDto> response = await _assignmentService.GetOzgur(assignmentId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
         }
 
         private Dictionary<string, string> GetMimeTypes()

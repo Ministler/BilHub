@@ -61,19 +61,45 @@ namespace backend.Data
                 .WithMany(c => c.ProjectGroups)
                 .HasForeignKey(bc => bc.UserId);
 
-            modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.SenderGroup)
+            modelBuilder.Entity<MergeRequest>().HasOne (mr => mr.SenderGroup)
                 .WithMany(g => g.OutgoingMergeRequest)
-                .HasForeignKey(mr => mr.SenderGroupId);
+                .HasForeignKey(mr => mr.SenderGroupId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.ReceiverGroup)
                 .WithMany(g => g.IncomingMergeRequest)
-                .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.NoAction);
 
             byte[] hash, salt;
             Utility.CreatePasswordHash("31", out hash, out salt);
 
             modelBuilder.Entity<Assignment>().HasData(
                 new Assignment
+                {
+                    Id = 1,
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "Odev",
+                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CreatedAt = DateTime.Now,
+                    AcceptedTypes = "pdf,doc,docx",
+                    MaxFileSizeInBytes = 1024,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true,
+                    Title = "Design Report iteration 1"
+                }, new Assignment
+                {
+                    Id = 2,
+                    AfilliatedCourseId = 2,
+                    AssignmentDescription = "315 proje",
+                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
+                    CreatedAt = DateTime.Now,
+                    AcceptedTypes = "pdf,doc,docx",
+                    MaxFileSizeInBytes = 1024,
+                    VisibilityOfSubmission = false,
+                    CanBeGradedByStudents = false,
+                    IsItGraded = false,
+                    Title = "Language design"
+                }, new Assignment
                 {
                     Id = 3,
                     AfilliatedCourseId = 1,
@@ -498,7 +524,51 @@ namespace backend.Data
                     Year = 2021,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
-                }
+                }/*, new Course
+                {
+                    Id = 7,
+                    Name = "Cs 476",
+                    CourseInformation = "Automata",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
+                    CourseSemester = "fall",
+                    MinGroupSize = 1,
+                    MaxGroupSize = 2
+                }, new Course
+                {
+                    Id = 8,
+                    Name = "Cs 491",
+                    CourseInformation = "bitirme",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
+                    CourseSemester = "fall",
+                    MinGroupSize = 3,
+                    MaxGroupSize = 5
+                }, new Course
+                {
+                    Id = 9,
+                    Name = "Gra 201",
+                    CourseInformation = "Grafik dersi",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
+                    CourseSemester = "fall",
+                    MinGroupSize = 2,
+                    MaxGroupSize = 4
+                }, new Course
+                {
+                    Id = 10,
+                    Name = "Ge 301",
+                    CourseInformation = "emine or withdraw",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
+                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
+                    CourseSemester = "fall",
+                    MinGroupSize = 2,
+                    MaxGroupSize = 5
+                }*/
             );
             modelBuilder.Entity<CourseUser>().HasData(
                 new CourseUser
@@ -601,7 +671,56 @@ namespace backend.Data
                     Id = 9,
                     AffiliatedCourseId = 6,
                     SectionNo = 1
-                }
+                }/*,
+                new Section
+                {
+                    Id = 10,
+                    SectionlessState = true,
+                    AffiliatedCourseId = 7,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 11,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 8,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 12,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 8,
+                    SectionNo = 2
+                },
+                new Section
+                {
+                    Id = 13,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 8,
+                    SectionNo = 3
+                },
+                new Section
+                {
+                    Id = 14,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 9,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 15,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 10,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = 16,
+                    SectionlessState = false,
+                    AffiliatedCourseId = 10,
+                    SectionNo = 2
+                }*/
             );
             modelBuilder.Entity<ProjectGroup>().HasData(
                 new ProjectGroup
@@ -648,6 +767,141 @@ namespace backend.Data
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Satis Language",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 6,
+                    AffiliatedSectionId = 9,
+                    AffiliatedCourseId = 6,
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "Hamdinin melekleri",
+                    ConfirmedGroupMembers = "5"
+                }, new ProjectGroup
+                {
+                    Id = 7,
+                    AffiliatedSectionId = 9,
+                    AffiliatedCourseId = 6,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Butun kizlar toplandik",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 8,
+                    AffiliatedSectionId = 8,
+                    AffiliatedCourseId = 5,
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 5,
+                    ProjectInformation = "Baris erasmustayken bitirme aliyoruz",
+                    ConfirmedGroupMembers = "1 4 5 6 7"
+                }, new ProjectGroup
+                {
+                    Id = 9,
+                    AffiliatedSectionId = 6,
+                    AffiliatedCourseId = 4,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Donemin en ikonikleri uwu",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 10,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "rakip grup",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 11,
+                    AffiliatedSectionId = 9,
+                    AffiliatedCourseId = 6,
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "o sen olsan bari",
+                    ConfirmedGroupMembers = "5"
+                }, new ProjectGroup
+                {
+                    Id = 12,
+                    AffiliatedSectionId = 8,
+                    AffiliatedCourseId = 5,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "She abunai hanasu cancu",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 13,
+                    AffiliatedSectionId = 8,
+                    AffiliatedCourseId = 5,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "cotomate cotomate",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 14,
+                    AffiliatedSectionId = 6,
+                    AffiliatedCourseId = 4,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Duz bireyler",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 15,
+                    AffiliatedSectionId = 6,
+                    AffiliatedCourseId = 4,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Hazin gelmiyor ama gelebilirdi",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 16,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "bulamadim isim",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 17,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "grup ariyorum",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 18,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "frontend guzel renk bul",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 19,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "yusuf klavye kullanmayi ogren",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 20,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "nasrettin hocanin askerleriyiz",
                     ConfirmedGroupMembers = ""
                 }
             );
@@ -720,35 +974,6 @@ namespace backend.Data
                 {
                     UserId = 7,
                     ProjectGroupId = 4,
-                }
-            );
-            modelBuilder.Entity<Assignment>().HasData(
-                new Assignment
-                {
-                    Id = 1,
-                    AfilliatedCourseId = 1,
-                    Title = "Design Report",
-                    AssignmentDescription = "Odev",
-                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf,doc,docx",
-                    MaxFileSizeInBytes = 1024,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true,
-                }, new Assignment
-                {
-                    Id = 2,
-                    AfilliatedCourseId = 2,
-                    AssignmentDescription = "315 proje",
-                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf,doc,docx",
-                    MaxFileSizeInBytes = 1024,
-                    VisibilityOfSubmission = false,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = false,
-                    Title = "Language design"
                 }
             );
 
