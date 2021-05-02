@@ -14,6 +14,7 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<GetProjectGroupDto>> LeaveGroup(int projectGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> KickStudentFromGroup(int projectGroupId, int userId, bool fromInside);
         Task<ServiceResponse<List<GetProjectGroupDto>>> GetProjectGroupsOfSection(int sectionId);
+        Task<ServiceResponse<List<GetProjectGroupDto>>> GetProjectGroupsOfUser(int userId);
         Task<ServiceResponse<string>> DeleteProjectGroup(int projectGroupId);
         Task<ServiceResponse<string>> ForceCancelGroup(int projectGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> CompleteJoinRequest(int joinRequestId);

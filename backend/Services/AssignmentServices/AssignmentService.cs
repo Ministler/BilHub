@@ -8,6 +8,7 @@ using AutoMapper;
 using backend.Data;
 using backend.Dtos.Assignment;
 using backend.Dtos.ProjectGroup;
+using backend.Dtos.Submission;
 using backend.Models;
 using backend.Services.SubmissionServices;
 using Microsoft.AspNetCore.Hosting;
@@ -157,7 +158,8 @@ namespace backend.Services.AssignmentServices
         public async Task<ServiceResponse<GetAssignmentDto>> SubmitAssignment(AddAssignmentDto assignmentDto)
         {
             ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
-            Course course = await _context.Courses.Include(c => c.Instructors).FirstOrDefaultAsync(c => c.Id == assignmentDto.CourseId);
+            Course course = await _context.Courses.Include(c => c.Instructors).Include(c => c.Sections).ThenInclude(s => s.ProjectGroups)
+                .FirstOrDefaultAsync(c => c.Id == assignmentDto.CourseId);
             if (course == null)
             {
                 response.Data = null;
@@ -208,8 +210,22 @@ namespace backend.Services.AssignmentServices
                 FilePath = "",
                 Title = assignmentDto.Title
             };
+
             await _context.Assignments.AddAsync(assignment);
             await _context.SaveChangesAsync();
+
+            foreach (Section s in course.Sections)
+            {
+                foreach (ProjectGroup pg in s.ProjectGroups)
+                {
+                    await _submissionService.AddSubmission(new AddSubmissionDto
+                    {
+                        AssignmentId = assignment.Id,
+                        ProjectGroupId = pg.Id
+                    });
+                }
+            }
+
             response.Data = _mapper.Map<GetAssignmentDto>(assignment);
             response.Data.FileEndpoint = string.Format("Assignment/File/{0}", assignment.Id);
             return response;
@@ -397,6 +413,93 @@ namespace backend.Services.AssignmentServices
             getOzgurDto.ozgurStatDtos = ozgurStatDtos;
             // List<int> graderIds = submission.Comments.Select(c => c.CommentedUserId).ToList();
             response.Data = getOzgurDto;
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<GetFeedItemDto>>> GetFeeds()
+        {
+            ServiceResponse<List<GetFeedItemDto>> response = new ServiceResponse<List<GetFeedItemDto>>();
+            User user = await _context.Users
+            .Include(u => u.ProjectGroups).ThenInclude(pg => pg.ProjectGroup).ThenInclude(pg => pg.Submissions)
+                .ThenInclude(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse)
+                .Include(u => u.ProjectGroups).ThenInclude(pg => pg.ProjectGroup).ThenInclude(pg => pg.AffiliatedCourse).ThenInclude(c => c.Assignments)
+            .Include(u => u.InstructedCourses).ThenInclude(cu => cu.Course).ThenInclude(c => c.Assignments).ThenInclude(a => a.Submissions)
+            .FirstOrDefaultAsync(u => u.Id == GetUserId());
+
+            List<GetFeedItemDto> data = new List<GetFeedItemDto>();
+            List<int> submittedAssignments = new List<int>();
+            if (user.ProjectGroups != null)
+            {
+                foreach (ProjectGroup pg in user.ProjectGroups.Select(pgu => pgu.ProjectGroup))
+                {
+                    if (pg.Submissions != null)
+                    {
+                        foreach (Submission s in pg.Submissions)
+                        {
+                            if (s.AffiliatedAssignment != null && pg.AffiliatedCourse != null)
+                            {
+                                submittedAssignments.Add(s.AffiliatedAssignment.Id);
+                                data.Add(
+                                    new GetFeedItemDto
+                                    {
+                                        title = s.AffiliatedAssignment.Title,
+                                        status = s.HasSubmission ? s.IsGraded ? 1 : 2 : 3,
+                                        caption = s.AffiliatedAssignment.AssignmentDescription,
+                                        publisher = pg.AffiliatedCourse.Name,
+                                        publisherId = pg.AffiliatedCourse.Id,
+                                        publishmentDate = s.AffiliatedAssignment.CreatedAt,
+                                        dueDate = s.AffiliatedAssignment.DueDate,
+                                        hasFile = s.AffiliatedAssignment.HasFile,
+                                        fileEndpoint = "Assignment/File/" + s.AffiliatedAssignment.Id,
+                                        projectId = pg.Id,
+                                        submissionId = s.Id
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            List<Assignment> goingAssignments = new List<Assignment>();
+
+            if (user.InstructedCourses != null)
+            {
+                foreach (Course c in user.InstructedCourses.Select(cu => cu.Course))
+                {
+                    if (c.Assignments != null)
+                    {
+                        foreach (Assignment a in c.Assignments)
+                        {
+                            data.Add(
+                                new GetFeedItemDto
+                                {
+                                    title = a.Title,
+                                    status =
+                                    !a.Submissions.Any(s => !s.HasSubmission) ? !a.Submissions.Any(s => !s.IsGraded) ? 1 : 2 :
+                                    (a.Submissions.Where(s => s.HasSubmission).Count() == 0 || a.Submissions.Where(s => s.HasSubmission).Any(s => s.IsGraded)) ? 3 : 4,
+
+                                    caption = a.AssignmentDescription,
+                                    publisher = a.AfilliatedCourse.Name,
+                                    publisherId = a.AfilliatedCourse.Id,
+                                    publishmentDate = a.CreatedAt,
+                                    dueDate = a.DueDate,
+                                    hasFile = a.HasFile,
+                                    fileEndpoint = "Assignment/File/" + a.Id,
+                                    courseId = c.Id,
+                                    assignmentId = a.Id
+                                }
+                            );
+                        }
+                    }
+                }
+            }
+            data.OrderBy(i => i.dueDate);
+
+            response.Data = data;
+
             return response;
         }
     }

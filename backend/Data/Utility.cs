@@ -69,30 +69,30 @@ namespace backend.Data
 
             var email = new MimeMessage();
             //^^^^^^^^^^^^^^^^ sadece productionda bu emaile gecicez ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-            // email.From.Add(MailboxAddress.Parse("bilhub@bilkent.edu.tr"));
-            // email.To.Add(MailboxAddress.Parse(mailaddress));
-            // email.Subject = subject;
-            // email.Body = new TextPart(TextFormat.Plain) { Text = content };
-
-            // // send email
-            // SmtpClient smtp = new SmtpClient();
-            // smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            // smtp.Authenticate("bilhubapp@gmail.com", "BilHubApp-Ministler");
-            // smtp.Send(email);
-            // smtp.Disconnect(true);
-
-            ///^^^^^^^^^^^ testing icin etheral mail ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-            email.From.Add(MailboxAddress.Parse("felix.kihn39@ethereal.email"));
+            email.From.Add(MailboxAddress.Parse("bilhub@bilkent.edu.tr"));
             email.To.Add(MailboxAddress.Parse(mailaddress));
             email.Subject = subject;
             email.Body = new TextPart(TextFormat.Plain) { Text = content };
 
             // send email
             SmtpClient smtp = new SmtpClient();
-            smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate("felix.kihn39@ethereal.email", "v2pPMTNgnQhdB3muC1");
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("bilhubapp@gmail.com", "BilHubApp-Ministler");
             smtp.Send(email);
             smtp.Disconnect(true);
+
+            // ///^^^^^^^^^^^ testing icin etheral mail ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            // email.From.Add(MailboxAddress.Parse("felix.kihn39@ethereal.email"));
+            // email.To.Add(MailboxAddress.Parse(mailaddress));
+            // email.Subject = subject;
+            // email.Body = new TextPart(TextFormat.Plain) { Text = content };
+
+            // // send email
+            // SmtpClient smtp = new SmtpClient();
+            // smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
+            // smtp.Authenticate("felix.kihn39@ethereal.email", "v2pPMTNgnQhdB3muC1");
+            // smtp.Send(email);
+            // smtp.Disconnect(true);
         }
 
         public static bool CheckIfInstructorEmail(string email)

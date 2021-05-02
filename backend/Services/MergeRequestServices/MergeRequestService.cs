@@ -496,6 +496,7 @@ namespace backend.Services.MergeRequestServices
                 return response;
             }
 
+            /*
             GetMergeRequestDto dto = new GetMergeRequestDto
             {
                 Id = mergeRequestId,
@@ -527,12 +528,37 @@ namespace backend.Services.MergeRequestServices
                 VotedStudents = mergeRequest.VotedStudents,
                 Description = mergeRequest.Description
             };
+            */
 
-            response.Data = dto;
+            response.Data = _mapper.Map<GetMergeRequestDto> (mergeRequest);
             response.Message = "Success";
             response.Success = true;
 
             return response;
+        }
+
+        public async Task<ServiceResponse<List<GetMergeRequestDto>>> GetOutgoingMergeRequestsOfUser()
+        {
+            ServiceResponse<List<GetMergeRequestDto>> serviceResponse = new ServiceResponse<List<GetMergeRequestDto>> ();
+            List<MergeRequest> dbMergeRequests = await _context.MergeRequests
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers )
+                .Where ( c => c.SenderGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() )).ToListAsync();
+
+            serviceResponse.Data = dbMergeRequests.Select(c => _mapper.Map<GetMergeRequestDto>(c)).ToList();
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetMergeRequestDto>>> GetIncomingMergeRequestsOfUser()
+        {
+            ServiceResponse<List<GetMergeRequestDto>> serviceResponse = new ServiceResponse<List<GetMergeRequestDto>> ();
+            List<MergeRequest> dbMergeRequests = await _context.MergeRequests
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers )
+                .Where ( c => c.ReceiverGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() )).ToListAsync();
+
+            serviceResponse.Data = dbMergeRequests.Select(c => _mapper.Map<GetMergeRequestDto>(c)).ToList();
+            return serviceResponse;
         }
     }
 }

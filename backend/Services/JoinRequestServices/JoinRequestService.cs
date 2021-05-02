@@ -509,40 +509,35 @@ namespace backend.Services.JoinRequestServices
                 return response;
             }
 
-            GetJoinRequestDto dto = new GetJoinRequestDto
-            {
-                Id = joinRequestId,
-                RequestingStudent = new UserInJoinRequestDto
-                {
-                    Id = joinRequest.RequestingStudent.Id,
-                    email = joinRequest.RequestingStudent.Email,
-                    name = joinRequest.RequestingStudent.Name
-                },
-                RequestingStudentId = joinRequest.RequestingStudentId,
-                RequestedGroup = new ProjectGroupInJoinRequestDto
-                {
-                    Id = joinRequest.RequestedGroup.Id,
-                    AffiliatedSectionId = joinRequest.RequestedGroup.AffiliatedSectionId,
-                    AffiliatedCourseId = joinRequest.RequestedGroup.AffiliatedCourseId,
-                    ConfirmationState = joinRequest.RequestedGroup.ConfirmationState,
-                    ConfirmedUserNumber = joinRequest.RequestedGroup.ConfirmedUserNumber,
-                    ProjectInformation = joinRequest.RequestedGroup.ProjectInformation,
-                    ConfirmedGroupMembers = joinRequest.RequestedGroup.ConfirmedGroupMembers,
-                },
-                RequestedGroupId = joinRequest.RequestedGroupId,
-                CreatedAt = joinRequest.CreatedAt,
-                AcceptedNumber = joinRequest.AcceptedNumber,
-                Accepted = joinRequest.Accepted,
-                Resolved = joinRequest.Resolved,
-                VotedStudents = joinRequest.VotedStudents,
-                Description = joinRequest.Description
-            };
-
-            response.Data = dto;
+            response.Data = _mapper.Map<GetJoinRequestDto>(joinRequest);
             response.Message = "Success";
             response.Success = true;
 
             return response;
+        }
+
+        public async Task<ServiceResponse<List<GetJoinRequestDto>>> GetOutgoingJoinRequestsOfUser()
+        {
+            ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>> ();
+            List<JoinRequest> dbJoinRequests = await _context.JoinRequests
+                .Include(jr => jr.RequestingStudent)
+                .Include(jr => jr.RequestedGroup)
+                .Where ( c => c.RequestingStudentId == GetUserId() ).ToListAsync();
+
+            serviceResponse.Data = dbJoinRequests.Select(c => _mapper.Map<GetJoinRequestDto>(c)).ToList();
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetJoinRequestDto>>> GetIncomingJoinRequestsOfUser()
+        {
+            ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>> ();
+            List<JoinRequest> dbJoinRequests = await _context.JoinRequests
+                .Include(jr => jr.RequestingStudent)
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers )
+                .Where ( c => c.RequestedGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() ) ).ToListAsync();
+
+            serviceResponse.Data = dbJoinRequests.Select(c => _mapper.Map<GetJoinRequestDto>(c)).ToList();
+            return serviceResponse;
         }
 
         //////// ADD LOCK DATE

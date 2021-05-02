@@ -80,5 +80,11 @@ namespace backend.Controllers
         {
             return Ok(await _courseService.DeactivateCourse(courseId));
         }
+
+        [HttpGet("InstructedCoursesOfUser")]
+        public async Task<ActionResult> GetInstructedCoursesOfUser ( int userId )
+        {
+            return Ok ( await _courseService.GetInstructedCoursesOfUser( userId ) );
+        }
     }
 }

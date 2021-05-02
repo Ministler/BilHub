@@ -82,5 +82,27 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpGet("OutgoingMergeRequestsOfUser")]
+        public async Task<IActionResult> GetOutgoingMergeRequestsOfUser ( )
+        {
+            ServiceResponse<List<GetMergeRequestDto>> response = await _mergeRequestService.GetOutgoingMergeRequestsOfUser();
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet("IncomingMergeRequestsOfUser")]
+        public async Task<IActionResult> GetIncomingMergeRequestsOfUser ( )
+        {
+            ServiceResponse<List<GetMergeRequestDto>> response = await _mergeRequestService.GetIncomingMergeRequestsOfUser();
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
     }
 }

@@ -70,88 +70,8 @@ namespace backend.Data
                 .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.NoAction);
 
             byte[] hash, salt;
-            Utility.CreatePasswordHash("31", out hash, out salt);
+            Utility.CreatePasswordHash("cs319", out hash, out salt);
 
-            modelBuilder.Entity<Assignment>().HasData(
-                new Assignment
-                {
-                    Id = 1,
-                    AfilliatedCourseId = 1,
-                    AssignmentDescription = "Odev",
-                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf,doc,docx",
-                    MaxFileSizeInBytes = 1024,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true,
-                    Title = "Design Report iteration 1"
-                }, new Assignment
-                {
-                    Id = 2,
-                    AfilliatedCourseId = 2,
-                    AssignmentDescription = "315 proje",
-                    DueDate = new DateTime(2021, 5, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf,doc,docx",
-                    MaxFileSizeInBytes = 1024,
-                    VisibilityOfSubmission = false,
-                    CanBeGradedByStudents = false,
-                    IsItGraded = false,
-                    Title = "Language design"
-                }, new Assignment
-                {
-                    Id = 3,
-                    AfilliatedCourseId = 1,
-                    AssignmentDescription = "Odev iteration 2",
-                    DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true,
-                    Title = "Design Report iteration 2"
-                }, new Assignment
-                {
-                    Id = 4,
-                    AfilliatedCourseId = 1,
-                    AssignmentDescription = "Odev iteration 3",
-                    DueDate = new DateTime(2021, 4, 15, 7, 0, 0),
-                    CreatedAt = DateTime.Now,
-                    AcceptedTypes = "pdf-doc-docx",
-                    MaxFileSizeInBytes = 4096,
-                    VisibilityOfSubmission = true,
-                    CanBeGradedByStudents = true,
-                    IsItGraded = true,
-                    Title = "Design Report 3"
-                }
-            );
-            modelBuilder.Entity<Submission>().HasData(
-                new Submission
-                {
-                    Id = 1,
-                    AffiliatedAssignmentId = 1,
-                    AffiliatedGroupId = 1,
-                    UpdatedAt = DateTime.Now,
-                    HasSubmission = false,
-                    CourseId = 1,
-                    SectionId = 1
-                }
-            );
-            modelBuilder.Entity<Comment>().HasData(
-                new Comment
-                {
-                    Id = 1,
-                    CommentedUserId = 2,
-                    CommentedSubmissionId = 1,
-                    CommentText = "nays",
-                    MaxGrade = 10.0M,
-                    Grade = 9.4M,
-                    CreatedAt = DateTime.Now,
-                    FileAttachmentAvailability = true
-                }
-            );
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
@@ -242,7 +162,7 @@ namespace backend.Data
                 }, new User
                 {
                     Id = 8,
-                    Name = "HOCAM SIMDI BIZ SOYLE BI SISTEM DUSUNDUK DE",
+                    Name = "berke ceran",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,

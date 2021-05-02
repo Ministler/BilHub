@@ -9,6 +9,8 @@ using backend.Dtos.Submission;
 using backend.Dtos.User;
 using backend.Dtos.PeerGrade;
 using backend.Models;
+using backend.Dtos.JoinRequest;
+using backend.Dtos.MergeRequest;
 
 namespace backend
 {
@@ -35,6 +37,13 @@ namespace backend
             CreateMap<User, GetUserDto>();
             CreateMap<User, GetCommentorDto>();
             CreateMap<PeerGrade, PeerGradeInfoDto>();
+
+            CreateMap<User,UserInJoinRequestDto>();
+            CreateMap<ProjectGroup,ProjectGroupInJoinRequestDto>();
+            CreateMap<JoinRequest,GetJoinRequestDto>();
+
+            CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>();
+            CreateMap<MergeRequest,GetMergeRequestDto>();
         }
 
     }

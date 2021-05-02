@@ -21,6 +21,7 @@ namespace backend.Models
         public DateTime UpdatedAt { get; set; }
         public string FilePath { get; set; }
         public bool HasSubmission { get; set; }
+        public bool HasFile { get; set; }
         public ICollection<Comment> Comments { get; set; }
         //public Course AffiliatedCourse { get; set; }
         public int CourseId { get; set; }

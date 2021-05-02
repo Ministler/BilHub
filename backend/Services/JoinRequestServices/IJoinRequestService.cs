@@ -12,7 +12,8 @@ namespace backend.Services.JoinRequestServices
         Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto);
         Task<ServiceResponse<string>> DeleteAllJoinRequestsOfGroup(DeleteAllJoinRequestsGroupDto deleteAllJoinRequestsGroupDto);
         Task<ServiceResponse<string>> DeleteAllJoinRequestsOfUser(DeleteAllJoinRequestsUserDto deleteAllJoinRequestsUserDto);
-
         Task<ServiceResponse<GetJoinRequestDto>> GetJoinRequestById(int Id);
+        Task<ServiceResponse<List<GetJoinRequestDto>>> GetOutgoingJoinRequestsOfUser ();
+        Task<ServiceResponse<List<GetJoinRequestDto>>> GetIncomingJoinRequestsOfUser ();
     }
 }
