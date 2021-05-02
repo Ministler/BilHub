@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using ICSharpCode.SharpZipLib.Zip;
 using backend.Dtos.Comment;
+using backend.Dtos.Comment.FeedbackItems;
 
 namespace backend.Controllers
 {
@@ -215,6 +216,18 @@ namespace backend.Controllers
         public async Task<IActionResult> GetStudentComments(int submissionId)
         {
             ServiceResponse<List<GetCommentDto>> response = await _submissionService.GetStudentComments(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet]
+        [Route("Feedbacks")]
+        public async Task<IActionResult> GetFeedbacks()
+        {
+            ServiceResponse<FeedbacksDto> response = await _submissionService.GetNewFeedbacks();
             if (response.Success)
             {
                 return Ok(response);

@@ -139,6 +139,30 @@ namespace backend.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("NotGraded")]
+        public async Task<IActionResult> GetNotGraded()
+        {
+            ServiceResponse<List<NotGradedAsssignmentsDto>> response = await _assignmentService.GetNotGradedAssignments();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("Upcoming")]
+        public async Task<IActionResult> GetUpcoming()
+        {
+            ServiceResponse<List<UpcomingAssignmentsDto>> response = await _assignmentService.GetUpcomingAssignments();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         private string GetContentType(string path)
         {
             var types = GetMimeTypes();

@@ -18,5 +18,7 @@ namespace backend.Services.AssignmentServices
         Task<ServiceResponse<GetOzgurDto>> GetOzgur(int groupId);
         Task<ServiceResponse<string>> DeleteWithForce(int assignmentId);
         Task<ServiceResponse<List<GetFeedItemDto>>> GetFeeds();
+        Task<ServiceResponse<List<NotGradedAsssignmentsDto>>> GetNotGradedAssignments();
+        Task<ServiceResponse<List<UpcomingAssignmentsDto>>> GetUpcomingAssignments();
     }
 }
