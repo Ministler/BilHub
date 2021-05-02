@@ -116,7 +116,9 @@ namespace backend.Services.CourseServices
                 MaxGroupSize = createCourseDto.MaxGroupSize,
                 StartDate = DateTime.Now,
                 IsSectionless = createCourseDto.IsSectionless,
-                IsActive = createCourseDto.IsActive
+                IsActive = createCourseDto.IsActive,
+                IsLocked = createCourseDto.IsLocked,
+                CourseDescription = createCourseDto.CourseDescription
             };
 
             CourseUser founderInstructor = new CourseUser
@@ -229,6 +231,8 @@ namespace backend.Services.CourseServices
             dbCourse.MinGroupSize = editCourseDto.MinGroupSize;
             dbCourse.MaxGroupSize = editCourseDto.MaxGroupSize;
             dbCourse.IsActive = editCourseDto.IsActive;
+            dbCourse.IsLocked = editCourseDto.IsLocked;
+            dbCourse.CourseDescription = editCourseDto.CourseDescription;
 
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
