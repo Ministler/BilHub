@@ -32,14 +32,13 @@ namespace backend.Controllers
 
         
         [HttpPost]
-        [Route("{projectGroupId}/{revieweeId}/{maxGrade}/{grade}")]
-        public async Task<IActionResult> Add(int projectGroupId, int revieweeId, decimal maxGrade, decimal grade, string comment )
+        [Route("{projectGroupId}/{revieweeId}/{grade}")]
+        public async Task<IActionResult> Add(int projectGroupId, int revieweeId, int grade, string comment )
         {            
             AddPeerGradeDto dto = new AddPeerGradeDto {
                                                         ProjectGroupId = projectGroupId, 
                                                         RevieweeId = revieweeId,
-                                                        CreatedAt = DateTime.Now,
-                                                        MaxGrade = maxGrade,
+                                                        LastEdited = DateTime.Now,
                                                         Grade = grade,
                                                         Comment = comment
                                                     };
@@ -65,14 +64,13 @@ namespace backend.Controllers
         }
 
         [HttpPut]
-        [Route("{peerGradeId}/{maxGrade}/{grade}")]
-        public async Task<IActionResult> Edit(int peerGradeId, decimal maxGrade, decimal grade, string comment )
+        [Route("{peerGradeId}/{grade}")]
+        public async Task<IActionResult> Edit(int peerGradeId, int grade, string comment )
         {     
             EditPeerGradeDto dto = new EditPeerGradeDto {
-                                        MaxGrade = maxGrade,
                                         Grade = grade,
+                                        LastEdited = DateTime.Now,
                                         Comment = comment,
-                                        CreatedAt = DateTime.Now,
                                         Id = peerGradeId
                                     };
             
@@ -103,6 +101,32 @@ namespace backend.Controllers
         {
             GetPeerGradeDto dto = new GetPeerGradeDto { ProjectGroupId = projectGroupId, ReviewerId = reviewerId, RevieweeId = revieweeId };
             ServiceResponse<PeerGradeInfoDto> response = await _peerGradeService.GetPeerGradeByUsersAndGroup( dto );
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet]
+        [Route("To/{projectGroupId}/{revieweeId}")]
+        public async Task<IActionResult> GetPeerGradesGivenTo( int projectGroupId, int revieweeId )
+        {
+            GetPeerGradesGivenToDto dto = new GetPeerGradesGivenToDto { ProjectGroupId = projectGroupId, RevieweeId = revieweeId };
+            ServiceResponse<List<PeerGradeInfoDto>> response = await _peerGradeService.GetPeerGradesGivenTo( dto );
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpGet]
+        [Route("By/{projectGroupId}/{reviewerId}")]
+        public async Task<IActionResult> GetPeerGradesGivenBy( int projectGroupId, int reviewerId )
+        {
+            GetPeerGradesGivenByDto dto = new GetPeerGradesGivenByDto { ProjectGroupId = projectGroupId, ReviewerId = reviewerId };
+            ServiceResponse<List<PeerGradeInfoDto>> response = await _peerGradeService.GetPeerGradesGivenBy( dto );
             if (response.Success)
             {
                 return Ok(response);

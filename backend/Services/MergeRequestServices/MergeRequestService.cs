@@ -310,7 +310,7 @@ namespace backend.Services.MergeRequestServices
             }
             return ret;
         }
-
+        
         public async Task<ServiceResponse<MergeRequestInfoDto>> Vote(VoteMergeRequestDto mergeRequestDto)
         {
             ServiceResponse<MergeRequestInfoDto> response = new ServiceResponse<MergeRequestInfoDto>();

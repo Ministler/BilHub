@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
  
 namespace backend.Dtos.ProjectGrade
 {
-    public class GetProjectGradeDto : GetGradeBaseDto
+    public class GetProjectGradeDto
     {
         public int GradingUserId { get; set; }
         public int GradedProjectGroupID { get; set; }

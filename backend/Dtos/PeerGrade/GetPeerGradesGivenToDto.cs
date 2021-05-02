@@ -5,10 +5,8 @@ using backend.Dtos.GradeBase;
  
 namespace backend.Dtos.PeerGrade
 {
-    public class GetPeerGradeDto
+    public class GetPeerGradesGivenToDto : GetGradeBasesDto
     {
-        public int ProjectGroupId { get; set; }
-        public int ReviewerId { get; set; }
         public int RevieweeId { get; set; }
     }
 }

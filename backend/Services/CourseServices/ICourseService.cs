@@ -17,6 +17,5 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<string>> RemoveCourse ( int courseId );
         Task<ServiceResponse<GetCourseDto>> ActivateCourse(int courseId);
         Task<ServiceResponse<GetCourseDto>> DeactivateCourse(int courseId);
-
     }
 }

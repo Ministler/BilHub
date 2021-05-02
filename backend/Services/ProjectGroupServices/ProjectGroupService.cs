@@ -769,7 +769,7 @@ namespace backend.Services.ProjectGroupServices
                     MaxGrade = c.MaxGrade,
                     Grade = c.Grade,
                     Comment = c.Description,
-                    CreatedAt = c.CreatedAt,
+                    LastEdited = c.LastEdited,
                     userInProjectGradeDto = new UserInProjectGradeDto
                     {
                         Id = c.GradingUser.Id,
@@ -813,7 +813,7 @@ namespace backend.Services.ProjectGroupServices
                     MaxGrade = c.MaxGrade,
                     Grade = c.Grade,
                     Comment = c.Description,
-                    CreatedAt = c.CreatedAt,
+                    LastEdited = c.LastEdited,
                     userInProjectGradeDto = new UserInProjectGradeDto
                     {
                         Id = c.GradingUser.Id,
@@ -857,7 +857,7 @@ namespace backend.Services.ProjectGroupServices
                     MaxGrade = c.MaxGrade,
                     Grade = c.Grade,
                     Comment = c.Description,
-                    CreatedAt = c.CreatedAt,
+                    LastEdited = c.LastEdited,
                     userInProjectGradeDto = new UserInProjectGradeDto
                     {
                         Id = c.GradingUser.Id,
