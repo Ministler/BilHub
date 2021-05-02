@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
+import { getCourseRequest, getSectionRequest } from '../../API';
 import './Course.css';
 import {
     InformationSection,
@@ -111,14 +113,41 @@ class Course extends Component {
     };
 
     componentDidMount() {
-        this.setState({
-            groups: dummyGroupsLocked,
-            courseInformation: dummyCourseInformation,
-            newInformation: dummyCourseInformation.information,
-            assignments: dummyCourseAssignments,
-            currentSection: dummyCourseInformation.currentUserSection
-                ? dummyCourseInformation.currentUserSection - 1
-                : 0,
+        getCourseRequest(this.props.match.params.courseId).then((response) => {
+            const courseData = response.data.data;
+            console.log(courseData);
+            const courseInformation = {
+                courseName: courseData.name + '-' + courseData.year + courseData.courseSemester,
+                description: courseData.courseInformation,
+                instructors: courseData.instructors,
+                formationDate: courseData.lockDate,
+                numberOfSections: courseData.numberOfSections,
+                // currentUserSection:, // BURA
+                // isCourseActive: ,// BURA
+                // TAs: ,// BURA
+                // information:, // BURA
+                // isTAorInstructorOfCourse:, // BURA
+                // isUserInFormedGroup:, // BURA
+                // isUserAlone:, // BURA
+                // isLocked:, // BURA
+            };
+            this.setState({
+                // assignments: // BURA,
+                courseInformation: courseInformation,
+                newInformation: courseInformation.information,
+                currentSection: courseInformation.currentUserSection ? courseInformation.currentUserSection - 1 : 0,
+            });
+
+            const sectionRequests = [];
+            for (let i = 0; i < courseData.sections.length; i++) {
+                sectionRequests.push(getSectionRequest(courseData.sections[i].id));
+            }
+
+            axios.all(sectionRequests).then(
+                axios.spread((...responses) => {
+                    console.log(responses[0].data.data);
+                })
+            );
         });
     }
 
