@@ -27,7 +27,12 @@ namespace backend
             CreateMap<Course, CourseInProjectGroupDto>();
             CreateMap<Section, SectionInProjectGroupDto>();
             CreateMap<Course, GetCourseDto>()
-                .ForMember(dto => dto.Instructors, c => c.MapFrom(c => c.Instructors.Select(cs => cs.User)));
+                .ForMember(dto => dto.Instructors, c => c.MapFrom(c => c.Instructors.Select(cs => cs.User)))
+                .ForMember( dto => dto.CurrentUserSectionId, opt => opt.Ignore() )
+                .ForMember( dto => dto.IsInstructorOrTAInCourse, opt => opt.Ignore() )
+                .ForMember( dto => dto.IsUserInFormedGroup, opt => opt.Ignore() )
+                .ForMember( dto => dto.IsUserAlone, opt => opt.Ignore() );
+
             CreateMap<Course, CourseInSectionDto>();
             CreateMap<ProjectGroup, ProjectGroupInSectionDto>();
             CreateMap<Section, GetSectionOfCourseDto>();

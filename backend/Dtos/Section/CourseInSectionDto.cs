@@ -8,5 +8,6 @@ namespace backend.Dtos.Section
         public string Name { get; set; }
         public SemesterType CourseSemester { get; set; }
         public int Year { get; set; }
+        public string CourseDescription { get; set; }
     }
 }
