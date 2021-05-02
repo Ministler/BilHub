@@ -319,7 +319,24 @@ namespace backend.Services.ProjectGroupServices
             return serviceResponse;
         }
 
-        // This method cannot be called via api. Only withdraw student method can call this.
+        public async Task<ServiceResponse<List<GetProjectGroupDto>>> GetProjectGroupsOfUser(int userId)
+        {
+            ServiceResponse<List<GetProjectGroupDto>> serviceResponse = new ServiceResponse<List<GetProjectGroupDto>>();
+            User dbUser = await _context.Users
+                .Include(c => c.ProjectGroups).ThenInclude(cs => cs.ProjectGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .FirstOrDefaultAsync(c => c.Id == userId);
+            if (dbUser == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = dbUser.ProjectGroups.Select(c => _mapper.Map<GetProjectGroupDto>(c.ProjectGroup)).ToList();
+            return serviceResponse;
+        }
+
+        // This method cannot be called via api.
         public async Task<ServiceResponse<string>> DeleteProjectGroup(int projectGroupId)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();

@@ -51,6 +51,12 @@ namespace backend.Controllers
             return Ok(await _projectGroupService.GetProjectGroupsOfSection(sectionId));
         }
 
+        [HttpGet("ProjectGroupsOfUser")]
+        public async Task<ActionResult> GetProjectGroupsOfUser(int userId)
+        {
+            return Ok(await _projectGroupService.GetProjectGroupsOfUser(userId));
+        }
+
         [HttpDelete("DeleteProjectGroup")]
         public async Task<ActionResult>  DeleteProjectGroup ( int projectGroupId )
         {
