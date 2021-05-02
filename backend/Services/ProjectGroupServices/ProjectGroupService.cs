@@ -1113,29 +1113,36 @@ namespace backend.Services.ProjectGroupServices
         public async Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int projectGroupId)
         {
             ServiceResponse<List<GetFeedItemDto>> response = new ServiceResponse<List<GetFeedItemDto>>();
-            // Course course = await _context.Courses.Include(c => c.Assignments).ThenInclude(a => a.AfilliatedCourse)
-            // .FirstOrDefaultAsync(c => c.Id == courseId);
-            // List<GetFeedItemDto> data = new List<GetFeedItemDto>();
-            // if (course != null)
-            // {
-            //     foreach (Assignment a in course.Assignments)
-            //     {
-            //         data.Add(
-            //             new GetFeedItemDto
-            //             {
-            //                 assignmentId = a.Id,
-            //                 caption = a.AssignmentDescription,
-            //                 publisher = a.AfilliatedCourse.Name,
-            //                 publisherId = a.AfilliatedCourseId,
-            //                 publishmentDate = a.CreatedAt,
-            //                 dueDate = a.DueDate,
-            //                 hasFile = a.HasFile,
-            //                 fileEndpoint = "Assignment/File/" + a.Id,
-            //                 courseId = a.AfilliatedCourseId
-            //             }
-            //         );
-            //     }
-            // }
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                .Include(c => c.Submissions).ThenInclude(a => a.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse)
+            .FirstOrDefaultAsync(c => c.Id == projectGroupId);
+            List<GetFeedItemDto> data = new List<GetFeedItemDto>();
+            if (projectGroup != null)
+            {
+                foreach (Submission s in projectGroup.Submissions)
+                {
+                    Assignment a = s.AffiliatedAssignment;
+                    data.Add(
+                        new GetFeedItemDto
+                        {
+                            assignmentId = a.Id,
+                            caption = a.AssignmentDescription,
+                            publisher = a.AfilliatedCourse.Name,
+                            publisherId = a.AfilliatedCourseId,
+                            publishmentDate = a.CreatedAt,
+                            dueDate = a.DueDate,
+                            hasFile = a.HasFile,
+                            fileEndpoint = "Assignment/File/" + a.Id,
+                            projectId = projectGroup.Id,
+                            submissionId = s.Id,
+                            title = a.Title,
+                            courseId = a.AfilliatedCourseId
+                        }
+                    );
+                }
+            }
+            data.OrderBy(c => c.dueDate);
+            response.Data = data;
             return response;
         }
     }

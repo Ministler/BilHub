@@ -138,10 +138,10 @@ namespace backend.Controllers
             return Ok(await _projectGroupService.DeleteSrsGrade(deleteSrsGradeDto));
         }
 
-        [HttpGet("Assignments/{courseId}")]
-        public async Task<ActionResult> GetAssignments(int courseId)
+        [HttpGet("Assignments/{projectGroupId}")]
+        public async Task<ActionResult> GetAssignments(int projectGroupId)
         {
-            return Ok(await _projectGroupService.GetAssignments(courseId));
+            return Ok(await _projectGroupService.GetAssignments(projectGroupId));
         }
     }
 }
