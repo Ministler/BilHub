@@ -54,12 +54,12 @@ namespace backend.Controllers
         [Route("{peerGradeId}")]
         public async Task<IActionResult> Delete(int peerGradeId )
         {     
-            DeletePeerGradeDto dto = new DeletePeerGradeDto {Id = peerGradeId};
+            DeletePeerGradeDto dto = new DeletePeerGradeDto {Id = peerGradeId, LastEdited = DateTime.Now};
             ServiceResponse<string> response = await _peerGradeService.DeletePeerGrade(dto);
             if (response.Success)
             {
                 return Ok(response);
-            }
+            } 
             return NotFound(response);
         }
 

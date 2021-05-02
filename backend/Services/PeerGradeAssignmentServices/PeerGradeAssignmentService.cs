@@ -122,7 +122,7 @@ namespace backend.Services.PeerGradeAssignmentServices
             User user = await _context.Users.Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
 
-            PeerGradeAssignment pga = await _context.PeerGradeAssignments.FirstOrDefaultAsync( pga => pga.Id == dto.Id );
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments.Include(pg => pg.PeerGrades).FirstOrDefaultAsync( pga => pga.Id == dto.Id );
 
             if( pga == null) {
                 response.Data = null;
@@ -145,6 +145,16 @@ namespace backend.Services.PeerGradeAssignmentServices
                 response.Message = "Max grade should not be negative";
                 response.Success = false;
                 return response;
+            }
+
+            if( pga.MaxGrade != 0 )
+            {
+                // update operations due to possible maxGradeChange
+                foreach( PeerGrade pg in pga.PeerGrades )
+                {       
+                    pg.Grade = (int) Math.Ceiling( ( pg.Grade * dto.MaxGrade ) / pga.MaxGrade) ;
+                    pg.MaxGrade = dto.MaxGrade;
+                }   
             }
 
             pga.MaxGrade = dto.MaxGrade;
@@ -176,7 +186,8 @@ namespace backend.Services.PeerGradeAssignmentServices
             User user = await _context.Users.Include(u => u.InstructedCourses)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
 
-            PeerGradeAssignment pga = await _context.PeerGradeAssignments.FirstOrDefaultAsync( pga => pga.Id == Id );
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments.Include( pga => pga.PeerGrades)
+                                        .FirstOrDefaultAsync( pga => pga.Id == Id );
 
             if( pga == null) {
                 response.Data = null;
@@ -192,7 +203,12 @@ namespace backend.Services.PeerGradeAssignmentServices
                 response.Success = false;
                 return response;
             }
-            
+
+            foreach( PeerGrade pg in pga.PeerGrades )
+            {
+                _context.PeerGrades.Remove( pg );
+            }
+            await _context.SaveChangesAsync();
 
             _context.PeerGradeAssignments.Remove( pga );
             await _context.SaveChangesAsync();

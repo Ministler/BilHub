@@ -7,6 +7,6 @@ namespace backend.Dtos.PeerGrade
 {
     public class DeletePeerGradeDto : DeleteGradeBaseDto
     {
-
+        public DateTime LastEdited { get; set; }
     }
 }

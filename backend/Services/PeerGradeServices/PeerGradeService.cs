@@ -19,7 +19,6 @@ namespace backend.Services.PeerGradeServices
 {
     public class PeerGradeService : IPeerGradeService
     {
-        // peer grade due date doesn't exist
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -60,6 +59,7 @@ namespace backend.Services.PeerGradeServices
                                 .ThenInclude(g => g.ProjectGroup)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include( g => g.AffiliatedCourse )
                                             .Include(g => g.GroupMembers)
                                             .FirstOrDefaultAsync(rg => rg.Id == addPeerGradeDto.ProjectGroupId );
 
@@ -87,7 +87,7 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-            PeerGradeAssignment pga = await _context.PeerGradeAssignments
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments.Include( pg => pg.PeerGrades )
                                             .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
 
             if(pga == null )
@@ -137,6 +137,9 @@ namespace backend.Services.PeerGradeServices
                 RevieweeId = addPeerGradeDto.RevieweeId
             };
 
+            pga.PeerGrades.Add(createdPeerGrade);
+
+            _context.ProjectGroups.Update( projectGroup );
             _context.PeerGrades.Add( createdPeerGrade );
             await _context.SaveChangesAsync();
 
@@ -156,6 +159,7 @@ namespace backend.Services.PeerGradeServices
 
             PeerGrade peerGrade = await _context.PeerGrades.FirstOrDefaultAsync( pg => pg.Id == editPeerGradeDto.Id );
 
+
             if( peerGrade == null) {
                 response.Data = null;
                 response.Message = "There is no peer grade with this Id.";
@@ -167,6 +171,20 @@ namespace backend.Services.PeerGradeServices
             {
                 response.Data = null;
                 response.Message = "You are not authorized to change this peer grade";
+                response.Success = false;
+                return response;
+            }
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == peerGrade.ProjectGroupId );
+
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if( pga.DueDate < editPeerGradeDto.LastEdited )
+            {
+                response.Data = null;
+                response.Message = "Due date has passed for the peer grade assignment";
                 response.Success = false;
                 return response;
             }
@@ -233,10 +251,29 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-            // due date olursa kontrol
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == peerGrade.ProjectGroupId );
+
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments.Include( pga=> pga.PeerGrades)
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if( pga.DueDate < deletePeerGradeDto.LastEdited )
+            {
+                response.Data = null;
+                response.Message = "Due date has passed for the peer grade assignment";
+                response.Success = false;
+                return response;
+            }
 
             _context.PeerGrades.Remove( peerGrade );
             await _context.SaveChangesAsync();
+
+            if (pga != null)
+            {
+                _context.PeerGradeAssignments.Update(pga);
+                await _context.SaveChangesAsync();
+            }
 
             response.Data = "Successful";
             response.Message = "Peer grade is successfully cancelled";
