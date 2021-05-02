@@ -547,11 +547,7 @@ class Project extends Component {
         return {
             title: 'Peer Review',
             content: this.state.isPeerReviewOpen ? (
-<<<<<<< HEAD
-                /*this.props.userType === 'Student'*/ true ? (
-=======
                 this.props.userType === 'student' ? (
->>>>>>> origin/ozgur-api
                     <StudentPeerReviewPane
                         curUser={{ name: 'Halil Özgür Demir', userId: 2 }} //dummy
                         group={this.state.projectGroup}
