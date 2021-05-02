@@ -16,7 +16,7 @@ namespace backend.Dtos.GradeBase
         public decimal MaxGrade { get; set; }
         public decimal Grade { get; set; }
         public string Comment { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime LastEdited { get; set; }
         //public string FilePath { get; set; }
     }
 }

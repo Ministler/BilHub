@@ -64,7 +64,7 @@ namespace backend.Controllers
             AddProjectGradeDto dto = new AddProjectGradeDto {
                                                         File = file,
                                                         GradedProjectGroupID = gradedProjectGroupId, 
-                                                        CreatedAt = DateTime.Now,
+                                                        LastEdited = DateTime.Now,
                                                         MaxGrade = maxGrade,
                                                         Grade = grade,
                                                         Comment = comment
@@ -97,7 +97,7 @@ namespace backend.Controllers
             EditProjectGradeDto dto = new EditProjectGradeDto {
                                         File = file,
                                         Id = projectGradeId, 
-                                        CreatedAt = DateTime.Now,
+                                        LastEdited = DateTime.Now,
                                         MaxGrade = maxGrade,
                                         Grade = grade,
                                         Comment = comment

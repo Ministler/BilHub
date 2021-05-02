@@ -31,6 +31,7 @@ using backend.Services.SectionServices;
 using backend.Services.CourseServices;
 using backend.Services.PeerGradeServices;
 using backend.Services.ProjectGradeServices;
+using backend.Services.PeerGradeAssignmentServices;
 
 namespace backend
 {
@@ -89,6 +90,7 @@ namespace backend
             services.AddScoped<ISectionService, SectionService>();
             services.AddScoped<IPeerGradeService, PeerGradeService>();
             services.AddScoped<IProjectGradeService, ProjectGradeService>();
+            services.AddScoped<IPeerGradeAssignmentService, PeerGradeAssignmentService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

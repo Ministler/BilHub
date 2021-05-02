@@ -12,5 +12,7 @@ namespace backend.Services.PeerGradeServices
         Task<ServiceResponse<string>> DeletePeerGrade(DeletePeerGradeDto deletePeerGradeDto); 
         Task<ServiceResponse<PeerGradeInfoDto>> GetPeerGradeById(GetPeerGradeByIdDto getPeerGradeDto);
         Task<ServiceResponse<PeerGradeInfoDto>> GetPeerGradeByUsersAndGroup(GetPeerGradeDto getPeerGradeDto);
+        Task<ServiceResponse<List<PeerGradeInfoDto>>> GetPeerGradesGivenTo(GetPeerGradesGivenToDto dto);
+        Task<ServiceResponse<List<PeerGradeInfoDto>>> GetPeerGradesGivenBy(GetPeerGradesGivenByDto dto);
     }
 }

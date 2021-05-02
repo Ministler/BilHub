@@ -34,6 +34,39 @@ namespace backend.Services.CourseServices
         }
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        private async Task<GetCourseDto> AddExtraDtos ( GetCourseDto dto )
+        {
+            // CurrentUserSectionId
+            // IsInstructorOrTAInCourse
+            // IsUserInFormedGroup
+            // IsUserAlone
+            User dbUser = await _context.Users
+                .Include ( c => c.InstructedCourses ).ThenInclude( cs => cs.Course )
+                .Include ( c => c.ProjectGroups ).ThenInclude( cs => cs.ProjectGroup ).ThenInclude ( css => css.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.Id == GetUserId());
+            
+            ProjectGroupUser projectGroupUser = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedCourseId == dto.Id ); 
+            
+            if ( projectGroupUser != null ) {
+                ProjectGroup currentProjectGroup = projectGroupUser.ProjectGroup;
+                dto.CurrentUserSectionId = currentProjectGroup.AffiliatedSectionId;
+                dto.IsUserInFormedGroup = currentProjectGroup.ConfirmationState;
+                dto.IsUserAlone = (currentProjectGroup.GroupMembers.Count == 1)?true:false;
+            }
+            else {
+                dto.CurrentUserSectionId = 0;
+                dto.IsUserInFormedGroup = false;
+                dto.IsUserAlone = false;
+            }
+            
+            if ( dbUser.InstructedCourses.Any ( c => c.Course.Id == dto.Id ) )
+                dto.IsInstructorOrTAInCourse = true;
+            else
+                dto.IsInstructorOrTAInCourse = false;
+            
+            return dto;
+        }
         public async Task<ServiceResponse<GetCourseDto>> CreateCourse(CreateCourseDto createCourseDto)
         {
             ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
@@ -110,7 +143,7 @@ namespace backend.Services.CourseServices
             await _context.Courses.AddAsync(newCourse);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(newCourse);
+            serviceResponse.Data = await AddExtraDtos( _mapper.Map<GetCourseDto>(newCourse));
 
             return serviceResponse;
         }
@@ -131,7 +164,7 @@ namespace backend.Services.CourseServices
                 return serviceResponse;
             }
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            serviceResponse.Data =  await AddExtraDtos( _mapper.Map<GetCourseDto>(dbCourse));
             return serviceResponse;
         }
 
@@ -200,7 +233,7 @@ namespace backend.Services.CourseServices
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            serviceResponse.Data =  await AddExtraDtos( _mapper.Map<GetCourseDto>(dbCourse));
             return serviceResponse;
         }
 
@@ -254,7 +287,7 @@ namespace backend.Services.CourseServices
 
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            serviceResponse.Data = await AddExtraDtos( _mapper.Map<GetCourseDto>(dbCourse));
             return serviceResponse;
         }
 
@@ -313,7 +346,7 @@ namespace backend.Services.CourseServices
 
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            serviceResponse.Data = await AddExtraDtos ( _mapper.Map<GetCourseDto>(dbCourse));
             return serviceResponse;
         }
 
@@ -477,7 +510,7 @@ namespace backend.Services.CourseServices
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            serviceResponse.Data = await AddExtraDtos (_mapper.Map<GetCourseDto>(dbCourse));
             return serviceResponse;
         }
 
@@ -519,7 +552,7 @@ namespace backend.Services.CourseServices
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            serviceResponse.Data = await AddExtraDtos (_mapper.Map<GetCourseDto>(dbCourse));
             return serviceResponse;
         }
 
@@ -537,8 +570,14 @@ namespace backend.Services.CourseServices
                 serviceResponse.Message = "No such user is found with given id";
                 return serviceResponse;
             }
+            
+            List<GetCourseDto> dtos = dbUser.InstructedCourses.Select(c => _mapper.Map<GetCourseDto>(c.Course)).ToList();
+            List<GetCourseDto> newDtos = new List<GetCourseDto> ();
+            foreach ( var i in dtos )
+                newDtos.Add ( await AddExtraDtos(i) );
 
-            serviceResponse.Data = dbUser.InstructedCourses.Select(c => _mapper.Map<GetCourseDto>(c.Course)).ToList();
+            dtos.Clear();
+            serviceResponse.Data = newDtos;
             return serviceResponse;
         }
         public async Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId)
