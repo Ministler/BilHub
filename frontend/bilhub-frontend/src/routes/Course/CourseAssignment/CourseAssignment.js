@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Icon, Dropdown, Button } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
+
 
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
@@ -166,11 +167,11 @@ class CourseAssignment extends Component {
         if (this.state.assignment?.isUserTAorInstructor) {
             buttons = (
                 <>
-                    <Button icon={'download'} onClick={this.onDownloadAllFiles}>
-                        Download All Files
+                    <Button color="green" compact onClick={this.onDownloadAllFiles} icon labelPosition="right">
+                        Download All Files  <Icon name="download" />
                     </Button>
-                    <Button icon={'download'} onClick={this.onDownloadNotGradedFiles}>
-                        Donwload Only Not Graded Files
+                    <Button color="green" compact onClick={this.onDownloadNotGradedFiles} icon labelPosition="right">
+                        Donwload Only Not Graded Files  <Icon name="download" />
                     </Button>
                 </>
             );
@@ -188,11 +189,11 @@ class CourseAssignment extends Component {
                     color="blue"
                     style={{ display: 'inline' }}
                 />
-                <p
+                <Link
                     onClick={this.onReturnProjectPage}
                     style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
                     Back To Course Page
-                </p>
+                </Link>
                 <Tab tabPanes={this.getPaneElements()} />
             </div>
         );

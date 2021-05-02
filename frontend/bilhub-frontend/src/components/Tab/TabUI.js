@@ -1,7 +1,9 @@
 import React from 'react';
-import { Tab, Icon } from 'semantic-ui-react';
+import { Tab, Icon, Dropdown, TextArea, Button, Form, Divider, GridRow, Grid } from 'semantic-ui-react';
 
-import { AssignmentCardElement } from '../CardGroup';
+import { AssignmentCardElement, convertFeedbacksToFeedbackList } from '../CardGroup';
+
+import './TabUI.css';
 
 export const MyTab = (props) => {
     let tabPanes = props.tabPanes;
@@ -78,5 +80,185 @@ export const SubmissionPane = (props) => {
             {submissionCard}
             {props.buttons}
         </div>
+    );
+};
+
+export const StudentPeerReviewPane = (props) => {
+    const options = [];
+    const points = [];
+
+    for (var i = 0; i < props.group.members.length; i++) {
+        if (props.curUser.userId !== props.group.members[i].userId) {
+            options.push({
+                text: props.group.members[i].name,
+                key: props.group.members[i].userId,
+                value: props.group.members[i].userId,
+            });
+        }
+    }
+    for (var i = 0; i <= props.maxGrade; i++) {
+        points.push({
+            text: i,
+            key: i,
+            value: i,
+        });
+    }
+    return (
+        <>
+            <div class="sixteen wide column">
+                <Form reply style={{ width: '95%' }}>
+                    <Form.Select
+                        placeholder="Select Peer"
+                        onChange={(e, d) => props.changePeer(d.value)}
+                        options={options}></Form.Select>
+                    <Form.TextArea rows="5" value={props.comment} onChange={(e, d) => props.commentChange(d)} />
+                    <Form.Select
+                        floated="left"
+                        onChange={(e, d) => props.gradeChange(d)}
+                        value={props.grade}
+                        placeholder="#"
+                        className="numberDropdown"
+                        selection
+                        options={points}
+                        label="Grade"></Form.Select>
+                    <Form.Button
+                        labelPosition="right"
+                        icon
+                        onClick={() => props.submitReview()}
+                        color="green"
+                        content="Give Feedback"
+                        floated="right"
+                        Compact>
+                        Submit
+                        <Icon name="send" />
+                    </Form.Button>
+                </Form>
+            </div>
+        </>
+    );
+};
+
+export const AllStudentPeerReviewPane = (props) => {
+    const sections = [];
+    const groups = [];
+    const students = [];
+    for (var i = 0; i < props.state.currentPeerReviewSections.length; i++) {
+        sections.push({
+            text: props.state.currentPeerReviewSections[i].sectionId,
+            value: props.state.currentPeerReviewSections[i].id,
+        });
+    }
+    for (var i = 0; i < props.state.currentPeerReviewGroups.length; i++) {
+        groups.push({
+            text: props.state.currentPeerReviewGroups[i].groupName,
+            value: props.state.currentPeerReviewGroups[i].groupId,
+        });
+    }
+    for (var i = 0; i < props.state.currentPeerReviewStudents.length; i++) {
+        students.push({
+            text: props.state.currentPeerReviewStudents[i].name,
+            value: props.state.currentPeerReviewStudents[i].userId,
+        });
+    }
+
+    const visibleReviews = [];
+    for (var i in props.state.currentReviews) {
+        visibleReviews.push({
+            name: props.state.currentReviews[i].reviewerId,
+            caption: props.state.currentReviews[i].comment,
+            grade: props.state.currentReviews[i].grade,
+            maxGrade: props.state.currentReviews[i].maxGrade,
+            date: props.state.currentReviews[i].createdAt,
+            userId: props.state.currentReviews[i].revieweeId,
+        });
+    }
+
+    return (
+        <>
+            {' '}
+            <Grid>
+                <Grid.Row columns={3}>
+                    <Grid.Column>
+                        <Dropdown
+                            name="currentPeerReviewSection"
+                            options={sections}
+                            selection
+                            placeholder="Select Section"
+                            value={props.state.currentPeerReviewSection?.id}
+                            onChange={(e, d) => props.handleSectionChange(d)}></Dropdown>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Dropdown
+                            name="currentPeerReviewGroup"
+                            options={groups}
+                            selection
+                            placeholder="Select Group"
+                            value={props.state.currentPeerReviewGroup?.groupId}
+                            onChange={(e, d) => props.handleGroupChange(d)}></Dropdown>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Dropdown
+                            name="currentPeerReviewStudent"
+                            options={students}
+                            selection
+                            placeHolder="Select Student"
+                            value={props.state.currentPeerReviewStudent?.userId}
+                            onChange={(e, d) => props.handleStudentChange(d)}></Dropdown>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    {convertFeedbacksToFeedbackList(
+                        visibleReviews,
+                        () => {},
+                        () => {},
+                        props.userId,
+                        () => {}
+                    )}
+                </Grid.Row>
+            </Grid>
+        </>
+    );
+};
+
+export const InstructorPeerReviewPane = (props) => {
+    const options = [];
+    for (let i = 0; i < props.group.members.length; i++) {
+        options.push({
+            text: props.group.members[i].name,
+            key: props.group.members[i].userId,
+            value: props.group.members[i].userId,
+        });
+    }
+    const visibleReviews = [];
+    for (var i in props.peerReviews) {
+        visibleReviews.push({
+            name: props.peerReviews[i].reviewerId,
+            caption: props.peerReviews[i].comment,
+            grade: props.peerReviews[i].grade,
+            maxGrade: props.peerReviews[i].maxGrade,
+            date: props.peerReviews[i].createdAt,
+            userId: props.peerReviews[i].revieweeId,
+        });
+    }
+
+    return (
+        <>
+            <GridRow className="rows">
+                <Dropdown
+                    placeholder="Select Peer"
+                    onChange={(e, d) => props.changePeer(d.value)}
+                    selection
+                    options={options}></Dropdown>
+            </GridRow>
+            <GridRow className="rows">
+                {convertFeedbacksToFeedbackList(
+                    visibleReviews, //
+                    () => {},
+                    () => {},
+                    props.userId,
+                    () => {}
+                )}
+            </GridRow>
+        </>
     );
 };

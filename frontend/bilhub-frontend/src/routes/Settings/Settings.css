@@ -1,3 +1,11 @@
 .leftRed {
     border-left: 2px solid #db2828 !important;
 }
+
+.linkToProfile {
+    color: black;
+}
+linkToProfile:hover {
+    color: #3a58c4;
+    text-decoration: underline;
+}

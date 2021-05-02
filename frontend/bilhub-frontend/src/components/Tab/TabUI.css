@@ -1,0 +1,9 @@
+.rows {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.numberDropdown {
+    min-width: 50px !important;
+    width: 40px;
+}

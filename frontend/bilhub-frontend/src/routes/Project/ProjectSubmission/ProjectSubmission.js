@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Icon, Button } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import {
     NewCommentModal,
     EditCommentModal,
@@ -495,11 +495,11 @@ class ProjectAssignment extends Component {
                     color="blue"
                     style={{ display: 'inline' }}
                 />
-                <p
+                <Link
                     onClick={this.onReturnProjectPage}
                     style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
                     Back To Assigments
-                </p>
+                </Link>
                 <Tab tabPanes={this.getPaneElements()} />
                 {this.getModals()}
             </div>
