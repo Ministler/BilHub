@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
 using System.Text;
+using backend.Services.ProjectGroupServices;
 
 
 // merge ve join birlestirme : join=1kisilikmerge
@@ -25,9 +26,11 @@ namespace backend.Services.MergeRequestServices
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IWebHostEnvironment _hostingEnvironment;
+        private readonly IProjectGroupService _projectGroupService;
 
-        public MergeRequestService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
+        public MergeRequestService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment, IProjectGroupService projectGroupService)
         {
+            _projectGroupService = projectGroupService;
             _httpContextAccessor = httpContextAccessor;
             _context = context;
             _mapper = mapper;
@@ -117,7 +120,7 @@ namespace backend.Services.MergeRequestServices
                                             .Include(g => g.GroupMembers)
                                             .FirstOrDefaultAsync(rg => rg.Id == senderGroup.Id);
 
-            int maxSize = ( await _context.Courses.FirstOrDefaultAsync(c => c.Id == senderGroup.AffiliatedCourseId)).MaxGroupSize;
+            int maxSize = (await _context.Courses.FirstOrDefaultAsync(c => c.Id == senderGroup.AffiliatedCourseId)).MaxGroupSize;
             if (receiverGroup.GroupMembers.Count + senderGroupOriginal.GroupMembers.Count > maxSize)
             {
                 response.Data = null;
@@ -162,7 +165,7 @@ namespace backend.Services.MergeRequestServices
                 SenderGroupId = senderGroup.Id,
                 ReceiverGroup = receiverGroup,
                 ReceiverGroupId = receiverGroup.Id,
-                VotedStudents = GetUserId() + " ",
+                VotedStudents = GetUserId().ToString(),
                 CreatedAt = newMergeRequest.CreatedAt,
                 Accepted = false,
                 Resolved = false,
@@ -173,14 +176,12 @@ namespace backend.Services.MergeRequestServices
             senderGroup.OutgoingMergeRequest.Add(createdMergeRequest);
 
             _context.ProjectGroups.Update(receiverGroup);
-            await _context.SaveChangesAsync();
             _context.ProjectGroups.Update(senderGroup);
-            await _context.SaveChangesAsync();
-            _context.MergeRequests.Update(createdMergeRequest);
+            _context.MergeRequests.Add(createdMergeRequest);
             await _context.SaveChangesAsync();
 
             response.Data = newMergeRequest;
-            response.Message = "Merge request is successfully sent " +  receiverGroup.GroupMembers.Count + " " + receiverGroup.GroupMembers.Count  ;
+            response.Message = "Merge request is successfully sent " + receiverGroup.GroupMembers.Count + " " + receiverGroup.GroupMembers.Count;
             response.Success = true;
 
             return response;
@@ -191,7 +192,7 @@ namespace backend.Services.MergeRequestServices
             ServiceResponse<string> response = new ServiceResponse<string>();
 
             User user = await _context.Users
-                                .Include(u => u.ProjectGroups )
+                                .Include(u => u.ProjectGroups)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
             MergeRequest mergeRequest = await _context.MergeRequests
                                             .FirstOrDefaultAsync(mr => mr.Id == mergeRequestDto.Id);
@@ -213,19 +214,19 @@ namespace backend.Services.MergeRequestServices
             }
 
             ProjectGroup senderGroup = await _context.ProjectGroups
-                                            .FirstOrDefaultAsync( sg =>  sg.Id == mergeRequest.SenderGroupId);
-            
+                                            .FirstOrDefaultAsync(sg => sg.Id == mergeRequest.SenderGroupId);
+
             ProjectGroup receiverGroup = await _context.ProjectGroups
-                                            .FirstOrDefaultAsync( rg =>  rg.Id == mergeRequest.ReceiverGroupId);
-            
+                                            .FirstOrDefaultAsync(rg => rg.Id == mergeRequest.ReceiverGroupId);
+
             bool isUserInSender = senderGroup.GroupMembers.Any(pgu => pgu.UserId == GetUserId());
 
-    
 
-            if ( !isUserInSender )
+
+            if (!isUserInSender)
             {
                 response.Data = "Not allowed";
-                response.Message = "You are not authorized to cancel this merge request" ;
+                response.Message = "You are not authorized to cancel this merge request";
                 response.Success = false;
                 return response;
             }
@@ -246,18 +247,18 @@ namespace backend.Services.MergeRequestServices
                 return response;
             }
 
-            _context.MergeRequests.Remove( mergeRequest );
+            _context.MergeRequests.Remove(mergeRequest);
             await _context.SaveChangesAsync();
 
-            if( senderGroup != null )
+            if (senderGroup != null)
             {
-                _context.ProjectGroups.Update( senderGroup );
+                _context.ProjectGroups.Update(senderGroup);
                 await _context.SaveChangesAsync();
             }
-            
-            if( receiverGroup != null )
+
+            if (receiverGroup != null)
             {
-                _context.ProjectGroups.Update( receiverGroup );
+                _context.ProjectGroups.Update(receiverGroup);
                 await _context.SaveChangesAsync();
             }
 
@@ -266,6 +267,48 @@ namespace backend.Services.MergeRequestServices
             response.Success = true;
 
             return response;
+        }
+
+        private bool IsUserInString(string s, int userId)
+        {
+            if (s.Length == 0)
+                return false;
+
+            string[] confirmers = s.Split(' ');
+            foreach (var i in confirmers)
+            {
+                if (i.Equals(userId.ToString()))
+                    return true;
+            }
+            return false;
+        }
+
+        private string AddUserToString(string s, int userId)
+        {
+            if (s.Length == 0)
+                return userId.ToString();
+            if (IsUserInString(s, userId))
+                return s;
+            s = s + " " + userId.ToString();
+            return s;
+        }
+
+        private string RemoveUserFromString(string s, int userId)
+        {
+            if (s.Length == 0 || !IsUserInString(s, userId))
+                return s;
+            string[] confirmers = s.Split(' ');
+            string ret = "";
+            foreach (var i in confirmers)
+            {
+                if (i.Equals(userId.ToString()))
+                    continue;
+                if (ret.Length == 0)
+                    ret = ret + i;
+                else
+                    ret = ret + " " + i;
+            }
+            return ret;
         }
 
         public async Task<ServiceResponse<MergeRequestInfoDto>> Vote(VoteMergeRequestDto mergeRequestDto)
@@ -293,7 +336,7 @@ namespace backend.Services.MergeRequestServices
                 response.Success = false;
                 return response;
             }
-            if( mergeRequest.Accepted )
+            if (mergeRequest.Accepted)
             {
                 response.Data = null;
                 response.Message = "The merge request is accepted already";
@@ -308,93 +351,84 @@ namespace backend.Services.MergeRequestServices
                 return response;
             }
 
-            bool voteChanged = false;
-
-            
-            int acceptedNumber = 0;
-
-            if( mergeRequest.VotedStudents != "" )
-            {
-                string[] voters = mergeRequest.VotedStudents.Split(' ');
-                string idString = "";
-                idString += user.Id;
-
-                foreach( string s in voters )
-                {
-                    if( s != "" && s != " " )
-                        acceptedNumber++;
-                }
-
-                foreach( string s in voters )
-                {
-                    if( string.Compare( idString, s) == 0 )
-                    {
-                        if( mergeRequestDto.accept )
-                        {
-                            response.Data = new MergeRequestInfoDto {Id = mergeRequestDto.Id, Accepted = mergeRequest.Accepted, Resolved = mergeRequest.Resolved, VotedStudents = mergeRequest.VotedStudents};
-                            response.Message = "You have already voted";
-                            response.Success = false;
-                            return response;
-                        }
-                        else
-                        {
-                            acceptedNumber--;
-                            voteChanged = true;
-                        }
-                    }
-                }       
-            }
-
-            int maxSize = ( await _context.Courses.FirstOrDefaultAsync(c => c.Id == mergeRequest.SenderGroup.AffiliatedCourseId) ).MaxGroupSize;
-            if( mergeRequestDto.accept ) 
-            {
-                acceptedNumber++;
-                if( acceptedNumber >= mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count )
-                {
-                    mergeRequest.Accepted = true;    
-                    if( mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count >= maxSize )
-                    {
-                        await DeleteAllMergeRequests( new DeleteAllMergeRequestsDto { projectGroupId =  mergeRequest.ReceiverGroupId } );
-                        await DeleteAllMergeRequests( new DeleteAllMergeRequestsDto { projectGroupId =  mergeRequest.SenderGroupId } );
-                    }
-                }
-            }
-            else
+            if (!IsUserInString(mergeRequest.VotedStudents, GetUserId()) && mergeRequestDto.accept == false)
             {
                 mergeRequest.Resolved = true;
-                // bildirim nasi silcem
+                _context.MergeRequests.Update(mergeRequest);
+                await _context.SaveChangesAsync();
+                response.Message = "Merge request is cancelled by the negative vote";
+                return response;
             }
-            
-            // call ozconun metodu
-            
-            
-            _context.MergeRequests.Update( mergeRequest );
-            await _context.SaveChangesAsync();
-            
 
-            if( !voteChanged )
+            if (IsUserInString(mergeRequest.VotedStudents, GetUserId()) && mergeRequestDto.accept == false)
             {
-                mergeRequest.VotedStudents = mergeRequest.VotedStudents + user.Id + ' ';
+                mergeRequest.VotedStudents = RemoveUserFromString(mergeRequest.VotedStudents, GetUserId());
+                _context.MergeRequests.Update(mergeRequest);
+                await _context.SaveChangesAsync();
+                response.Message = "Your vote is taken back successfully.";
+                return response;
             }
-            response.Data = new MergeRequestInfoDto {Id = mergeRequestDto.Id, Accepted = mergeRequest.Accepted, Resolved = mergeRequest.Resolved, VotedStudents = mergeRequest.VotedStudents};
-            response.Message = "You succesfully voted" ;
-            response.Success = true;
+            if (IsUserInString(mergeRequest.VotedStudents, GetUserId()) && mergeRequestDto.accept == true)
+            {
+                response.Success = false;
+                response.Message = "User is already voted accepted for this request";
+                return response;
+            }
 
+            int acceptedNumber = 0;
+            string[] voters = mergeRequest.VotedStudents.Split(' ');
+            foreach (string s in voters)
+            {
+                if (s != "" && s != " ")
+                    acceptedNumber++;
+            }
 
+            int maxSize = (await _context.Courses.FirstOrDefaultAsync(c => c.Id == mergeRequest.SenderGroup.AffiliatedCourseId)).MaxGroupSize;
+
+            acceptedNumber++;
+            mergeRequest.VotedStudents = AddUserToString(mergeRequest.VotedStudents, GetUserId());
+
+            if (acceptedNumber >= mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count && mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count <= maxSize)
+            {
+                int newSize = mergeRequest.ReceiverGroup.GroupMembers.Count + mergeRequest.SenderGroup.GroupMembers.Count;
+                mergeRequest.Accepted = true;
+                _context.MergeRequests.Update(mergeRequest);
+                await _context.SaveChangesAsync();
+
+                int recId = mergeRequest.ReceiverGroupId;
+                int senId = mergeRequest.SenderGroupId;
+
+                var tmp = await _projectGroupService.CompleteMergeRequest ( mergeRequest.Id );
+                if ( newSize >= maxSize )
+                {
+                    await DeleteAllMergeRequests(new DeleteAllMergeRequestsDto { projectGroupId = recId });
+                    await DeleteAllMergeRequests(new DeleteAllMergeRequestsDto { projectGroupId = senId });
+                }
+                // _context.MergeRequests.Remove ( mergeRequest );
+                await _context.SaveChangesAsync();
+                response.Message = "Merge request is accepted from all members and groups are merged.";
+                return response;
+            }
+
+            _context.MergeRequests.Update(mergeRequest);
+            await _context.SaveChangesAsync();
+
+            response.Data = new MergeRequestInfoDto { Id = mergeRequestDto.Id, Accepted = mergeRequest.Accepted, Resolved = mergeRequest.Resolved, VotedStudents = mergeRequest.VotedStudents };
+            response.Message = "You succesfully voted";
 
             return response;
-        } 
+        }
 
-        public async Task<ServiceResponse<string>> DeleteAllMergeRequests(DeleteAllMergeRequestsDto deleteAllMergeRequestsDto) 
+        public async Task<ServiceResponse<string>> DeleteAllMergeRequests(DeleteAllMergeRequestsDto deleteAllMergeRequestsDto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             ProjectGroup projectGroup = await _context.ProjectGroups
-                                            .Include( g => g.GroupMembers)
-                                            .Include( g => g.IncomingMergeRequest )
-                                            .Include( g => g.OutgoingMergeRequest )
-                                            .FirstOrDefaultAsync( jr => jr.Id == deleteAllMergeRequestsDto.projectGroupId );
-                                    
-            if( projectGroup == null )
+                                            .Include(g => g.GroupMembers)
+                                            .Include(g => g.IncomingMergeRequest)
+                                            .Include(g => g.OutgoingMergeRequest)
+                                            .FirstOrDefaultAsync(jr => jr.Id == deleteAllMergeRequestsDto.projectGroupId);
+
+            if (projectGroup == null)
             {
                 response.Data = "Not allowed";
                 response.Message = "There is no group with this Id";
@@ -402,28 +436,28 @@ namespace backend.Services.MergeRequestServices
                 return response;
             }
 
-            if( projectGroup.IncomingMergeRequest.Count != 0 )
+            if (projectGroup.IncomingMergeRequest.Count != 0)
             {
-                foreach( MergeRequest mr in projectGroup.IncomingMergeRequest )
+                foreach (MergeRequest mr in projectGroup.IncomingMergeRequest)
                 {
-                    if( !mr.Accepted && !mr.Resolved )
-                        _context.MergeRequests.Remove( mr );    
+                    if (!mr.Accepted && !mr.Resolved)
+                        _context.MergeRequests.Remove(mr);
                 }
             }
 
             await _context.SaveChangesAsync();
-            if( projectGroup.OutgoingMergeRequest.Count != 0 )
+            if (projectGroup.OutgoingMergeRequest.Count != 0)
             {
-                foreach( MergeRequest mr in projectGroup.OutgoingMergeRequest )
+                foreach (MergeRequest mr in projectGroup.OutgoingMergeRequest)
                 {
-                    if( !mr.Accepted && !mr.Resolved )
-                        _context.MergeRequests.Remove( mr );
-                    
+                    if (!mr.Accepted && !mr.Resolved)
+                        _context.MergeRequests.Remove(mr);
+
                 }
             }
-                    
+
             await _context.SaveChangesAsync();
-            
+
             response.Data = "Successful";
             response.Message = "Merge requests are successfully deleted";
             response.Success = true;
@@ -431,36 +465,37 @@ namespace backend.Services.MergeRequestServices
             return response;
         }
 
-        
-        public async Task<ServiceResponse<GetMergeRequestDto>> GetMergeRequestById(int mergeRequestId) {
+
+        public async Task<ServiceResponse<GetMergeRequestDto>> GetMergeRequestById(int mergeRequestId)
+        {
             ServiceResponse<GetMergeRequestDto> response = new ServiceResponse<GetMergeRequestDto>();
             MergeRequest mergeRequest = await _context.MergeRequests
-                .Include( jr => jr.SenderGroup )
-                .Include( jr => jr.ReceiverGroup )
-                .FirstOrDefaultAsync( jr => jr.Id == mergeRequestId );
-            
-            if( mergeRequest == null)
+                .Include(jr => jr.SenderGroup)
+                .Include(jr => jr.ReceiverGroup)
+                .FirstOrDefaultAsync(jr => jr.Id == mergeRequestId);
+
+            if (mergeRequest == null)
             {
                 response.Data = null;
                 response.Message = "There is no merge request with this id";
-                response.Success =false;
+                response.Success = false;
                 return response;
             }
-            if( mergeRequest.SenderGroup == null)
+            if (mergeRequest.SenderGroup == null)
             {
                 response.Data = null;
                 response.Message = "There is no group with senderGroupId";
-                response.Success =false;
+                response.Success = false;
                 return response;
             }
-            if( mergeRequest.ReceiverGroup == null)
+            if (mergeRequest.ReceiverGroup == null)
             {
                 response.Data = null;
                 response.Message = "There is no group with receiverGroupId";
-                response.Success =false;
+                response.Success = false;
                 return response;
             }
-            
+
             GetMergeRequestDto dto = new GetMergeRequestDto
             {
                 Id = mergeRequestId,
