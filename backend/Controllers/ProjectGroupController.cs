@@ -58,7 +58,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("DeleteProjectGroup")]
-        public async Task<ActionResult>  DeleteProjectGroup ( int projectGroupId )
+        public async Task<ActionResult> DeleteProjectGroup(int projectGroupId)
         {
             return Ok(await _projectGroupService.DeleteProjectGroup(projectGroupId));
         }
@@ -70,9 +70,9 @@ namespace backend.Controllers
         }
 
         [HttpPost("KickStudentFromGroup")]
-        public async Task<ActionResult> KickStudentFromGroup ( int projectGroupId, int userId )
-        {  
-            return Ok ( await _projectGroupService.KickStudentFromGroup ( projectGroupId, userId, false ) );
+        public async Task<ActionResult> KickStudentFromGroup(int projectGroupId, int userId)
+        {
+            return Ok(await _projectGroupService.KickStudentFromGroup(projectGroupId, userId, false));
         }
 
         [HttpPost("CompleteJoinRequest")]
@@ -121,21 +121,27 @@ namespace backend.Controllers
         }
 
         [HttpPut("UpdateSrsGrade")]
-        public async Task<IActionResult> UpdateSrsGrade (UpdateSrsGradeDto updateSrsGradeDto)
+        public async Task<IActionResult> UpdateSrsGrade(UpdateSrsGradeDto updateSrsGradeDto)
         {
-            return Ok ( await _projectGroupService.UpdateSrsGrade( updateSrsGradeDto ) );
+            return Ok(await _projectGroupService.UpdateSrsGrade(updateSrsGradeDto));
         }
 
         [HttpGet("GetSrsGrade")]
-        public async Task<IActionResult> GetSrsGrade (int projectGroupId)
+        public async Task<IActionResult> GetSrsGrade(int projectGroupId)
         {
-            return Ok ( await _projectGroupService.GetSrsGrade ( projectGroupId ) );
+            return Ok(await _projectGroupService.GetSrsGrade(projectGroupId));
         }
 
         [HttpDelete("DeleteSrsGrade")]
-        public async Task<IActionResult> DeleteSrsGrade (DeleteSrsGradeDto deleteSrsGradeDto)
+        public async Task<IActionResult> DeleteSrsGrade(DeleteSrsGradeDto deleteSrsGradeDto)
         {
-            return Ok ( await _projectGroupService.DeleteSrsGrade ( deleteSrsGradeDto ) );
+            return Ok(await _projectGroupService.DeleteSrsGrade(deleteSrsGradeDto));
+        }
+
+        [HttpGet("Assignments/{courseId}")]
+        public async Task<ActionResult> GetAssignments(int courseId)
+        {
+            return Ok(await _projectGroupService.GetAssignments(courseId));
         }
     }
 }
