@@ -65,3 +65,14 @@ export const getGroupStudentCommentsRequest = async (groupId) => {
             throw error;
         });
 };
+
+export const getGroupAssignmentsRequest = async (ProjectGroupId) => {
+    const url = 'Assignments/' + ProjectGroupId;
+
+    return authAxios
+        .get(BASE_PROJECT_GROUP_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
