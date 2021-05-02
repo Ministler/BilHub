@@ -448,9 +448,9 @@ class Project extends Component {
                             this.onFeedbackFileClicked,
                             this.onModalOpened
                         )}
+                        newCommentButton={newCommentButton}
                     />
                 </div>
-                {newCommentButton}
             </Grid>
         );
         return {

@@ -15,12 +15,13 @@ code {
 
 .clickableChangeColor:hover {
     cursor: pointer;
-    color: blue;
+    color: #3a58c4;
+    text-decoration: underline;
 }
 
 .clickableChangeColor {
     color: black;
-    transition: 0.15s;
+    transition: 0.05s;
 }
 
 .clickableHighlightBack:hover {
@@ -37,4 +38,9 @@ code {
 .settingHover:hover {
     background-color: rgb(246, 251, 253);
     cursor: pointer;
+}
+
+a:hover {
+    color: #3a58c4;
+    text-decoration: underline;
 }

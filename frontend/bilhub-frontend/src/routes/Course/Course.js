@@ -290,7 +290,6 @@ class Course extends Component {
             }
             return (
                 <Dropdown
-                    fluid
                     selection
                     options={sectionOptions}
                     value={this.state.currentSection}
@@ -429,7 +428,6 @@ class Course extends Component {
                         this.getAssignmentControlIcons()
                     )}
                     {this.getNewAssignmentButton()}
-                    {this.getDownloadSubmissionsPopup()}
                 </>
             ) : (
                 <>
@@ -716,8 +714,8 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 3,
-            groupName: 'Biub',
+            groupId: 1,
+            groupName: 'BilH123ub',
         },
         {
             members: [
@@ -737,6 +735,150 @@ const dummyGroupsLocked = [
             groupId: 4,
             groupName: 'NoBilhub',
         },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
     ],
     [
         {
@@ -754,7 +896,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 1,
+            groupId: 3,
             groupName: 'BilHub',
         },
         {
@@ -772,7 +914,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 2,
+            groupId: 4,
             groupName: 'Not Bilhub',
         },
     ],
@@ -792,7 +934,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 1,
+            groupId: 5,
             groupName: 'BilHub',
         },
         {
@@ -810,7 +952,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 2,
+            groupId: 6,
             groupName: 'Not Bilhub',
         },
     ],
@@ -848,6 +990,159 @@ const dummyGroups = [
                     },
                     {
                         name: '2Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
                         userId: 3,
                     },
                 ],
