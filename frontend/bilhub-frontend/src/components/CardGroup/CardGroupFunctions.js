@@ -110,6 +110,7 @@ export const convertFeedbacksToFeedbackList = (
     userId,
     onFeedbackFileClicked
 ) => {
+    // console.log(feedbacks);
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;
@@ -151,6 +152,7 @@ export const convertFeedbacksToFeedbackList = (
                     hasFile={feedback.hasFile}
                     onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId)}
                     grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
+                    maxGrade={feedback?.maxGrade}
                     date={feedback.date}
                     icons={icons}
                     onAuthorClicked={() => onAuthorClicked(feedback.userId)}

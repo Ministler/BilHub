@@ -15,6 +15,7 @@ import {
     FeedbacksPane,
 } from '../../components';
 import { ProjectSubmission } from './ProjectSubmission';
+import { InstructorPeerReviewPane, StudentPeerReviewPane } from '../../components/Tab/TabUI';
 
 class Project extends Component {
     constructor(props) {
@@ -32,6 +33,7 @@ class Project extends Component {
             newInformation: '',
 
             // States regarding open modals of right part
+
             isGiveFeedbackOpen: false,
             isEditFeedbackOpen: false,
             isDeleteFeedbackOpen: false,
@@ -41,6 +43,13 @@ class Project extends Component {
             currentFeedbackGrade: 10,
             currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
+
+            //Peer Review
+            isPeerReviewOpen: false,
+            currentReviewComment: '',
+            currentReviewGrade: -1,
+            currentPeer: 0,
+            maxReviewGrade: 5, //will be taken from project groups peer reviewing assignment
         };
     }
 
@@ -127,6 +136,7 @@ class Project extends Component {
             grades: dummyGrades,
             feedbacks: dummyFeedbacks,
 
+            isPeerReviewOpen: true,
             newName: dummyProjectGroup.name,
             newInformation: dummyProjectGroup.information,
         });
@@ -449,8 +459,77 @@ class Project extends Component {
         };
     };
 
+    changeReviewingPeer = (userId) => {
+        let currentReview = {};
+        for (var i = 0; i < goingDummyPeerReviews.length; i++) {
+            if (goingDummyPeerReviews[i].revieweeId === userId) {
+                currentReview = { ...goingDummyPeerReviews[i] };
+                i = goingDummyPeerReviews.length;
+            }
+        }
+        console.log(currentReview);
+
+        this.setState({
+            currentPeer: userId,
+            currentReviewComment: currentReview.comment ? currentReview.comment : '',
+            currentReviewGrade: currentReview.grade ? currentReview.grade : -1,
+        });
+    };
+
+    changeViewingPeer = (userId) => {
+        this.setState({ currentPeer: userId });
+    };
+
+    submitReview = () => {
+        console.log(this.state.currentReviewGrade);
+        if (this.state.currentReviewGrade === -1 || this.state.currentPeer === 0 /* check existance */) {
+            window.alert('You need to enter both grade and reviewee');
+        } else {
+            const request = {
+                ProjectGroupId: 12, //nasil alcagimi bilmiyom
+                comment: this.state.currentReviewComment,
+                grade: this.state.currentReviewGrade,
+                revieweeId: this.state.currentPeer,
+                maxGrade: 5, //will be taken from assignment
+            };
+            console.log(request);
+        }
+    };
+
+    getPeerReviewPane = () => {
+        return {
+            title: 'Peer Review',
+            content: this.state.isPeerReviewOpen ? (
+                /*this.props.userType === 'student'*/ true ? (
+                    <StudentPeerReviewPane
+                        curUser={{ name: 'Halil Özgür Demir', userId: 2 }} //dummy
+                        group={this.state.projectGroup}
+                        changePeer={(userId) => this.changeReviewingPeer(userId)}
+                        currentPeer={this.state.currentPeer}
+                        commentChange={(d) => this.setState({ currentReviewComment: d.value })}
+                        gradeChange={(d) => this.setState({ currentReviewGrade: d.value })}
+                        comment={this.state.currentReviewComment}
+                        grade={this.state.currentReviewGrade}
+                        submitReview={this.submitReview}
+                        maxGrade={this.state.maxReviewGrade}
+                    />
+                ) : (
+                    <InstructorPeerReviewPane
+                        peerReviews={comingDummyPeerReviews} //This will change according to currentPeer
+                        group={this.state.projectGroup}
+                        userId={this.props.userId}
+                        changePeer={(userId) => this.changeViewingPeer(userId)}
+                        currentPeer={this.state.currentPeer}
+                    />
+                )
+            ) : (
+                <div>Peer reviewing is currently closed.</div>
+            ),
+        };
+    };
+
     getPaneElements = () => {
-        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
+        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane(), this.getPeerReviewPane()];
     };
 
     // Modals
@@ -660,6 +739,103 @@ const dummyGrades = {
     courseAverage: 6.5,
     finalGrade: 38,
 };
+
+const dummyPeerReview = {
+    ProjectGroupId: 12,
+    reviewerId: 1,
+    revieweeId: 2,
+    Id: 14,
+    maxGrade: 5,
+    grade: 2,
+    comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+    createdAt: new Date(2012, 12, 12, 12, 12),
+};
+
+const goingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 2,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 4,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 6,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
+const comingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 3,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 2,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 4,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 5,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 6,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
 
 const dummyFeedbacks = {
     // SRSResult: {
