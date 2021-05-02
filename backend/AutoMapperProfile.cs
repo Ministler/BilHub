@@ -7,6 +7,7 @@ using backend.Dtos.Comment;
 using backend.Dtos.ProjectGroup;
 using backend.Dtos.Submission;
 using backend.Dtos.User;
+using backend.Dtos.PeerGrade;
 using backend.Models;
 using backend.Dtos.JoinRequest;
 using backend.Dtos.MergeRequest;
@@ -42,6 +43,7 @@ namespace backend
             CreateMap<Comment, GetCommentDto>();
             CreateMap<User, GetUserDto>();
             CreateMap<User, GetCommentorDto>();
+            CreateMap<PeerGrade, PeerGradeInfoDto>();
 
             CreateMap<User,UserInJoinRequestDto>();
             CreateMap<ProjectGroup,ProjectGroupInJoinRequestDto>();

@@ -11,6 +11,7 @@ namespace backend.Models
             Sections = new Collection<Section>();
             Instructors = new Collection<CourseUser>();
             Assignments = new Collection<Assignment>();
+            PeerGradeAssignment = null;
         }
         public int Id { get; set; }
         public string Name { get; set; }

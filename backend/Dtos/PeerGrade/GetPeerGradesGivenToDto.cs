@@ -5,8 +5,8 @@ using backend.Dtos.GradeBase;
  
 namespace backend.Dtos.PeerGrade
 {
-    public class DeletePeerGradeDto : DeleteGradeBaseDto
+    public class GetPeerGradesGivenToDto : GetGradeBasesDto
     {
-        public DateTime LastEdited { get; set; }
+        public int RevieweeId { get; set; }
     }
 }

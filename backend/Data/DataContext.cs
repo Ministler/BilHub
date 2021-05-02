@@ -61,7 +61,7 @@ namespace backend.Data
                 .WithMany(c => c.ProjectGroups)
                 .HasForeignKey(bc => bc.UserId);
 
-            modelBuilder.Entity<MergeRequest>().HasOne (mr => mr.SenderGroup)
+            modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.SenderGroup)
                 .WithMany(g => g.OutgoingMergeRequest)
                 .HasForeignKey(mr => mr.SenderGroupId).OnDelete(DeleteBehavior.NoAction);
 
@@ -95,7 +95,7 @@ namespace backend.Data
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
-                    UserType = UserTypeClass.Student,
+                    UserType = UserTypeClass.Instructor,
                     Email = "eray@tuzun",
                     VerificationCode = "31"
                 },

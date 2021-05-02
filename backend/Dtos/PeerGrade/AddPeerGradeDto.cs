@@ -5,10 +5,14 @@ using backend.Dtos.GradeBase;
  
 namespace backend.Dtos.PeerGrade
 {
-    public class AddPeerGradeDto : AddGradeBaseDto
+    public class AddPeerGradeDto
     {
         public int ProjectGroupId { get; set; }
         public int RevieweeId { get; set; }
+
+        public decimal Grade { get; set; }
+        public string Comment { get; set; }
+        public DateTime LastEdited { get; set; }
 
     }
 }

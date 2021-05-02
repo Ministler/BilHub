@@ -96,7 +96,7 @@ namespace backend.Services.ProjectGradeServices
                 MaxGrade = addProjectGradeDto.MaxGrade,
                 Grade = addProjectGradeDto.Grade,
                 Description = addProjectGradeDto.Comment,
-                CreatedAt = addProjectGradeDto.CreatedAt,
+                LastEdited = addProjectGradeDto.LastEdited,
                 GradingUser = user,
                 GradingUserId = user.Id,
                 GradedProjectGroup = projectGroup,
@@ -175,7 +175,7 @@ namespace backend.Services.ProjectGradeServices
             projectGrade.MaxGrade = projectGrade.MaxGrade; // ask
             projectGrade.Grade = projectGrade.Grade;
             projectGrade.Description = editProjectGradeDto.Comment;
-            projectGrade.CreatedAt = editProjectGradeDto.CreatedAt; // ask
+            projectGrade.LastEdited = editProjectGradeDto.LastEdited; // ask
             if (editProjectGradeDto.File != null)
             {
                 var target = Path.Combine(_hostingEnvironment.ContentRootPath, string.Format("{0}/{1}/{2}/{3}/{4}",
@@ -210,7 +210,7 @@ namespace backend.Services.ProjectGradeServices
                 MaxGrade = editProjectGradeDto.MaxGrade,
                 Grade = editProjectGradeDto.Grade,
                 Comment = editProjectGradeDto.Comment,
-                CreatedAt = editProjectGradeDto.CreatedAt,
+                LastEdited = editProjectGradeDto.LastEdited,
                 userInProjectGradeDto = new UserInProjectGradeDto
                 {
                     Id = user.Id,
@@ -356,7 +356,7 @@ namespace backend.Services.ProjectGradeServices
                 MaxGrade = projectGrade.MaxGrade,
                 Grade = projectGrade.Grade,
                 Comment = projectGrade.Description,
-                CreatedAt = projectGrade.CreatedAt,
+                LastEdited = projectGrade.LastEdited,
                 FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", projectGrade.Id),
                 userInProjectGradeDto = new UserInProjectGradeDto
                 {
@@ -464,7 +464,7 @@ namespace backend.Services.ProjectGradeServices
                 MaxGrade = projectGrade.MaxGrade,
                 Grade = projectGrade.Grade,
                 Comment = projectGrade.Description,
-                CreatedAt = projectGrade.CreatedAt,
+                LastEdited = projectGrade.LastEdited,
                 userInProjectGradeDto = new UserInProjectGradeDto
                 {
                     Id = projectGrade.GradingUser.Id,

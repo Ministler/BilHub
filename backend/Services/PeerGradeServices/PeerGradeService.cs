@@ -14,13 +14,11 @@ using System;
 using System.Text;
 using backend.Services.ProjectGroupServices;
 
-// edit will be edited
 
 namespace backend.Services.PeerGradeServices
 {
     public class PeerGradeService : IPeerGradeService
     {
-        // peer grade due date doesn't exist
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -60,7 +58,8 @@ namespace backend.Services.PeerGradeServices
             User user = await _context.Users.Include(u => u.ProjectGroups)
                                 .ThenInclude(g => g.ProjectGroup)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-            ProjectGroup projectGroup = await _context.ProjectGroups.Include(g => g.AffiliatedCourse).ThenInclude( c => c.PeerGradeAssignment)
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include( g => g.AffiliatedCourse )
                                             .Include(g => g.GroupMembers)
                                             .FirstOrDefaultAsync(rg => rg.Id == addPeerGradeDto.ProjectGroupId );
 
@@ -88,26 +87,21 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-            if( projectGroup.AffiliatedCourse.PeerGradeAssignment == null )
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments.Include( pg => pg.PeerGrades )
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if(pga == null )
             {
                 response.Data = null;
                 response.Message = "Course doesn't have a peer grade assignment";
                 response.Success = false;
                 return response;
             }
-            
-            if( addPeerGradeDto.MaxGrade < addPeerGradeDto.Grade )
-            {
-                response.Data = null;
-                response.Message = "Grade should be less than or equal to the max grade";
-                response.Success = false;
-                return response;
-            }
 
-            if( addPeerGradeDto.MaxGrade < 0 )
+            if( pga.DueDate < addPeerGradeDto.LastEdited )
             {
                 response.Data = null;
-                response.Message = "Max grade should not be negative";
+                response.Message = "Due date has passed for the peer grade assignment";
                 response.Success = false;
                 return response;
             }
@@ -122,17 +116,30 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
+            
+            if( pga.MaxGrade < addPeerGradeDto.Grade )
+            {
+                response.Data = null;
+                response.Message = "Grade should be less than or equal to the max grade";
+                response.Success = false;
+                return response;
+            }
+
+
             PeerGrade createdPeerGrade = new PeerGrade
             {
-                MaxGrade = addPeerGradeDto.MaxGrade,
+                MaxGrade = pga.MaxGrade,
                 Grade = addPeerGradeDto.Grade,
                 Comment = addPeerGradeDto.Comment,
-                CreatedAt = addPeerGradeDto.CreatedAt,
+                LastEdited = addPeerGradeDto.LastEdited,
                 ProjectGroupId = addPeerGradeDto.ProjectGroupId,
                 ReviewerId = GetUserId(),
                 RevieweeId = addPeerGradeDto.RevieweeId
             };
 
+            pga.PeerGrades.Add(createdPeerGrade);
+
+            _context.ProjectGroups.Update( projectGroup );
             _context.PeerGrades.Add( createdPeerGrade );
             await _context.SaveChangesAsync();
 
@@ -149,48 +156,9 @@ namespace backend.Services.PeerGradeServices
             User user = await _context.Users.Include(u => u.ProjectGroups)
                                 .ThenInclude(g => g.ProjectGroup)
                                 .FirstOrDefaultAsync(u => u.Id == GetUserId());
-            /*ProjectGroup projectGroup = await _context.ProjectGroups.Include(g => g.AffiliatedCourse).ThenInclude( c => c.PeerGradeAssignment)
-                                            .Include(g => g.GroupMembers)
-                                            .FirstOrDefaultAsync(rg => rg.Id == editPeerGradeDto.ProjectGroupId );
-
-            if( projectGroup == null )
-            {
-                response.Data = null;
-                response.Message = "There is no project group with this id";
-                response.Success = false;
-                return response;
-            }
-
-            if( !IsUserInGroup( projectGroup, GetUserId() ) )
-            {
-                response.Data = null;
-                response.Message = "You are not in this group";
-                response.Success = false;
-                return response;
-            }
-
-            if( !IsUserInGroup( projectGroup, editPeerGradeDto.RevieweeId ) )
-            {
-                response.Data = null;
-                response.Message = "You are not in the same group with the reviewee ";
-                response.Success = false;
-                return response;
-            }
-
-            if( projectGroup.AffiliatedCourse.PeerGradeAssignment == null )
-            {
-                response.Data = null;
-                response.Message = "Course doesn't have a peer grade assignment";
-                response.Success = false;
-                return response;
-            }
-            
-
-            PeerGrade peerGrade = await _context.PeerGrades
-                .FirstOrDefaultAsync( pg => pg.ReviewerId == GetUserId() && pg.RevieweeId == editPeerGradeDto.RevieweeId && pg.ProjectGroupId == editPeerGradeDto.ProjectGroupId );
-            */
 
             PeerGrade peerGrade = await _context.PeerGrades.FirstOrDefaultAsync( pg => pg.Id == editPeerGradeDto.Id );
+
 
             if( peerGrade == null) {
                 response.Data = null;
@@ -199,7 +167,29 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-             if( editPeerGradeDto.MaxGrade < editPeerGradeDto.Grade )
+            if( peerGrade.ReviewerId != user.Id)
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to change this peer grade";
+                response.Success = false;
+                return response;
+            }
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == peerGrade.ProjectGroupId );
+
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if( pga.DueDate < editPeerGradeDto.LastEdited )
+            {
+                response.Data = null;
+                response.Message = "Due date has passed for the peer grade assignment";
+                response.Success = false;
+                return response;
+            }
+
+             if( peerGrade.MaxGrade < editPeerGradeDto.Grade )
             {
                 response.Data = null;
                 response.Message = "Grade should be less than or equal to the max grade";
@@ -207,11 +197,8 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-            peerGrade.MaxGrade = editPeerGradeDto.MaxGrade; // ask
             peerGrade.Grade = editPeerGradeDto.Grade;
-            if( editPeerGradeDto.Comment != null)
-                peerGrade.Comment = editPeerGradeDto.Comment;
-            peerGrade.CreatedAt = editPeerGradeDto.CreatedAt; // ask
+            peerGrade.Comment = editPeerGradeDto.Comment;
             
             _context.PeerGrades.Update( peerGrade );
             await _context.SaveChangesAsync();
@@ -227,7 +214,7 @@ namespace backend.Services.PeerGradeServices
                 MaxGrade = peerGrade.MaxGrade,
                 Grade = peerGrade.Grade,
                 Comment = peerGrade.Comment,
-                CreatedAt = peerGrade.CreatedAt
+                LastEdited = peerGrade.LastEdited
             };
 
             response.Data = peerGradeInfoDto;
@@ -264,10 +251,29 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-            // due date olursa kontrol
+            ProjectGroup projectGroup = await _context.ProjectGroups
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == peerGrade.ProjectGroupId );
+
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments.Include( pga=> pga.PeerGrades)
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if( pga.DueDate < deletePeerGradeDto.LastEdited )
+            {
+                response.Data = null;
+                response.Message = "Due date has passed for the peer grade assignment";
+                response.Success = false;
+                return response;
+            }
 
             _context.PeerGrades.Remove( peerGrade );
             await _context.SaveChangesAsync();
+
+            if (pga != null)
+            {
+                _context.PeerGradeAssignments.Update(pga);
+                await _context.SaveChangesAsync();
+            }
 
             response.Data = "Successful";
             response.Message = "Peer grade is successfully cancelled";
@@ -301,7 +307,7 @@ namespace backend.Services.PeerGradeServices
                 MaxGrade = peerGrade.MaxGrade,
                 Grade = peerGrade.Grade,
                 Comment = peerGrade.Comment,
-                CreatedAt = peerGrade.CreatedAt
+                LastEdited = peerGrade.LastEdited
             };
 
             ProjectGroup projectGroup = await _context.ProjectGroups
@@ -358,7 +364,10 @@ namespace backend.Services.PeerGradeServices
                 return response;
             }
 
-            if( projectGroup.AffiliatedCourse.PeerGradeAssignment == null )
+            PeerGradeAssignment pga = await _context.PeerGradeAssignments
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if(pga == null )
             {
                 response.Data = null;
                 response.Message = "Course doesn't have a peer grade assignment";
@@ -396,13 +405,119 @@ namespace backend.Services.PeerGradeServices
                 MaxGrade = peerGrade.MaxGrade,
                 Grade = peerGrade.Grade,
                 Comment = peerGrade.Comment,
-                CreatedAt = peerGrade.CreatedAt
+                LastEdited = peerGrade.LastEdited
             };
 
             response.Data = dto;
             response.Message = "Success";
             response.Success = true;
 
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<PeerGradeInfoDto>>> GetPeerGradesGivenTo(GetPeerGradesGivenToDto dto)
+        {
+            ServiceResponse<List<PeerGradeInfoDto>> response = new ServiceResponse<List<PeerGradeInfoDto>>();
+            User user = await _context.Users
+                                .Include( u => u.InstructedCourses )
+                                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(g => g.AffiliatedCourse)
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == dto.ProjectGroupId );
+            
+            if( projectGroup == null )
+            {
+                response.Data = null;
+                response.Message = "There is no project group with this id";
+                response.Success = false;
+                return response;
+            }
+
+            if( !IsUserInGroup( projectGroup, dto.RevieweeId ) )
+            {
+                response.Data = null;
+                response.Message = "There is no user with revieweeId in group";
+                response.Success = false;
+                return response;
+            }
+
+             PeerGradeAssignment pga = await _context.PeerGradeAssignments
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if(pga == null )
+            {
+                response.Data = null;
+                response.Message = "Course doesn't have a peer grade assignment";
+                response.Success = false;
+                return response;
+            }
+
+            if( user == null || ( !doesUserInstruct( user, projectGroup.AffiliatedCourseId ) ) )
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to see these peer grades";
+                response.Success = false;
+                return response;
+            } 
+
+            List<PeerGradeInfoDto> peerGrades = _context.PeerGrades.Where(pg => pg.RevieweeId == dto.RevieweeId && pg.ProjectGroupId == dto.ProjectGroupId ).Select(c => _mapper.Map<PeerGradeInfoDto>(c)).ToList();
+            response.Data = peerGrades;
+            response.Message = "Success";
+            response.Success = true;
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<PeerGradeInfoDto>>> GetPeerGradesGivenBy(GetPeerGradesGivenByDto dto)
+        {
+            ServiceResponse<List<PeerGradeInfoDto>> response = new ServiceResponse<List<PeerGradeInfoDto>>();
+            User user = await _context.Users
+                                .Include( u => u.InstructedCourses )
+                                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(g => g.AffiliatedCourse).ThenInclude( c => c.PeerGradeAssignment)
+                                            .Include(g => g.GroupMembers)
+                                            .FirstOrDefaultAsync(rg => rg.Id == dto.ProjectGroupId );
+            
+            if( projectGroup == null )
+            {
+                response.Data = null;
+                response.Message = "There is no project group with this id";
+                response.Success = false;
+                return response;
+            }
+
+            if( !IsUserInGroup( projectGroup, dto.ReviewerId ) )
+            {
+                response.Data = null;
+                response.Message = "There is no user with reviewerId in group";
+                response.Success = false;
+                return response;
+            }
+            
+             PeerGradeAssignment pga = await _context.PeerGradeAssignments
+                                            .FirstOrDefaultAsync( pga => pga.CourseId == projectGroup.AffiliatedCourseId );
+
+            if(pga == null )
+            {
+                response.Data = null;
+                response.Message = "Course doesn't have a peer grade assignment";
+                response.Success = false;
+                return response;
+            }
+
+            if( user == null || ( !doesUserInstruct( user, projectGroup.AffiliatedCourseId ) ) )
+            {
+                response.Data = null;
+                response.Message = "You are not authorized to see these peer grades";
+                response.Success = false;
+                return response;
+            } 
+
+            List<PeerGradeInfoDto> peerGrades = _context.PeerGrades.Where(pg => pg.ProjectGroupId == dto.ProjectGroupId).Where( pg => pg.ReviewerId == dto.ReviewerId ).Select(c => _mapper.Map<PeerGradeInfoDto>(c)).ToList();
+            response.Data = peerGrades;
+            response.Message = "Success";
+            response.Success = true;
             return response;
         }
     }
