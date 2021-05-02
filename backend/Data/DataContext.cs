@@ -61,13 +61,13 @@ namespace backend.Data
                 .WithMany(c => c.ProjectGroups)
                 .HasForeignKey(bc => bc.UserId);
 
-            modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.SenderGroup)
+            modelBuilder.Entity<MergeRequest>().HasOne (mr => mr.SenderGroup)
                 .WithMany(g => g.OutgoingMergeRequest)
-                .HasForeignKey(mr => mr.SenderGroupId);
+                .HasForeignKey(mr => mr.SenderGroupId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<MergeRequest>().HasOne(mr => mr.ReceiverGroup)
                 .WithMany(g => g.IncomingMergeRequest)
-                .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(mr => mr.ReceiverGroupId).OnDelete(DeleteBehavior.NoAction);
 
             byte[] hash, salt;
             Utility.CreatePasswordHash("cs319", out hash, out salt);

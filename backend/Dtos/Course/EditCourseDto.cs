@@ -12,5 +12,6 @@ namespace backend.Dtos.Course
         public DateTime LockDate { get; set; }
         public int MinGroupSize { get; set; }
         public int MaxGroupSize { get; set; }
+        public bool IsActive {get; set;}
     }
 }

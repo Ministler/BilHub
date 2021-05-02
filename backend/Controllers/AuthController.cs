@@ -51,6 +51,18 @@ namespace backend.Controllers
             return Ok(response);
         }
 
+        [Authorize]
+        [HttpGet("IdOfUser")]
+        public async Task<IActionResult> IdOfUser( string email )
+        {
+            ServiceResponse<int> response = await _authRepo.IdOfUser(email);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(UserForgotDto request)
         {

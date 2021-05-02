@@ -253,5 +253,20 @@ namespace backend.Data.Auth
             response.Data = "new verification code has been sent to your email";
             return response;
         }
+
+        public async Task<ServiceResponse<int>> IdOfUser(string email)
+        {
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int> ();
+            User dbUser = await _context.Users.FirstOrDefaultAsync ( x => x.Email.Equals ( email ) );
+            if ( dbUser == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "There is no such user";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = dbUser.Id;
+            return serviceResponse;
+        }
     }
 }

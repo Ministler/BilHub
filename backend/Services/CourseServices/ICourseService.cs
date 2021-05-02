@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using backend.Dtos.Course;
 using backend.Dtos.ProjectGroup;
@@ -15,6 +16,9 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<GetCourseDto>> RemoveInstructorFromCourse(int userId, int courseId);
         Task<ServiceResponse<GetOzgurDto>> GetOzgur(int courseId);
         Task<ServiceResponse<string>> RemoveCourse ( int courseId );
+        Task<ServiceResponse<GetCourseDto>> ActivateCourse(int courseId);
+        Task<ServiceResponse<GetCourseDto>> DeactivateCourse(int courseId);
+        Task<ServiceResponse<List<GetCourseDto>>> GetInstructedCoursesOfUser(int userId);
 
     }
 }

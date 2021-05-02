@@ -51,6 +51,12 @@ namespace backend.Controllers
             return Ok(await _projectGroupService.GetProjectGroupsOfSection(sectionId));
         }
 
+        [HttpGet("ProjectGroupsOfUser")]
+        public async Task<ActionResult> GetProjectGroupsOfUser(int userId)
+        {
+            return Ok(await _projectGroupService.GetProjectGroupsOfUser(userId));
+        }
+
         [HttpDelete("DeleteProjectGroup")]
         public async Task<ActionResult>  DeleteProjectGroup ( int projectGroupId )
         {
@@ -112,6 +118,24 @@ namespace backend.Controllers
                 return Ok(response);
             }
             return NotFound(response);
+        }
+
+        [HttpPut("UpdateSrsGrade")]
+        public async Task<IActionResult> UpdateSrsGrade (UpdateSrsGradeDto updateSrsGradeDto)
+        {
+            return Ok ( await _projectGroupService.UpdateSrsGrade( updateSrsGradeDto ) );
+        }
+
+        [HttpGet("GetSrsGrade")]
+        public async Task<IActionResult> GetSrsGrade (int projectGroupId)
+        {
+            return Ok ( await _projectGroupService.GetSrsGrade ( projectGroupId ) );
+        }
+
+        [HttpDelete("DeleteSrsGrade")]
+        public async Task<IActionResult> DeleteSrsGrade (DeleteSrsGradeDto deleteSrsGradeDto)
+        {
+            return Ok ( await _projectGroupService.DeleteSrsGrade ( deleteSrsGradeDto ) );
         }
     }
 }

@@ -82,7 +82,8 @@ namespace backend.Services.CourseServices
                 MinGroupSize = createCourseDto.MinGroupSize,
                 MaxGroupSize = createCourseDto.MaxGroupSize,
                 StartDate = DateTime.Now,
-                IsSectionless = createCourseDto.IsSectionless
+                IsSectionless = createCourseDto.IsSectionless,
+                IsActive = createCourseDto.IsActive
             };
 
             CourseUser founderInstructor = new CourseUser
@@ -142,10 +143,10 @@ namespace backend.Services.CourseServices
                 .Include(c => c.InstructedCourses)
                 .FirstOrDefaultAsync(c => c.Id == GetUserId());
 
-            if (dbUser == null || dbUser.UserType == UserTypeClass.Student)
+            if (dbUser == null )
             {
                 serviceResponse.Success = false;
-                serviceResponse.Message = "User is not in instructor list. If you think this is incorrect, please contact the devs.";
+                serviceResponse.Message = "Current user not found.";
                 return serviceResponse;
             }
             if (editCourseDto.MaxGroupSize < 1 || editCourseDto.MinGroupSize > editCourseDto.MaxGroupSize)
@@ -194,6 +195,7 @@ namespace backend.Services.CourseServices
             dbCourse.LockDate = editCourseDto.LockDate;
             dbCourse.MinGroupSize = editCourseDto.MinGroupSize;
             dbCourse.MaxGroupSize = editCourseDto.MaxGroupSize;
+            dbCourse.IsActive = editCourseDto.IsActive;
 
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
@@ -435,6 +437,108 @@ namespace backend.Services.CourseServices
             // List<int> graderIds = submission.Comments.Select(c => c.CommentedUserId).ToList();
             response.Data = getOzgurDto;
             return response;
+        }
+
+        public async Task<ServiceResponse<GetCourseDto>> ActivateCourse(int courseId)
+        {
+            ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
+
+            User dbUser = await _context.Users
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => c.Id == GetUserId());
+
+            if (dbUser == null )
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Current user is not found.";
+                return serviceResponse;
+            }
+
+            Course dbCourse = await _context.Courses
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Course not found.";
+                return serviceResponse;
+            }
+            if (!dbCourse.Instructors.Any(c => c.UserId == dbUser.Id))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User does not have authority on this course.";
+                return serviceResponse;
+            }
+
+            dbCourse.IsActive = true;
+
+            _context.Courses.Update(dbCourse);
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetCourseDto>> DeactivateCourse(int courseId)
+        {
+            ServiceResponse<GetCourseDto> serviceResponse = new ServiceResponse<GetCourseDto>();
+
+            User dbUser = await _context.Users
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => c.Id == GetUserId());
+
+            if (dbUser == null )
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Current user is not found.";
+                return serviceResponse;
+            }
+
+            Course dbCourse = await _context.Courses
+                .Include(c => c.Instructors).ThenInclude(cs => cs.User)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Course not found.";
+                return serviceResponse;
+            }
+            if (!dbCourse.Instructors.Any(c => c.UserId == dbUser.Id))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User does not have authority on this course.";
+                return serviceResponse;
+            }
+
+            dbCourse.IsActive = true;
+
+            _context.Courses.Update(dbCourse);
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _mapper.Map<GetCourseDto>(dbCourse);
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetCourseDto>>> GetInstructedCoursesOfUser(int userId)
+        {
+            ServiceResponse<List<GetCourseDto>> serviceResponse = new ServiceResponse<List<GetCourseDto>> ();
+            User dbUser = await _context.Users
+                .Include ( c => c.InstructedCourses ).ThenInclude ( cs => cs.Course ).ThenInclude(css => css.Instructors).ThenInclude(csss => csss.User)
+                .Include ( c => c.InstructedCourses ).ThenInclude ( cs => cs.Course ).ThenInclude(css => css.Sections)
+                .FirstOrDefaultAsync ( c => c.Id == userId );
+            
+            if ( dbUser == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "No such user is found with given id";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = dbUser.InstructedCourses.Select(c => _mapper.Map<GetCourseDto>(c.Course)).ToList();
+            return serviceResponse;
         }
     }
 }
