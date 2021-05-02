@@ -22,7 +22,7 @@ import { checkAuthRequest } from './API';
 class App extends Component {
     componentDidMount() {
         checkAuthRequest().then((response) => {
-            const userData = response.data;
+            const userData = response.data.data;
             this.props.authSuccess(
                 localStorage.getItem('token'),
                 userData.id,

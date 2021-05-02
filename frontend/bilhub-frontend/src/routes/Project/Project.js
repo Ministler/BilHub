@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Icon, Input, TextArea, Segment, Button, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import _ from 'lodash';
 
 import './Project.css';
 import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal } from './ProjectComponents';
@@ -16,6 +17,14 @@ import {
 } from '../../components';
 import { ProjectSubmission } from './ProjectSubmission';
 import { InstructorPeerReviewPane, StudentPeerReviewPane } from '../../components/Tab/TabUI';
+import {
+    getGroupInstructorCommentsRequest,
+    getGroupStudentCommentsRequest,
+    getGroupTACommentsRequest,
+    getProjectGroupRequest,
+} from '../../API/projectGroupAPI/projectGroupGET';
+import { putProjectGroupInformationRequest } from '../../API/projectGroupAPI/projectGroupPUT';
+import { getAssignmentFileRequest } from '../../API/assignmentAPI/assignmentGET';
 
 class Project extends Component {
     constructor(props) {
@@ -63,16 +72,13 @@ class Project extends Component {
     };
 
     changeGroupInformation = (newInformation) => {
-        const request = {
-            newInformation: newInformation,
-            groupId: this.props.match.params.projectId,
-        };
-
-        console.log(request);
+        //putProjectGroupInformationRequest(newInformation, this.props.match.params.projectId);
     };
 
-    onAssignmentFileClicked = () => {
-        console.log('FILE');
+    onAssignmentFileClicked = (assignmentId) => {
+        /*getAssignmentFileRequest(assignmentId).then((response) => {
+            if (!response.data.success) return;
+        });*/
     };
 
     onModalClosed = (modalType, isSuccess) => {
@@ -84,6 +90,7 @@ class Project extends Component {
         let request = 'error';
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
+                //postCommentRequest(File, CommentedSubmissionId, CommentText, this.state.currentMaxFeedbackGrade, this.state.currentFeedbackGrade)
                 request = {
                     grade: this.state.currentFeedbackGrade,
                     maxGrade: this.state.currentMaxFeedbackGrade,
@@ -130,15 +137,55 @@ class Project extends Component {
     };
 
     componentDidMount() {
-        this.setState({
-            projectGroup: dummyProjectGroup,
-            assignments: dummyAssignmentsList,
-            grades: dummyGrades,
-            feedbacks: dummyFeedbacks,
+        getProjectGroupRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+            const projectGroupData = response.data.data;
+            let isInGroup;
+            isInGroup = _.includes(projectGroupData.groupMembers, this.props.userId);
+            const projectInformation = {
+                isInGroup: isInGroup,
+                isTAorInstructor: false, //look
+                canUserComment: true,
+                name: projectGroupData.affiliatedCourse.name,
+                isNameChangeable: true,
+                courseName: projectGroupData.projectInformation,
+                isProjectActive: true, //look
+                courseId: projectGroupData.affiliatedCourseId,
+                members: projectGroupData.groupMembers,
+                information: projectGroupData.projectInformation,
+                newInformation: projectGroupData.projectInformation,
+                newName: projectGroupData.affiliatedCourse.name,
+            };
+            this.setState({
+                projectGroup: projectInformation,
+            });
+        });
 
-            isPeerReviewOpen: true,
-            newName: dummyProjectGroup.name,
-            newInformation: dummyProjectGroup.information,
+        //this.setState({
+        //    assignments: dummyAssignmentsList,
+        //    grades: dummyGrades,
+        //    feedbacks: dummyFeedbacks,
+        //    isPeerReviewOpen: true,
+        //});
+
+        getGroupInstructorCommentsRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+            const instructorComments = response.data.data;
+            const arr = [];
+            /*for(var i in instructorComments){
+
+            }*/
+            console.log(instructorComments);
+        });
+        getGroupTACommentsRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+            const TAComments = response.data.data;
+            console.log(TAComments);
+        });
+        getGroupStudentCommentsRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+            const studentComments = response.data.data;
+            console.log(studentComments);
         });
     }
 
@@ -500,7 +547,7 @@ class Project extends Component {
         return {
             title: 'Peer Review',
             content: this.state.isPeerReviewOpen ? (
-                /*this.props.userType === 'student'*/ true ? (
+                this.props.userType === 'student' ? (
                     <StudentPeerReviewPane
                         curUser={{ name: 'Halil Özgür Demir', userId: 2 }} //dummy
                         group={this.state.projectGroup}
