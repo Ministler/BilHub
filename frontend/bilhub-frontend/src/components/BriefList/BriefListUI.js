@@ -51,13 +51,13 @@ export const MemberBriefElement = (props) => {
 export const SubmissionBriefElement = (props) => {
     return (
         <div style={{ marginTop: '10px', marginLeft: '25px' }}>
-            <span onClick={props.onSubmissionPageClicked} style={{fontWeight: "bold"}}>
+            <span onClick={props.onSubmissionPageClicked} style={{ fontWeight: 'bold' }}>
                 {props.submission?.groupName}: &nbsp;
             </span>
-            <Link onClick={props.onSubmissionPageClicked}>
-                {props.submission?.fileName} &nbsp;
-            </Link>
-            {props.submission?.hasFile ? <Icon name="file" onClick={props.onSubmissionFileClicked} color="grey"/> : null}
+            <Link onClick={props.onSubmissionPageClicked}>{props.submission?.fileName} &nbsp;</Link>
+            {props.submission?.hasFile ? (
+                <Icon name="file" onClick={props.onSubmissionFileClicked} color="grey" />
+            ) : null}
             {props.submission?.grade ? <span>Grade: {props.submission?.grade}</span> : null}
             <span style={{ float: 'right' }}>
                 {typeof props.submission?.submissionDate === 'object'
@@ -69,7 +69,6 @@ export const SubmissionBriefElement = (props) => {
 };
 
 export const GroupBriefElement = (props) => {
-    console.log(props.group);
     return (
         <>
             {props.group?.map((member) => {

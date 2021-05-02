@@ -42,7 +42,7 @@ export const convertAssignmentsToAssignmentList = (
                 titleClicked={onAssignmentClickedId}
                 caption={assignment.caption}
                 fileIcon={fileIcon}
-                fileClicked={onAssignmentFileClicked}
+                fileClicked={() => onAssignmentFileClicked(assignment.assignmentId)}
                 date={date}
                 publisher={assignment.publisher}
             />
@@ -110,7 +110,6 @@ export const convertFeedbacksToFeedbackList = (
     userId,
     onFeedbackFileClicked
 ) => {
-    // console.log(feedbacks);
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;

@@ -43,7 +43,7 @@ export const postForceCancelGroupRequest = async (projectGroupId) => {
         });
 };
 
-export const postForceCancelGroupRequest = async (projectGroupId, userId) => {
+export const postKickStudentFromGroupRequest = async (projectGroupId, userId) => {
     const url = 'KickStudentFromGroup';
     const body = {
         projectGroupId: projectGroupId,

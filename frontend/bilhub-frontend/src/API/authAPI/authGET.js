@@ -10,3 +10,14 @@ export const checkAuthRequest = async () => {
             throw error;
         });
 };
+
+export const getIdByEmailRequest = async (email) => {
+    const url = 'IdOfUser?email=' + email;
+
+    return authAxios
+        .get(BASE_AUTH_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

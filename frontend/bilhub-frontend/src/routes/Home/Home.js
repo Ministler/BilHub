@@ -2,6 +2,15 @@ import React, { Component } from 'react';
 import { Grid, GridColumn, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
+import {
+    getAssignmentFeedsRequest,
+    getUpcomingAssignmentFeedsRequest,
+    getNotGradedAssignmentRequest,
+    getAssignmentFileRequest,
+    getInstructedCoursesRequest,
+    getUserGroupsRequest,
+    getCourseRequest,
+} from '../../API';
 import './Home.css';
 import {
     ProfilePrompt,
@@ -11,6 +20,7 @@ import {
     convertNotGradedAssignmentsToBriefList,
     convertAssignmentsToAssignmentList,
 } from '../../components';
+import reportWebVitals from '../../reportWebVitals';
 
 class Home extends Component {
     constructor(props) {
@@ -25,13 +35,82 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            myProjects: dummyMyProjectsList,
-            instructedCourses: dummyInstructedCoursesList,
-            feeds: dummyFeedsList,
-            upcomingAssignments: dummyUpcomingAssignmentsList,
-            notGradedAssignments: dummyNotGradedAssignmentsList,
+        getAssignmentFeedsRequest().then((response) => {
+            if (!response.data.success) return;
+
+            const feedData = response.data.data;
+            this.setState({
+                feeds: feedData,
+            });
         });
+
+        getNotGradedAssignmentRequest().then((response) => {
+            if (!response.data.success) return;
+
+            const notGradedAssignment = response.data.data;
+            this.setState({
+                notGradedAssignments: notGradedAssignment,
+            });
+        });
+
+        getInstructedCoursesRequest(this.props.userId).then((response) => {
+            if (!response.data.success) return;
+
+            const instructedCourse = [];
+            for (let i = 0; i < response.data.data.length; i++) {
+                instructedCourse.push({
+                    courseId: response.data.data[i].id,
+                    courseCode:
+                        response.data.data[i].name +
+                        ' ' +
+                        response.data.data[i].courseSemester +
+                        '-' +
+                        response.data.data[i].year,
+                    isActive: response.data.data[i].isActive,
+                });
+            }
+
+            this.setState({
+                instructedCourses: instructedCourse,
+            });
+        });
+
+        if (this.props.userType !== 'Instructor') {
+            getUpcomingAssignmentFeedsRequest().then((response) => {
+                if (!response.data.success) return;
+
+                const upcomingData = response.data.data;
+                this.setState({
+                    upcomingAssignments: upcomingData,
+                });
+            });
+
+            getUserGroupsRequest(this.props.userId).then((response) => {
+                if (!response.data.success) return;
+
+                const data = response.data.data;
+                const myProjects = [];
+                for (let i = 0; i < data.length; i++) {
+                    let courseId = data[i].affiliatedCourseId;
+                    getCourseRequest(courseId).then((response) => {
+                        if (!response.data.success) {
+                            myProjects.push({
+                                //projectName:data,
+                                projectId: data[i].id,
+                            });
+                        }
+                        let courseData = response.data.data;
+                        myProjects.push({
+                            courseCode: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
+                            //projectName:data,
+                            isActive: courseData.isActive,
+                            projectId: data[i].id,
+                        });
+                    });
+                }
+                console.log(response.data.data);
+            });
+        }
     }
 
     onProfilePromptClicked = () => {
@@ -54,8 +133,8 @@ class Home extends Component {
         this.props.history.push('course/' + courseId + '/assignment/' + assignmentId);
     };
 
-    onFeedFileClicked = () => {
-        console.log('FEED FILE CLICKED');
+    onFeedFileClicked = (assignmentId) => {
+        getAssignmentFileRequest(assignmentId);
     };
 
     render() {
@@ -68,10 +147,10 @@ class Home extends Component {
             : null;
 
         let upcomingAssignmentsComponent = null;
-        if (this.props.userType !== 'instructor') {
+        if (this.props.userType !== 'Instructor') {
             upcomingAssignmentsComponent = convertUpcomingAssignmentsToBriefList(
                 this.state.upcomingAssignments,
-                this.onAssignmentClicked
+                this.onSubmissionClicked
             );
         }
 
@@ -132,6 +211,7 @@ const mapStateToProps = (state) => {
     return {
         userName: state.name,
         userType: state.userType,
+        userId: state.userId,
     };
 };
 

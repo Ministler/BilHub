@@ -4,7 +4,7 @@ export const deleteAssignmentFileRequest = async (assignmentId) => {
     const url = 'File/' + assignmentId;
 
     return authAxios
-        .delete(BASE_ASSIGNMENT_URL + url, body)
+        .delete(BASE_ASSIGNMENT_URL + url)
         .then((response) => response)
         .catch((error) => {
             throw error;
@@ -15,7 +15,7 @@ export const deleteAssignmentRequest = async (assignmentId) => {
     const url = assignmentId;
 
     return authAxios
-        .delete(BASE_ASSIGNMENT_URL + url, body)
+        .delete(BASE_ASSIGNMENT_URL + url)
         .then((response) => response)
         .catch((error) => {
             throw error;

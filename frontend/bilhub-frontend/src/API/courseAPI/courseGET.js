@@ -21,3 +21,14 @@ export const getCourseStatisticRequest = async (courseId) => {
             throw error;
         });
 };
+
+export const getInstructedCoursesRequest = async (userId) => {
+    const url = 'InstructedCoursesOfUser?userId=' + userId;
+
+    return authAxios
+        .get(BASE_COURSE_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

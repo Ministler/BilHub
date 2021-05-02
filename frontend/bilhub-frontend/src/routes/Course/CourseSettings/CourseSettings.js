@@ -17,7 +17,7 @@ import {
 import { UserSearchBar } from '../CourseComponents';
 
 import './CourseSettings.css';
-
+import { getCourseRequest, postDeactivateCourseRequest, putCourseRequest, deleteCourseRequest } from '../../../API';
 import { FormedGroupsBriefList, convertUnformedGroupsToBriefList } from '../../../components';
 import { dateObjectToInputDate, inputDateToDateObject } from '../../../utils';
 
@@ -104,25 +104,26 @@ export class CourseSettings extends Component {
             };
         }
 
+        putCourseRequest(
+            this.props.match.params.courseId,
+            this.state.code,
+            this.state.semester,
+            this.state.year,
+            this.state.courseInformation,
+            this.state.lockDate,
+            this.state.minSize,
+            this.state.maxSize
+        );
+
         console.log(request);
     };
 
     deleteCourse = () => {
-        const request = {
-            delete: true,
-            courseId: this.props.match.params.courseId,
-        };
-
-        console.log(request);
+        deleteCourseRequest(this.props.match.params.courseId);
     };
 
     deactiveCourse = () => {
-        const request = {
-            deactivate: true,
-            courseId: this.props.match.params.courseId,
-        };
-
-        console.log(request);
+        postDeactivateCourseRequest(this.props.match.params.courseId);
     };
 
     removeUserFromCourse = (userMail) => {
@@ -166,64 +167,56 @@ export class CourseSettings extends Component {
     };
 
     componentDidMount() {
-        let code;
-        let year;
-        let semester;
-        let delimitir = 0;
-        for (let i = 0; i < dummyCourseInformation.courseName.length; i++) {
-            if (dummyCourseInformation.courseName.charAt(i) === '-') {
-                code = dummyCourseInformation.courseName.substring(0, i);
-                delimitir = i;
-            } else if (dummyCourseInformation.courseName.charAt(i) === ' ') {
-                year = parseInt(dummyCourseInformation.courseName.substring(delimitir + 1, i));
-                delimitir = i;
-            } else if (i + 1 === dummyCourseInformation.courseName.length) {
-                semester = dummyCourseInformation.courseName.substring(delimitir + 1);
+        getCourseRequest(this.props.match.params.courseId).then((response) => {
+            if (!response.data.success) return;
+
+            const courseData = response.data?.data;
+
+            let numberOfSections = courseData.numberOfSections;
+            let studentManualList = [];
+            let studentAutoList = [];
+            for (let i = 0; i < numberOfSections; i++) {
+                studentAutoList.push([]);
+                studentManualList.push([]);
             }
-        }
+            let sections = [];
+            for (let i = 1; i <= numberOfSections; i++) {
+                sections.push({
+                    key: i,
+                    text: i,
+                    value: i,
+                });
+            }
 
-        let numberOfSections = dummyCourseInformation.numberOfSections;
-        let studentManualList = [];
-        let studentAutoList = [];
-        for (let i = 0; i < numberOfSections; i++) {
-            studentAutoList.push([]);
-            studentManualList.push([]);
-        }
-        let sections = [];
-        for (let i = 1; i <= numberOfSections; i++) {
-            sections.push({
-                key: i,
-                text: i,
-                value: i,
+            let date = courseData.lockDate;
+
+            this.setState({
+                settingTitle:
+                    'Course Settings ' + courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
+                code: courseData.name,
+                year: courseData.year,
+                semester: courseData.courseSemester,
+                shortDescription: courseData.courseInformation,
+                isSectionless: courseData.isSectionless,
+                //isLocked: ,
+                numberOfSections: numberOfSections,
+                //sections: sections,
+                instructorList: [],
+                currentInstructor: '',
+                TAList: [],
+                currentTA: '',
+                studentManualList: studentManualList,
+                manualSection: 1,
+                currentStudent: '',
+                studentAutoList: studentAutoList,
+                autoSection: 1,
+                groupChangeSection: 1,
+                minSize: courseData.minGroupSize,
+                maxSize: courseData.maxGroupSize,
+                groupFormationDate: date,
+                //groups: dummyGroups,
+                //users: dummyUsers,
             });
-        }
-        let date = dateObjectToInputDate(dummyCourseInformation.groupFormationDate);
-
-        this.setState({
-            settingTitle: 'Course Settings ' + dummyCourseInformation.courseName,
-            code: code,
-            year: year,
-            semester: semester,
-            shortDescription: dummyCourseInformation.description,
-            isSectionless: dummyCourseInformation.isSectionless,
-            isLocked: dummyCourseInformation.isLocked,
-            numberOfSections: numberOfSections,
-            sections: sections,
-            instructorList: [],
-            currentInstructor: '',
-            TAList: [],
-            currentTA: '',
-            studentManualList: studentManualList,
-            manualSection: 1,
-            currentStudent: '',
-            studentAutoList: studentAutoList,
-            autoSection: 1,
-            groupChangeSection: 1,
-            minSize: dummyCourseInformation.minSize,
-            maxSize: dummyCourseInformation.maxSize,
-            groupFormationDate: date,
-            groups: dummyGroups,
-            users: dummyUsers,
         });
     }
 
@@ -878,23 +871,23 @@ const dummyGroupsLocked = [
 ];
 
 const dummyUsers = [
-    { type: 'student', mail: 'yusuf@bilkent.edu.tr' },
-    { type: 'student', mail: 'baris@bilkent.edu.tr' },
-    { type: 'student', mail: 'aybala@bilkent.edu.tr' },
-    { type: 'student', mail: 'ozgur@bilkent.edu.tr' },
-    { type: 'student', mail: 'ozco@bilkent.edu.tr' },
-    { type: 'student', mail: 'mert@bilkent.edu.tr' },
-    { type: 'student', mail: 'ata@bilkent.edu.tr' },
-    { type: 'student', mail: 'asd@bilkent.edu.tr' },
-    { type: 'student', mail: 'fgh@bilkent.edu.tr' },
-    { type: 'student', mail: 'jkl@bilkent.edu.tr' },
-    { type: 'student', mail: 'qwe@bilkent.edu.tr' },
-    { type: 'student', mail: 'rety@bilkent.edu.tr' },
-    { type: 'student', mail: 'werrd@bilkent.edu.tr' },
-    { type: 'student', mail: 'xcccxs@bilkent.edu.tr' },
-    { type: 'student', mail: 'bvbvbvb@bilkent.edu.tr' },
-    { type: 'student', mail: 'fdgggggw@bilkent.edu.tr' },
+    { type: 'Student', mail: 'yusuf@bilkent.edu.tr' },
+    { type: 'Student', mail: 'baris@bilkent.edu.tr' },
+    { type: 'Student', mail: 'aybala@bilkent.edu.tr' },
+    { type: 'Student', mail: 'ozgur@bilkent.edu.tr' },
+    { type: 'Student', mail: 'ozco@bilkent.edu.tr' },
+    { type: 'Student', mail: 'mert@bilkent.edu.tr' },
+    { type: 'Student', mail: 'ata@bilkent.edu.tr' },
+    { type: 'Student', mail: 'asd@bilkent.edu.tr' },
+    { type: 'Student', mail: 'fgh@bilkent.edu.tr' },
+    { type: 'Student', mail: 'jkl@bilkent.edu.tr' },
+    { type: 'Student', mail: 'qwe@bilkent.edu.tr' },
+    { type: 'Student', mail: 'rety@bilkent.edu.tr' },
+    { type: 'Student', mail: 'werrd@bilkent.edu.tr' },
+    { type: 'Student', mail: 'xcccxs@bilkent.edu.tr' },
+    { type: 'Student', mail: 'bvbvbvb@bilkent.edu.tr' },
+    { type: 'Student', mail: 'fdgggggw@bilkent.edu.tr' },
     { type: 'TA', mail: 'TA@bilkent.edu.tr' },
     { type: 'TA', mail: 'TA22@bilkent.edu.tr' },
-    { type: 'instructor', mail: 'hoca@bilkent.edu.tr' },
+    { type: 'Instructor', mail: 'hoca@bilkent.edu.tr' },
 ];

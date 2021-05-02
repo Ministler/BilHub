@@ -6,4 +6,4 @@ export {
     forgotPasswordRequest,
     resendRequest,
 } from './authPOST';
-export { checkAuthRequest } from './authGET';
+export { checkAuthRequest, getIdByEmailRequest } from './authGET';

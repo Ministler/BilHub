@@ -22,7 +22,7 @@ import { checkAuthRequest } from './API';
 class App extends Component {
     componentDidMount() {
         checkAuthRequest().then((response) => {
-            const userData = response.data;
+            const userData = response.data.data;
             this.props.authSuccess(
                 localStorage.getItem('token'),
                 userData.id,
@@ -59,7 +59,7 @@ class App extends Component {
                     <Route exact path={'/course/:courseId'} component={Course} />
                     <Route exact path={'/course/:courseId/assignment/:assignmentId'} component={Course} />
                     <Route exact path={'/settings'} component={Settings} />
-                    {this.props.userType === 'instructor' ? (
+                    {this.props.userType === 'Instructor' ? (
                         <Route exact path={'/create-new-course'} component={CourseCreation} />
                     ) : null}
                     <Route exact path={'/'} component={Home} />

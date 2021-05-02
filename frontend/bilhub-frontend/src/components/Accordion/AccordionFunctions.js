@@ -158,7 +158,6 @@ export const getSubmissionsAsAccordion = (submissions, onSubmissionPageClicked, 
 };
 
 export const getAssignmentStatistics = (tableData, graphData) => {
-    console.log('tried to print stat');
     const accordionElements = [
         {
             title: 'Table',
@@ -178,7 +177,6 @@ export const getAssignmentStatistics = (tableData, graphData) => {
 };
 
 export const getCourseStatistics = (tableData, graphData) => {
-    console.log('tried to print stat');
     const accordionElements = [
         {
             title: 'Table',

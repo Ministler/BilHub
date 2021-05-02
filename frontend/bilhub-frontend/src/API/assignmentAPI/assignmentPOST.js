@@ -24,7 +24,6 @@ export const postAssignmentRequest = async (
     CanBeGradedByStudents,
     IsItGraded
 ) => {
-    const url = assignmentId;
     const body = {
         file: file,
         courseId: courseId,
@@ -37,7 +36,7 @@ export const postAssignmentRequest = async (
     };
 
     return authAxios
-        .post(BASE_ASSIGNMENT_URL + url, body)
+        .post(BASE_ASSIGNMENT_URL, body)
         .then((response) => response)
         .catch((error) => {
             throw error;

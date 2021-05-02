@@ -22,6 +22,17 @@ export const getSectionGroupsRequest = async (sectionId) => {
         });
 };
 
+export const getUserGroupsRequest = async (userId) => {
+    const url = 'ProjectGroupsOfUser?userId=' + userId;
+
+    return authAxios
+        .get(BASE_PROJECT_GROUP_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
+
 export const getGroupInstructorCommentsRequest = async (groupId) => {
     const url = 'InstructorComments/' + groupId;
 

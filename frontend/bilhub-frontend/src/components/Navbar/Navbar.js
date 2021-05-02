@@ -25,7 +25,7 @@ const Navbar = (props) => {
                         <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
 
-                        {props.userType === 'instructor' ? (
+                        {props.userType === 'Instructor' ? (
                             <>
                                 <Dropdown.Divider />
                                 <Dropdown.Item

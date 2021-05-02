@@ -1,13 +1,10 @@
 import { authAxios, BASE_SECTION_URL } from '../axiosConfigs';
 
-export const postStudentToSectionRequest = async (email, sectionId) => {
-    const url = 'AddStudentToSection';
-    const body = {
-        email: email,
-    };
+export const postStudentToSectionRequest = async (userId, sectionId) => {
+    const url = 'AddStudentToSection?userId=' + userId + '&sectionId=' + sectionId;
 
     return authAxios
-        .delete(BASE_SECTION_URL + url, body)
+        .post(BASE_SECTION_URL + url)
         .then((response) => response)
         .catch((error) => {
             throw error;

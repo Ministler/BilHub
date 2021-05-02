@@ -42,7 +42,6 @@ export default class Signup extends Component {
             this.setError('Passwords dont match');
             return;
         }
-        console.log(this.state.form.firstName + ' ' + this.state.form.lastName);
 
         registerRequest(
             this.state.form.email,
@@ -73,7 +72,6 @@ export default class Signup extends Component {
                 });
             })
             .catch((error) => {
-                console.log(error.response);
                 this.setInformation(null);
                 this.setError('Conformation Code is Not Correct');
             });
@@ -94,16 +92,13 @@ export default class Signup extends Component {
     };
 
     onChange = (name, value) => {
-        console.log(name, value);
         this.setForm({ ...this.state.form, [name]: value });
     };
 
     onResendCode = () => {
         resendRequest(this.state.email)
             .then((response) => {})
-            .catch((error) => {
-                console.log(error.response);
-            });
+            .catch((error) => {});
     };
 
     render() {

@@ -17,8 +17,15 @@ import {
     TextArea,
 } from 'semantic-ui-react';
 
+import {
+    postCourseRequest,
+    postCourseInstructorRequest,
+    postStudentToSectionRequest,
+    getIdByEmailRequest,
+} from '../../../API';
 import './CourseCreation.css';
 import { inputDateToDateObject } from '../../../utils/dateConversions';
+import axios from 'axios';
 
 const semesterOptions = [
     {
@@ -87,24 +94,55 @@ export class CourseCreation extends Component {
         //System.DateTime
         let date = inputDateToDateObject(this.state.groupFormationDate);
 
-        const request = {
-            courseName: this.state.code + '/' + this.state.year + this.state.semester,
-            description: this.state.shortDescription,
+        postCourseRequest(
+            this.state.code,
+            this.state.semester,
+            this.state.year,
+            this.state.shortDescription,
+            this.state.sectionNumber,
+            this.state.isSectionless,
+            date,
+            this.state.minSize,
+            this.state.maxSize
+        ).then((response) => {
+            if (!response.data.success) return;
+            const data = response.data.data;
+            const courseId = data.id;
+            const sections = data.sections;
 
-            isSectionless: this.state.isSectionless,
-            numberOfSection: this.state.sectionNumber,
-            instructorList: this.state.instructorList,
-            TAList: this.state.TAList,
-            studentList: this.state.studentAutoList,
+            const idRequests = [];
+            const authList = this.state.instructorList.concat(this.state.TAList);
+            for (let i = 0; i < authList.length; i++) {
+                idRequests.push(getIdByEmailRequest(authList[i]));
+            }
 
-            minSize: this.state.minSize,
-            maxSize: this.state.maxSize,
-            groupFormationDate: date,
-        };
+            axios.all(idRequests).then(
+                axios.spread((...responses) => {
+                    for (let i = 0; i < responses.length; i++) {
+                        postCourseInstructorRequest(responses[i].data.data, courseId);
+                    }
+                })
+            );
 
-        if (true) {
-            this.props.history.push('/home');
-        }
+            for (let i = 0; i < this.state.studentAutoList.length; i++) {
+                let studentIdRequests = [];
+                for (let j = 0; j < this.state.studentAutoList[i].length; j++) {
+                    studentIdRequests.push(getIdByEmailRequest(this.state.studentAutoList[i][j]));
+                }
+
+                axios.all(studentIdRequests).then(
+                    axios.spread((...responses) => {
+                        for (let k = 0; k < responses.length; k++) {
+                            console.log(responses[k].data.data);
+                            console.log(this.state.studentAutoList[i]);
+                            postStudentToSectionRequest(responses[k].data.data, this.state.studentAutoList[i].id);
+                        }
+                    })
+                );
+            }
+
+            this.props.history.push('/course/' + courseId);
+        });
     };
 
     validations = (data) => {
@@ -244,15 +282,7 @@ export class CourseCreation extends Component {
         if (this.state[userType] === '') {
             return;
         }
-        for (let i = 0; i < this.state[userType].length; i++)
-            if (
-                this.state[userType][i] === '@' &&
-                i + 1 < this.state[userType].length &&
-                this.state[userType].indexOf('bilkent', i + 1) === -1
-            ) {
-                window.alert('Please enter bilkent email');
-                return;
-            }
+
         let curList = [...this.state[listType]];
         if (section === 0) {
             if (this.checkIfExists(curList, this.state[userType])) {

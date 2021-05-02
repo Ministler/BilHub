@@ -43,7 +43,7 @@ export const TabExampleSecondaryPointing = (props) => {
         },
     ];
 
-    if (props.userType !== 'instructor') {
+    if (props.userType !== 'Instructor') {
         panes.unshift({
             title: 'Projects',
             content: props.projects ? (

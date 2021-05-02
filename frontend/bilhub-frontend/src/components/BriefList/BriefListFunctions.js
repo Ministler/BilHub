@@ -114,7 +114,9 @@ export const convertMembersToMemberElement = (members, onUserClicked, title = ''
     const convertedList = members?.map((member) => {
         return (
             <p>
-                <Link style={{ fontWeight: 'bold' }} onClick={() => onUserClicked(member.userId)}>
+                <Link
+                    style={{ fontWeight: 'bold' }}
+                    onClick={() => onUserClicked(member.userId ? member.userId : member.id)}>
                     {member.name}
                 </Link>
             </p>

@@ -125,38 +125,49 @@ class Course extends Component {
 
     componentDidMount() {
         getCourseRequest(this.props.match.params.courseId).then((response) => {
-            const courseData = response.data.data;
-            console.log(courseData);
+            if (!response.data.success) return;
+
+            const courseData = response.data?.data;
             const courseInformation = {
-                courseName: courseData.name + '-' + courseData.year + courseData.courseSemester,
-                description: courseData.courseInformation,
-                instructors: courseData.instructors,
-                formationDate: courseData.lockDate,
-                numberOfSections: courseData.numberOfSections,
-                // currentUserSection:, // BURA
-                // isCourseActive: ,// BURA
+                courseName: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
+                description: courseData?.courseInformation,
+                instructors: courseData?.instructors,
+                formationDate: courseData?.lockDate,
+                numberOfSections: courseData?.numberOfSections,
+                isCourseActive: courseData?.isActive,
                 // TAs: ,// BURA
                 // information:, // BURA
+                // isLocked:, // BURA
+
+                // currentUserSection:, // BURA
                 // isTAorInstructorOfCourse:, // BURA
                 // isUserInFormedGroup:, // BURA
                 // isUserAlone:, // BURA
-                // isLocked:, // BURA
+                // assignments: // BURA,
             };
             this.setState({
-                // assignments: // BURA,
                 courseInformation: courseInformation,
                 newInformation: courseInformation.information,
                 currentSection: courseInformation.currentUserSection ? courseInformation.currentUserSection - 1 : 0,
             });
 
+            console.log(courseData);
+
             const sectionRequests = [];
-            for (let i = 0; i < courseData.sections.length; i++) {
-                sectionRequests.push(getSectionRequest(courseData.sections[i].id));
+            for (let i = 0; i < courseData?.sections.length; i++) {
+                sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
             }
 
             axios.all(sectionRequests).then(
                 axios.spread((...responses) => {
-                    console.log(responses[0].data.data);
+                    const sections = [];
+                    for (let i = 0; i < responses?.data?.data?.length; i++) {
+                        sections.push(responses?.data?.data[i]);
+                    }
+
+                    this.setState({
+                        sections: sections,
+                    });
                 })
             );
         });
@@ -550,7 +561,7 @@ class Course extends Component {
     };
 
     getCoursePanes = () => {
-        return this.props.userType === 'student'
+        return this.props.userType === 'Student'
             ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()]
             : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()];
     };

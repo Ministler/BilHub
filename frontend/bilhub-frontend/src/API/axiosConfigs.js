@@ -7,17 +7,21 @@ import { logout } from '../store';
 axios.defaults.baseURL = 'https://57b2663d01e7.ngrok.io/';
 
 // Authorized Requests
-export const authAxios = axios.create({
-    headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
-});
+export const authAxios = axios.create();
 
 // Authorized Requests Interceptors
 authAxios.interceptors.request.use(
     (request) => {
+        request.headers['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@ REQUEST @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        console.log(request);
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         return request;
     },
     (error) => {
-        console.log(error.request);
+        console.log('@@@@@@@@@@@@@@@@@@@@ RESPONSE ERROR @@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        console.log(error.response);
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         return Promise.reject(error);
     }
 );
@@ -25,14 +29,18 @@ authAxios.interceptors.request.use(
 // Authorized Responses Interceptors
 authAxios.interceptors.response.use(
     (response) => {
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@ RESPONSE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        console.log(response.data);
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         return response;
     },
     (error) => {
-        console.log(error.response);
         if (error.response?.status === 401) {
             store.dispatch(logout());
         }
-
+        console.log('@@@@@@@@@@@@@@@@@@@@@ RESPONSE ERROR @@@@@@@@@@@@@@@@@@@@@@@@@@@');
+        console.log(error.response);
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         return Promise.reject(error);
     }
 );

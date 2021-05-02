@@ -31,15 +31,22 @@ export const postCourseRequest = async (
         });
 };
 
-export const postCourseInstructorRequest = async (email, courseId) => {
-    const url = 'AddInstructorToCourse';
-    const body = {
-        email: email,
-        courseId: courseId,
-    };
+export const postCourseInstructorRequest = async (userId, courseId) => {
+    const url = 'AddInstructorToCourse?userId=' + userId + '&courseId=' + courseId;
 
     return authAxios
-        .post(BASE_COURSE_URL + url, body)
+        .post(BASE_COURSE_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
+
+export const postDeactivateCourseRequest = async (courseId) => {
+    const url = 'DeactivateCourse?courseId=' + courseId;
+
+    return authAxios
+        .post(BASE_COURSE_URL + url)
         .then((response) => response)
         .catch((error) => {
             throw error;
