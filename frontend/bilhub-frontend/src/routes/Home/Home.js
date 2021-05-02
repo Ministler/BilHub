@@ -21,6 +21,7 @@ import {
     convertAssignmentsToAssignmentList,
 } from '../../components';
 import reportWebVitals from '../../reportWebVitals';
+import axios from 'axios';
 
 class Home extends Component {
     constructor(props) {
@@ -89,26 +90,36 @@ class Home extends Component {
                 if (!response.data.success) return;
 
                 const data = response.data.data;
-                const myProjects = [];
+                const requests = [];
                 for (let i = 0; i < data.length; i++) {
                     let courseId = data[i].affiliatedCourseId;
-                    getCourseRequest(courseId).then((response) => {
-                        if (!response.data.success) {
+                    requests.push(getCourseRequest(courseId));
+                }
+
+                const myProjects = [];
+                axios.all(requests).then(
+                    axios.spread((...responses) => {
+                        for (let i = 0; i < responses.length; i++) {
+                            if (!responses[i].data.success) {
+                                myProjects.push({
+                                    projectName: data[i].name,
+                                    projectId: data[i].id,
+                                });
+                            }
+
+                            let courseData = responses[i].data.data;
                             myProjects.push({
-                                //projectName:data,
+                                courseCode: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
+                                projectName: data[i].name,
+                                isActive: courseData.isActive,
                                 projectId: data[i].id,
                             });
+                            this.setState({
+                                myProjects: myProjects,
+                            });
                         }
-                        let courseData = response.data.data;
-                        myProjects.push({
-                            courseCode: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
-                            //projectName:data,
-                            isActive: courseData.isActive,
-                            projectId: data[i].id,
-                        });
-                    });
-                }
-                console.log(response.data.data);
+                    })
+                );
             });
         }
     }
