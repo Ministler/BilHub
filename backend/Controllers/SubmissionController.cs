@@ -149,18 +149,18 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SubmitAssignment([FromForm] AddSubmissionwithAttachmentDto addwithAttachment)
-        {
-            ServiceResponse<GetSubmissionDto> response = await _submissionService.AddSubmission(addwithAttachment.addSubmissionDto);
-            if (response.Success)
-            {
-                if (addwithAttachment.file != null)
-                    await _submissionService.SubmitAssignment(new AddSubmissionFileDto { File = addwithAttachment.file, SubmissionId = response.Data.Id });
-                return Ok(response);
-            }
-            return NotFound(response);
-        }
+        // [HttpPost]
+        // public async Task<IActionResult> SubmitAssignment([FromForm] AddSubmissionwithAttachmentDto addwithAttachment)
+        // {
+        //     ServiceResponse<GetSubmissionDto> response = await _submissionService.AddSubmission(addwithAttachment.addSubmissionDto);
+        //     if (response.Success)
+        //     {
+        //         if (addwithAttachment.file != null)
+        //             await _submissionService.SubmitAssignment(new AddSubmissionFileDto { File = addwithAttachment.file, SubmissionId = response.Data.Id });
+        //         return Ok(response);
+        //     }
+        //     return NotFound(response);
+        // }
 
         [HttpDelete]
         [Route("{submissionId}")]
@@ -300,6 +300,42 @@ namespace backend.Controllers
 
         }
 
+        [HttpDelete]
+        [Route("SrsGrade/{submissionId}")]
+        public async Task<IActionResult> DeleteSrsGrade(int submissionId)
+        {
+            ServiceResponse<string> response = await _submissionService.DeleteSrsGrade(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+
+        }
+
+        [HttpGet]
+        [Route("SrsGrade/{submissionId}")]
+        public async Task<IActionResult> GetSrsGrade(int submissionId)
+        {
+            ServiceResponse<decimal> response = await _submissionService.GetSrsGrade(submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [HttpPost]
+        [Route("SrsGrade/{submissionId}")]
+        public async Task<IActionResult> PostSrsGrade(int submissionId, EnterSrsGradeDto dto)
+        {
+            ServiceResponse<string> response = await _submissionService.EnterSrsGrade(dto.SrsGrade, submissionId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
 
         private string GetContentType(string path)
         {
