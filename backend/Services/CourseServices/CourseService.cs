@@ -555,6 +555,7 @@ namespace backend.Services.CourseServices
                         new GetFeedItemDto
                         {
                             assignmentId = a.Id,
+                            title = a.Title,
                             caption = a.AssignmentDescription,
                             publisher = a.AfilliatedCourse.Name,
                             publisherId = a.AfilliatedCourseId,
@@ -567,14 +568,9 @@ namespace backend.Services.CourseServices
                     );
                 }
             }
+            data.OrderBy(d => d.dueDate);
+            response.Data = data;
             return response;
         }
     }
 }
-/*public string title { get; set; }
-        public int status { get; set; }
-        public string caption { get; set; }
-        public int? projectId { get; set; }
-        public int? submissionId { get; set; }
-        public int? courseId { get; set; }
-        public int? assignmentId { get; set; }*/
