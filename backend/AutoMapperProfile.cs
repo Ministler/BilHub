@@ -18,7 +18,9 @@ namespace backend
         public AutoMapperProfile()
         {
             CreateMap<ProjectGroup, GetProjectGroupDto>()
-                .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)));
+                .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)))
+                .ForMember( dto => dto.AffiliatedCourseName, opt => opt.Ignore() )
+                .ForMember( dto => dto.IsActive, opt => opt.Ignore() );
 
             CreateMap<User, UserInProjectGroupDto>();
             CreateMap<User, InstructorInCourseDto>();
