@@ -1,0 +1,7 @@
+.linkToProfile {
+    color: black;
+}
+linkToProfile:hover {
+    color: #3a58c4;
+    text-decoration: underline;
+}

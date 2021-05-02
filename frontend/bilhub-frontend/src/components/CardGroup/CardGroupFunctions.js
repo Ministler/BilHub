@@ -418,8 +418,8 @@ export const convertRequestsToRequestsList = (
                                                         userName
                                                     )
                                                 }
-                                                name="remove circle"
-                                                color="black"
+                                                name="x"
+                                                color="red"
                                             />
                                         )}
                                     </p>

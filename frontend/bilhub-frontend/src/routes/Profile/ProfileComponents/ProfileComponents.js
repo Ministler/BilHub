@@ -71,9 +71,9 @@ export const TabExampleSecondaryPointing = (props) => {
 
 export const ProjectCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement" fluid link style={{ width: '95%' }}>
+        <Card className="ProjectCardElement" fluid style={{ width: '95%' }}>
             <Card.Content>
-                <Card.Header>
+                <Card.Header className="clickableChangeColor">
                     <div onClick={props.onProjectClicked}>{props.title}</div>
                 </Card.Header>
                 <Card.Description>
@@ -109,9 +109,9 @@ export const ProjectCardElement = (props) => {
 
 export const CourseCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement" fluid link style={{ width: '95%' }}>
+        <Card className="ProjectCardElement" fluid style={{ width: '95%' }}>
             <Card.Content>
-                <Card.Header>
+                <Card.Header className="clickableChangeColor">
                     <div onClick={props.onCourseClicked}>{props.title}</div>
                 </Card.Header>
                 <Card.Description>
