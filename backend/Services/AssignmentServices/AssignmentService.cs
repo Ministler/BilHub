@@ -33,8 +33,6 @@ namespace backend.Services.AssignmentServices
             _hostingEnvironment = hostingEnvironment;
         }
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-
         public async Task<ServiceResponse<string>> SubmitAssignmentFile(AddAssignmentFileDto file)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -98,7 +96,6 @@ namespace backend.Services.AssignmentServices
 
             return response;
         }
-
         public async Task<ServiceResponse<string>> DownloadAssignmentFile(GetAssignmentFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -123,8 +120,6 @@ namespace backend.Services.AssignmentServices
             response.Data = assignment.FilePath;
             return response;
         }
-
-
         public async Task<ServiceResponse<string>> DeleteFile(DeleteAssignmentFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -154,7 +149,6 @@ namespace backend.Services.AssignmentServices
             await _context.SaveChangesAsync();
             return response;
         }
-
         public async Task<ServiceResponse<GetAssignmentDto>> SubmitAssignment(AddAssignmentDto assignmentDto)
         {
             ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
@@ -230,7 +224,6 @@ namespace backend.Services.AssignmentServices
             response.Data.FileEndpoint = string.Format("Assignment/File/{0}", assignment.Id);
             return response;
         }
-
         public async Task<ServiceResponse<string>> DeleteAssignment(DeleteAssignmentDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -264,7 +257,6 @@ namespace backend.Services.AssignmentServices
             await _context.SaveChangesAsync();
             return response;
         }
-
         public async Task<ServiceResponse<GetAssignmentDto>> GetAssignment(int assignmentId)
         {
             ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
@@ -291,7 +283,6 @@ namespace backend.Services.AssignmentServices
             response.Data = _mapper.Map<GetAssignmentDto>(assignment);
             return response;
         }
-
         public async Task<ServiceResponse<GetAssignmentDto>> UpdateAssignment(UpdateAssignmentDto dto)
         {
             ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
@@ -415,7 +406,6 @@ namespace backend.Services.AssignmentServices
             response.Data = getOzgurDto;
             return response;
         }
-
         public async Task<ServiceResponse<List<GetFeedItemDto>>> GetFeeds()
         {
             ServiceResponse<List<GetFeedItemDto>> response = new ServiceResponse<List<GetFeedItemDto>>();
@@ -452,7 +442,8 @@ namespace backend.Services.AssignmentServices
                                         hasFile = s.AffiliatedAssignment.HasFile,
                                         fileEndpoint = "Assignment/File/" + s.AffiliatedAssignment.Id,
                                         projectId = pg.Id,
-                                        submissionId = s.Id
+                                        submissionId = s.Id,
+                                        assignmentId = s.AffiliatedAssignmentId
                                     }
                                 );
                             }
@@ -500,6 +491,112 @@ namespace backend.Services.AssignmentServices
 
             response.Data = data;
 
+            return response;
+        }
+        public async Task<ServiceResponse<List<NotGradedAsssignmentsDto>>> GetNotGradedAssignments()
+        {
+            ServiceResponse<List<NotGradedAsssignmentsDto>> response = new ServiceResponse<List<NotGradedAsssignmentsDto>>();
+            User user = await _context.Users
+                .Include(u => u.ProjectGroups)
+                    .ThenInclude(pg => pg.ProjectGroup).ThenInclude(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse)
+                .Include(u => u.ProjectGroups).ThenInclude(pg => pg.ProjectGroup).ThenInclude(pg => pg.AffiliatedCourse)
+                .Include(u => u.InstructedCourses).ThenInclude(cu => cu.Course).ThenInclude(c => c.Assignments).ThenInclude(a => a.Submissions)
+            .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            List<NotGradedAsssignmentsDto> data = new List<NotGradedAsssignmentsDto>();
+            if (user.ProjectGroups != null)
+            {
+                foreach (ProjectGroup pg in user.ProjectGroups.Select(pgu => pgu.ProjectGroup))
+                {
+                    if (pg.Submissions != null)
+                    {
+                        foreach (Submission s in pg.Submissions)
+                        {
+                            if (s.AffiliatedAssignment != null && pg.AffiliatedCourse != null && s.HasSubmission && !s.IsGraded)
+                            {
+                                Course course = s.AffiliatedAssignment.AfilliatedCourse;
+                                data.Add(
+                                    new NotGradedAsssignmentsDto
+                                    {
+                                        courseCode = string.Format("{0}_{1}_{2}", course.Name, course.CourseSemester, course.Year),
+                                        assignmentName = s.AffiliatedAssignment.Title,
+                                        dueDate = s.AffiliatedAssignment.DueDate,
+                                        courseId = s.AffiliatedAssignment.AfilliatedCourseId,
+                                        assignmentId = s.AffiliatedAssignmentId
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+            if (user.InstructedCourses != null)
+            {
+                foreach (Course c in user.InstructedCourses.Select(cu => cu.Course))
+                {
+                    if (c.Assignments != null)
+                    {
+                        foreach (Assignment a in c.Assignments)
+                        {
+                            if (a.Submissions.Any(s => !s.IsGraded))
+                            {
+                                data.Add(
+                                   new NotGradedAsssignmentsDto
+                                   {
+                                       courseCode = string.Format("{0}_{1}_{2}", c.Name, c.CourseSemester, c.Year),
+                                       assignmentName = a.Title,
+                                       dueDate = a.DueDate,
+                                       courseId = c.Id,
+                                       assignmentId = a.Id
+                                   }
+                               );
+                            }
+                        }
+                    }
+                }
+            }
+
+            data.OrderBy(i => i.dueDate);
+            response.Data = data;
+            return response;
+        }
+        public async Task<ServiceResponse<List<UpcomingAssignmentsDto>>> GetUpcomingAssignments()
+        {
+            ServiceResponse<List<UpcomingAssignmentsDto>> response = new ServiceResponse<List<UpcomingAssignmentsDto>>();
+            User user = await _context.Users
+                .Include(u => u.ProjectGroups)
+                    .ThenInclude(pg => pg.ProjectGroup).ThenInclude(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment).ThenInclude(a => a.AfilliatedCourse)
+                .Include(u => u.ProjectGroups).ThenInclude(pg => pg.ProjectGroup).ThenInclude(pg => pg.AffiliatedCourse)
+            .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            List<UpcomingAssignmentsDto> data = new List<UpcomingAssignmentsDto>();
+            if (user.ProjectGroups != null)
+            {
+                foreach (ProjectGroup pg in user.ProjectGroups.Select(pgu => pgu.ProjectGroup))
+                {
+                    if (pg.Submissions != null)
+                    {
+                        foreach (Submission s in pg.Submissions)
+                        {
+                            if (s.AffiliatedAssignment != null && pg.AffiliatedCourse != null && !s.HasSubmission)
+                            {
+                                Course course = s.AffiliatedAssignment.AfilliatedCourse;
+                                data.Add(
+                                    new UpcomingAssignmentsDto
+                                    {
+                                        courseCode = string.Format("{0}_{1}_{2}", course.Name, course.CourseSemester, course.Year),
+                                        assignmentName = s.AffiliatedAssignment.Title,
+                                        dueDate = s.AffiliatedAssignment.DueDate,
+                                        projectId = s.AffiliatedGroupId,
+                                        submissionId = s.Id
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            data.OrderBy(i => i.dueDate);
+            response.Data = data;
             return response;
         }
     }

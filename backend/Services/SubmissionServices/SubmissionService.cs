@@ -15,6 +15,7 @@ using System.Web;
 using backend.Services.CommentServices;
 using backend.Dtos.Comment;
 using System.Collections.ObjectModel;
+using backend.Dtos.Comment.FeedbackItems;
 
 namespace backend.Services.SubmissionServices
 {
@@ -36,6 +37,7 @@ namespace backend.Services.SubmissionServices
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         public async Task<ServiceResponse<string>> DownloadAllSubmissions(GetSubmissionsFileDto dto)
+
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
             User user = await _context.Users.Include(u => u.ProjectGroups).FirstOrDefaultAsync(u => u.Id == GetUserId());
@@ -330,7 +332,6 @@ namespace backend.Services.SubmissionServices
             return response;
         }
 
-
         public async Task<ServiceResponse<string>> Delete(int submissionId)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
@@ -425,7 +426,11 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser).Where(c => c.CommentedUser.UserType == UserTypeClass.Instructor).Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
+            List<GetCommentDto> comments = _context.Comments
+                .Include(c => c.CommentedUser)
+                .Where(c => c.CommentedSubmissionId == submissionId)
+                .Where(c => c.CommentedUser.UserType == UserTypeClass.Instructor)
+                .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
 
             response.Data = comments;
             return response;
@@ -459,6 +464,7 @@ namespace backend.Services.SubmissionServices
             List<int> intrs = new List<int>();
             intrs = course.Instructors.Select(cu => cu.UserId).ToList();
             List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
+                .Where(c => c.CommentedSubmissionId == submissionId)
                 .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
                 .Where(c => intrs.Contains(c.CommentedUserId))
                 .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
@@ -495,6 +501,7 @@ namespace backend.Services.SubmissionServices
             List<int> intrs = new List<int>();
             intrs = course.Instructors.Select(cu => cu.UserId).ToList();
             List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
+                .Where(c => c.CommentedSubmissionId == submissionId)
                 .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
                 .Where(c => !intrs.Contains(c.CommentedUserId))
                 .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
@@ -667,6 +674,113 @@ namespace backend.Services.SubmissionServices
             response.Data = submission.SrsGrade;
             response.Message = "You succesfully deleted the srs grade for this submission";
             response.Success = true;
+            return response;
+        }
+        public async Task<ServiceResponse<FeedbacksDto>> GetNewFeedbacks()
+        {
+            ServiceResponse<FeedbacksDto> response = new ServiceResponse<FeedbacksDto>();
+            FeedbacksDto data = new FeedbacksDto();
+            List<NewFeedbacksDto> InstructorComments = new List<NewFeedbacksDto>();
+            List<NewFeedbacksDto> TAComments = new List<NewFeedbacksDto>();
+            List<NewFeedbacksDto> StudentComments = new List<NewFeedbacksDto>();
+            User user = await _context.Users
+                .Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup).ThenInclude(pg => pg.Submissions).ThenInclude(s => s.AffiliatedAssignment)
+                .Include(u => u.ProjectGroups).ThenInclude(pgu => pgu.ProjectGroup).ThenInclude(pg => pg.AffiliatedCourse)
+                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+            foreach (ProjectGroup pg in user.ProjectGroups.Select(pgu => pgu.ProjectGroup))
+            {
+                if (pg != null)
+                {
+                    foreach (Submission s in pg.Submissions)
+                    {
+                        ServiceResponse<List<GetCommentDto>> comments = await GetInstructorComments(s.Id);
+                        InstructorComments.AddRange(
+                               comments.Data.Select(comment => new NewFeedbacksDto
+                               {
+                                   submission = new FeedbackSubmissionItem
+                                   {
+                                       submissionId = s.Id,
+                                       assignmentName = s.AffiliatedAssignment.Title,
+                                       projectId = pg.Id
+                                   },
+                                   course = new FeedbackCourseItem
+                                   {
+                                       courseName = pg.AffiliatedCourse.Name
+                                   },
+                                   feedback = new FeedbackItemDto
+                                   {
+                                       caption = comment.CommentText,
+                                       date = comment.CreatedAt,
+                                       commentId = comment.Id,
+                                       grade = decimal.Round(comment.Grade / comment.MaxGrade * 10, 2)
+                                   },
+                                   user = new UserFeedbackDto
+                                   {
+                                       name = user.Name
+                                   }
+                               })
+                        );
+                        ServiceResponse<List<GetCommentDto>> comments2 = await GetTaComments(s.Id);
+                        TAComments.AddRange(
+                               comments.Data.Select(comment => new NewFeedbacksDto
+                               {
+                                   submission = new FeedbackSubmissionItem
+                                   {
+                                       submissionId = s.Id,
+                                       assignmentName = s.AffiliatedAssignment.Title,
+                                       projectId = pg.Id
+                                   },
+                                   course = new FeedbackCourseItem
+                                   {
+                                       courseName = pg.AffiliatedCourse.Name
+                                   },
+                                   feedback = new FeedbackItemDto
+                                   {
+                                       caption = comment.CommentText,
+                                       date = comment.CreatedAt,
+                                       commentId = comment.Id,
+                                       grade = decimal.Round(comment.Grade / comment.MaxGrade * 10, 2)
+                                   },
+                                   user = new UserFeedbackDto
+                                   {
+                                       name = user.Name
+                                   }
+                               })
+                        );
+                        ServiceResponse<List<GetCommentDto>> comments3 = await GetStudentComments(s.Id);
+                        StudentComments.AddRange(
+                               comments.Data.Select(comment => new NewFeedbacksDto
+                               {
+                                   submission = new FeedbackSubmissionItem
+                                   {
+                                       submissionId = s.Id,
+                                       assignmentName = s.AffiliatedAssignment.Title,
+                                       projectId = pg.Id
+                                   },
+                                   course = new FeedbackCourseItem
+                                   {
+                                       courseName = pg.AffiliatedCourse.Name
+                                   },
+                                   feedback = new FeedbackItemDto
+                                   {
+                                       caption = comment.CommentText,
+                                       date = comment.CreatedAt,
+                                       commentId = comment.Id,
+                                       grade = decimal.Round(comment.Grade / comment.MaxGrade * 10, 2)
+                                   },
+                                   user = new UserFeedbackDto
+                                   {
+                                       name = user.Name
+                                   }
+                               })
+                        );
+                    }
+                }
+            }
+            data.InstructorComments = InstructorComments;
+            data.TAFeedbacks = TAComments;
+            data.StudentsFeedbacks = StudentComments;
+            response.Data = data;
             return response;
         }
     }
