@@ -1,4 +1,5 @@
 import { Card, Icon, Button } from 'semantic-ui-react';
+import { dateObjectToString } from '../../utils';
 import { convertMembersToMemberElement } from '../BriefList';
 
 import { AssignmentCardElement, FeedbackCardElement, RequestCardElement } from './CardGroupUI';
@@ -11,18 +12,24 @@ export const convertAssignmentsToAssignmentList = (
     assignmentIcons
 ) => {
     const assignmentCardElements = assignments?.map((assignment) => {
-        const date = 'Publishment Date: ' + assignment.publishmentDate + ' / Due Date: ' + assignment.dueDate;
+        const date =
+            'Publishment Date: ' +
+            (typeof assignment.publishmentDate === 'object'
+                ? dateObjectToString(assignment.publishmentDate)
+                : assignment.publishmentDate) +
+            ' / Due Date: ' +
+            (typeof assignment.dueDate === 'object' ? dateObjectToString(assignment.dueDate) : assignment.dueDate);
 
         let statusIcon = null;
         if (assignment.status === 'graded') {
-            statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} color="blue"/>;
+            statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} color="blue" />;
         } else if (assignment.status === 'submitted') {
-            statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px', color: "rgb(251, 178, 4)" }} />;
+            statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px', color: 'rgb(251, 178, 4)' }} />;
         } else if (assignment.status === 'notsubmitted') {
-            statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} color="red"/>;
+            statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} color="red" />;
         }
 
-        const fileIcon = assignment.file ? <Icon name="file" color="grey" /> : null;
+        const fileIcon = assignment.hasFile ? <Icon name="file" color="grey" /> : null;
 
         let onAssignmentClickedId = assignment.submissionId
             ? () => onSubmissionClicked(assignment.projectId, assignment.submissionId)
@@ -103,6 +110,7 @@ export const convertFeedbacksToFeedbackList = (
     userId,
     onFeedbackFileClicked
 ) => {
+    // console.log(feedbacks);
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;
@@ -141,9 +149,10 @@ export const convertFeedbacksToFeedbackList = (
                 <FeedbackCardElement
                     author={feedback.name ? feedback.name : 'Comment is anonymous'}
                     caption={feedback.caption}
-                    file={feedback.file}
+                    hasFile={feedback.hasFile}
                     onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId)}
                     grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
+                    maxGrade={feedback?.maxGrade}
                     date={feedback.date}
                     icons={icons}
                     onAuthorClicked={() => onAuthorClicked(feedback.userId)}
@@ -184,7 +193,7 @@ export const convertSRSFeedbackToSRSCardElement = (
                                 SRSResult.commentId,
                                 SRSResult.caption,
                                 SRSResult.grade,
-                                SRSResult.file,
+                                SRSResult.hasFile,
                                 SRSResult.maxGrade
                             )
                         }
@@ -200,7 +209,7 @@ export const convertSRSFeedbackToSRSCardElement = (
                                 SRSResult.commentId,
                                 SRSResult.caption,
                                 SRSResult.grade,
-                                SRSResult.file,
+                                SRSResult.hasFile,
                                 SRSResult.maxGrade
                             )
                         }
@@ -219,6 +228,7 @@ export const convertSRSFeedbackToSRSCardElement = (
                     date={SRSResult.date}
                     icons={icons}
                     maxGrade={SRSResult.maxGrade}
+                    isSrs={true}
                 />
             </Card.Group>
         );
@@ -410,8 +420,8 @@ export const convertRequestsToRequestsList = (
                                                         userName
                                                     )
                                                 }
-                                                name="remove circle"
-                                                color="black"
+                                                name="x"
+                                                color="red"
                                             />
                                         )}
                                     </p>

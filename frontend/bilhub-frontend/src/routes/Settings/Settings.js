@@ -271,17 +271,23 @@ class Settings extends Component {
                         <div class="ui segments">
                             <Segment
                                 onClick={() => this.changeTab('Profile Settings')}
-                                color={this.state.segment === 'Profile Settings' ? 'red' : ''}>
+                                className={
+                                    this.state.segment === 'Profile Settings' ? 'leftRed settingHover' : 'settingHover'
+                                }>
                                 <p>Profile Settings</p>
                             </Segment>
                             <Segment
                                 onClick={() => this.changeTab('Account Settings')}
-                                color={this.state.segment === 'Account Settings' ? 'red' : ''}>
+                                className={
+                                    this.state.segment === 'Account Settings' ? 'leftRed settingHover' : 'settingHover'
+                                }>
                                 <p>Account Settings</p>
                             </Segment>
                             <Segment
                                 onClick={() => this.changeTab('Appearance')}
-                                color={this.state.segment === 'Appearance' ? 'red' : ''}>
+                                className={
+                                    this.state.segment === 'Appearance' ? 'leftRed settingHover' : 'settingHover'
+                                }>
                                 <p>Appearance</p>
                             </Segment>
                             {/* <Segment
@@ -312,7 +318,7 @@ const ProfilePrompt = (props) => {
             <span className={'ProfileSpan'}>
                 <Icon name="user circle" size="big" />
             </span>
-            <Link style={{ fontSize: '24px' }} to="/profile">
+            <Link className="linkToProfile" style={{ fontSize: '24px' }} to="/profile">
                 {props.name}
             </Link>
         </div>

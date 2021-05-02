@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Segment, TextArea, Icon, Button, Dropdown, Grid } from 'semantic-ui-react';
+import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Course.css';
@@ -14,6 +14,7 @@ import {
 } from './CourseComponents';
 import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
+import { AllStudentPeerReviewPane } from '../../components/Tab/TabUI';
 
 class Course extends Component {
     constructor(props) {
@@ -39,6 +40,16 @@ class Course extends Component {
             currentMessage: '',
 
             currentSection: 0,
+
+            //Peer Review
+            isPeerReviewOpen: false,
+            currentPeerReviewSections: [],
+            currentPeerReviewGroups: [],
+            currentPeerReviewStudents: [],
+            currentPeerReviewSection: {},
+            currentPeerReviewGroup: {},
+            currentPeerReviewStudent: {},
+            currentReviews: {},
         };
     }
 
@@ -119,6 +130,8 @@ class Course extends Component {
             currentSection: dummyCourseInformation.currentUserSection
                 ? dummyCourseInformation.currentUserSection - 1
                 : 0,
+            isPeerReviewOpen: true,
+            currentPeerReviewSections: dummySections,
         });
     }
 
@@ -277,7 +290,6 @@ class Course extends Component {
             }
             return (
                 <Dropdown
-                    fluid
                     selection
                     options={sectionOptions}
                     value={this.state.currentSection}
@@ -359,6 +371,50 @@ class Course extends Component {
         return button;
     };
 
+    downloadFromSection = (value) => {
+        if (value === 0) {
+            window.alert('You have to enter section.');
+        } else {
+            const request = {
+                course: this.state.courseInformation,
+                section: value,
+                assignment: -1,
+            };
+            console.log(request);
+        }
+    };
+
+    getDownloadSubmissionsPopup = () => {
+        let value = 0;
+        let sectionNo = this.state.courseInformation.numberOfSections;
+        const sections = [{ key: 0, text: 'All Sections', value: -1 }];
+        for (var i = 0; i < sectionNo; i++) {
+            sections.push({ key: i + 1, text: 'Section ' + (i + 1), value: i + 1 });
+        }
+        return (
+            <Popup
+                flowing
+                on="click"
+                trigger={
+                    <Button color="green" style={{ marginLeft: '10px' }} icon labelPosition="right">
+                        Download Submissions <Icon name="download" />
+                    </Button>
+                }>
+                <Dropdown
+                    onChange={(e, d) => {
+                        value = d.value;
+                    }}
+                    placeholder="Select Section"
+                    item
+                    selection
+                    options={sections}></Dropdown>
+                <Button onClick={() => this.downloadFromSection(value)} style={{ marginLeft: '10px' }} icon>
+                    <Icon name="download" />
+                </Button>
+            </Popup>
+        );
+    };
+
     getAssignmentPane = () => {
         return {
             title: 'Assignments',
@@ -408,8 +464,68 @@ class Course extends Component {
         return controlIcons;
     };
 
+    handleSectionChange = (data) => {
+        let index;
+        for (var i = 0; i < data.options.length; i++) {
+            if (data.options[i].value === data.value) {
+                index = i;
+                i = data.options.length;
+            }
+        }
+        this.setState({
+            currentPeerReviewSection: data.value,
+            currentPeerReviewGroups: dummyGroupsLocked[index],
+            currentPeerReviewGroup: {},
+            currentPeerReviewStudents: [],
+            currentPeerReviewStudent: {},
+            currentReviews: {},
+        });
+    };
+
+    handleGroupChange = (data) => {
+        let index;
+        for (var i = 0; i < data.options.length; i++) {
+            if (data.options[i].value === data.value) {
+                index = i;
+                i = data.options.length;
+            }
+        }
+        this.setState({
+            currentPeerReviewGroup: data.value,
+            currentPeerReviewStudents: this.state.currentPeerReviewGroups[index].members,
+            currentPeerReviewStudent: {},
+            currentReviews: {},
+        });
+        console.log(this.state.currentPeerReviewStudents);
+    };
+
+    handleStudentChange = (data) => {
+        this.setState({
+            currentPeerReviewStudent: data.value,
+            currentReviews: comingDummyPeerReviews,
+        });
+    };
+
+    getPeerReviewPane = () => {
+        return {
+            title: 'Peer Review',
+            content: this.state.isPeerReviewOpen ? (
+                <AllStudentPeerReviewPane
+                    state={{ ...this.state }}
+                    handleStudentChange={(data) => this.handleStudentChange(data)}
+                    handleGroupChange={(data) => this.handleGroupChange(data)}
+                    handleSectionChange={(data) => this.handleSectionChange(data)}
+                />
+            ) : (
+                <div>Peer reviewing is currently closed.</div>
+            ),
+        };
+    };
+
     getCoursePanes = () => {
-        return [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()];
+        return this.props.userType === 'student'
+            ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()]
+            : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()];
     };
 
     getAssignmentPage = () => {
@@ -424,7 +540,9 @@ class Course extends Component {
             />
         );
     };
-
+    deleteAssignment = (assignment) => {
+        console.log(assignment + ' will be deleted');
+    };
     getModals = () => {
         return (
             <>
@@ -441,6 +559,7 @@ class Course extends Component {
                     curAssignment={dummyCourseAssignments[0]}
                     onClosed={this.onDeleteAssignmentModalClosed}
                     isOpen={this.state.isDeleteAssignmentOpen}
+                    deleteAssignment={this.deleteAssignment}
                 />
                 <SendRequestModal
                     onClosed={this.onSendRequestModalClosed}
@@ -528,7 +647,7 @@ const dummyCourseInformation = {
     isUserInFormedGroup: false,
     isUserAlone: false,
     isLocked: true,
-    formationDate: '15/24/2020',
+    formationDate: new Date(2020, 12, 15, 15, 0),
     numberOfSections: 3,
     currentUserSection: 1,
 };
@@ -541,9 +660,9 @@ const dummyCourseAssignments = [
         assignmentId: 1,
         type: 1,
         publisher: 'Elgun Jabrayilzade',
-        file: 'file',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: new Date(2021, 3, 12, 12, 0),
+        hasFile: 'file',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
     {
         title: 'Design Report',
@@ -551,8 +670,8 @@ const dummyCourseAssignments = [
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 2,
         publisher: 'Erdem Tuna',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 April 2021 12:00',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
     {
         title: 'Design Report',
@@ -560,8 +679,8 @@ const dummyCourseAssignments = [
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 2,
         publisher: 'Erdem Tuna',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 April 2021 12:00',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
     {
         title: 'Design Report',
@@ -569,11 +688,15 @@ const dummyCourseAssignments = [
             'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
         assignmentId: 2,
         publisher: 'Erdem Tuna',
-        publishmentDate: '12 March 2021 12:00',
-        dueDate: '12 April 2021 12:00',
+        publishmentDate: new Date(2021, 3, 12, 12, 0),
+        dueDate: new Date(2021, 4, 12, 12, 0),
     },
 ];
-
+const dummySections = [
+    { sectionId: 1, id: 43 },
+    { sectionId: 2, id: 44 },
+    { sectionId: 3, id: 45 },
+];
 const dummyGroupsLocked = [
     [
         {
@@ -592,6 +715,188 @@ const dummyGroupsLocked = [
                 },
             ],
             groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '2Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '2Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '2Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 4,
+            groupName: 'NoBilhub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 1,
+            groupName: 'BilH123ub',
+        },
+    ],
+    [
+        {
+            members: [
+                {
+                    name: '1Yusuf Uyar',
+                    userId: 1,
+                },
+                {
+                    name: '1Halil Özgür Demir',
+                    userId: 2,
+                },
+                {
+                    name: '1Barış Ogün Yörük',
+                    userId: 3,
+                },
+            ],
+            groupId: 3,
             groupName: 'BilHub',
         },
         {
@@ -609,7 +914,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 2,
+            groupId: 4,
             groupName: 'Not Bilhub',
         },
     ],
@@ -629,7 +934,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 1,
+            groupId: 5,
             groupName: 'BilHub',
         },
         {
@@ -647,45 +952,7 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 2,
-            groupName: 'Not Bilhub',
-        },
-    ],
-    [
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilHub',
-        },
-        {
-            members: [
-                {
-                    name: '2Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '2Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '2Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 2,
+            groupId: 6,
             groupName: 'Not Bilhub',
         },
     ],
@@ -723,6 +990,159 @@ const dummyGroups = [
                     },
                     {
                         name: '2Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
+                        userId: 3,
+                    },
+                ],
+                groupId: 1,
+            },
+            {
+                members: [
+                    {
+                        name: '1Yusuf Uyar',
+                        userId: 1,
+                    },
+                    {
+                        name: '1Halil Özgür Demir',
+                        userId: 2,
+                    },
+                    {
+                        name: '1Barış Ogün Yörük',
                         userId: 3,
                     },
                 ],
@@ -957,4 +1377,90 @@ const dummyFinalGrades = [
     { group: 'BilCalendar', grade: 78 },
     { group: 'Yusuf Keke', grade: 80 },
     { group: 'Website', grade: 78 },
+];
+
+const goingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 2,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 4,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 6,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
+const comingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 3,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 2,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 4,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 5,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 6,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
 ];

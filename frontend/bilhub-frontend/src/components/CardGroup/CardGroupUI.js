@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Grid, Icon } from 'semantic-ui-react';
+import { dateObjectToString } from '../../utils';
 
 import './CardGroupUI.css';
 
@@ -22,7 +23,7 @@ export const AssignmentCardElement = (props) => {
             </Card.Content>
             <Card.Content extra textAlign="right">
                 <div>{props.publisher}</div>
-                <div>{props.date}</div>
+                <div>{typeof props.date === 'object' ? dateObjectToString(props.date) : props.date}</div>
             </Card.Content>
         </Card>
     );
@@ -31,25 +32,29 @@ export const AssignmentCardElement = (props) => {
 export const FeedbackCardElement = (props) => {
     return (
         <Card className="FeedbackCardElement">
-            <Card.Content>
-                <Card.Header>
-                    {props.author ? (
-                        <div onClick={props.onAuthorClicked}>{props.author}</div>
-                    ) : (
-                        <div>{props.titleElement}</div>
-                    )}
-                </Card.Header>
-                <Card.Description>
-                    {props.caption}
-                    {props.file ? <Icon name="file" onClick={props.onFeedbackFileClicked} /> : null}
-                    {props.icons}
-                </Card.Description>
-            </Card.Content>
+            {props?.isSrs !== true && (
+                <Card.Content>
+                    <Card.Header>
+                        {props.author ? (
+                            <div onClick={props.onAuthorClicked}>{props.author}</div>
+                        ) : (
+                            <div>{props.titleElement}</div>
+                        )}
+                    </Card.Header>
+                    <Card.Description>
+                        {props.caption}
+                        {props.hasFile ? <Icon name="file" onClick={props.onFeedbackFileClicked} /> : null}
+                        {props.icons}
+                    </Card.Description>
+                </Card.Content>
+            )}
             <Card.Content className="FeedbackCardExtra">
                 <div className="FeedbackGrade">
                     Grade: {props.grade}/{props.maxGrade ? props.maxGrade : '10'}
                 </div>
-                <div className="FeedbackDate">{props.date}</div>
+                <div className="FeedbackDate">
+                    {typeof props.date === 'object' ? dateObjectToString(props.date) : props.date}
+                </div>
             </Card.Content>
         </Card>
     );
@@ -96,11 +101,32 @@ export const RequestCardElement = (props) => {
                 <div style={{ float: 'right' }}>
                     {props.requestDate ? (
                         <span>
-                            Request Date: {props.requestDate} / Formation Date: {props.formationDate}
+                            Request Date:{' '}
+                            {typeof props.requestDate === 'object'
+                                ? dateObjectToString(props.requestDate)
+                                : props.requestDate}{' '}
+                            / Formation Date:{' '}
+                            {typeof props.formationDate === 'object'
+                                ? dateObjectToString(props.formationDate)
+                                : props.formationDate}
                         </span>
                     ) : null}
-                    {props.approvalDate ? <span>Approval Date: {props.approvalDate}</span> : null}
-                    {props.disapprovalDate ? <span>Dispproval Date: {props.disapprovalDate}</span> : null}
+                    {props.approvalDate ? (
+                        <span>
+                            Approval Date:{' '}
+                            {typeof props.approvalDate === 'object'
+                                ? dateObjectToString(props.approvalDate)
+                                : props.approvalDate}
+                        </span>
+                    ) : null}
+                    {props.disapprovalDate ? (
+                        <span>
+                            Dispproval Date:{' '}
+                            {typeof props.disapprovalDate === 'object'
+                                ? dateObjectToString(props.disapprovalDate)
+                                : props.disapprovalDate}
+                        </span>
+                    ) : null}
                 </div>
             </Card.Content>
         </Card>

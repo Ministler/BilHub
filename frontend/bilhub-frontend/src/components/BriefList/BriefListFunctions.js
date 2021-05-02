@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, Segment, Label, Popup, Header, Grid, Button, Dropdown } from 'semantic-ui-react';
+import { dateObjectToString } from '../../utils';
 
 import { SubmissionBriefElement, GroupBriefElement } from './BriefListUI';
 import './BriefListUI.css';
@@ -57,7 +58,9 @@ export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAss
                         {title}
                     </Link>
                     <div align="right" className="DueDate">
-                        {assignment.dueDate}
+                        {typeof assignment.dueDate === 'object'
+                            ? dateObjectToString(assignment.dueDate)
+                            : assignment.dueDate}
                     </div>
                 </Segment>
             );
@@ -86,7 +89,9 @@ export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onA
                         {title}
                     </Link>
                     <div align="right" className="DueDate">
-                        {assignment.dueDate}
+                        {typeof assignment.dueDate === 'object'
+                            ? dateObjectToString(assignment.dueDate)
+                            : assignment.dueDate}
                     </div>
                 </Segment>
             );

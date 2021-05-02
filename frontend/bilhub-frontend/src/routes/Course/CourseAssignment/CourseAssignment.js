@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Icon, Dropdown, Button } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
+
 
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
+import { dateObjectToString } from '../../../utils';
 
 class CourseAssignment extends Component {
     constructor(props) {
@@ -68,6 +70,7 @@ class CourseAssignment extends Component {
     };
 
     getAssignmentPane = () => {
+        console.log(typeof this.state.assignment?.publishmentDate);
         return {
             title: 'Assignment Information',
             content: (
@@ -75,14 +78,18 @@ class CourseAssignment extends Component {
                     title={this.props.courseName + ' / ' + this.state.assignment?.title}
                     caption={this.state.assignment?.caption}
                     publisher={this.state.assignment?.publisher}
-                    fileIcon={this.state.assignment?.file ? <Icon name="file" color="grey" /> : null}
+                    fileIcon={this.state.assignment?.hasFile ? <Icon name="file" color="grey" /> : null}
                     fileClicked={this.onFileClicked}
                     date={
                         'Publishment Date: ' +
-                        this.state.assignment?.publishmentDate +
+                        (typeof this.state.assignment?.publishmentDate === 'object'
+                            ? dateObjectToString(this.state.assignment?.publishmentDate)
+                            : this.state.assignment?.publishmentDate) +
                         ' / ' +
                         'Due Date: ' +
-                        this.state.assignment?.dueDate
+                        (typeof this.state.assignment?.dueDate === 'object'
+                            ? dateObjectToString(this.state.assignment?.dueDate)
+                            : this.state.assignment?.dueDate)
                     }
                     titleIcon={this.getAssignmentControlIcons()}
                 />
@@ -160,11 +167,11 @@ class CourseAssignment extends Component {
         if (this.state.assignment?.isUserTAorInstructor) {
             buttons = (
                 <>
-                    <Button icon={'download'} onClick={this.onDownloadAllFiles}>
-                        Download All Files
+                    <Button color="green" compact onClick={this.onDownloadAllFiles} icon labelPosition="right">
+                        Download All Files  <Icon name="download" />
                     </Button>
-                    <Button icon={'download'} onClick={this.onDownloadNotGradedFiles}>
-                        Donwload Only Not Graded Files
+                    <Button color="green" compact onClick={this.onDownloadNotGradedFiles} icon labelPosition="right">
+                        Donwload Only Not Graded Files  <Icon name="download" />
                     </Button>
                 </>
             );
@@ -182,11 +189,11 @@ class CourseAssignment extends Component {
                     color="blue"
                     style={{ display: 'inline' }}
                 />
-                <p
+                <Link
                     onClick={this.onReturnProjectPage}
                     style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
                     Back To Course Page
-                </p>
+                </Link>
                 <Tab tabPanes={this.getPaneElements()} />
             </div>
         );
@@ -198,10 +205,10 @@ const dummyAssignment = {
     caption:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
     publisher: 'Elgun Jabrayilzade',
-    file: 'file',
+    hasFile: 'file',
     isUserTAorInstructor: true,
-    publishmentDate: '12 March 2021 12:00',
-    dueDate: '12 March 2021 12:00',
+    publishmentDate: new Date(2021, 3, 12, 12, 0),
+    dueDate: new Date(2021, 3, 12, 12, 0),
     numberOfSections: 3,
     currentUserSection: 2,
 };
@@ -212,18 +219,18 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -232,16 +239,16 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -264,18 +271,18 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub2',
                 fileName: '21_1_analysisReport.pdf',
-                file: '2file',
+                hasFile: '2file',
                 grade: '2/10',
-                submissionDate: '2 March 2021',
+                submissionDate: new Date(2021, 3, 2, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -284,16 +291,16 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -316,18 +323,18 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -336,16 +343,16 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },

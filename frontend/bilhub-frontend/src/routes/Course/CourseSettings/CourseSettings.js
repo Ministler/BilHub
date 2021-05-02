@@ -19,6 +19,7 @@ import { UserSearchBar } from '../CourseComponents';
 import './CourseSettings.css';
 
 import { FormedGroupsBriefList, convertUnformedGroupsToBriefList } from '../../../components';
+import { dateObjectToInputDate, inputDateToDateObject } from '../../../utils';
 
 const semesterOptions = [
     {
@@ -68,14 +69,15 @@ export class CourseSettings extends Component {
     }
 
     updateGeneralSettings = () => {
+        const arr = [...this.state.studentAutoList];
         for (let i = 0; i < this.state.numberOfSections; i++) {
+            arr[i] = [...this.state.studentAutoList[i]];
             for (let k = 0; k < this.state.studentManualList[i].length; k++) {
-                this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
+                arr[i].push(this.state.studentManualList[i][k]);
             }
         }
-        let dateArr = this.state.groupFormationDate.split(/-/);
         //System.DateTime
-        let date = new Date(dateArr[0], dateArr[1], dateArr[2]);
+        let date = inputDateToDateObject(this.state.groupFormationDate);
 
         let request = null;
         if (this.state.courseInformation?.isLocked) {
@@ -83,7 +85,7 @@ export class CourseSettings extends Component {
                 courseName: this.state.code + '/' + this.state.year + this.state.semester,
                 description: this.state.shortDescription,
 
-                newStudents: this.state.studentAutoList,
+                newStudents: arr,
                 newTAs: this.state.TAList,
                 newinstructors: this.state.instructorList,
             };
@@ -92,7 +94,7 @@ export class CourseSettings extends Component {
                 courseName: this.state.code + '/' + this.state.year + this.state.semester,
                 description: this.state.shortDescription,
 
-                newStudents: this.state.studentAutoList,
+                newStudents: arr,
                 newTAs: this.state.TAList,
                 newinstructors: this.state.instructorList,
 
@@ -195,16 +197,7 @@ export class CourseSettings extends Component {
                 value: i,
             });
         }
-        let date =
-            dummyCourseInformation.groupFormationDate.getFullYear() +
-            '-' +
-            (dummyCourseInformation.groupFormationDate.getMonth() / 10 < 1
-                ? '0' + dummyCourseInformation.groupFormationDate.getMonth()
-                : dummyCourseInformation.groupFormationDate.getMonth()) +
-            '-' +
-            (dummyCourseInformation.groupFormationDate.getDate() / 10 < 1
-                ? '0' + dummyCourseInformation.groupFormationDate.getDate()
-                : dummyCourseInformation.groupFormationDate.getDate());
+        let date = dateObjectToInputDate(dummyCourseInformation.groupFormationDate);
 
         this.setState({
             settingTitle: 'Course Settings ' + dummyCourseInformation.courseName,
@@ -262,10 +255,13 @@ export class CourseSettings extends Component {
     };
 
     removeUser = (element, listType, section) => {
-        let ary = this.state[listType];
+        let ary = [...this.state[listType]];
         if (section === 0) {
             ary = _.without(ary, element);
         } else {
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                ary[i] = [...this.state[listType][i]];
+            }
             ary[section - 1] = _.without(ary[section - 1], element);
         }
         this.setState({ [listType]: ary });
@@ -331,7 +327,7 @@ export class CourseSettings extends Component {
                 window.alert('Please enter bilkent email');
                 return;
             }
-        let curList = this.state[listType];
+        let curList = [...this.state[listType]];
         if (section === 0) {
             if (this.checkIfExists(curList, this.state[userType])) {
                 window.alert("You can't add already existing user.");
@@ -344,6 +340,9 @@ export class CourseSettings extends Component {
                     window.alert("You can't add already existing user.");
                     return;
                 }
+            }
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                curList[i] = [...this.state[listType][i]];
             }
             curList[section - 1].push(this.state[userType]);
         }
@@ -363,7 +362,10 @@ export class CourseSettings extends Component {
         const reader = new FileReader();
         let students;
         reader.onload = async (file) => {
-            let curList = this.state.studentAutoList;
+            let curList = [...this.state.studentAutoList];
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                curList[i] = [...this.state.studentAutoList[i]];
+            }
             const text = file.target.result;
             students = text.split(/\n/);
             curList[this.state.autoSection - 1] = students;
@@ -372,11 +374,18 @@ export class CourseSettings extends Component {
         reader.readAsText(e.target.files[0]);
     };
 
+    onKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    };
+
     render() {
         console.log(this.state.groups, this.state.groupChangeSection);
         return (
             <>
-                <Form className="SettingsForm" onSubmit={this.onFormSubmit}>
+                <Form className="SettingsForm" onSubmit={this.onFormSubmit} onKeyDown={this.onKeyDown}>
                     <Form.Group>
                         <h1>{this.state.settingTitle}</h1>
                     </Form.Group>
@@ -533,7 +542,7 @@ export class CourseSettings extends Component {
                                         Group Formation Date
                                         <Input
                                             value={this.state.groupFormationDate}
-                                            type="date"
+                                            type="datetime-local"
                                             name="groupFormationDate"
                                             onChange={this.handleChange}></Input>
                                     </div>
@@ -628,11 +637,10 @@ const dummyCourseInformation = {
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
     isTAorInstructorOfCourse: true,
     isLocked: false,
-    formationDate: '15-24-2020',
     numberOfSections: 3,
     minSize: 3,
     maxSize: 5,
-    groupFormationDate: new Date(2022, 1, 2),
+    groupFormationDate: new Date(2022, 1, 2, 17, 30),
 };
 
 const dummyGroups = [

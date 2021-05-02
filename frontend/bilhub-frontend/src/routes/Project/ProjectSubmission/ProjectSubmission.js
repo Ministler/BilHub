@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Icon, Button } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import {
     NewCommentModal,
     EditCommentModal,
@@ -18,6 +18,7 @@ import {
     FeedbacksPane,
     SubmissionPane,
 } from '../../../components';
+import { dateObjectToString } from '../../../utils';
 
 class ProjectAssignment extends Component {
     constructor(props) {
@@ -274,7 +275,7 @@ class ProjectAssignment extends Component {
                                 this.onExistingSubmissionModalOpened(
                                     'isEditSubmissionOpen',
                                     this.state.submission.caption,
-                                    this.state.submission.file
+                                    this.state.submission.hasFile
                                 )
                             }>
                             Edit Submission
@@ -284,7 +285,7 @@ class ProjectAssignment extends Component {
                                 this.onExistingSubmissionModalOpened(
                                     'isDeleteSubmissionOpen',
                                     this.state.submission.caption,
-                                    this.state.submission.file
+                                    this.state.submission.hasFile
                                 )
                             }>
                             Delete Submission
@@ -361,7 +362,14 @@ class ProjectAssignment extends Component {
     getPaneElements = () => {
         const assignment = {
             ...this.state.assignment,
-            date: this.state.assignment.publishmentDate + ' / ' + this.state.assignment.dueDate,
+            date:
+                (typeof this.state.assignment.publishmentDate === 'object'
+                    ? dateObjectToString(this.state.assignment.publishmentDate)
+                    : this.state.assignment.publishmentDate) +
+                ' / ' +
+                (typeof this.state.assignment.dueDate === 'object'
+                    ? dateObjectToString(this.state.assignment.dueDate)
+                    : this.state.assignment.dueDate),
         };
 
         const submissionButtons = this.getSubmissionButtons();
@@ -487,11 +495,11 @@ class ProjectAssignment extends Component {
                     color="blue"
                     style={{ display: 'inline' }}
                 />
-                <p
+                <Link
                     onClick={this.onReturnProjectPage}
                     style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
                     Back To Assigments
-                </p>
+                </Link>
                 <Tab tabPanes={this.getPaneElements()} />
                 {this.getModals()}
             </div>
@@ -511,8 +519,8 @@ const dummyAssignment = {
     caption:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
     publisher: 'Erdem Tuna',
-    publishmentDate: '13 March 2023 12:00',
-    dueDate: '16 April 2025, 23:59',
+    publishmentDate: new Date(2023, 3, 13, 12, 0),
+    dueDate: new Date(2025, 4, 16, 23, 59),
     file: 'deneme',
     submissionInfo: 'Please name your submission file as: surname_name_id_section.pdf',
 };
@@ -531,7 +539,7 @@ const dummySubmission = {
     caption:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident dicta dignissimos dolore quo iure, et ipsam corporis accusamus ad eligendi, inventore consequatur, repellendus laboriosam vitae sed quam fugit. Omnis dignissimos eos libero facilis quisquam quidem. Labore veritatis eaque non vero asperiores, soluta, qui nisi adipisci, fugit corrupti praesentium voluptatem enim?',
     file: 'file',
-    date: '16 April 2025, 12:31',
+    date: new Date(2025, 4, 16, 12, 31),
     submissionId: 1,
 };
 
@@ -579,13 +587,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             commentId: 3,
             userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -599,13 +607,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             commentId: 4,
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -619,13 +627,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             //grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             commentId: 5,
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -637,12 +645,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -654,12 +662,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',

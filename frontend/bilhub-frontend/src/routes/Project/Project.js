@@ -15,6 +15,7 @@ import {
     FeedbacksPane,
 } from '../../components';
 import { ProjectSubmission } from './ProjectSubmission';
+import { InstructorPeerReviewPane, StudentPeerReviewPane } from '../../components/Tab/TabUI';
 
 class Project extends Component {
     constructor(props) {
@@ -32,6 +33,7 @@ class Project extends Component {
             newInformation: '',
 
             // States regarding open modals of right part
+
             isGiveFeedbackOpen: false,
             isEditFeedbackOpen: false,
             isDeleteFeedbackOpen: false,
@@ -41,6 +43,13 @@ class Project extends Component {
             currentFeedbackGrade: 10,
             currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
+
+            //Peer Review
+            isPeerReviewOpen: false,
+            currentReviewComment: '',
+            currentReviewGrade: -1,
+            currentPeer: 0,
+            maxReviewGrade: 5, //will be taken from project groups peer reviewing assignment
         };
     }
 
@@ -127,6 +136,7 @@ class Project extends Component {
             grades: dummyGrades,
             feedbacks: dummyFeedbacks,
 
+            isPeerReviewOpen: true,
             newName: dummyProjectGroup.name,
             newInformation: dummyProjectGroup.information,
         });
@@ -438,9 +448,9 @@ class Project extends Component {
                             this.onFeedbackFileClicked,
                             this.onModalOpened
                         )}
+                        newCommentButton={newCommentButton}
                     />
                 </div>
-                {newCommentButton}
             </Grid>
         );
         return {
@@ -449,8 +459,77 @@ class Project extends Component {
         };
     };
 
+    changeReviewingPeer = (userId) => {
+        let currentReview = {};
+        for (var i = 0; i < goingDummyPeerReviews.length; i++) {
+            if (goingDummyPeerReviews[i].revieweeId === userId) {
+                currentReview = { ...goingDummyPeerReviews[i] };
+                i = goingDummyPeerReviews.length;
+            }
+        }
+        console.log(currentReview);
+
+        this.setState({
+            currentPeer: userId,
+            currentReviewComment: currentReview.comment ? currentReview.comment : '',
+            currentReviewGrade: currentReview.grade ? currentReview.grade : -1,
+        });
+    };
+
+    changeViewingPeer = (userId) => {
+        this.setState({ currentPeer: userId });
+    };
+
+    submitReview = () => {
+        console.log(this.state.currentReviewGrade);
+        if (this.state.currentReviewGrade === -1 || this.state.currentPeer === 0 /* check existance */) {
+            window.alert('You need to enter both grade and reviewee');
+        } else {
+            const request = {
+                ProjectGroupId: 12, //nasil alcagimi bilmiyom
+                comment: this.state.currentReviewComment,
+                grade: this.state.currentReviewGrade,
+                revieweeId: this.state.currentPeer,
+                maxGrade: 5, //will be taken from assignment
+            };
+            console.log(request);
+        }
+    };
+
+    getPeerReviewPane = () => {
+        return {
+            title: 'Peer Review',
+            content: this.state.isPeerReviewOpen ? (
+                /*this.props.userType === 'student'*/ true ? (
+                    <StudentPeerReviewPane
+                        curUser={{ name: 'Halil Özgür Demir', userId: 2 }} //dummy
+                        group={this.state.projectGroup}
+                        changePeer={(userId) => this.changeReviewingPeer(userId)}
+                        currentPeer={this.state.currentPeer}
+                        commentChange={(d) => this.setState({ currentReviewComment: d.value })}
+                        gradeChange={(d) => this.setState({ currentReviewGrade: d.value })}
+                        comment={this.state.currentReviewComment}
+                        grade={this.state.currentReviewGrade}
+                        submitReview={this.submitReview}
+                        maxGrade={this.state.maxReviewGrade}
+                    />
+                ) : (
+                    <InstructorPeerReviewPane
+                        peerReviews={comingDummyPeerReviews} //This will change according to currentPeer
+                        group={this.state.projectGroup}
+                        userId={this.props.userId}
+                        changePeer={(userId) => this.changeViewingPeer(userId)}
+                        currentPeer={this.state.currentPeer}
+                    />
+                )
+            ) : (
+                <div>Peer reviewing is currently closed.</div>
+            ),
+        };
+    };
+
     getPaneElements = () => {
-        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
+        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane(), this.getPeerReviewPane()];
     };
 
     // Modals
@@ -558,8 +637,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 1,
         submissionId: 1,
     },
@@ -569,8 +648,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 2,
         submissionId: 2,
         file: 'dummyFile',
@@ -581,8 +660,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -592,8 +671,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -603,8 +682,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -614,8 +693,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -625,8 +704,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -661,6 +740,103 @@ const dummyGrades = {
     finalGrade: 38,
 };
 
+const dummyPeerReview = {
+    ProjectGroupId: 12,
+    reviewerId: 1,
+    revieweeId: 2,
+    Id: 14,
+    maxGrade: 5,
+    grade: 2,
+    comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+    createdAt: new Date(2012, 12, 12, 12, 12),
+};
+
+const goingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 2,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 4,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 6,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
+const comingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 3,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 2,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 4,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 5,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 6,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
 const dummyFeedbacks = {
     // SRSResult: {
     //     grade: '9.5',
@@ -672,13 +848,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 3,
             userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -693,13 +869,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 4,
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -713,14 +889,14 @@ const dummyFeedbacks = {
             caption:
                 'Lcaptionorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 5,
             userId: 1,
             userGroupName: 'ClassRoom Helper',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -733,12 +909,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -750,12 +926,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
