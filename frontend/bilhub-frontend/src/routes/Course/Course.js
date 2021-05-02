@@ -14,6 +14,7 @@ import {
 } from './CourseComponents';
 import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
+import { AllStudentPeerReviewPane } from '../../components/Tab/TabUI';
 
 class Course extends Component {
     constructor(props) {
@@ -39,6 +40,16 @@ class Course extends Component {
             currentMessage: '',
 
             currentSection: 0,
+
+            //Peer Review
+            isPeerReviewOpen: false,
+            currentPeerReviewSections: [],
+            currentPeerReviewGroups: [],
+            currentPeerReviewStudents: [],
+            currentPeerReviewSection: {},
+            currentPeerReviewGroup: {},
+            currentPeerReviewStudent: {},
+            currentReviews: {},
         };
     }
 
@@ -119,6 +130,8 @@ class Course extends Component {
             currentSection: dummyCourseInformation.currentUserSection
                 ? dummyCourseInformation.currentUserSection - 1
                 : 0,
+            isPeerReviewOpen: true,
+            currentPeerReviewSections: dummySections,
         });
     }
 
@@ -453,8 +466,68 @@ class Course extends Component {
         return controlIcons;
     };
 
+    handleSectionChange = (data) => {
+        let index;
+        for (var i = 0; i < data.options.length; i++) {
+            if (data.options[i].value === data.value) {
+                index = i;
+                i = data.options.length;
+            }
+        }
+        this.setState({
+            currentPeerReviewSection: data.value,
+            currentPeerReviewGroups: dummyGroupsLocked[index],
+            currentPeerReviewGroup: {},
+            currentPeerReviewStudents: [],
+            currentPeerReviewStudent: {},
+            currentReviews: {},
+        });
+    };
+
+    handleGroupChange = (data) => {
+        let index;
+        for (var i = 0; i < data.options.length; i++) {
+            if (data.options[i].value === data.value) {
+                index = i;
+                i = data.options.length;
+            }
+        }
+        this.setState({
+            currentPeerReviewGroup: data.value,
+            currentPeerReviewStudents: this.state.currentPeerReviewGroups[index].members,
+            currentPeerReviewStudent: {},
+            currentReviews: {},
+        });
+        console.log(this.state.currentPeerReviewStudents);
+    };
+
+    handleStudentChange = (data) => {
+        this.setState({
+            currentPeerReviewStudent: data.value,
+            currentReviews: comingDummyPeerReviews,
+        });
+    };
+
+    getPeerReviewPane = () => {
+        return {
+            title: 'Peer Review',
+            content: this.state.isPeerReviewOpen ? (
+                <AllStudentPeerReviewPane
+                    state={{ ...this.state }}
+                    handleStudentChange={(data) => this.handleStudentChange(data)}
+                    handleGroupChange={(data) => this.handleGroupChange(data)}
+                    handleSectionChange={(data) => this.handleSectionChange(data)}
+                />
+            ) : (
+                <div>Peer reviewing is currently closed.</div>
+            ),
+        };
+    };
+
     getCoursePanes = () => {
-        return [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()];
+        return this.props.userType === 'student'
+            ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()]
+            : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()];
     };
 
     getAssignmentPage = () => {
@@ -621,7 +694,11 @@ const dummyCourseAssignments = [
         dueDate: new Date(2021, 4, 12, 12, 0),
     },
 ];
-
+const dummySections = [
+    { sectionId: 1, id: 43 },
+    { sectionId: 2, id: 44 },
+    { sectionId: 3, id: 45 },
+];
 const dummyGroupsLocked = [
     [
         {
@@ -639,8 +716,8 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 1,
-            groupName: 'BilHub',
+            groupId: 3,
+            groupName: 'Biub',
         },
         {
             members: [
@@ -657,8 +734,8 @@ const dummyGroupsLocked = [
                     userId: 3,
                 },
             ],
-            groupId: 2,
-            groupName: 'Not Bilhub',
+            groupId: 4,
+            groupName: 'NoBilhub',
         },
     ],
     [
@@ -1005,4 +1082,90 @@ const dummyFinalGrades = [
     { group: 'BilCalendar', grade: 78 },
     { group: 'Yusuf Keke', grade: 80 },
     { group: 'Website', grade: 78 },
+];
+
+const goingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 2,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 4,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 6,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
+const comingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 3,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 2,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 4,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 5,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 6,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
 ];
