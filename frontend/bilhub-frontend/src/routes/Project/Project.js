@@ -41,7 +41,7 @@ import { postPeerGradeRequest } from '../../API/peerGradeAPI/peerGradePOST';
 import { deleteSrsGradeRequest } from '../../API/projectGroupAPI/projectGroupDELETE';
 import { putProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePUT';
 import { getPeerGradeRequestWithReviewee, getPeerGradeRequestWithReviewer } from '../../API/peerGradeAPI/peerGradeGET';
-import { getProjectGradeDownloadByIdRequest } from '../../API';
+import { getProjectGradeDownloadByIdRequest, putProjectGroupRequest } from '../../API';
 
 class Project extends Component {
     constructor(props) {
@@ -86,10 +86,7 @@ class Project extends Component {
     }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     changeGroupName = (newName) => {
-        const request = {
-            newName: newName,
-            groupId: this.props.match.params.projectId,
-        };
+        putProjectGroupRequest(this.props.match.params.projectId, this.state.projectGroup.information, newName);
     };
 
     changeGroupInformation = (newInformation) => {
@@ -157,7 +154,7 @@ class Project extends Component {
                     isInGroup: isInGroup,
                     isTAorInstructor: auth.data.data, //look
                     canUserComment: true,
-                    name: projectGroupData.projectInformation,
+                    name: projectGroupData.name,
                     isNameChangeable: true,
                     courseName: projectGroupData.affiliatedCourse.name,
                     isProjectActive: true, //look

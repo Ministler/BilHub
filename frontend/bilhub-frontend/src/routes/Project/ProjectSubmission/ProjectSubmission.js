@@ -194,13 +194,7 @@ class ProjectAssignment extends Component {
                 if (!response.data.success) return;
                 const curSubmission = response.data.data;
                 console.log(curSubmission);
-                let isInGroup = false;
-                for (let i of curSubmission.affiliatedGroup.groupMembers) {
-                    if (i.id === this.props.userId) {
-                        isInGroup = true;
-                        break;
-                    }
-                }
+
                 let status;
                 if (curSubmission.isGraded) {
                     status = 2;
@@ -226,9 +220,16 @@ class ProjectAssignment extends Component {
                     date: inputDateToDateObject(curSubmission.updatedAt),
                     submissionId: curSubmission.id,
                 };
+                let isInGroup = false;
+                for (let i of curSubmission.affiliatedGroup.groupMembers) {
+                    if (i.id === this.props.userId) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
                 const page = {
                     isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
-                    isInGroup: isInGroup,
+                    isInGroup: true,
                     isTAorInstructor: auth.data.data,
                     canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
                     hasSubmission: curSubmission.hasSubmission,

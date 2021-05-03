@@ -36,6 +36,8 @@ export const putProjectGroupRequest = async (id, projectInformation, name) => {
         name: name,
     };
 
+    console.log(body);
+
     return authAxios
         .put(BASE_PROJECT_GROUP_URL, body)
         .then((response) => response)

@@ -281,9 +281,18 @@ export const convertRequestsToRequestsList = (
                         yourGroup = convertMembersToMemberElement(request.yourGroup, onUserClicked);
                     }
 
+                    let psotherGroup = [];
+                    if (request?.user) {
+                        psotherGroup.push(request?.user);
+                    } else {
+                        psotherGroup = null;
+                    }
                     let otherGroup = null;
-                    if (request.otherGroup) {
-                        otherGroup = convertMembersToMemberElement(request.otherGroup, onUserClicked);
+                    if (request.otherGroup || psotherGroup) {
+                        otherGroup = convertMembersToMemberElement(
+                            request.otherGroup ? request.otherGroup : psotherGroup,
+                            onUserClicked
+                        );
                     }
 
                     let titleStart, titleMid, userName, userId;
