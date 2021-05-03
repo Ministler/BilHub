@@ -50,6 +50,7 @@ export {
     getGroupSrsGradeRequest,
     postLeaveGroupRequest,
     postProjectGiveReadyRequest,
+    putProjectGroupRequest,
 } from './projectGroupAPI';
 export {
     getIncomingJoinRequest,

@@ -28,6 +28,7 @@ import {
     deleteSubmissionRequest,
     getAssignmentFileRequest,
     deleteSubmissionSrsGradeRequest,
+    postSubmissionSrsGradeRequest,
 } from '../../../API';
 import {
     getSubmissionFileRequest,
@@ -150,19 +151,9 @@ class ProjectAssignment extends Component {
         let request = 'error';
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
-                request = {
-                    grade: this.state.currentFeedbackGrade,
-                    maxGrade: this.state.currentMaxFeedbackGrade,
-                    userId: this.props.userId,
-                    submissionId: this.props.match.params.submissionId,
-                };
+                postSubmissionSrsGradeRequest(this.props.match.params.submissionId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isEditFeedbackOpen') {
-                request = {
-                    grade: this.state.currentFeedbackGrade,
-                    maxGrade: this.state.currentMaxFeedbackGrade,
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                postSubmissionSrsGradeRequest(this.props.match.params.submissionId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isDeleteFeedbackOpen') {
                 deleteSubmissionSrsGradeRequest(this.state.submission.submissionId);
             }

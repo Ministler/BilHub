@@ -90,8 +90,6 @@ class Project extends Component {
             newName: newName,
             groupId: this.props.match.params.projectId,
         };
-
-        console.log(request);
     };
 
     changeGroupInformation = (newInformation) => {
@@ -147,8 +145,14 @@ class Project extends Component {
             getProjectGroupRequest(this.props.match.params.projectId).then((response) => {
                 if (!response.data.success) return;
                 const projectGroupData = response.data.data;
-                let isInGroup;
-                isInGroup = _.includes(projectGroupData.groupMembers, this.props.userId);
+                let isInGroup = false;
+                for (let i of projectGroupData.groupMembers) {
+                    if (i.id === this.props.userId) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
+                console.log(projectGroupData.groupMembers);
                 const projectInformation = {
                     isInGroup: isInGroup,
                     isTAorInstructor: auth.data.data, //look
