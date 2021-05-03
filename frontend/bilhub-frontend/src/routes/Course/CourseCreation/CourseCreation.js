@@ -99,7 +99,6 @@ export class CourseCreation extends Component {
             this.state.shortDescription,
             this.state.sectionNumber,
             this.state.isSectionless,
-            date,
             this.state.minSize,
             this.state.maxSize
         ).then((response) => {

@@ -11,10 +11,11 @@ export const deleteProjectRequest = async (projectGroupId) => {
         });
 };
 
-export const deleteSrsGradeRequest = async () => {
+export const deleteSrsGradeRequest = async (projectGroupId) => {
     const url = 'DelteSrsGrade';
+    const body = { projectGroupId: projectGroupId };
     return authAxios
-        .delete(BASE_PROJECT_GROUP_URL + url)
+        .delete(BASE_PROJECT_GROUP_URL + url, body)
         .then((response) => response)
         .catch((error) => {
             throw error;

@@ -30,13 +30,15 @@ import {
     getGroupTACommentsRequest,
     getProjectGroupRequest,
 } from '../../API/projectGroupAPI/projectGroupGET';
-import { putProjectGroupInformationRequest } from '../../API/projectGroupAPI/projectGroupPUT';
+import { putProjectGroupInformationRequest, putUpdateSRSGradeRequest } from '../../API/projectGroupAPI/projectGroupPUT';
 import { getAssignmentFileRequest } from '../../API/assignmentAPI/assignmentGET';
 import { getProjectGradeByIdRequest } from '../../API/projectGradeAPI/projectGradeGET';
 import { inputDateToDateObject } from '../../utils';
 import { postProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePOST';
 import { deleteProjectGradeRequest } from '../../API/projectGradeAPI/projectGradeDELETE';
 import { postPeerGradeRequest } from '../../API/peerGradeAPI/peerGradePOST';
+import { deleteSrsGradeRequest } from '../../API/projectGroupAPI/projectGroupDELETE';
+import { putProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePUT';
 
 class Project extends Component {
     constructor(props) {
@@ -76,6 +78,7 @@ class Project extends Component {
             currentReviewGrade: -1,
             currentPeer: 0,
             maxReviewGrade: 10, //will be taken from project groups peer reviewing assignment
+            peerReviews: [],
         };
     }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -93,9 +96,9 @@ class Project extends Component {
     };
 
     onAssignmentFileClicked = (assignmentId) => {
-        /*getAssignmentFileRequest(assignmentId).then((response) => {
+        getAssignmentFileRequest(assignmentId).then((response) => {
             if (!response.data.success) return;
-        });*/
+        });
     };
 
     onModalClosed = (modalType, isSuccess) => {
@@ -107,23 +110,11 @@ class Project extends Component {
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
                 //!!!!!!!!!!!!
-                postProjectGradeRequest(
-                    this.props.match.params.projectId,
-                    this.state.currentMaxFeedbackGrade,
-                    this.state.currentFeedbackGrade,
-                    ''
-                );
+                putUpdateSRSGradeRequest(this.props.match.params.projectId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isEditFeedbackOpen') {
-                // putProjectGradeRequest(projectGradeId, this.state.currentMaxFeedbackGrade, this.state.currentFeedbackGrade)
-                /*request = {
-                    grade: this.state.currentFeedbackGrade,
-                    maxGrade: this.state.currentMaxFeedbackGrade,
-                    userId: this.props.userId,
-                };*/
+                putUpdateSRSGradeRequest(this.props.match.params.projectId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                /*request = {
-                    userId: this.props.userId,
-                };*/
+                deleteSrsGradeRequest(this.props.match.params.projectId);
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
@@ -135,14 +126,12 @@ class Project extends Component {
                     this.state.currentFeedbackFile
                 );
             } else if (modalType === 'isEditFeedbackOpen') {
-                //putProjectGradeRequest(this.state.currentFeedbackId, 10, this.state.currentFeedbackGrade);
-                /*request = {
-                    newGrade: this.state.currentFeedbackGrade,
-                    newText: this.state.currentFeedbackText,
-                    newFile: this.state.currentFeedbackFile,
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };*/
+                putProjectGradeRequest(
+                    this.state.currentFeedbackId,
+                    this.state.currentFeedbackMaxGrade,
+                    this.state.currentFeedbackGrade,
+                    this.state.currentFeedbackText
+                );
             } else if (modalType === 'isDeleteFeedbackOpen') {
                 deleteProjectGradeRequest(this.state.currentFeedbackId);
             }
@@ -159,9 +148,9 @@ class Project extends Component {
                 isInGroup: isInGroup,
                 isTAorInstructor: false, //look
                 canUserComment: true,
-                name: projectGroupData.affiliatedCourse.name,
+                name: projectGroupData.projectInformation,
                 isNameChangeable: true,
-                courseName: projectGroupData.projectInformation,
+                courseName: projectGroupData.affiliatedCourse.name,
                 isProjectActive: true, //look
                 courseId: projectGroupData.affiliatedCourseId,
                 members: projectGroupData.groupMembers,
@@ -173,6 +162,8 @@ class Project extends Component {
                 projectGroup: projectInformation,
             });
         });
+
+        //isTAorInstructor
 
         getGroupAssignmentsRequest(this.props.match.params.projectId).then((response) => {
             if (!response.data.success) return;
@@ -809,7 +800,7 @@ class Project extends Component {
         console.log(this.state.currentReviewGrade);
         if (this.state.currentReviewGrade === -1 || this.state.currentPeer === 0 /* check existance */) {
             window.alert('You need to enter both grade and reviewee');
-        } else {
+        } /*if()*/ else {
             postPeerGradeRequest(
                 this.props.match.params.projectId,
                 this.state.currentPeer,
