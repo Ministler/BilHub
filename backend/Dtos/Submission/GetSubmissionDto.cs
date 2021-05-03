@@ -11,13 +11,14 @@ namespace backend.Dtos.Submission
         public GetAssignmentDto AffiliatedAssignment { get; set; }
         public bool IsGraded { get; set; }
         public decimal SrsGrade { get; set; }
+        public GetProjectGroupDto AffiliatedGroup { get; set; }
         // public int AffiliatedAssignmentId { get; set; }
         // public GetProjectGroupDto AffiliatedGroup { get; set; }
-        public int AffiliatedGroupId { get; set; }
         public DateTime UpdatedAt { get; set; }
         public string FileEndpoint { get; set; }
         public bool HasSubmission { get; set; }
         public int CourseId { get; set; }
         public int SectionId { get; set; }
+        public int SectionNumber { get; set; }
     }
 }

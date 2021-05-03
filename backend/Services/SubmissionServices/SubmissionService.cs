@@ -372,19 +372,14 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<GetSubmissionDto>> GetSubmission(int submissionId)
         {
             ServiceResponse<GetSubmissionDto> response = new ServiceResponse<GetSubmissionDto>();
-            Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).Include(s => s.AffiliatedGroup)
-                .ThenInclude(pg => pg.GroupMembers).FirstOrDefaultAsync(s => s.Id == submissionId);
+            Submission submission = await _context.Submissions
+                .Include(s => s.AffiliatedAssignment).Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers).ThenInclude(pgu => pgu.User)
+                .Include(s => s.AffiliatedAssignment).Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.AffiliatedSection)
+                .FirstOrDefaultAsync(s => s.Id == submissionId);
             if (submission == null)
             {
                 response.Data = null;
                 response.Message = "There is no such submission";
-                response.Success = false;
-                return response;
-            }
-            if (!submission.HasFile)
-            {
-                response.Data = null;
-                response.Message = "This group has not yet submitted their file for this assigment";
                 response.Success = false;
                 return response;
             }
@@ -400,6 +395,7 @@ namespace backend.Services.SubmissionServices
             }
             response.Data = _mapper.Map<GetSubmissionDto>(submission);
             response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
+            response.Data.SectionNumber = submission.AffiliatedGroup.AffiliatedSection.SectionNo;
             return response;
         }
 

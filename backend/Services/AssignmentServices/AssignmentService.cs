@@ -260,7 +260,9 @@ namespace backend.Services.AssignmentServices
         public async Task<ServiceResponse<GetAssignmentDto>> GetAssignment(int assignmentId)
         {
             ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
-            Assignment assignment = await _context.Assignments.FirstOrDefaultAsync(a => a.Id == assignmentId);
+            Assignment assignment = await _context.Assignments
+                .Include(a => a.Submissions).Include(a => a.AfilliatedCourse)
+                .FirstOrDefaultAsync(a => a.Id == assignmentId);
             if (assignment == null)
             {
                 response.Data = null;
@@ -281,6 +283,8 @@ namespace backend.Services.AssignmentServices
                 return response;
             }
             response.Data = _mapper.Map<GetAssignmentDto>(assignment);
+            response.Data.SubmissionIds = assignment.Submissions.Select(s => s.Id).ToList();
+            response.Data.publisher = assignment.AfilliatedCourse.Name;
             return response;
         }
         public async Task<ServiceResponse<GetAssignmentDto>> UpdateAssignment(UpdateAssignmentDto dto)
