@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, GridColumn, Divider } from 'semantic-ui-react';
+import { Grid, GridColumn, Divider, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import './Home.css';
@@ -11,6 +11,10 @@ import {
     convertNotGradedAssignmentsToBriefList,
     convertAssignmentsToAssignmentList,
 } from '../../components';
+
+import {
+    convertDate, instructerTypeSplit
+} from '../../utils';
 
 class Home extends Component {
     constructor(props) {
@@ -56,6 +60,13 @@ class Home extends Component {
 
     onFeedFileClicked = () => {
         console.log('FEED FILE CLICKED');
+    };
+
+    test = () => {
+        //let date = convertDate(dumyDate);
+        //console.log("Input:", dumyDate, "output", date);
+        //let {taList, instructerList} = instructerTypeSplit(dumyInstructerList);
+        //console.log(taList[0].name, "\n", taList[1].name, "\n", instructerList[0].name, "\n", instructerList[1].name);
     };
 
     render() {
@@ -117,6 +128,7 @@ class Home extends Component {
                                     <div>
                                         {upcomingAssignmentsComponent}
                                         {notGradedAssignmentsComponent}
+                                        <Button onClick={this.test} fluid>TEST</Button>
                                     </div>
                                 </GridColumn>
                             </Grid.Row>
@@ -136,6 +148,31 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(Home);
+
+const dumyDate = "2021-05-07T00:00:00";
+
+const dumyInstructerList =  [
+    {
+        email: 'Yusuf@bilkent',
+        name: 'Yusuf Uyar',
+        userType: 'Student',
+    },
+    {
+        email: 'eray@tuzun',
+        name: 'Eray Tuzun',
+        userType: 'Instructor',
+    },  
+    {
+        email: 'Bilal@bilkent',
+        name: 'Bilal Uyar',
+        userType: 'Student',
+    },
+    {
+        email: 'Kemal@bilkent',
+        name: 'Kemal Uyar',
+        userType: 'Instructor',
+    },
+];
 
 const dummyMyProjectsList = [
     {

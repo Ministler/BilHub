@@ -67,10 +67,6 @@ export const getFeedbacksAsAccordion = (
 export const getNewFeedbacksAsAccordion = (feedbacks, onSubmissionClicked, onProjectClicked) => {
     const accordionElements = [
         {
-            title: 'SRS Feedback',
-            content: convertNewFeedbacksToFeedbackList(feedbacks?.SRSResults, onSubmissionClicked, onProjectClicked),
-        },
-        {
             title: 'Instructor Feedbacks',
             content: convertNewFeedbacksToFeedbackList(
                 feedbacks?.InstructorComments,

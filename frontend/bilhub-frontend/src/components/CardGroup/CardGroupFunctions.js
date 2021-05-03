@@ -88,7 +88,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                 );
             }
             return (
-                <FeedbackCardElement
+                <FeedbackCardElement 
                     titleElement={titleElement}
                     caption={feedback.feedback?.caption}
                     grade={feedback.feedback?.grade}

@@ -34,3 +34,12 @@ export function dateObjectToString(dateObject) {
         (dateObject.getMinutes() / 10 < 1 ? '0' + dateObject.getMinutes() : dateObject.getMinutes())
     );
 }
+
+export function convertDate(dateObject) {
+    let year = dateObject.slice(0, 4);
+    let month = dateObject.slice(5, 7);
+    let day = dateObject.slice(8, 10);
+    let clock = dateObject.slice(11, 16);
+    let date = day + "/" + month + "/" + year + " " + clock;
+    return date;
+}

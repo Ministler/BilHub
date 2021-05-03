@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea, Segment, Button, Grid } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Segment, Button, Grid, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
 import './Project.css';
-import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal } from './ProjectComponents';
+import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal, NewCommentModal2 } from './ProjectComponents';
 import {
     Tab,
     convertAssignmentsToAssignmentList,
@@ -43,9 +43,14 @@ class Project extends Component {
             currentFeedbackGrade: 10,
             currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
+            
+            // testing
+            currentFeedbackText2: '',
+            currentFeedbackGrade2: 10,
+            currentMaxFeedbackGrade2: 10,
 
             //Peer Review
-            isPeerReviewOpen: false,
+            isPeerReviewOpen: true,
             currentReviewComment: '',
             currentReviewGrade: -1,
             currentPeer: 0,
@@ -195,6 +200,30 @@ class Project extends Component {
         this.setState({
             currentMaxFeedbackGrade: e.target.value,
         });
+    };
+
+    onCurrentFeedbackTextChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackText2: e.target.value,
+        });
+    };
+    onCurrentFeedbackGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackGrade2: e.target.value,
+        });
+    };
+    onCurrentFeedbackMaxGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade2: e.target.value,
+        });
+    };
+    onGiveFeedback = (e) => {
+        console.log(this.state.currentFeedbackText2);
+        console.log(this.state.currentFeedbackGrade2);
+        console.log(this.state.currentMaxFeedbackGrade2);
     };
 
     onModalOpened = (modalType, isFeedbackSRS) => {
@@ -438,6 +467,20 @@ class Project extends Component {
                     <Divider/>
                 </div> */}
                 <div class="sixteen wide column">
+                    <NewCommentModal2  
+                        text={this.state.currentFeedbackText2}
+                        grade={this.state.currentFeedbackGrade2}
+                        maxGrade={this.state.currentMaxFeedbackGrade2}
+                        onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
+                        onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
+                        onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                        onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                        />
+                </div>   
+                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                    <Divider/>
+                </div> 
+                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
                     <FeedbacksPane
                         feedbacksAccordion={getFeedbacksAsAccordion(
                             this.state.feedbacks,
@@ -448,7 +491,7 @@ class Project extends Component {
                             this.onFeedbackFileClicked,
                             this.onModalOpened
                         )}
-                        newCommentButton={newCommentButton}
+                        //newCommentButton={newCommentButton}
                     />
                 </div>
             </Grid>
@@ -499,7 +542,7 @@ class Project extends Component {
     getPeerReviewPane = () => {
         return {
             title: 'Peer Review',
-            content: this.state.isPeerReviewOpen ? (
+            content: 
                 /*this.props.userType === 'student'*/ true ? (
                     <StudentPeerReviewPane
                         curUser={{ name: 'Halil Özgür Demir', userId: 2 }} //dummy
@@ -522,14 +565,14 @@ class Project extends Component {
                         currentPeer={this.state.currentPeer}
                     />
                 )
-            ) : (
-                <div>Peer reviewing is currently closed.</div>
-            ),
         };
     };
 
     getPaneElements = () => {
-        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane(), this.getPeerReviewPane()];
+        if( this.state.isPeerReviewOpen )
+            return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane(), this.getPeerReviewPane()];
+        else
+            return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
     };
 
     // Modals

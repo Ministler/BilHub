@@ -31,7 +31,7 @@ export const AssignmentCardElement = (props) => {
 
 export const FeedbackCardElement = (props) => {
     return (
-        <Card className="FeedbackCardElement">
+        <Card className="FeedbackCardElement" >
             {props?.isSrs !== true && (
                 <Card.Content>
                     <Card.Header>
