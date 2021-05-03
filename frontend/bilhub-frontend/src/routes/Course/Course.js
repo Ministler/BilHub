@@ -226,13 +226,47 @@ class Course extends Component {
                             }
                             groups.push(section);
                         }
-                        console.log(groups);
                         this.setState({
                             groups: groups,
                         });
                     })
                 );
             } else {
+                const sectionRequests = [];
+                for (let i = 0; i < courseData?.sections.length; i++) {
+                    sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
+                }
+
+                axios.all(sectionRequests).then(
+                    axios.spread((...responses) => {
+                        console.log(responses);
+                        const groups = [];
+                        for (let i = 0; i < responses.length; i++) {
+                            const data = responses[i].data.data;
+                            const section = [];
+                            for (let group of data.projectGroups) {
+                                const members = [];
+                                for (let member of group.groupMembers) {
+                                    console.log(member);
+                                    members.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+                                const group2 = {
+                                    groupName: group.name,
+                                    groupId: group.id,
+                                    members: members,
+                                };
+                                section.push(group2);
+                            }
+                            groups.push(section);
+                        }
+                        this.setState({
+                            groups: groups,
+                        });
+                    })
+                );
             }
         });
 
@@ -491,18 +525,19 @@ class Course extends Component {
                     <Grid columns="equal">
                         <Grid.Row>
                             <Grid.Column>{this.getDropdownForSections()}</Grid.Column>
-                            {this.state.courseInformation?.isTAorInstructorOfCourse && (
-                                <Grid.Column>
-                                    <Button
-                                        content="Lock Groups"
-                                        labelPosition="right"
-                                        icon="lock"
-                                        primary
-                                        floated="right"
-                                        onClick={() => this.lockGroup()}
-                                    />
-                                </Grid.Column>
-                            )}
+                            {this.state.courseInformation?.isTAorInstructorOfCourse &&
+                                !this.state.courseInformation?.isLocked && (
+                                    <Grid.Column>
+                                        <Button
+                                            content="Lock Groups"
+                                            labelPosition="right"
+                                            icon="lock"
+                                            primary
+                                            floated="right"
+                                            onClick={() => this.lockGroup()}
+                                        />
+                                    </Grid.Column>
+                                )}
                         </Grid.Row>
                     </Grid>
                     {this.state.groups &&
