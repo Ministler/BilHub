@@ -1131,12 +1131,14 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
+            /*
             if (!(await isUserInstructorOfGroup(projectGroupId)) && !(dbProjectGroup.GroupMembers.Any(c => c.UserId == GetUserId())))
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User is not an instructor of this group and not a part of this project group.";
                 return serviceResponse;
             }
+            */
 
             GetSrsGradeDto data = new GetSrsGradeDto
             {
