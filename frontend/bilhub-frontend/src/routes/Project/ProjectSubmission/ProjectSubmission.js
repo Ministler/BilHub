@@ -26,8 +26,10 @@ import {
     postSubmissionRequest,
     putSubmissionRequest,
     deleteSubmissionRequest,
+    getAssignmentFileRequest,
 } from '../../../API';
 import {
+    getSubmissionFileRequest,
     getSubmissionInstructorCommentsRequest,
     getSubmissionSrsGradeRequest,
     getSubmissionStudentCommentsRequest,
@@ -90,7 +92,7 @@ class ProjectAssignment extends Component {
     };
     onGiveFeedback = (e) => {
         postCommentRequest(
-            '',
+            null,
             this.state.submission.submissionId,
             this.state.currentFeedbackText2,
             this.state.currentMaxFeedbackGrade2,
@@ -99,11 +101,15 @@ class ProjectAssignment extends Component {
     };
 
     onAssignmentFileClicked = () => {
-        console.log('file');
+        getAssignmentFileRequest(this.props.match.params.submissionId).then((response) => {
+            if (!response.data.success) return;
+        });
     };
 
     onSubmissionFileClicked = () => {
-        console.log('file');
+        getSubmissionFileRequest(this.state.submission.submissionId).then((response) => {
+            if (!response.data.success) return;
+        });
     };
 
     onSubmissionModalClosed = (modalType, isSuccess) => {
