@@ -178,6 +178,7 @@ namespace backend.Services.ProjectGroupServices
             }
 
             dbProjectGroup.ProjectInformation = updateProjectGroupDto.ProjectInformation;
+            dbProjectGroup.Name = updateProjectGroupDto.Name;
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
 
