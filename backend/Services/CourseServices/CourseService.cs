@@ -557,7 +557,7 @@ namespace backend.Services.CourseServices
                 return serviceResponse;
             }
 
-            dbCourse.IsActive = true;
+            dbCourse.IsActive = false;
 
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
