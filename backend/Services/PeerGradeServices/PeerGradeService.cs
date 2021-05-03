@@ -505,8 +505,8 @@ namespace backend.Services.PeerGradeServices
                 response.Success = false;
                 return response;
             }
-
-            if( user == null || ( !doesUserInstruct( user, projectGroup.AffiliatedCourseId ) ) )
+            
+            if( user == null || ( !doesUserInstruct( user, projectGroup.AffiliatedCourseId ) && user.Id != dto.ReviewerId  ) )
             {
                 response.Data = null;
                 response.Message = "You are not authorized to see these peer grades";
