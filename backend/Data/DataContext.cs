@@ -715,70 +715,7 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "NewLanguage()",
                     ConfirmedGroupMembers = ""
-                }/*, new ProjectGroup
-                {
-                    Id = 14,
-                    AffiliatedSectionId = 6,
-                    AffiliatedCourseId = 4,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "Duz bireyler",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
-                {
-                    Id = 15,
-                    AffiliatedSectionId = 6,
-                    AffiliatedCourseId = 4,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "Hazin gelmiyor ama gelebilirdi",
-                    ConfirmedGroupMembers = ""
-                }/*, new ProjectGroup
-                {
-                    Id = 16,
-                    AffiliatedSectionId = 1,
-                    AffiliatedCourseId = 1,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "bulamadim isim",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
-                {
-                    Id = 17,
-                    AffiliatedSectionId = 1,
-                    AffiliatedCourseId = 1,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "grup ariyorum",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
-                {
-                    Id = 18,
-                    AffiliatedSectionId = 1,
-                    AffiliatedCourseId = 1,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "frontend guzel renk bul",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
-                {
-                    Id = 19,
-                    AffiliatedSectionId = 1,
-                    AffiliatedCourseId = 1,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "yusuf klavye kullanmayi ogren",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
-                {
-                    Id = 20,
-                    AffiliatedSectionId = 1,
-                    AffiliatedCourseId = 1,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "nasrettin hocanin askerleriyiz",
-                    ConfirmedGroupMembers = ""
-                }*/
+                }
             );
             modelBuilder.Entity<ProjectGroupUser>().HasData(
                 new ProjectGroupUser
@@ -1394,6 +1331,50 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 10,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 13,
+                    GradingUserId = 17,
+                    Description = "",
+                    GradedProjectGroupID = 5,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 14,
+                    GradingUserId = 16,
+                    Description = "good job",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 15,
+                    GradingUserId = 17,
+                    Description = "amazing",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 16,
+                    GradingUserId = 16,
+                    Description = "",
+                    GradedProjectGroupID = 5,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 9,
                     LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
                 }
             );

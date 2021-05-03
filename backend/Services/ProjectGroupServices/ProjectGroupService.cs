@@ -899,6 +899,7 @@ namespace backend.Services.ProjectGroupServices
 
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser).Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                .Where( c => c.GradedProjectGroupID == projectGroupId ) // just added
                 .Select(c => new ProjectGradeInfoDto
                 {
                     Id = c.Id,
@@ -940,7 +941,8 @@ namespace backend.Services.ProjectGroupServices
             intrs = course.Instructors.Select(cu => cu.UserId).ToList();
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser)
-                .Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                //.Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
+                .Where( c => c.GradedProjectGroupID == projectGroupId ) // just added
                 .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
                 .Where(c => intrs.Contains(c.GradingUserId))
                 .Select(c => new ProjectGradeInfoDto
@@ -984,8 +986,8 @@ namespace backend.Services.ProjectGroupServices
             intrs = course.Instructors.Select(cu => cu.UserId).ToList();
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser)
-                .Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
                 .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
+                .Where( c => c.GradedProjectGroupID == projectGroupId ) // just added
                 .Where(c => !intrs.Contains(c.GradingUserId))
                 .Select(c => new ProjectGradeInfoDto
                 {

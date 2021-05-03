@@ -15,5 +15,6 @@ namespace backend.Services.ProjectGradeServices
         Task<ServiceResponse<ProjectGradeInfoDto>> GetProjectGradeByUserAndGroup(GetProjectGradeDto getProjectGradeDto);
         Task<ServiceResponse<string>> DownloadProjectGradeByGroupAndUser(GetProjectGradeDto dto);
         Task<ServiceResponse<string>> DeleteWithForce(int projectGradeId);
+        Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetProjectGradesGivenTo(int projectGroupId);
     }
 }

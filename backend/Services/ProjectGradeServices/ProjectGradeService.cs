@@ -421,32 +421,6 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            if (grader == null)
-            {
-                response.Data = null;
-                response.Message = "There is no grader with this id";
-                response.Success = false;
-                return response;
-            }
-
-            /*
-            if( !doesUserInstruct( grader, projectGroup.AffiliatedCourseId ) )
-            {
-                response.Data = null;
-                response.Message = "Grader does not instruct this course";
-                response.Success = false;
-                return response;
-            }*/
-            /*
-            if( user == null || ( !doesUserInstruct( user, projectGroup.AffiliatedCourseId ) && user.Id != getProjectGradeDto.GradingUserId  && !IsUserInGroup( projectGroup, GetUserId()) ) ) 
-            {
-                response.Data = null;
-                response.Message = "You are not authorized to see this project grade";
-                response.Success = false;
-                return response;
-            }*/
-
-
             ProjectGrade projectGrade = await _context.ProjectGrades.Include(pg => pg.GradingUser)
                 .FirstOrDefaultAsync(pg => pg.GradingUserId == getProjectGradeDto.GradingUserId && pg.GradedProjectGroupID == getProjectGradeDto.GradedProjectGroupID);
 
@@ -566,6 +540,46 @@ namespace backend.Services.ProjectGradeServices
             response.Message = "Success";
             response.Success = true;
 
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetProjectGradesGivenTo(int projectGroupId)
+        {
+            ServiceResponse<List<ProjectGradeInfoDto>> response = new ServiceResponse<List<ProjectGradeInfoDto>>();
+            ProjectGroup projectGroup = await _context.ProjectGroups.Include(s => s.AffiliatedCourse).ThenInclude(pg => pg.Instructors)
+                .Include(s => s.ProjectGrades).Include(s => s.AffiliatedSection).FirstOrDefaultAsync(s => s.Id == projectGroupId);
+
+            if (projectGroup == null)
+            {
+                response.Data = null;
+                response.Message = "There is no such project Group";
+                response.Success = false;
+                return response;
+            }
+
+            List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
+                .Include(c => c.GradingUser)
+                .Where( c => c.GradedProjectGroupID == projectGroupId ) 
+                .Select(c => new ProjectGradeInfoDto
+                {
+                    Id = c.Id,
+                    MaxGrade = c.MaxGrade,
+                    Grade = c.Grade,
+                    Comment = c.Description,
+                    LastEdited = c.LastEdited,
+                    userInProjectGradeDto = new UserInProjectGradeDto
+                    {
+                        Id = c.GradingUser.Id,
+                        email = c.GradingUser.Email,
+                        name = c.GradingUser.Name
+                    },
+                    GradingUserId = c.GradingUserId,
+
+                    FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
+                    GradedProjectGroupID = c.GradedProjectGroup.Id
+                }).ToList();
+
+            response.Data = projectGrades;
             return response;
         }
     }
