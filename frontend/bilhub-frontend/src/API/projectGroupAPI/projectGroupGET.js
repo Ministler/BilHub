@@ -87,3 +87,14 @@ export const getGroupSrsGradeRequest = async (ProjectGroupId) => {
             throw error;
         });
 };
+
+export const getIsUserInstructorOfGroupRequest = async (ProjectGroupId, userId) => {
+    const url = 'IsUserInstructorOfGroup?projectGroupId=' + ProjectGroupId + '&userId=' + userId;
+
+    return authAxios
+        .get(BASE_PROJECT_GROUP_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
