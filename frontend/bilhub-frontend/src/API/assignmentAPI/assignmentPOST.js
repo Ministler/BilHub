@@ -35,8 +35,27 @@ export const postAssignmentRequest = async (
         IsItGraded: IsItGraded,
     };
 
+    let fd = new FormData();
+    fd.append('courseId', courseId);
+    fd.append('title', title);
+    fd.append('AssignmenDescription', AssignmenDescription);
+    fd.append('DueDate', DueDate);
+    fd.append('VisibiltyOfSubmission', VisibiltyOfSubmission);
+    fd.append('CanBeGradedByStudents', CanBeGradedByStudents);
+    fd.append('IsItGraded', IsItGraded);
+    var isFormDataEmpty = true;
+    for (var p of fd) {
+        isFormDataEmpty = false;
+        break;
+    }
+    console.log(isFormDataEmpty);
+
     return authAxios
-        .post(BASE_ASSIGNMENT_URL, body)
+        .post(BASE_ASSIGNMENT_URL, fd, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
         .then((response) => response)
         .catch((error) => {
             throw error;

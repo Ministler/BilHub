@@ -10,6 +10,7 @@ import {
     getAssignmentFileRequest,
     putCourseRequest,
     getCourseStatisticRequest,
+    deleteAssignmentRequest,
 } from '../../API';
 import './Course.css';
 import {
@@ -237,14 +238,16 @@ class Course extends Component {
         });
     };
 
-    onEditAssignmentModalOpened = () => {
+    onEditAssignmentModalOpened = (index) => {
         this.setState({
+            index: index,
             isEditAssignmentOpen: true,
         });
     };
 
-    onDeleteAssignmentModalOpened = () => {
+    onDeleteAssignmentModalOpened = (index) => {
         this.setState({
+            index: index,
             isDeleteAssignmentOpen: true,
         });
     };
@@ -520,7 +523,9 @@ class Course extends Component {
                         this.onAssignmentClicked,
                         null,
                         this.onAssignmentFileClicked,
-                        this.getAssignmentControlIcons()
+                        this.onEditAssignmentModalOpened,
+                        this.onDeleteAssignmentModalOpened,
+                        this.state.courseInformation?.isTAorInstructorOfCourse
                     )}
                     {this.getNewAssignmentButton()}
                 </>
@@ -531,32 +536,6 @@ class Course extends Component {
                 </>
             ),
         };
-    };
-
-    getAssignmentControlIcons = () => {
-        let controlIcons = null;
-        if (this.state.courseInformation?.isTAorInstructorOfCourse) {
-            controlIcons = (
-                <>
-                    <Icon
-                        name="close"
-                        color="red"
-                        size="small"
-                        style={{ float: 'right' }}
-                        onClick={this.onDeleteAssignmentModalOpened}
-                    />
-                    <Icon
-                        name="edit"
-                        color="blue"
-                        size="small"
-                        style={{ float: 'right' }}
-                        onClick={this.onEditAssignmentModalOpened}
-                    />
-                </>
-            );
-        }
-
-        return controlIcons;
     };
 
     handleSectionChange = (data) => {
@@ -645,25 +624,32 @@ class Course extends Component {
         );
     };
 
-    deleteAssignment = (assignment) => {};
+    deleteAssignment = (assignmentId) => {
+        deleteAssignmentRequest(assignmentId);
+    };
 
     getModals = () => {
         return (
             <>
                 <NewAssignmentModal
+                    courseId={this.props.match.params.courseId}
                     onClosed={this.onNewAssignmentModalClosed}
                     isOpen={this.state.isNewAssignmentOpen}
                 />
-                {this.state.assignments?.length > 0 ? (
+                {this.state.assignments?.length > this.state.index ? (
                     <EditAssignmentModal
-                        curAssignment={this.state.assignments[0]}
+                        curAssignment={this.state.assignments[this.state.index]}
                         onClosed={this.onEditAssignmentModalClosed}
                         isOpen={this.state.isEditAssignmentOpen}
                     />
                 ) : null}
-                {this.state.assignments?.length > 0 ? (
+                {this.state.assignments?.length > this.state.index ? (
                     <DeleteAssignmentModal
-                        curAssignment={this.state.assignments?.length > 0 ? this.state.assignments[0] : null}
+                        curAssignment={
+                            this.state.assignments?.length > this.state.index
+                                ? this.state.assignments[this.state.index]
+                                : null
+                        }
                         onClosed={this.onDeleteAssignmentModalClosed}
                         isOpen={this.state.isDeleteAssignmentOpen}
                         deleteAssignment={this.deleteAssignment}
