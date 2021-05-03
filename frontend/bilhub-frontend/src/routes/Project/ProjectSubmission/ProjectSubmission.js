@@ -194,13 +194,7 @@ class ProjectAssignment extends Component {
                 if (!response.data.success) return;
                 const curSubmission = response.data.data;
                 console.log(curSubmission);
-                let isInGroup = false;
-                for (let i of curSubmission.affiliatedGroup.groupMembers) {
-                    if (i.id === this.props.userId) {
-                        isInGroup = true;
-                        break;
-                    }
-                }
+
                 let status;
                 if (curSubmission.isGraded) {
                     status = 2;

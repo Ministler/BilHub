@@ -121,9 +121,16 @@ class Notifications extends Component {
                 let i = 0;
                 for (let response of responses) {
                     const data = response.data.data;
-
                     for (let req of data) {
                         console.log(req);
+                        const myGroup;
+                        for (let member of req.requestedGroup.groupMembers) {
+                            myGroup.push({
+                                userId: member.id,
+                                name: member.name,
+                            });
+                        }
+
                         let request = {};
                         if (req.resolved) {
                             if (i === 0) {
@@ -131,8 +138,12 @@ class Notifications extends Component {
                                     type: 'Join',
                                     requestId: req.id,
                                     status: 'Dissapproved',
-                                    // yourGroup,
-                                    // user,
+                                    yourGroup: myGroup,
+                                    otherGroup: [
+                                        {
+                                            userId: req.requestingStudentId,
+                                        },
+                                    ],
                                     // course:,
                                     approvalDate: req.createdAt,
                                     message: req.description,
