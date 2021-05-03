@@ -682,6 +682,7 @@ namespace backend.Services.CourseServices
 
             bool flag = false;
             foreach ( var i in dbCourse.Sections ) {
+                await _context.SaveChangesAsync();
                 var tmp = await _sectionService.LockGroupFormation( i.Id );
                 if ( tmp.Success == false )
                     flag = true;
