@@ -27,6 +27,7 @@ import {
     putSubmissionRequest,
     deleteSubmissionRequest,
     getAssignmentFileRequest,
+    deleteSubmissionSrsGradeRequest,
 } from '../../../API';
 import {
     getSubmissionFileRequest,
@@ -36,6 +37,8 @@ import {
     getSubmissionTACommentsRequest,
 } from '../../../API/submissionAPI/submissionGET';
 import axios from 'axios';
+import { deleteCommentRequest, putCommentRequest } from '../../../API/commentAPI';
+import { getIsUserInstructorOfGroupRequest } from '../../../API/projectGroupAPI/projectGroupGET';
 
 class ProjectAssignment extends Component {
     constructor(props) {
@@ -161,33 +164,27 @@ class ProjectAssignment extends Component {
                     userId: this.props.userId,
                 };
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                request = {
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                deleteSubmissionSrsGradeRequest(this.state.submission.submissionId);
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
-                request = {
-                    newGrade: this.state.currentFeedbackGrade,
-                    newText: this.state.currentFeedbackText,
-                    newFile: this.state.currentFeedbackFile,
-                    userId: this.props.userId,
-                    submissionId: this.props.match.params.submissionId,
-                };
+                postCommentRequest(
+                    this.state.currentFeedbackFile,
+                    this.submission.submissionId,
+                    this.state.currentFeedbackText,
+                    10,
+                    this.state.currentFeedbackGrade
+                );
             } else if (modalType === 'isEditFeedbackOpen') {
-                request = {
-                    newGrade: this.state.currentFeedbackGrade,
-                    newText: this.state.currentFeedbackText,
-                    newFile: this.state.currentFeedbackFile,
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                putCommentRequest(
+                    this.state.currentFeedbackFile,
+                    this.state.currentFeedbackId,
+                    this.state.currentFeedbackText,
+                    10,
+                    this.state.currentFeedbackGrade
+                );
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                request = {
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                deleteCommentRequest(this.state.currentFeedbackId);
             }
         }
 
@@ -195,112 +192,115 @@ class ProjectAssignment extends Component {
     };
 
     componentDidMount() {
-        getSubmissionRequest(this.props.match.params.submissionId).then((response) => {
-            if (!response.data.success) return;
-            const curSubmission = response.data.data;
-            console.log(curSubmission);
-            let status;
-            if (curSubmission.isGraded) {
-                status = 2;
-            } else if (curSubmission.hasSubmission) {
-                status = 1;
-            } else {
-                status = 0;
-            }
-            const assignment = {
-                title: curSubmission.affiliatedAssignment.title,
-                status: status,
-                caption: curSubmission.affiliatedAssignment.assignmentDescription,
-                publisher: curSubmission.affiliatedAssignment.publisher,
-                publishmentDate: inputDateToDateObject(curSubmission.affiliatedAssignment.createdAt),
-                dueDate: inputDateToDateObject(curSubmission.affiliatedAssignment.dueDate),
-                file: curSubmission.affiliatedAssignment.hasFile ? curSubmission.affiliatedAssignment.fileName : '',
-                submissionInfo: '',
-            };
-            const submission = {
-                caption: curSubmission.description,
-                file: curSubmission.fileName,
-                date: inputDateToDateObject(curSubmission.updatedAt),
-                submissionId: curSubmission.id,
-            };
-            const page = {
-                isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
-                isInGroup: curSubmission.affiliatedGroup.id === this.props.match.params.projectId,
-                isTAorInstructor: false, //look
-                canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
-                hasSubmission: curSubmission.hasSubmission,
-                isLate: submission.date > assignment.dueDate,
-                isEdittable: true, //ask
-            };
-            this.setState({ assignment: assignment, submissionPage: page, submission: submission });
-            console.log(this.state.submission.submissionId);
-            feedbackRequests.push(getSubmissionInstructorCommentsRequest(this.state.submission.submissionId));
-            feedbackRequests.push(getSubmissionTACommentsRequest(this.state.submission.submissionId));
-            feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission.submissionId));
-            //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
-            const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
-            axios.all(feedbackRequests).then(
-                axios.spread((...responses) => {
-                    let instGrade = 0;
-                    for (let i in responses[0].data.data) {
-                        feedbacks.InstructorComments.push({
-                            name: responses[0].data.data[i].commentedUser.name,
-                            caption: responses[0].data.data[i].commentText,
-                            grade: responses[0].data.data[i].grade,
-                            date: inputDateToDateObject(responses[0].data.data[i].createdAt),
-                            commentId: responses[0].data.data[i].id,
-                            userId: responses[0].data.data[i].commentedUser.id,
-                        });
-                        persons.push({
-                            name: responses[0].data.data[i].commentedUser.name,
-                            type: responses[0].data.data[i].commentedUser.userType,
-                            grade: responses[0].data.data[i].grade,
-                            userId: responses[0].data.data[i].commentedUser.id,
-                        });
-                        instGrade += responses[0].data.data[i].grade;
-                    }
-                    for (let i in responses[1].data.data) {
-                        feedbacks.TAComments.push({
-                            name: responses[1].data.data[i].commentedUser.name,
-                            caption: responses[1].data.data[i].commentText,
-                            grade: responses[1].data.data[i].grade,
-                            date: inputDateToDateObject(responses[1].data.data[i].createdAt),
-                            commentId: responses[1].data.data[i].id,
-                            userId: responses[1].data.data[i].commentedUser.id,
-                        });
-                        persons.push({
-                            name: responses[1].data.data[i].commentedUser.name,
-                            type: responses[1].data.data[i].commentedUser.userType,
-                            grade: responses[1].data.data[i].grade,
-                            userId: responses[1].data.data[i].commentedUser.id,
-                        });
-                        instGrade += responses[1].data.data[i].grade;
-                    }
-                    let studentAvg = 0;
-                    for (let i in responses[2].data.data) {
-                        feedbacks.StudentComments.push({
-                            name: responses[2].data.data[i].commentedUser.name,
-                            caption: responses[2].data.data[i].commentText,
-                            grade: responses[2].data.data[i].grade,
-                            date: inputDateToDateObject(responses[2].data.data[i].createdAt),
-                            commentId: responses[2].data.data[i].id,
-                            userId: responses[2].data.data[i].commentedUser.id,
-                        });
-                        studentAvg += responses[2].data.data[i].grade;
-                    }
-                    studentAvg = studentAvg === 0 ? 0 : studentAvg / responses[2].data.data.length;
-                    const projectAverage =
-                        (studentAvg + instGrade) / (responses[0].data.data.length + responses[1].data.data.length + 1);
-                    const grades = {
-                        persons: persons,
-                        studentAvg: studentAvg,
-                        projectAverage: projectAverage,
-                        courseAverage: 8, //kendim belirledim
-                        finalGrade: 40, //kendim belirledim
-                    };
-                    this.setState({ feedbacks: feedbacks, grades: grades });
-                })
-            );
+        getIsUserInstructorOfGroupRequest(this.props.match.params.projectId, this.props.userId).then((auth) => {
+            getSubmissionRequest(this.props.match.params.submissionId).then((response) => {
+                if (!response.data.success) return;
+                const curSubmission = response.data.data;
+                console.log(curSubmission);
+                let status;
+                if (curSubmission.isGraded) {
+                    status = 2;
+                } else if (curSubmission.hasSubmission) {
+                    status = 1;
+                } else {
+                    status = 0;
+                }
+                const assignment = {
+                    title: curSubmission.affiliatedAssignment.title,
+                    status: status,
+                    caption: curSubmission.affiliatedAssignment.assignmentDescription,
+                    publisher: curSubmission.affiliatedAssignment.publisher,
+                    publishmentDate: inputDateToDateObject(curSubmission.affiliatedAssignment.createdAt),
+                    dueDate: inputDateToDateObject(curSubmission.affiliatedAssignment.dueDate),
+                    file: curSubmission.affiliatedAssignment.hasFile ? curSubmission.affiliatedAssignment.fileName : '',
+                    submissionInfo: '',
+                };
+                const submission = {
+                    caption: curSubmission.description,
+                    file: curSubmission.fileName,
+                    date: inputDateToDateObject(curSubmission.updatedAt),
+                    submissionId: curSubmission.id,
+                };
+                const page = {
+                    isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
+                    isInGroup: curSubmission.affiliatedGroup.id === this.props.match.params.projectId,
+                    isTAorInstructor: auth.data.data,
+                    canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
+                    hasSubmission: curSubmission.hasSubmission,
+                    isLate: submission.date > assignment.dueDate,
+                    isEdittable: true, //ask
+                };
+                this.setState({ assignment: assignment, submissionPage: page, submission: submission });
+                console.log(this.state.submission.submissionId);
+                feedbackRequests.push(getSubmissionInstructorCommentsRequest(this.state.submission.submissionId));
+                feedbackRequests.push(getSubmissionTACommentsRequest(this.state.submission.submissionId));
+                feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission.submissionId));
+                //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
+                const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
+                axios.all(feedbackRequests).then(
+                    axios.spread((...responses) => {
+                        let instGrade = 0;
+                        for (let i in responses[0].data.data) {
+                            feedbacks.InstructorComments.push({
+                                name: responses[0].data.data[i].commentedUser.name,
+                                caption: responses[0].data.data[i].commentText,
+                                grade: responses[0].data.data[i].grade,
+                                date: inputDateToDateObject(responses[0].data.data[i].createdAt),
+                                commentId: responses[0].data.data[i].id,
+                                userId: responses[0].data.data[i].commentedUser.id,
+                            });
+                            persons.push({
+                                name: responses[0].data.data[i].commentedUser.name,
+                                type: responses[0].data.data[i].commentedUser.userType,
+                                grade: responses[0].data.data[i].grade,
+                                userId: responses[0].data.data[i].commentedUser.id,
+                            });
+                            instGrade += responses[0].data.data[i].grade;
+                        }
+                        for (let i in responses[1].data.data) {
+                            feedbacks.TAComments.push({
+                                name: responses[1].data.data[i].commentedUser.name,
+                                caption: responses[1].data.data[i].commentText,
+                                grade: responses[1].data.data[i].grade,
+                                date: inputDateToDateObject(responses[1].data.data[i].createdAt),
+                                commentId: responses[1].data.data[i].id,
+                                userId: responses[1].data.data[i].commentedUser.id,
+                            });
+                            persons.push({
+                                name: responses[1].data.data[i].commentedUser.name,
+                                type: responses[1].data.data[i].commentedUser.userType,
+                                grade: responses[1].data.data[i].grade,
+                                userId: responses[1].data.data[i].commentedUser.id,
+                            });
+                            instGrade += responses[1].data.data[i].grade;
+                        }
+                        let studentAvg = 0;
+                        for (let i in responses[2].data.data) {
+                            feedbacks.StudentComments.push({
+                                name: responses[2].data.data[i].commentedUser.name,
+                                caption: responses[2].data.data[i].commentText,
+                                grade: responses[2].data.data[i].grade,
+                                date: inputDateToDateObject(responses[2].data.data[i].createdAt),
+                                commentId: responses[2].data.data[i].id,
+                                userId: responses[2].data.data[i].commentedUser.id,
+                            });
+                            studentAvg += responses[2].data.data[i].grade;
+                        }
+                        studentAvg = studentAvg === 0 ? 0 : studentAvg / responses[2].data.data.length;
+                        const projectAverage =
+                            (studentAvg + instGrade) /
+                            (responses[0].data.data.length + responses[1].data.data.length + 1);
+                        const grades = {
+                            persons: persons,
+                            studentAvg: studentAvg,
+                            projectAverage: projectAverage,
+                            courseAverage: 8, //kendim belirledim
+                            finalGrade: 40, //kendim belirledim
+                        };
+                        this.setState({ feedbacks: feedbacks, grades: grades });
+                    })
+                );
+            });
         });
         const feedbackRequests = [];
         const persons = [];
