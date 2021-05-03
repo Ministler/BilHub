@@ -84,7 +84,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = 0,
                     Email = "cagri@durgut",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 },
                 new User
                 {
@@ -97,7 +97,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
                     Email = "eray@tuzun",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 },
                 new User
                 {
@@ -110,11 +110,11 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
                     Email = "baris@ogun",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 4,
-                    Name = "Ozgur Chadoglu",
+                    Name = "Ozgur Demir",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
@@ -122,7 +122,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
                     Email = "ozgur@demir",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 5,
@@ -133,12 +133,12 @@ namespace backend.Data
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "yusuf@kawai",
-                    VerificationCode = "31"
+                    Email = "yusuf@uyar",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 6,
-                    Name = "Aybala karakaya",
+                    Name = "Aybala Karakaya",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
@@ -146,11 +146,11 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
                     Email = "aybala@karakaya",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 7,
-                    Name = "oguzhan ozcelik",
+                    Name = "Oguzhan Ozcelik",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
@@ -158,67 +158,67 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
                     Email = "oguzhan@ozcelik",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 8,
-                    Name = "berke ceran",
+                    Name = "Enise Feyza",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "berke@ceran",
-                    VerificationCode = "31"
+                    Email = "enise@feyza",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 9,
-                    Name = "Funda Tan",
+                    Name = "Zehra Erdem",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "funda@tan",
-                    VerificationCode = "31"
+                    Email = "zehra@erdem",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 10,
-                    Name = "Hami Mert",
+                    Name = "Akin Kutlu",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "hami@mert",
-                    VerificationCode = "31"
+                    Email = "akin@kutlu",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 11,
-                    Name = "Cagri Eren",
+                    Name = "Ahmet Hakan",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "cagri@eren",
-                    VerificationCode = "31"
+                    Email = "ahmet@hakan",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 12,
-                    Name = "Guven Gerger",
+                    Name = "Guven Gergerli",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "guven@gerger",
-                    VerificationCode = "31"
+                    Email = "guven@gergerli",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 13,
@@ -230,19 +230,19 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
                     Email = "onur@korkmaz",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 14,
-                    Name = "Fuat Schwarzengger",
+                    Name = "Fuat Aslan",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "fuat@schwarzenegger",
-                    VerificationCode = "31"
+                    Email = "fuat@aslan",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 15,
@@ -254,7 +254,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
                     Email = "aynur@dayanik",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 16,
@@ -265,32 +265,32 @@ namespace backend.Data
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "erdem@Tuna",
-                    VerificationCode = "31"
+                    Email = "erdem@tuna",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 17,
-                    Name = "Elgun TA",
+                    Name = "Elgun Jabrayilzade",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "elgun@ta",
-                    VerificationCode = "31"
+                    Email = "elgun@jabrayilzade",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 18,
-                    Name = "Irem Reis",
+                    Name = "Serkan Demirci",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "irem@reis",
-                    VerificationCode = "31"
+                    Email = "serkan@demirci",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 19,
@@ -302,7 +302,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
                     Email = "fazli@can",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 20,
@@ -314,7 +314,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
                     Email = "can@alkan",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 21,
@@ -326,7 +326,7 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
                     Email = "ercument@cicek",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 22,
@@ -337,8 +337,8 @@ namespace backend.Data
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
-                    Email = "alper@karel",
-                    VerificationCode = "31"
+                    Email = "alper@sarikan",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 23,
@@ -350,31 +350,79 @@ namespace backend.Data
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Instructor,
                     Email = "altay@guvenir",
-                    VerificationCode = "31"
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 24,
-                    Name = "Tuna Derbeder",
+                    Name = "Tuna Dalbeler",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "tuna@derbeder",
-                    VerificationCode = "31"
+                    Email = "tuna@dalbeler",
+                    VerificationCode = "cs"
                 }, new User
                 {
                     Id = 25,
-                    Name = "Abdul Razak",
+                    Name = "Ali Emre",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
-                    Email = "abdul@razak",
-                    VerificationCode = "31"
+                    Email = "ali@emre",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = 26,
+                    Name = "Ali Yilmaz",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ali@yilmaz",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = 27,
+                    Name = "Ayse Aydin",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ayse@aydin",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = 28,
+                    Name = "Can Demir",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "can@demir",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = 29,
+                    Name = "Elif Kaya",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "elif@kaya",
+                    VerificationCode = "cs"
                 }
             );
             modelBuilder.Entity<Course>().HasData(
@@ -444,51 +492,7 @@ namespace backend.Data
                     Year = 2021,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
-                }/*, new Course
-                {
-                    Id = 7,
-                    Name = "Cs 476",
-                    CourseInformation = "Automata",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 1,
-                    MaxGroupSize = 2
-                }, new Course
-                {
-                    Id = 8,
-                    Name = "Cs 491",
-                    CourseInformation = "bitirme",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 3,
-                    MaxGroupSize = 5
-                }, new Course
-                {
-                    Id = 9,
-                    Name = "Gra 201",
-                    CourseInformation = "Grafik dersi",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 2,
-                    MaxGroupSize = 4
-                }, new Course
-                {
-                    Id = 10,
-                    Name = "Ge 301",
-                    CourseInformation = "emine or withdraw",
-                    LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 10, 15, 7, 0, 0),
-                    EndDate = new DateTime(2021, 1, 15, 7, 0, 0),
-                    CourseSemester = "fall",
-                    MinGroupSize = 2,
-                    MaxGroupSize = 5
-                }*/
+                }
             );
             modelBuilder.Entity<CourseUser>().HasData(
                 new CourseUser
@@ -591,56 +595,7 @@ namespace backend.Data
                     Id = 9,
                     AffiliatedCourseId = 6,
                     SectionNo = 1
-                }/*,
-                new Section
-                {
-                    Id = 10,
-                    SectionlessState = true,
-                    AffiliatedCourseId = 7,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 11,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 8,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 12,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 8,
-                    SectionNo = 2
-                },
-                new Section
-                {
-                    Id = 13,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 8,
-                    SectionNo = 3
-                },
-                new Section
-                {
-                    Id = 14,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 9,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 15,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 10,
-                    SectionNo = 1
-                },
-                new Section
-                {
-                    Id = 16,
-                    SectionlessState = false,
-                    AffiliatedCourseId = 10,
-                    SectionNo = 2
-                }*/
+                }
             );
             modelBuilder.Entity<ProjectGroup>().HasData(
                 new ProjectGroup
@@ -659,7 +614,7 @@ namespace backend.Data
                     AffiliatedCourseId = 1,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "Abduls Class Helper",
+                    ProjectInformation = "Yet Another Class Helper",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -691,40 +646,40 @@ namespace backend.Data
                 }, new ProjectGroup
                 {
                     Id = 6,
-                    AffiliatedSectionId = 9,
-                    AffiliatedCourseId = 6,
+                    AffiliatedSectionId = 2,
+                    AffiliatedCourseId = 1,
                     ConfirmationState = true,
-                    ConfirmedUserNumber = 1,
-                    ProjectInformation = "Hamdinin melekleri",
-                    ConfirmedGroupMembers = "5"
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "SMS - A Student Management System",
+                    ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 7,
-                    AffiliatedSectionId = 9,
-                    AffiliatedCourseId = 6,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "Butun kizlar toplandik",
+                    ProjectInformation = "Group A",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 8,
-                    AffiliatedSectionId = 8,
-                    AffiliatedCourseId = 5,
-                    ConfirmationState = true,
-                    ConfirmedUserNumber = 5,
-                    ProjectInformation = "Baris erasmustayken bitirme aliyoruz",
-                    ConfirmedGroupMembers = "1 4 5 6 7"
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "Group B",
+                    ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 9,
-                    AffiliatedSectionId = 6,
-                    AffiliatedCourseId = 4,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "Donemin en ikonikleri uwu",
+                    ProjectInformation = "Best Class Management System",
                     ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                }/*, new ProjectGroup
                 {
                     Id = 10,
                     AffiliatedSectionId = 1,
@@ -823,7 +778,7 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "nasrettin hocanin askerleriyiz",
                     ConfirmedGroupMembers = ""
-                }
+                }*/
             );
             modelBuilder.Entity<ProjectGroupUser>().HasData(
                 new ProjectGroupUser
@@ -865,7 +820,7 @@ namespace backend.Data
                 }, new ProjectGroupUser
                 {
                     UserId = 24,
-                    ProjectGroupId = 2,
+                    ProjectGroupId = 5,
                 }, new ProjectGroupUser
                 {
                     UserId = 25,
@@ -894,9 +849,646 @@ namespace backend.Data
                 {
                     UserId = 7,
                     ProjectGroupId = 4,
+                }, new ProjectGroupUser
+                {
+                    UserId = 9,
+                    ProjectGroupId = 6,
+                }, new ProjectGroupUser
+                {
+                    UserId = 8,
+                    ProjectGroupId = 6,
+                }, new ProjectGroupUser
+                {
+                    UserId = 14,
+                    ProjectGroupId = 7,
+                }, new ProjectGroupUser
+                {
+                    UserId = 10,
+                    ProjectGroupId = 8,
+                }, new ProjectGroupUser
+                {
+                    UserId = 26,
+                    ProjectGroupId = 6,
+                }, new ProjectGroupUser
+                {
+                    UserId = 27,
+                    ProjectGroupId = 9,
+                }, new ProjectGroupUser
+                {
+                    UserId = 28,
+                    ProjectGroupId = 9,
+                }, new ProjectGroupUser
+                {
+                    UserId = 29,
+                    ProjectGroupId = 9,
                 }
             );
-
+            modelBuilder.Entity<Assignment>().HasData(
+                new Assignment
+                {
+                    Id = 1,
+                    Title = "Requirements report final",
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "analysis and requirements report final",
+                    DueDate = new DateTime(2021,3,31,23,59,59),
+                    CreatedAt = new DateTime(2021,3,1,14,2,23),
+                    AcceptedTypes = "pdf",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true,
+                    HasFile = false
+                },
+                new Assignment
+                {
+                    Id = 2,
+                    Title = "Final report",
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "explain the final version of your project",
+                    DueDate = new DateTime(2021,5,5,23,59,59),
+                    CreatedAt = new DateTime(2021,4,20,4,50,23),
+                    AcceptedTypes = "pdf",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = false,
+                    IsItGraded = true,
+                    HasFile = true
+                },
+                new Assignment
+                {
+                    Id = 3,
+                    Title = "First iteration of design report",
+                    AfilliatedCourseId = 1,
+                    AssignmentDescription = "This is the first iteration so it won't be graded",
+                    DueDate = new DateTime(2021,3,15,23,59,59),
+                    CreatedAt = new DateTime(2021,3,10,4,50,23),
+                    AcceptedTypes = "pdf, txt, doc, docx",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = false,
+                    HasFile = true
+                }
+            );
+            modelBuilder.Entity<Submission>().HasData(
+                new Submission
+                {
+                    Id = 1,
+                    Description = "Our submission is here",
+                    IsGraded = true,
+                    SrsGrade = (decimal)9.6,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 1,
+                    UpdatedAt = new DateTime(2021, 3, 31, 22, 54, 2),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = true,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 2,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)8,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 5,
+                    UpdatedAt = new DateTime(2021, 3, 31, 23, 51, 12),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = true,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 3,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)6.5,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 2,
+                    UpdatedAt = new DateTime(2021, 3, 30, 15, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 4,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 1,
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 5,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 5,
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 6,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 2,
+                    UpdatedAt = new DateTime(2021, 5, 3, 1, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = true,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 7,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 1,
+                    UpdatedAt = new DateTime(2021, 3, 13, 1, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = true,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 8,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 5,
+                    UpdatedAt = new DateTime(2021, 3, 14, 1, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = true,
+                    CourseId = 1,
+                    SectionId = 1, 
+                }, new Submission
+                {
+                    Id = 9,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 2,
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }
+            );
+            modelBuilder.Entity<Comment>().HasData(
+                new Comment
+                {
+                    Id = 1,
+                    CommentedUserId = 24,
+                    CommentedSubmissionId = 1,
+                    CommentText = "You could make these improvements: ....",
+                    MaxGrade = 10, 
+                    Grade = 8,
+                    CreatedAt = new DateTime( 2021, 4, 14, 12, 2, 3),
+                    FileAttachmentAvailability = false,
+                    FilePath = ""
+                }, new Comment
+                {
+                    Id = 2,
+                    CommentedUserId = 25,
+                    CommentedSubmissionId = 1,
+                    CommentText = "It's a nice report but I'm still attaching some ideas in a file",
+                    MaxGrade = 10, 
+                    Grade = (decimal)9.5,
+                    CreatedAt = new DateTime( 2021, 4, 1, 11, 2, 3),
+                    FileAttachmentAvailability = true,
+                    FilePath = ""
+                }, new Comment
+                {
+                    Id = 3,
+                    CommentedUserId = 13,
+                    CommentedSubmissionId = 1,
+                    CommentText = "Cool",
+                    MaxGrade = 10, 
+                    Grade = (decimal)10,
+                    CreatedAt = new DateTime( 2021, 4, 2, 11, 2, 3),
+                    FileAttachmentAvailability = true,
+                    FilePath = ""
+                }
+            );
+            modelBuilder.Entity<JoinRequest>().HasData(
+                new JoinRequest
+                {
+                    Id = 1,
+                    RequestingStudentId = 14,
+                    Description = "Hi, I want to join your group. I know .net",
+                    RequestedGroupId = 5,
+                    CreatedAt = new DateTime( 2021, 4, 29, 10, 23, 2 ),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                },
+                new JoinRequest
+                {
+                    Id = 2,
+                    RequestingStudentId = 24,
+                    Description = "Hey, you can check out the projects I did on my github profile",
+                    RequestedGroupId = 5,
+                    CreatedAt = new DateTime( 2021, 4, 29, 10, 23, 2 ),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                },
+                new JoinRequest
+                {
+                    Id = 3,
+                    RequestingStudentId = 24,
+                    Description = "Hey, can I join you?",
+                    RequestedGroupId = 7,
+                    CreatedAt = new DateTime( 2021, 4, 29, 10, 23, 2 ),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                }, 
+                new JoinRequest
+                {
+                    Id = 4,
+                    RequestingStudentId = 13,
+                    Description = "Hi, I am very good at Javascript",
+                    RequestedGroupId = 6,
+                    CreatedAt = new DateTime( 2021, 4, 29, 10, 29, 2 ),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                }
+            );
+            modelBuilder.Entity<MergeRequest>().HasData(
+                new MergeRequest
+                {
+                    Id = 1,
+                    SenderGroupId = 6,
+                    Description = "Let's merge, we are strong in design",
+                    ReceiverGroupId = 9,
+                    VotedStudents = "26",
+                    CreatedAt = new DateTime( 2021, 4, 13, 10, 23, 2 ),
+                    Accepted = false,
+                    Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 2,
+                    SenderGroupId = 9,
+                    Description = "You can see our past projects from our pages. We'd be good team if we merged",
+                    ReceiverGroupId = 2,
+                    VotedStudents = "27",
+                    CreatedAt = new DateTime( 2021, 4, 13, 14, 23, 2 ),
+                    Accepted = false,
+                    Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 3,
+                    SenderGroupId = 2,
+                    Description = "",
+                    ReceiverGroupId = 6,
+                    VotedStudents = "13",
+                    CreatedAt = new DateTime( 2021, 4, 13, 16, 23, 2 ),
+                    Accepted = false,
+                    Resolved = false
+                }
+            );
+            modelBuilder.Entity<PeerGradeAssignment>().HasData(
+                new PeerGradeAssignment
+                {
+                    Id = 1,
+                    CourseId = 1,
+                    DueDate = new DateTime( 2021, 6, 1, 1, 0, 0 ),
+                    LastEdited = new DateTime( 2021, 4, 1, 1, 1, 0, 0 ),
+                    MaxGrade = 10
+                }, new PeerGradeAssignment
+                {
+                    Id = 2,
+                    CourseId = 2,
+                    DueDate = new DateTime( 2021, 8, 1, 1, 0, 0 ),
+                    LastEdited = new DateTime( 2021, 4, 1, 1, 1, 0, 0 ),
+                    MaxGrade = 5
+                }
+            );
+            modelBuilder.Entity<ProjectGrade>().HasData(
+                new ProjectGrade
+                {
+                    Id = 1,
+                    GradingUserId = 8,
+                    Description = "cool one",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 0, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 2,
+                    GradingUserId = 9,
+                    Description = " ",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 9,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 1, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 3,
+                    GradingUserId = 10,
+                    Description = " ",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 2, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 4,
+                    GradingUserId = 2,
+                    Description = " ",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 3, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 5,
+                    GradingUserId = 1,
+                    Description = " ",
+                    GradedProjectGroupID = 2,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 6,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 4, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 6,
+                    GradingUserId = 2,
+                    Description = " ",
+                    GradedProjectGroupID = 2,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 7,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 5, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 7,
+                    GradingUserId = 3,
+                    Description = " ",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 6, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 8,
+                    GradingUserId = 9,
+                    Description = " ",
+                    GradedProjectGroupID = 1,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 9,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 7, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 9,
+                    GradingUserId = 6,
+                    Description = " ",
+                    GradedProjectGroupID = 5,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 9,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 8, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 10,
+                    GradingUserId = 2,
+                    Description = " ",
+                    GradedProjectGroupID = 5,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 9,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 9, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 11,
+                    GradingUserId = 3,
+                    Description = " ",
+                    GradedProjectGroupID = 5,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 10, 0 )
+                }, new ProjectGrade
+                {
+                    Id = 12,
+                    GradingUserId = 7,
+                    Description = " ",
+                    GradedProjectGroupID = 5,
+                    FilePath = "",
+                    HasFile = false,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                }
+            );
+            modelBuilder.Entity<PeerGrade>().HasData(
+                new PeerGrade
+                {
+                    Id = 1,
+                    ProjectGroupId = 1,
+                    ReviewerId = 1,
+                    RevieweeId = 3,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    Comment = "nice term",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 0, 0 )
+                }, new PeerGrade
+                {
+                    Id = 2,
+                    ProjectGroupId = 1,
+                    ReviewerId = 1,
+                    RevieweeId = 4,
+                    MaxGrade = 10,
+                    Grade = 9,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 1, 0 )
+                }, new PeerGrade
+                {
+                    Id = 3,
+                    ProjectGroupId = 1,
+                    ReviewerId = 1,
+                    RevieweeId = 5,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 2, 0 )
+                }, new PeerGrade
+                {
+                    Id = 4,
+                    ProjectGroupId = 1,
+                    ReviewerId = 1,
+                    RevieweeId = 6,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 3, 0 )
+                }, new PeerGrade
+                {
+                    Id = 5,
+                    ProjectGroupId = 1,
+                    ReviewerId = 1,
+                    RevieweeId = 7,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 4, 0 )
+                }, new PeerGrade
+                {
+                    Id = 6,
+                    ProjectGroupId = 1,
+                    ReviewerId = 3,
+                    RevieweeId = 1,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 5, 0 )
+                }, new PeerGrade
+                {
+                    Id = 7,
+                    ProjectGroupId = 1,
+                    ReviewerId = 3,
+                    RevieweeId = 4,
+                    MaxGrade = 10,
+                    Grade = 6,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 6, 0 )
+                }, new PeerGrade
+                {
+                    Id = 8,
+                    ProjectGroupId = 1,
+                    ReviewerId = 3,
+                    RevieweeId = 5,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 7, 0 )
+                }, new PeerGrade
+                {
+                    Id = 9,
+                    ProjectGroupId = 1,
+                    ReviewerId = 3,
+                    RevieweeId = 6,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 8, 0 )
+                }, new PeerGrade
+                {
+                    Id = 10,
+                    ProjectGroupId = 1,
+                    ReviewerId = 3,
+                    RevieweeId = 7,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 9, 0 )
+                }, new PeerGrade
+                {
+                    Id = 11,
+                    ProjectGroupId = 1,
+                    ReviewerId = 4,
+                    RevieweeId = 1,
+                    MaxGrade = 10,
+                    Grade = 10,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 10, 0 )
+                }, new PeerGrade
+                {
+                    Id = 12,
+                    ProjectGroupId = 1,
+                    ReviewerId = 4,
+                    RevieweeId = 3,
+                    MaxGrade = 10,
+                    Grade = 4,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                }, new PeerGrade
+                {
+                    Id = 13,
+                    ProjectGroupId = 1,
+                    ReviewerId = 4,
+                    RevieweeId = 5,
+                    MaxGrade = 10,
+                    Grade = 8,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 12, 0 )
+                }, new PeerGrade
+                {
+                    Id = 14,
+                    ProjectGroupId = 1,
+                    ReviewerId = 4,
+                    RevieweeId = 6,
+                    MaxGrade = 10,
+                    Grade = 7,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 13, 0 )
+                }, new PeerGrade
+                {
+                    Id = 15,
+                    ProjectGroupId = 1,
+                    ReviewerId = 4,
+                    RevieweeId = 7,
+                    MaxGrade = 10,
+                    Grade = 9,
+                    Comment = "",
+                    PeerGradeAssignmentId = 1,
+                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 14, 0 )
+                }
+            );
         }
     }
 }
