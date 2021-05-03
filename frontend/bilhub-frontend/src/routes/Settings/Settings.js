@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../store';
 
 import './Settings.css';
-import { changePassword } from '../../API';
+import { changePassword, updateProfile } from '../../API';
 
 class Settings extends Component {
     constructor(props) {
@@ -30,12 +30,7 @@ class Settings extends Component {
             return;
         }
 
-        const request = {
-            newName: e.target.name?.value,
-            newInformation: e.target.information?.value,
-            userId: this.props.userId,
-        };
-        console.log(request);
+        updateProfile(this.props.email, newName, this.state.userInformation, false);
     };
 
     updatePassword = (e) => {

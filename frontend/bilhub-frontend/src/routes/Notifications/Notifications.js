@@ -123,6 +123,7 @@ class Notifications extends Component {
                     const data = response.data.data;
 
                     for (let req of data) {
+                        console.log(req);
                         let request = {};
                         if (req.resolved) {
                             if (i === 0) {
@@ -150,7 +151,6 @@ class Notifications extends Component {
                             }
                             incomingRequests.resolved.push(request);
                         } else if (req.accepted) {
-                            console.log(req);
                             if (i === 0) {
                                 request = {
                                     type: 'Join',

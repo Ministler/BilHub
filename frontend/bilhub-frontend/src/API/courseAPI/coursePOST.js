@@ -54,3 +54,14 @@ export const postDeactivateCourseRequest = async (courseId) => {
             throw error;
         });
 };
+
+export const postLockCourseRequest = async (courseId) => {
+    const url = 'LockGroupFormation?courseId=' + courseId;
+
+    return authAxios
+        .post(BASE_COURSE_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
