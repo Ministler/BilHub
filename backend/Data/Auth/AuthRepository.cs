@@ -268,5 +268,43 @@ namespace backend.Data.Auth
             serviceResponse.Data = dbUser.Id;
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<GetUserInfoDto>> UpdateProfile(UserUpdateDto userUpdateDto)
+        {
+            ServiceResponse<GetUserInfoDto> serviceResponse = new ServiceResponse<GetUserInfoDto>();
+            User dbUser = await _context.Users
+                .FirstOrDefaultAsync ( c => c.Id == GetUserId() );
+            
+            if ( dbUser == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found";
+                return serviceResponse;
+            }
+
+            dbUser.Email = userUpdateDto.Email;
+            dbUser.DarkModeStatus = userUpdateDto.DarkModeStatus;
+            dbUser.Name = userUpdateDto.Name;
+            dbUser.ProfileInfo = userUpdateDto.ProfileInfo;
+            serviceResponse.Data = _mapper.Map<GetUserInfoDto> (dbUser);
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetUserInfoDto>> GetProfile(int userId)
+        {
+            ServiceResponse<GetUserInfoDto> serviceResponse = new ServiceResponse<GetUserInfoDto>();
+            User dbUser = await _context.Users
+                .FirstOrDefaultAsync ( c => c.Id == userId );
+            
+            if ( dbUser == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found";
+                return serviceResponse;
+            }
+            
+            serviceResponse.Data = _mapper.Map<GetUserInfoDto> (dbUser);
+            return serviceResponse;
+        }
     }
 }

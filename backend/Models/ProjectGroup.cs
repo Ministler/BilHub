@@ -19,6 +19,7 @@ namespace backend.Models
         public int AffiliatedSectionId { get; set; }
         public string Name { get; set; }
         public decimal SrsGrade { get; set; }
+        public decimal MaxSrsGrade { get; set; }
         public bool IsGraded { get; set; }
         public Course AffiliatedCourse { get; set; }
         public int AffiliatedCourseId { get; set; }

@@ -21,6 +21,7 @@ namespace backend.Models
         public bool Accepted { get; set; }
         public bool Resolved { get; set; }
         public string VotedStudents { get; set; }
+
         // public Course AffiliatedCourse { get; set; }
         // public int CourseId { get; set; }
         // public Section AffiliatedSection { get; set; }

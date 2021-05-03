@@ -4,6 +4,7 @@ namespace backend.Dtos.User
     {
         public string Email { get; set; } = "";
         public string Name { get; set; } = "";
+        public string ProfileInfo { get; set; }
         public bool DarkModeStatus { get; set; }
     }
 }

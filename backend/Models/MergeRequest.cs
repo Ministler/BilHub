@@ -20,6 +20,12 @@ namespace backend.Models
         public DateTime CreatedAt { get; set; }
         public bool Accepted { get; set; }
         public bool Resolved { get; set; }
+        public enum MergeRequestType
+        {
+            Pending,
+            Unresolved,
+            Resolved
+        }
 
         // public Course AffiliatedCourse { get; set; }
         // public int CourseId { get; set; }

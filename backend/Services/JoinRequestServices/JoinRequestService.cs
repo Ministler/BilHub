@@ -540,6 +540,49 @@ namespace backend.Services.JoinRequestServices
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<string>> GetVoteOfUser( int joinRequestId )
+        {
+            ServiceResponse<string> response = new ServiceResponse<string> ();
+            JoinRequest joinRequest = await _context.JoinRequests
+                .Include(jr => jr.RequestedGroup).ThenInclude( rq => rq.GroupMembers )
+                .FirstOrDefaultAsync(jr => jr.Id == joinRequestId);
+
+            if (joinRequest == null)
+            {
+                response.Data = null;
+                response.Message = "There is no join request with this id";
+                response.Success = false;
+                return response;
+            }
+
+            if (!joinRequest.RequestedGroup.GroupMembers.Any(pgu => pgu.UserId == GetUserId()))
+            {
+                response.Data = null;
+                response.Message = "You did not vote because you are not in this group";
+                response.Success = false;
+                return response;
+            }
+
+            response.Success = true;
+
+            if( joinRequest.Resolved || joinRequest.Accepted )
+            {
+                response.Data = "Resolved";
+                return response;
+            }
+
+            if( !IsUserInString( joinRequest.VotedStudents, GetUserId() ) )
+            {
+                response.Data = "Pending";
+                return response;
+            }
+            
+            
+            response.Data = "Unresolved";
+            return response;
+        }
+        
+
         //////// ADD LOCK DATE
 
         // bi sekilde grupta 0 insan kalmasi durumu
