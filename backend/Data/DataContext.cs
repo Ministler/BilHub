@@ -1131,6 +1131,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 3, 14, 22, 54, 2),
                     FilePath = "", // check this
                     HasSubmission = true,
+                 
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 2
@@ -1265,10 +1266,10 @@ namespace backend.Data
                     Description = "Hi, I am looking for a team.",
                     RequestedGroupId = 10,
                     CreatedAt = new DateTime( 2021, 4, 29, 10, 30, 2 ),
-                    AcceptedNumber = 0,
+                    AcceptedNumber = 1,
                     Accepted = false,
                     Resolved = false,
-                    VotedStudents = ""
+                    VotedStudents = "26"
                 }, new JoinRequest
                 {
                     Id = 6,
@@ -1280,6 +1281,28 @@ namespace backend.Data
                     Accepted = false,
                     Resolved = false,
                     VotedStudents = ""
+                }, new JoinRequest
+                {
+                    Id = 7,
+                    RequestingStudentId = 7,
+                    Description = "take me",
+                    RequestedGroupId = 1,
+                    CreatedAt = new DateTime( 2021, 4, 15, 14, 30, 2 ),
+                    AcceptedNumber = 5,
+                    Accepted = true,
+                    Resolved = false,
+                    VotedStudents = "1 3 4 5 6"
+                }, new JoinRequest
+                {
+                    Id = 8,
+                    RequestingStudentId = 25,
+                    Description = "take me",
+                    RequestedGroupId = 1,
+                    CreatedAt = new DateTime( 2021, 4, 15, 10, 30, 2 ),
+                    AcceptedNumber = 2,
+                    Accepted = false,
+                    Resolved = true,
+                    VotedStudents = "1 3 4"
                 }
             );
             modelBuilder.Entity<MergeRequest>().HasData(
@@ -1329,7 +1352,7 @@ namespace backend.Data
                     SenderGroupId = 10,
                     Description = "",
                     ReceiverGroupId = 13,
-                    VotedStudents = "26",
+                    VotedStudents = "",
                     CreatedAt = new DateTime( 2021, 4, 13, 17, 23, 2 ),
                     Accepted = false,
                     Resolved = false
@@ -1339,10 +1362,30 @@ namespace backend.Data
                     SenderGroupId = 13,
                     Description = "",
                     ReceiverGroupId = 11,
-                    VotedStudents = "10",
+                    VotedStudents = "10 28",
                     CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
                     Accepted = false,
                     Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 7,
+                    SenderGroupId = 14,
+                    Description = "",
+                    ReceiverGroupId = 1,
+                    VotedStudents = "1 3 4 5 6",
+                    CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
+                    Accepted = true,
+                    Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 8,
+                    SenderGroupId = 5,
+                    Description = "hey, merge",
+                    ReceiverGroupId = 1,
+                    VotedStudents = "1 3 24 4",
+                    CreatedAt = new DateTime( 2021, 4, 10, 19, 23, 2 ),
+                    Accepted = false,
+                    Resolved = true
                 }
             );
             modelBuilder.Entity<PeerGradeAssignment>().HasData(
