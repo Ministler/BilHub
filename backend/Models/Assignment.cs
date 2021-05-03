@@ -23,6 +23,7 @@ namespace backend.Models
         public bool VisibilityOfSubmission { get; set; }
         public bool CanBeGradedByStudents { get; set; }
         public bool IsItGraded { get; set; }
+        public decimal MaxGrade { get; set; }
         public bool HasFile { get; set; }
         public ICollection<Submission> Submissions { get; set; }
         // public User PublishedUser { get; set; }
