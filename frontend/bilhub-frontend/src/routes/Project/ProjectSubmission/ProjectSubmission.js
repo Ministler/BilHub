@@ -220,13 +220,6 @@ class ProjectAssignment extends Component {
                     date: inputDateToDateObject(curSubmission.updatedAt),
                     submissionId: curSubmission.id,
                 };
-                let isInGroup = false;
-                for (let i of curSubmission.affiliatedGroup.groupMembers) {
-                    if (i.id === this.props.userId) {
-                        isInGroup = true;
-                        break;
-                    }
-                }
                 const page = {
                     isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
                     isInGroup: isInGroup,
