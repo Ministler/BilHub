@@ -25,9 +25,8 @@ export const postAssignmentRequest = async (
     IsItGraded
 ) => {
     const body = {
-        file: file,
-        courseId: courseId,
-        title: title,
+        CourseId: courseId,
+        Title: title,
         AssignmenDescription: AssignmenDescription,
         DueDate: DueDate,
         VisibiltyOfSubmission: VisibiltyOfSubmission,
@@ -36,13 +35,13 @@ export const postAssignmentRequest = async (
     };
 
     let fd = new FormData();
-    fd.append('courseId', courseId);
-    fd.append('title', title);
-    fd.append('AssignmenDescription', AssignmenDescription);
-    fd.append('DueDate', DueDate);
-    fd.append('VisibiltyOfSubmission', VisibiltyOfSubmission);
-    fd.append('CanBeGradedByStudents', CanBeGradedByStudents);
-    fd.append('IsItGraded', IsItGraded);
+    fd.append('addAssignmentDto.CourseId', courseId);
+    fd.append('addAssignmentDto.Title', title);
+    fd.append('addAssignmentDto.AssignmenDescription', AssignmenDescription);
+    fd.append('addAssignmentDto.DueDate', DueDate);
+    fd.append('addAssignmentDto.VisibiltyOfSubmission', VisibiltyOfSubmission);
+    fd.append('addAssignmentDto.CanBeGradedByStudents', CanBeGradedByStudents);
+    fd.append('addAssignmentDto.IsItGraded', IsItGraded);
     var isFormDataEmpty = true;
     for (var p of fd) {
         isFormDataEmpty = false;

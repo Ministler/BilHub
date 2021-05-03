@@ -106,7 +106,7 @@ export class NewAssignmentModal extends Component {
     };
 
     onFormSubmit() {
-        let d = inputDateToDateObject(this.state.dueDate);
+        let d = this.state.dueDate;
         const request = {
             //isCommentsAnonymous: this.state.isCommentsAnonymous,
         };
