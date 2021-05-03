@@ -229,7 +229,7 @@ class ProjectAssignment extends Component {
                 }
                 const page = {
                     isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
-                    isInGroup: isInGroup,
+                    isInGroup: true,
                     isTAorInstructor: auth.data.data,
                     canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
                     hasSubmission: curSubmission.hasSubmission,
