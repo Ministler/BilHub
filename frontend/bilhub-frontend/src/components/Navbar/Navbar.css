@@ -1,0 +1,12 @@
+.MyDivider {
+    margin-top: 0.5em;
+}
+
+.NavigatorRightMenu i {
+    margin: 0 !important;
+}
+
+.NavMenu > .item.active,
+.NavigatorRightMenu > .item.active {
+    background-color: rgba(0, 0, 0, 0) !important;
+}

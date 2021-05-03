@@ -1,0 +1,24 @@
+.AssignmentCard {
+    width: 100% !important;
+}
+
+.docFile i {
+    margin: 5px;
+    float: right;
+}
+
+.FeedbackCardExtra {
+    display: flex;
+}
+
+.FeedbackCardElement > .content > .header {
+    margin-top: 5px !important;
+}
+
+.FeedbackDate {
+    margin-left: auto;
+}
+
+.FeedbackCardElement {
+    width: 95% !important;
+}
