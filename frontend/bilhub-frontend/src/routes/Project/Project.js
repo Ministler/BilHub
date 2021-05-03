@@ -167,10 +167,11 @@ class Project extends Component {
                     newInformation: projectGroupData.projectInformation,
                     newName: projectGroupData.affiliatedCourse.name,
                 };
-                if (auth.data.data) {
+                if (!auth.data.data) {
+                    console.log(this.props.match.params.projectId, this.props.userId);
                     getPeerGradeRequestWithReviewer(this.props.match.params.projectId, this.props.userId).then(
                         (users) => {
-                            console.log(users.data.data);
+                            this.setState({ peerReviews: users.data.data });
                         }
                     );
                 } else {
@@ -178,7 +179,7 @@ class Project extends Component {
                         parseInt(this.props.match.params.projectId),
                         this.state.currentPeer
                     ).then((users) => {
-                        console.log(users.data.data);
+                        this.setState({ peerReviews: users.data.data });
                     });
                 }
                 this.setState({
