@@ -42,6 +42,7 @@ export const postAssignmentRequest = async (
     fd.append('addAssignmentDto.VisibiltyOfSubmission', VisibiltyOfSubmission);
     fd.append('addAssignmentDto.CanBeGradedByStudents', CanBeGradedByStudents);
     fd.append('addAssignmentDto.IsItGraded', IsItGraded);
+    fd.append('file', file);
     var isFormDataEmpty = true;
     for (var p of fd) {
         isFormDataEmpty = false;
