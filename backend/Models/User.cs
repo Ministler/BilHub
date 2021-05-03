@@ -28,5 +28,6 @@ namespace backend.Models
         public ICollection<Comment> OutgoingComments { get; set; }
         [Required]
         public UserTypeClass UserType { get; set; } = UserTypeClass.Student;
+        public string ProfileInfo {get; set;}
     }
 }
