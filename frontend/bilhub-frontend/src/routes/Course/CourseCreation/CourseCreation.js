@@ -1,4 +1,15 @@
+/* 
+    Authors:    Barış Ogün Yörük 
+                Halil Özgür Demir
+                Yusuf Uyar
+
+    Date:   <Salla Bişiler> (e.g 03/05/2021)
+
+    Description:    <Dosya Adı> implementation file (e.g. Course Creation implementation file)
+*/
+
 import React, { Component } from 'react';
+import _ from 'lodash';
 import {
     Divider,
     Input,
@@ -13,9 +24,18 @@ import {
     Message,
     List,
     Popup,
+    TextArea,
 } from 'semantic-ui-react';
 
+import {
+    postCourseRequest,
+    postCourseInstructorRequest,
+    postStudentToSectionRequest,
+    getIdByEmailRequest,
+} from '../../../API';
 import './CourseCreation.css';
+import { inputDateToDateObject } from '../../../utils/dateConversions';
+import axios from 'axios';
 
 const semesterOptions = [
     {
@@ -35,32 +55,17 @@ const semesterOptions = [
     },
 ];
 
-const groupFormationSettings = [
-    {
-        key: 'By Group Size',
-        text: 'By Group Size',
-        value: 'By Group Size',
-    },
-    {
-        key: 'By Group Number',
-        text: 'By Group Number',
-        value: 'By Group Number',
-    },
-    {
-        key: 'By Hard Coded',
-        text: 'By Hard Coded',
-        value: 'By Hard Coded',
-    },
-];
-
 export class CourseCreation extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            //course info
             code: '',
             year: '',
             semester: '',
+            shortDescription: '',
 
+            //section settings
             isSectionless: false,
             sectionNumber: 1,
             sections: [
@@ -71,20 +76,89 @@ export class CourseCreation extends Component {
                 },
             ],
 
+            //users
             instructorList: [],
+            currentInstructor: '',
             TAList: [],
-            studentManualList: [],
-            studentAutoList: [],
-            groupFormationType: '',
+            currentTA: '',
+            studentManualList: [[]],
+            manualSection: 1,
+            currentStudent: '',
+            studentAutoList: [[]],
+            autoSection: 1,
+            currentFile: '',
+
+            //group formation
+            minSize: 1,
+            maxSize: 1,
         };
     }
 
+    onFormSubmit = () => {
+        for (let i = 0; i < this.state.sectionNumber; i++) {
+            for (let k = 0; k < this.state.studentManualList[i].length; k++) {
+                this.state.studentAutoList[i].push(this.state.studentManualList[i][k]);
+            }
+        }
+        //System.DateTime
+
+        postCourseRequest(
+            this.state.code,
+            this.state.semester,
+            this.state.year,
+            this.state.shortDescription,
+            this.state.sectionNumber,
+            this.state.isSectionless,
+            this.state.minSize,
+            this.state.maxSize
+        ).then((response) => {
+            if (!response.data.success) return;
+            const data = response.data.data;
+            const courseId = data.id;
+            const sections = data.sections;
+
+            const idRequests = [];
+            const authList = this.state.instructorList.concat(this.state.TAList);
+            for (let i = 0; i < authList.length; i++) {
+                idRequests.push(getIdByEmailRequest(authList[i]));
+            }
+
+            axios.all(idRequests).then(
+                axios.spread((...responses) => {
+                    for (let i = 0; i < responses.length; i++) {
+                        postCourseInstructorRequest(responses[i].data.data, courseId);
+                    }
+                })
+            );
+
+            for (let i = 0; i < this.state.studentAutoList.length; i++) {
+                let studentIdRequests = [];
+                for (let j = 0; j < this.state.studentAutoList[i].length; j++) {
+                    studentIdRequests.push(getIdByEmailRequest(this.state.studentAutoList[i][j]));
+                }
+
+                axios.all(studentIdRequests).then(
+                    axios.spread((...responses) => {
+                        for (let k = 0; k < responses.length; k++) {
+                            console.log();
+                            console.log(response.data.data.sections[i].id);
+                            postStudentToSectionRequest(responses[k].data.data, response.data.data.sections[i].id);
+                        }
+                    })
+                );
+            }
+
+            this.props.history.push('/course/' + courseId);
+        });
+    };
+
     validations = (data) => {
-        console.log(data);
         const name = data.name;
         switch (name) {
             case 'code':
                 if (String(data.value).length > 7) return false;
+                break;
+            default:
                 break;
         }
 
@@ -97,14 +171,25 @@ export class CourseCreation extends Component {
         if (!this.validations(data)) {
             return;
         }
-
         const name = data.name;
-        var value = '';
-
+        let value = '';
         if (data.type === 'checkbox') {
             value = data.checked;
-            var sectionNumber = value ? 0 : 1;
-            this.setState({ [name]: value, sectionNumber: sectionNumber });
+            this.setState({
+                [name]: value,
+                sectionNumber: 1,
+                sections: [
+                    {
+                        key: 1,
+                        text: 1,
+                        value: 1,
+                    },
+                ],
+                manualSection: 1,
+                autoSection: 1,
+                studentAutoList: [[]],
+                studentManualList: [[]],
+            });
         } else {
             value = data.value;
             this.setState({
@@ -114,44 +199,145 @@ export class CourseCreation extends Component {
     };
 
     changeSection = (event, data) => {
-        var sections = [];
-        for (var i = 1; i <= data.value; i++) {
+        const sections = [];
+        const studentManualList = [];
+        const studentAutoList = [];
+        for (let i = 1; i <= data.value; i++) {
             sections.push({
                 key: i,
                 text: i,
                 value: i,
             });
+            studentManualList.push([]);
+            studentAutoList.push([]);
         }
+        this.setState({ studentAutoList: studentAutoList, studentManualList: studentManualList, sections: sections });
 
-        this.setState({ sections: sections });
         this.handleChange(event, data);
     };
 
-    createUserList(members) {
+    removeUser = (element, listType, section) => {
+        let ary = [...this.state[listType]];
+        if (section === 0) {
+            ary = _.without(ary, element);
+        } else {
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                ary[i] = [...this.state[listType][i]];
+            }
+            ary[section - 1] = _.without(ary[section - 1], element);
+        }
+        this.setState({ [listType]: ary });
+    };
+
+    createUserList(members, userType, listType, section = 0) {
+        let list = section === 0 ? members : members[section - 1];
         return (
-            <Segment style={{ height: '200px' }}>
-                <List items={members}></List>
+            <Segment style={{ height: '200px', width: '100%' }}>
+                <List selection className="UserList" items={list}>
+                    {list.map((element) => {
+                        return (
+                            <Popup
+                                on="click"
+                                content={
+                                    <Button onClick={() => this.removeUser(element, listType, section)} color="red">
+                                        Remove User
+                                    </Button>
+                                }
+                                trigger={<List.Item>{element}</List.Item>}
+                            />
+                        );
+                    })}
+                </List>
                 <Segment.Inline className="AddSegment">
-                    <Input icon={<Icon name="plus" inverted circular link />} placeholder="Enter" />
+                    <Form.Input
+                        name={userType}
+                        onChange={this.handleChange}
+                        icon={
+                            <Icon
+                                name="plus"
+                                inverted
+                                circular
+                                link
+                                onClick={() => {
+                                    this.addUser(userType, listType, section);
+                                }}
+                            />
+                        }
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                this.addUser(userType, listType, section);
+                            }
+                        }}
+                        placeholder="Enter"
+                        value={this.state[userType]}
+                    />
                 </Segment.Inline>
             </Segment>
         );
     }
 
-    onFormSubmit = (e) => {
-        console.log(this.state.sectionNumber);
-        return {
-            courseName: this.state.code + '/' + this.state.year + this.state.semester,
-            isSectionless: this.state.isSectionless,
-            numberOfSection: this.state.sectionNumber, // If sectionless this field is 0
+    checkIfExists = (list, element) => {
+        for (let i = 0; i < list.length; i++) {
+            if (element === list[i]) {
+                return true;
+            }
+        }
+        return false;
+    };
 
-            groupFormationType: this.state.groupFormationType,
+    addUser = (userType, listType, section) => {
+        if (this.state[userType] === '') {
+            return;
+        }
+
+        let curList = [...this.state[listType]];
+        if (section === 0) {
+            if (this.checkIfExists(curList, this.state[userType])) {
+                window.alert("You can't add already existing user.");
+                return;
+            }
+            curList.push(this.state[userType]);
+        } else {
+            for (let i = 0; i < curList.length; i++) {
+                if (this.checkIfExists(curList[i], this.state[userType])) {
+                    window.alert("You can't add already existing user.");
+                    return;
+                }
+            }
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                curList[i] = [...this.state[listType][i]];
+            }
+            curList[section - 1].push(this.state[userType]);
+        }
+        this.setState({ [listType]: curList, [userType]: '' });
+    };
+
+    readFile = (e) => {
+        const reader = new FileReader();
+        let students;
+        reader.onload = async (file) => {
+            let curList = [...this.state.studentAutoList];
+            for (var i = 0; i < this.state.sectionNumber; i++) {
+                curList[i] = [...this.state.studentAutoList[i]];
+            }
+            const text = file.target.result;
+            students = text.split(/\n/);
+            curList[this.state.autoSection - 1] = [...students];
+            this.setState({ studentAutoList: curList /* currentFile: */ });
         };
+        reader.readAsText(e.target.files[0]);
+    };
+
+    onKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
     };
 
     render() {
         return (
-            <Form onSubmit={this.onFormSubmit}>
+            <Form className="CreationForm" onSubmit={this.onFormSubmit} onKeyDown={this.onKeyDown}>
                 <Form.Group>
                     <h1>Create New Course</h1>
                 </Form.Group>
@@ -163,16 +349,17 @@ export class CourseCreation extends Component {
                             value={this.state.code}
                             onChange={this.handleChange}
                             name="code"
-                            style={{ width: '50%' }}
+                            style={{ width: '100%' }}
                         />
                     </Form.Field>
                     <Form.Field width={3}>
                         <label for="year">Year:</label>
                         <Form.Input
+                            value={this.state.year}
                             min="0"
                             max="9999"
                             name="year"
-                            style={{ width: '50%' }}
+                            style={{ width: '100%' }}
                             onChange={this.handleChange}
                             type="number"
                         />
@@ -180,6 +367,7 @@ export class CourseCreation extends Component {
                     <Form.Field width={3}>
                         <label for="semester">Semester:</label>
                         <Form.Dropdown
+                            value={this.state.semester}
                             onChange={this.handleChange}
                             name="semester"
                             inline
@@ -188,11 +376,23 @@ export class CourseCreation extends Component {
                             options={semesterOptions}
                         />
                     </Form.Field>
-                    <Form.Field width={7} textAlign="center">
-                        {this.state.code}
-                        {(this.state.code != '' || this.state.code != '') && '-'}
-                        {this.state.year} {this.state.semester}
+                    <Form.Field className="newCourseName" width={7} textAlign="center">
+                        <h2>
+                            {this.state.code}
+                            {(this.state.code !== '' || this.state.code !== '') && '-'}
+                            {this.state.year} {this.state.semester}
+                        </h2>
                     </Form.Field>
+                </Form.Group>
+                <Form.Group>
+                    <label for="shortDescription">Short Course Description:</label>{' '}
+                    <TextArea
+                        className="Description"
+                        value={this.state.shortDescription}
+                        onChange={this.handleChange}
+                        name="shortDescription"
+                        style={{ width: '100%', height: '42px' }}
+                    />
                 </Form.Group>
                 <Divider />
                 <Form.Group widths={3}>
@@ -211,7 +411,7 @@ export class CourseCreation extends Component {
                                 label="Number of Sections: "
                                 name="sectionNumber"
                                 onChange={this.changeSection}
-                                style={{ width: '25%' }}
+                                style={{ width: '50%' }}
                                 value={this.state.sectionNumber}
                             />
                         )}
@@ -224,116 +424,103 @@ export class CourseCreation extends Component {
                 </Form.Group>
                 <Divider />
                 <Grid>
-                    <Grid.Row columns={6}>
-                        <GridColumn>Add Instructor:</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
-                        <GridColumn>Add Teaching Assistants</GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                    <Grid.Row>
+                        <GridColumn width="3">Add Instructor:</GridColumn>
+                        <GridColumn width="5">
+                            {this.createUserList(this.state.instructorList, 'currentInstructor', 'instructorList')}
+                        </GridColumn>
+                        <GridColumn width="3">Add Teaching Assistants</GridColumn>
+                        <GridColumn width="5">
+                            {this.createUserList(this.state.TAList, 'currentTA', 'TAList')}
+                        </GridColumn>
                     </Grid.Row>
-                    <Grid.Row columns={6}>
-                        <GridColumn>
+                    <Grid.Row>
+                        <GridColumn width="3">
                             <div>Add Student as .txt file:</div>
-                            {this.state.sectionNumber > 0 && (
+                            {this.state.isSectionless !== true && (
                                 <div>
                                     Section:
                                     <Dropdown
+                                        name="autoSection"
                                         fluid
                                         selection
                                         options={this.state.sections}
                                         defaultValue={this.state.sections[0].value}
+                                        onChange={this.handleChange}
                                     />
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn>
-                            <Button>Add File</Button>
+                        <GridColumn width="5">
+                            <input
+                                className="FileInput"
+                                type="file"
+                                accept=".txt"
+                                value={this.state.currentFile}
+                                onChange={(e) => this.readFile(e)}
+                            />
                         </GridColumn>
-                        <GridColumn>
+                        <GridColumn width="3">
                             <div>Add Student as a list:</div>
-                            {this.state.sectionNumber > 0 && (
+                            {this.state.isSectionless !== true && (
                                 <div>
                                     Section:{' '}
                                     <Dropdown
+                                        name="manualSection"
                                         fluid
                                         selection
                                         options={this.state.sections}
                                         defaultValue={this.state.sections[0].value}
+                                        onChange={this.handleChange}
                                     />
                                 </div>
                             )}
                         </GridColumn>
-                        <GridColumn>{this.createUserList(this.state.instructorList)}</GridColumn>
+                        <GridColumn width="5">
+                            {this.createUserList(
+                                this.state.studentManualList,
+                                'currentStudent',
+                                'studentManualList',
+                                this.state.manualSection
+                            )}
+                        </GridColumn>
                     </Grid.Row>
                 </Grid>
                 <Divider />
                 <Form.Group>
                     <Form.Field>
-                        Group Formation Type:
-                        <Dropdown
-                            style={{ float: 'left' }}
-                            name="groupFormationType"
-                            onChange={this.handleChange}
-                            fluid
-                            selection
-                            options={groupFormationSettings}></Dropdown>
-                        {this.state.groupFormationType == '' && (
-                            <Popup
-                                style={{ float: 'left' }}
-                                content={'Select one of the group formations'}
-                                header={'Group Formation'}
-                                trigger={<Icon name="info circle"></Icon>}
-                            />
-                        )}
-                        {this.state.groupFormationType == 'By Group Size' && (
-                            <span>
-                                <Popup
-                                    style={{ float: 'left' }}
-                                    content={'Select one of the group formations'}
-                                    header={'Group Formation'}
-                                    trigger={<Icon name="info circle"></Icon>}
-                                />
-                                <div>
-                                    Min:<Input type="number"></Input> Max:<Input type="number"></Input>
-                                    Group Formation Date
-                                    <Input type="date"></Input>
-                                </div>
-                            </span>
-                        )}
-                        {this.state.groupFormationType == 'By Group Number' && (
-                            <span>
-                                <Popup
-                                    style={{ float: 'left' }}
-                                    content={'Select one of the group formations'}
-                                    header={'Group Formation'}
-                                    trigger={<Icon name="info circle"></Icon>}
-                                />
-                                <div>
-                                    Group Number:<Input type="number"></Input>
-                                    Group Formation Date
-                                    <Input type="date"></Input>
-                                </div>
-                            </span>
-                        )}
-                        {this.state.groupFormationType == 'By Hard Coded' && (
-                            <span>
-                                <Popup
-                                    style={{ float: 'left' }}
-                                    content={'Select one of the group formations'}
-                                    header={'Group Formation'}
-                                    trigger={<Icon name="info circle"></Icon>}
-                                />
-                                <div>
-                                    Group Number:<Input type="number"></Input>
-                                    Group Formation Date
-                                    <Input type="date"></Input>
-                                </div>
-                            </span>
-                        )}
+                        <h2>Group Formation Settings</h2>
+                        <div>
+                            Min Group Size:
+                            <Input
+                                name="minSize"
+                                value={this.state.minSize}
+                                min={1}
+                                max={this.state.maxSize}
+                                onChange={this.handleChange}
+                                type="number"></Input>{' '}
+                            Max Group Size:
+                            <Input
+                                name="maxSize"
+                                min={this.state.minSize}
+                                value={this.state.maxSize}
+                                onChange={this.handleChange}
+                                type="number"></Input>
+                        </div>
                     </Form.Field>
                 </Form.Group>
                 <Divider />
-                <Button>Create New Course</Button>
+                <Button type="submit">Create New Course</Button>
             </Form>
         );
     }
 }
+
+const dummyCourse = {
+    students: [
+        ['ali', 'yusuf', 'ozco'],
+        ['aybala', 'ozgur', 'baris', 'cagri'],
+    ],
+    TAs: ['eray', 'alper'],
+    instructors: ['irmak', 'elgun'],
+};

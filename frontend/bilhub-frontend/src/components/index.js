@@ -18,6 +18,7 @@ export {
     getSubmissionsAsAccordion,
     getAssignmentStatistics,
     getCourseStatistics,
+    Accordion,
 } from './Accordion';
 export { ProfilePrompt } from './ProfilePrompt';
 export {
@@ -27,6 +28,7 @@ export {
     convertNotGradedAssignmentsToBriefList,
     convertMembersToMemberElement,
     convertUnformedGroupsToBriefList,
-    convertFormedGroupsToBriefList,
+    FormedGroupsBriefList,
 } from './BriefList';
 export { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from './Statistics';
+export { Logo } from './Logo'

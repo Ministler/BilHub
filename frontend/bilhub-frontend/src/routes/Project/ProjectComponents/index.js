@@ -6,4 +6,5 @@ export {
     NewSubmissionModal,
     EditSubmissionModal,
     DeleteSubmissionModal,
+    NewCommentModal2,
 } from './ProjectComponents';

@@ -1,1 +1,10 @@
-export { loginRequest, checkAuthRequest, singupRequest } from './authAPI';
+export {
+    loginRequest,
+    registerRequest,
+    verifyRequest,
+    changePassword,
+    forgotPasswordRequest,
+    resendRequest,
+} from './authPOST';
+export { checkAuthRequest, getIdByEmailRequest, getProfileInfo } from './authGET';
+export { updateProfile } from './authPUT';

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import { SignupUI } from './SignupUI';
-import { singupRequest } from '../../API';
+import { ConformationUI } from './ConformationUI';
+import { registerRequest, verifyRequest, resendRequest } from '../../API';
 
 export default class Signup extends Component {
     constructor(props) {
@@ -10,23 +11,10 @@ export default class Signup extends Component {
         this.state = {
             form: {},
             error: null,
+            information: null,
             activationMode: false,
         };
     }
-
-    setForm = (form) => {
-        this.setState({
-            form: form,
-        });
-    };
-
-    setError = (error) => {
-        this.setState({ error: error });
-    };
-
-    onChange = (name, value) => {
-        this.setForm({ ...this.state.form, [name]: value });
-    };
 
     onSubmit = () => {
         if (
@@ -40,7 +28,7 @@ export default class Signup extends Component {
             return;
         }
 
-        for (var i = 0; i < this.state.form.email.length; i++)
+        for (let i = 0; i < this.state.form.email.length; i++)
             if (
                 this.state.form.email[i] === '@' &&
                 i + 1 < this.state.form.email.length &&
@@ -55,19 +43,62 @@ export default class Signup extends Component {
             return;
         }
 
-        singupRequest(
+        registerRequest(
             this.state.form.email,
             this.state.form.password,
-            this.state.form.firstName + this.state.form.lastName
+            this.state.form.firstName + ' ' + this.state.form.lastName
         )
             .then((response) => {
-                this.setState({
-                    activationMode: true,
-                });
+                if (response.data.success) {
+                    this.setState({
+                        activationMode: true,
+                        email: this.state.form.email,
+                    });
+                    this.setError(null);
+                    this.setInformation('Please Enter the Activation Code that is Sent to Your Bilkent Email');
+                }
             })
-            .catch(() => {
+            .catch((error) => {
                 this.setError('Server Error');
             });
+    };
+
+    onConformation = () => {
+        verifyRequest(this.state.email, this.state.form.conformationCode)
+            .then((response) => {
+                this.props.history.push({
+                    pathname: '/login',
+                    state: { redirectedFrom: 'signup' },
+                });
+            })
+            .catch((error) => {
+                this.setInformation(null);
+                this.setError('Conformation Code is Not Correct');
+            });
+    };
+
+    setForm = (form) => {
+        this.setState({
+            form: form,
+        });
+    };
+
+    setError = (error) => {
+        this.setState({ error: error });
+    };
+
+    setInformation = (information) => {
+        this.setState({ information: information });
+    };
+
+    onChange = (name, value) => {
+        this.setForm({ ...this.state.form, [name]: value });
+    };
+
+    onResendCode = () => {
+        resendRequest(this.state.email)
+            .then((response) => {})
+            .catch((error) => {});
     };
 
     render() {
@@ -77,10 +108,25 @@ export default class Signup extends Component {
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
                 error={this.state.error}
-                onErrorClosed={() => this.setError(null)}
+                information={this.state.information}
+                onPopupClosed={() => {
+                    this.setError(null);
+                    this.setInformation(null);
+                }}
             />
         ) : (
-            <div>asd</div>
+            <ConformationUI
+                onResendCode={this.onResendCode}
+                onConformation={this.onConformation}
+                onChange={(e, { name, value }) => this.onChange(name, value)}
+                form={this.state.form}
+                error={this.state.error}
+                information={this.state.information}
+                onPopupClosed={() => {
+                    this.setError(null);
+                    this.setInformation(null);
+                }}
+            />
         );
     }
 }

@@ -1,4 +1,5 @@
 import { Card, Icon, Button } from 'semantic-ui-react';
+import { dateObjectToString } from '../../utils';
 import { convertMembersToMemberElement } from '../BriefList';
 
 import { AssignmentCardElement, FeedbackCardElement, RequestCardElement } from './CardGroupUI';
@@ -8,25 +9,56 @@ export const convertAssignmentsToAssignmentList = (
     onAssignmentClicked,
     onSubmissionClicked,
     onAssignmentFileClicked,
-    assignmentIcons
+    onEditAssignmentModalOpened,
+    onDeleteAssignmentModalOpened,
+    isTAorInstructorOfCourse
 ) => {
-    const assignmentCardElements = assignments?.map((assignment) => {
-        const date = 'Publishment Date: ' + assignment.publishmentDate + ' / Due Date: ' + assignment.dueDate;
+    const assignmentCardElements = assignments?.map((assignment, index) => {
+        const date =
+            'Publishment Date: ' +
+            (typeof assignment.publishmentDate === 'object'
+                ? dateObjectToString(assignment.publishmentDate)
+                : assignment.publishmentDate) +
+            ' / Due Date: ' +
+            (typeof assignment.dueDate === 'object' ? dateObjectToString(assignment.dueDate) : assignment.dueDate);
 
         let statusIcon = null;
         if (assignment.status === 'graded') {
-            statusIcon = <Icon name="check circle outline" />;
+            statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} color="blue" />;
         } else if (assignment.status === 'submitted') {
-            statusIcon = <Icon name="clock outline" />;
+            statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px', color: 'rgb(251, 178, 4)' }} />;
         } else if (assignment.status === 'notsubmitted') {
-            statusIcon = <Icon name="remove circle" />;
+            statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} color="red" />;
         }
 
-        const fileIcon = assignment.file ? <Icon name="file" size="big" /> : null;
+        const fileIcon = assignment.hasFile ? <Icon name="file" color="grey" /> : null;
 
         let onAssignmentClickedId = assignment.submissionId
             ? () => onSubmissionClicked(assignment.projectId, assignment.submissionId)
             : () => onAssignmentClicked(assignment.courseId, assignment.assignmentId);
+
+        let assignmentIcons = null;
+        if (isTAorInstructorOfCourse) {
+            assignmentIcons = (
+                <>
+                    {' '}
+                    <Icon
+                        name="close"
+                        color="red"
+                        size="small"
+                        style={{ float: 'right' }}
+                        onClick={() => onDeleteAssignmentModalOpened(index)}
+                    />
+                    <Icon
+                        name="edit"
+                        color="blue"
+                        size="small"
+                        style={{ float: 'right' }}
+                        onClick={() => onEditAssignmentModalOpened(index)}
+                    />
+                </>
+            );
+        }
 
         return (
             <AssignmentCardElement
@@ -35,7 +67,9 @@ export const convertAssignmentsToAssignmentList = (
                 titleClicked={onAssignmentClickedId}
                 caption={assignment.caption}
                 fileIcon={fileIcon}
-                fileClicked={onAssignmentFileClicked}
+                fileClicked={() =>
+                    onAssignmentFileClicked(assignment.submissionId ? assignment.submissionId : assignment.assignmentId)
+                }
                 date={date}
                 publisher={assignment.publisher}
             />
@@ -65,8 +99,8 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                                 onSubmissionClicked(feedback.submission?.projectId, feedback.submission?.submissionId)
                             }>
                             {' '}
-                            {feedback.user?.name} Commented to Your {feedback.submission?.assignmentName} Submission in{' '}
-                            {feedback.course?.courseName}{' '}
+                            {feedback.course?.courseName} / {feedback.user?.name} /{' '}
+                            {feedback.submission?.assignmentName}{' '}
                         </span>
                     </>
                 );
@@ -74,7 +108,8 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                 titleElement = (
                     <>
                         <span onClick={() => onProjectClicked(feedback.project?.projectId)}>
-                            Commented to Your {feedback.project?.projectName} Project in {feedback.course?.courseName}{' '}
+                            {' '}
+                            {feedback.course?.courseName} / {feedback.user?.name} / {feedback.project?.projectName}{' '}
                         </span>
                     </>
                 );
@@ -84,7 +119,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                     titleElement={titleElement}
                     caption={feedback.feedback?.caption}
                     grade={feedback.feedback?.grade}
-                    date={feedback.date}
+                    date={feedback.feedback?.date}
                 />
             );
         })
@@ -95,7 +130,13 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
     return newFeedbackCardElements;
 };
 
-export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorClicked, userId) => {
+export const convertFeedbacksToFeedbackList = (
+    feedbacks,
+    onOpenModal,
+    onAuthorClicked,
+    userId,
+    onFeedbackFileClicked
+) => {
     const feedbackCardElements = feedbacks ? (
         feedbacks.map((feedback) => {
             let icons = null;
@@ -105,7 +146,7 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorC
                         <Icon
                             name="edit"
                             onClick={() =>
-                                onOpenmodal(
+                                onOpenModal(
                                     'isEditFeedbackOpen',
                                     false,
                                     feedback.commentId,
@@ -117,7 +158,7 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorC
                         <Icon
                             name="delete"
                             onClick={() =>
-                                onOpenmodal(
+                                onOpenModal(
                                     'isDeleteFeedbackOpen',
                                     false,
                                     feedback.commentId,
@@ -134,7 +175,10 @@ export const convertFeedbacksToFeedbackList = (feedbacks, onOpenmodal, onAuthorC
                 <FeedbackCardElement
                     author={feedback.name ? feedback.name : 'Comment is anonymous'}
                     caption={feedback.caption}
+                    hasFile={feedback.hasFile}
+                    onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId)}
                     grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
+                    maxGrade={feedback?.maxGrade}
                     date={feedback.date}
                     icons={icons}
                     onAuthorClicked={() => onAuthorClicked(feedback.userId)}
@@ -157,7 +201,7 @@ export const convertSRSFeedbackToSRSCardElement = (
     isTAorInstructor,
     onModalOpenedWithComments,
     onAuthorClicked,
-    onmodalOpened
+    onModalOpened
 ) => {
     if (SRSResult) {
         let icons = null;
@@ -165,21 +209,9 @@ export const convertSRSFeedbackToSRSCardElement = (
             icons = (
                 <span>
                     <Icon
-                        name="edit"
-                        onClick={() =>
-                            onModalOpenedWithComments(
-                                'isEditFeedbackOpen',
-                                true,
-                                SRSResult.commentId,
-                                SRSResult.caption,
-                                SRSResult.grade,
-                                SRSResult.file,
-                                SRSResult.maxGrade
-                            )
-                        }
-                    />
-                    <Icon
                         name="delete"
+                        color="red"
+                        style={{ float: 'right' }}
                         onClick={() =>
                             onModalOpenedWithComments(
                                 'isDeleteFeedbackOpen',
@@ -187,7 +219,23 @@ export const convertSRSFeedbackToSRSCardElement = (
                                 SRSResult.commentId,
                                 SRSResult.caption,
                                 SRSResult.grade,
-                                SRSResult.file,
+                                SRSResult.hasFile,
+                                SRSResult.maxGrade
+                            )
+                        }
+                    />
+                    <Icon
+                        name="edit"
+                        color="blue"
+                        style={{ float: 'right' }}
+                        onClick={() =>
+                            onModalOpenedWithComments(
+                                'isEditFeedbackOpen',
+                                true,
+                                SRSResult.commentId,
+                                SRSResult.caption,
+                                SRSResult.grade,
+                                SRSResult.hasFile,
                                 SRSResult.maxGrade
                             )
                         }
@@ -206,11 +254,12 @@ export const convertSRSFeedbackToSRSCardElement = (
                     date={SRSResult.date}
                     icons={icons}
                     maxGrade={SRSResult.maxGrade}
+                    isSrs={true}
                 />
             </Card.Group>
         );
     } else if (isTAorInstructor) {
-        return <Button onClick={() => onmodalOpened('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
+        return <Button onClick={() => onModalOpened('isGiveFeedbackOpen', true)}>Add SRS Grade</Button>;
     } else {
         return <div>No SRS Feedback</div>;
     }
@@ -221,8 +270,7 @@ export const convertRequestsToRequestsList = (
     requestsType,
     requestStatus,
     onUserClicked,
-    onRequestApproved,
-    onRequestDisapproved
+    onRequestAction
 ) => {
     return (
         <Card.Group as="div" className="AssignmentCardGroup">
@@ -233,9 +281,18 @@ export const convertRequestsToRequestsList = (
                         yourGroup = convertMembersToMemberElement(request.yourGroup, onUserClicked);
                     }
 
+                    let psotherGroup = [];
+                    if (request?.user) {
+                        psotherGroup.push(request?.user);
+                    } else {
+                        psotherGroup = null;
+                    }
                     let otherGroup = null;
-                    if (request.otherGroup) {
-                        otherGroup = convertMembersToMemberElement(request.otherGroup, onUserClicked);
+                    if (request.otherGroup || psotherGroup) {
+                        otherGroup = convertMembersToMemberElement(
+                            request.otherGroup ? request.otherGroup : psotherGroup,
+                            onUserClicked
+                        );
                     }
 
                     let titleStart, titleMid, userName, userId;
@@ -257,36 +314,65 @@ export const convertRequestsToRequestsList = (
                         }
 
                         if (requestStatus === 'pending') {
-                            titleMid = ' created a ' + request.type + ' request to Your Unformed Group in ';
+                            titleMid = ' wants to ' + request.type + ' your group ';
 
                             voteIcons = (
                                 <>
+                                    <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                     <Icon
-                                        onClick={() => onRequestApproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isApprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="checkmark"
+                                        color="blue"
                                     />
                                     <Icon
-                                        onClick={() => onRequestDisapproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isDisapprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="x"
+                                        color="red"
                                     />
                                 </>
                             );
                         }
 
                         if (requestStatus === 'unresolved') {
-                            titleStart = 'Your Approved ';
-                            titleMid = request.type + ' request to your Unformed Group in ';
-
+                            titleStart = 'You approved ' + request.type + ' request of ';
                             voteIcons = (
-                                <>
-                                    <Icon name="checkmark" />
-                                </>
+                                <p style={{ display: 'inline' }}>
+                                    Approved: {request.voteStatus}&nbsp;
+                                    {
+                                        <Icon
+                                            onClick={() =>
+                                                onRequestAction(
+                                                    'isUndoModalOpen',
+                                                    request.requestId,
+                                                    request.type,
+                                                    userName
+                                                )
+                                            }
+                                            name="undo"
+                                            color="purple"
+                                        />
+                                    }
+                                </p>
                             );
                         }
 
                         if (requestStatus === 'resolved') {
-                            titleMid =
-                                "'s " + request.type + ' request ' + request.status + ' by your Unformed Group in ';
+                            titleStart = request.type + ' request of ';
+                            titleMid = ' ' + request.status;
                         }
                     } else if (requestsType === 'outgoing') {
                         if (request.type === 'Join') {
@@ -306,35 +392,80 @@ export const convertRequestsToRequestsList = (
                         }
 
                         if (requestStatus === 'pending') {
-                            titleMid = ' created a ' + request.type + ' request to an Unformed Group in ';
+                            titleMid = ' send a ' + request.type + ' request';
 
                             voteIcons = (
                                 <>
+                                    <p style={{ display: 'inline' }}>Approved: {request.voteStatus}&nbsp;</p>
                                     <Icon
-                                        onClick={() => onRequestApproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isApprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="checkmark"
+                                        color="blue"
                                     />
                                     <Icon
-                                        onClick={() => onRequestDisapproved(request.requestId, request.type, userName)}
+                                        onClick={() =>
+                                            onRequestAction(
+                                                'isDisapprovalModalOpen',
+                                                request.requestId,
+                                                request.type,
+                                                userName
+                                            )
+                                        }
                                         name="x"
+                                        color="red"
                                     />
                                 </>
                             );
                         }
 
                         if (requestStatus === 'unresolved') {
-                            titleMid = ' created a ' + request.type + ' request to an Unformed Group in ';
+                            titleMid = ' send a ' + request.type + ' request';
 
                             voteIcons = (
                                 <>
-                                    <Icon name="checkmark" />
+                                    <p style={{ display: 'inline' }}>
+                                        Approved: {request.voteStatus}&nbsp;{' '}
+                                        {request.type === 'Merge' ? (
+                                            <Icon
+                                                onClick={() =>
+                                                    onRequestAction(
+                                                        'isUndoModalOpen',
+                                                        request.requestId,
+                                                        request.type,
+                                                        userName
+                                                    )
+                                                }
+                                                name="undo"
+                                                color="purple"
+                                            />
+                                        ) : (
+                                            <Icon
+                                                onClick={() =>
+                                                    onRequestAction(
+                                                        'isDeleteModalOpen',
+                                                        request.requestId,
+                                                        request.type,
+                                                        userName
+                                                    )
+                                                }
+                                                name="x"
+                                                color="red"
+                                            />
+                                        )}
+                                    </p>
                                 </>
                             );
                         }
 
                         if (requestStatus === 'resolved') {
-                            titleMid =
-                                ' ' + request.type + ' request ' + request.status + ' by your Unformed Group in ';
+                            titleMid = ' ' + request.type + ' request ' + request.status;
                         }
                     }
 

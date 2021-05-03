@@ -1,0 +1,28 @@
+.CourseNameEdit i {
+    margin-left: 5px;
+}
+
+.InstructorsBlock {
+    margin-top: 20px;
+}
+
+.InstructorsBlock > div {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 2px;
+}
+
+.TAsBlock {
+    margin-top: 20px;
+}
+
+.TAsBlock > div {
+    padding-bottom: 10px;
+}
+
+.AssignmentCheckbox {
+    margin: 5px;
+}
+.courseGroupMember {
+    color: black;
+}

@@ -16,3 +16,7 @@
     overflow-x: hidden;
     max-height: 400px;
 }
+
+.GroupNameChangeInput {
+    width: 100%;
+}

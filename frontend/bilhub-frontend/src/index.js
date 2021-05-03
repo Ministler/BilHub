@@ -11,7 +11,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { authReducer } from './store';
 
-const store = createStore(authReducer);
+export const store = createStore(authReducer);
 
 const app = (
     <React.StrictMode>

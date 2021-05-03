@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Button, Grid, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-
+import { Logo } from '../../components';
 import './LoginUI.css';
 
 export const LoginUI = (props) => {
@@ -10,7 +10,7 @@ export const LoginUI = (props) => {
             <Grid centered>
                 <Grid.Column style={{ maxWidth: 300, marginTop: 50 }}>
                     <h2 className="ui center aligned icon header">
-                        <i className="circular users icon"></i>
+                        <Logo/>
                         Sign in to BilHub
                     </h2>
                     {props.error && (
@@ -18,9 +18,19 @@ export const LoginUI = (props) => {
                             <i
                                 className="close icon"
                                 onClick={() => {
-                                    props.onErrorClosed();
+                                    props.onPopupClosed();
                                 }}></i>
                             {props.error}
+                        </div>
+                    )}
+                    {props.information && (
+                        <div className="ui positive message" style={{ fontSize: '12px' }}>
+                            <i
+                                className="close icon"
+                                onClick={() => {
+                                    props.onPopupClosed();
+                                }}></i>
+                            {props.information}
                         </div>
                     )}
                     <Segment>

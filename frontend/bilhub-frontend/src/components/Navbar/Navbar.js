@@ -13,9 +13,9 @@ const Navbar = (props) => {
                 <Image size="mini" src="https://react.semantic-ui.com/logo.png" /> {/* TODO: LOGOMOUZU YERLEŞTİR */}
             </Menu.Item>
 
-            <Menu.Item>
+            {/* <Menu.Item>
                 <Search />
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Menu className="NavigatorRightMenu" position="right">
                 <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
                     <Icon name="bell" size="large" />
@@ -25,7 +25,7 @@ const Navbar = (props) => {
                         <div className="MyDivider" />
                         <Dropdown.Item as={NavLink} to="/profile" icon="user circle outline" text="My Profile" />
 
-                        {props.userType === 'instructor' ? (
+                        {props.userType === 'Instructor' ? (
                             <>
                                 <Dropdown.Divider />
                                 <Dropdown.Item
