@@ -934,7 +934,7 @@ namespace backend.Data
                     HasSubmission = true,
                     HasFile = false,
                     CourseId = 1,
-                    SectionId = 1
+                    SectionId = 2
                 }, new Submission
                 {
                     Id = 4,
@@ -971,7 +971,7 @@ namespace backend.Data
                     HasSubmission = true,
                     HasFile = false,
                     CourseId = 1,
-                    SectionId = 1
+                    SectionId = 2
                 }, new Submission
                 {
                     Id = 7,
@@ -1007,6 +1007,169 @@ namespace backend.Data
                     AffiliatedGroupId = 2,
                     FilePath = "", // check this
                     HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 2
+                }, new Submission
+                {
+                    Id = 10,
+                    Description = "we submitted our report",
+                    IsGraded = true,
+                    SrsGrade = (decimal)9.8,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 6,
+                    UpdatedAt = new DateTime(2021, 3, 31, 22, 54, 2),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 2
+                }, new Submission
+                {
+                    Id = 11,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)7.5,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 7,
+                    UpdatedAt = new DateTime(2021, 3, 27, 23, 51, 12),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 12,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)10,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 8,
+                    UpdatedAt = new DateTime(2021, 3, 29, 15, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 13,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)0,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = 9,
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 14,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)7.4,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 6,
+                    UpdatedAt = new DateTime(2021, 5, 22, 22, 54, 2),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 2
+                }, new Submission
+                {
+                    Id = 15,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)9,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 7,
+                    UpdatedAt = new DateTime(2021, 5, 21, 23, 51, 12),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 16,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)9.2,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 8,
+                    UpdatedAt = new DateTime(2021, 5, 28, 15, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 17,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)7,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = 9,
+                    UpdatedAt = new DateTime(2021, 5, 29, 15, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 18,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 6,
+                    UpdatedAt = new DateTime(2021, 3, 14, 22, 54, 2),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 2
+                }, new Submission
+                {
+                    Id = 19,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 7,
+                    UpdatedAt = new DateTime(2021, 3, 15, 23, 51, 12),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 20,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 8,
+                    UpdatedAt = new DateTime(2021, 3, 14, 15, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = 21,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = 9,
+                    UpdatedAt = new DateTime(2021, 3, 15, 15, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = true,
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 1
