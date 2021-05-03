@@ -132,6 +132,7 @@ class Course extends Component {
             if (!response.data.success) return;
 
             const courseData = response.data?.data;
+            console.log(courseData);
             const courseInformation = {
                 name: courseData?.name,
                 year: courseData?.year,
@@ -241,8 +242,13 @@ class Course extends Component {
 
         getCourseStatisticRequest(this.props.match.params.courseId).then((response) => {
             if (!response.data.success) return;
+            let stat = response.data.data;
+            const final = [];
+            for (let i in stat.ozgurStatDtos) {
+                final.push(stat.ozgurStatDtos[i].grades[0]);
+            }
 
-            console.log(response.data.data);
+            this.setState({ courseGrades: { graders: stat.graders, groups: stat.ozgurStatDtos }, finalGrades: final });
         });
     }
 
@@ -657,15 +663,17 @@ class Course extends Component {
 
     getCoursePanes = () => {
         return this.state.courseInformation?.isTAorInstructorOfCourse
-            ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()]
-            : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()];
+            ? [this.getGroupsPane(), this.getAssignmentPane(), this.getPeerReviewPane()]
+            : [this.getGroupsPane(), this.getAssignmentPane()];
     };
-
+    //this.getStatisticsPane(),this.getStatisticsPane(),
     getAssignmentPage = () => {
         return (
             <CourseAssignment
                 isTAorInstructorOfCourse={this.state.courseInformation?.isTAorInstructorOfCourse}
-                numberOfSections={this.state.courseInformation?.numberOfSections}
+                numberOfSections={
+                    this.state.courseInformation.numberOfSections ? this.state.courseInformation.numberOfSections : 1
+                }
                 currentUserSection={this.state.courseInformation?.currentUserSection}
                 isCourseActive={this.state.courseInformation?.isCourseActive}
                 courseName={this.state.courseInformation?.courseName}

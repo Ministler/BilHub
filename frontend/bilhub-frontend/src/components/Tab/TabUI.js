@@ -58,11 +58,11 @@ export const SubmissionPane = (props) => {
 
     let statusIcon = null;
     if (props.assignment.status === 'graded') {
-        statusIcon = <Icon name="check circle outline" color="blue"/>;
+        statusIcon = <Icon name="check circle outline" color="blue" />;
     } else if (props.assignment.status === 'submitted') {
-        statusIcon = <Icon name="clock outline" color="rgb(251, 178, 4)"/>;
+        statusIcon = <Icon name="clock outline" color="rgb(251, 178, 4)" />;
     } else if (props.assignment.status === 'notsubmitted') {
-        statusIcon = <Icon name="remove circle" color="red"/>;
+        statusIcon = <Icon name="remove circle" color="red" />;
     }
 
     return (
@@ -96,6 +96,7 @@ export const StudentPeerReviewPane = (props) => {
             });
         }
     }
+    console.log(options);
     for (var i = 0; i <= props.maxGrade; i++) {
         points.push({
             text: i,
@@ -107,39 +108,42 @@ export const StudentPeerReviewPane = (props) => {
         <>
             <div class="sixteen wide column">
                 <Form reply style={{ width: '95%' }}>
-                    <Form.Select width={5}
+                    <Form.Select
+                        width={5}
                         placeholder="Select Peer"
                         onChange={(e, d) => props.changePeer(d.value)}
                         options={options}></Form.Select>
                     <Form.TextArea rows="5" value={props.comment} onChange={(e, d) => props.commentChange(d)} />
-                    <Grid><Grid.Row columns={2}><Grid.Column>
-                    <Form.Group inline>
-                        <label>Grade</label>
-                        <Form.Select 
-                        floated="left"
-                        onChange={(e, d) => props.gradeChange(d)}
-                        value={props.grade}
-                        placeholder="#"
-                        className="numberDropdown"
-                        selection
-                        options={points}
-                        ></Form.Select>
-                    </Form.Group>
-                    </Grid.Column>
-                    <Grid.Column>
-                    <Form.Button
-                        floated="right"
-                        labelPosition="right"
-                        icon
-                        onClick={() => props.submitReview()}
-                        color="green"
-                        content="Give Feedback"
-                        Compact>
-                        Submit
-                        <Icon name="send" />
-                    </Form.Button>
-                    </Grid.Column>
-                    </Grid.Row></Grid>
+                    <Grid>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
+                                <Form.Group inline>
+                                    <label>Grade</label>
+                                    <Form.Select
+                                        floated="left"
+                                        onChange={(e, d) => props.gradeChange(d)}
+                                        value={props.grade}
+                                        placeholder="#"
+                                        className="numberDropdown"
+                                        selection
+                                        options={points}></Form.Select>
+                                </Form.Group>
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Form.Button
+                                    floated="right"
+                                    labelPosition="right"
+                                    icon
+                                    onClick={() => props.submitReview()}
+                                    color="green"
+                                    content="Give Feedback"
+                                    Compact>
+                                    Submit
+                                    <Icon name="send" />
+                                </Form.Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
                 </Form>
             </div>
         </>

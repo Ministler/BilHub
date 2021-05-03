@@ -45,6 +45,7 @@ class CourseAssignment extends Component {
             if (!response.data.success) return;
 
             const data = response.data.data;
+
             const assignment = {
                 title: data.title,
                 caption: data.assignmentDescription,
@@ -77,9 +78,11 @@ class CourseAssignment extends Component {
                             notSubmitted: [],
                         });
                     }
-
+                    console.log(data.sectionNumber);
+                    console.log(submission);
                     for (let response of responses) {
                         const data = response.data.data;
+                        console.log(data);
                         if (!data.hasSubmission) {
                             submission[data.sectionNumber - 1].notSubmitted.push({
                                 groupName: data.affiliatedGroup.name,
