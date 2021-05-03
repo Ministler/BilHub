@@ -70,8 +70,10 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<string>> DownloadSubmission(GetSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
-            Submission submission = await _context.Submissions.Include(s => s.AffiliatedGroup)
-                .ThenInclude(pg => pg.GroupMembers).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
+            Submission submission = await _context.Submissions
+                .Include(s => s.AffiliatedGroup).ThenInclude(pg => pg.GroupMembers)
+                .Include(s => s.AffiliatedAssignment)
+                .FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
             if (submission == null)
             {
                 response.Data = null;
@@ -86,11 +88,11 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            Course course = await _context.Courses.Include(c => c.Instructors)
-                .FirstOrDefaultAsync(c => c.Instructors.Any(cu => cu.UserId == GetUserId()
-                    && cu.CourseId == submission.AffiliatedAssignment.AfilliatedCourseId));
+            Course course = await _context.Courses.Include(c => c.Instructors).FirstOrDefaultAsync(c => c.Id == submission.AffiliatedAssignment.AfilliatedCourseId);
+
             if (!submission.AffiliatedAssignment.VisibilityOfSubmission
-                && course == null && submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
+                && !course.Instructors.Any(cu => cu.UserId == GetUserId())
+                && !submission.AffiliatedGroup.GroupMembers.Any(u => u.UserId == GetUserId()))
             {
                 response.Data = null;
                 response.Message = "You are not authorized to see this submission";
@@ -105,6 +107,13 @@ namespace backend.Services.SubmissionServices
         public async Task<ServiceResponse<string>> SubmitAssignment(AddSubmissionFileDto dto)
         {
             ServiceResponse<string> response = new ServiceResponse<string>();
+            if (dto == null)
+            {
+                response.Data = null;
+                response.Message = "There is no data";
+                response.Success = false;
+                return response;
+            }
             Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment).FirstOrDefaultAsync(s => s.Id == dto.SubmissionId);
             if (submission == null)
             {

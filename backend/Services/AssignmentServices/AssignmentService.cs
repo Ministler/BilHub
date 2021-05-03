@@ -152,6 +152,13 @@ namespace backend.Services.AssignmentServices
         public async Task<ServiceResponse<GetAssignmentDto>> SubmitAssignment(AddAssignmentDto assignmentDto)
         {
             ServiceResponse<GetAssignmentDto> response = new ServiceResponse<GetAssignmentDto>();
+            if (assignmentDto == null)
+            {
+                response.Data = null;
+                response.Message = "There is no data";
+                response.Success = false;
+                return response;
+            }
             Course course = await _context.Courses.Include(c => c.Instructors).Include(c => c.Sections).ThenInclude(s => s.ProjectGroups)
                 .FirstOrDefaultAsync(c => c.Id == assignmentDto.CourseId);
             if (course == null)
