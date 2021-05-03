@@ -15,5 +15,7 @@ namespace backend.Data.Auth
         Task<bool> UserExists(string username);
         Task<ServiceResponse<GetUserDto>> check();
         Task<ServiceResponse<int>> IdOfUser ( string email );
+        Task<ServiceResponse<GetUserInfoDto>> UpdateProfile ( UserUpdateDto userUpdateDto );
+        Task<ServiceResponse<GetUserInfoDto>> GetProfile ( int userId );
     }
 }
