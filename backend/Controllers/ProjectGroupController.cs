@@ -143,5 +143,11 @@ namespace backend.Controllers
         {
             return Ok(await _projectGroupService.GetAssignments(projectGroupId));
         }
+
+        [HttpGet("IsUserInstructorOfGroup")]
+        public async Task<ActionResult> IsUserInstructorOfGroup(int projectGroupId, int userId)
+        {
+            return Ok(await _projectGroupService.IsUserInstructorOfGroup(projectGroupId,userId));
+        }
     }
 }

@@ -35,7 +35,11 @@ namespace backend
                 .ForMember( dto => dto.IsUserAlone, opt => opt.Ignore() );
 
             CreateMap<Course, CourseInSectionDto>();
-            CreateMap<ProjectGroup, ProjectGroupInSectionDto>();
+            
+            CreateMap<User,GroupMemberInSectionDto>();
+            CreateMap<ProjectGroup, ProjectGroupInSectionDto>()
+                .ForMember ( dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
+
             CreateMap<Section, GetSectionOfCourseDto>();
             CreateMap<Section, GetSectionDto>();
             CreateMap<Assignment, GetAssignmentDto>();
@@ -51,6 +55,7 @@ namespace backend
 
             CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>();
             CreateMap<MergeRequest,GetMergeRequestDto>();
+            CreateMap<User,UsersOfCourseDto>();
         }
 
     }

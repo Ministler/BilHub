@@ -30,6 +30,6 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<GetSrsGradeDto>> GetSrsGrade(int projectGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> DeleteSrsGrade(DeleteSrsGradeDto deleteSrsGradeDto);
         Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId);
-
+        Task<ServiceResponse<bool>> IsUserInstructorOfGroup(int projectGroupId, int userId);
     }
 }

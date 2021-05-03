@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using backend.Dtos.Assignment;
 using backend.Dtos.Course;
 using backend.Dtos.ProjectGroup;
+using backend.Dtos.User;
 using backend.Models;
 
 namespace backend.Services.CourseServices
@@ -21,6 +22,7 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<GetCourseDto>> DeactivateCourse(int courseId);
         Task<ServiceResponse<List<GetCourseDto>>> GetInstructedCoursesOfUser(int userId);
         Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId);
+        Task<ServiceResponse<List<UsersOfCourseDto>>> GetUsersOfCourse (int courseId);
 
     }
 }
