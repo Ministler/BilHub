@@ -5,7 +5,13 @@ import axios from 'axios';
 import _ from 'lodash';
 
 import './Project.css';
-import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal, NewCommentModal2 } from './ProjectComponents';
+import {
+    InformationSection,
+    NewCommentModal,
+    EditCommentModal,
+    DeleteCommentModal,
+    NewCommentModal2,
+} from './ProjectComponents';
 import {
     Tab,
     convertAssignmentsToAssignmentList,
@@ -52,7 +58,7 @@ class Project extends Component {
             currentFeedbackGrade: 10,
             currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
-            
+
             // testing
             currentFeedbackText2: '',
             currentFeedbackGrade2: 10,
@@ -514,7 +520,7 @@ class Project extends Component {
                     <Divider/>
                 </div> */}
                 <div class="sixteen wide column">
-                    <NewCommentModal2  
+                    <NewCommentModal2
                         text={this.state.currentFeedbackText2}
                         grade={this.state.currentFeedbackGrade2}
                         maxGrade={this.state.currentMaxFeedbackGrade2}
@@ -522,12 +528,12 @@ class Project extends Component {
                         onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
                         onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
                         onGiveFeedback={(e) => this.onGiveFeedback(e)}
-                        />
-                </div>   
-                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
-                    <Divider/>
-                </div> 
-                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                    />
+                </div>
+                <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
+                    <Divider />
+                </div>
+                <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
                     <FeedbacksPane
                         feedbacksAccordion={getFeedbacksAsAccordion(
                             this.state.feedbacks,
@@ -612,14 +618,14 @@ class Project extends Component {
                         currentPeer={this.state.currentPeer}
                     />
                 )
+            ) : null,
         };
     };
 
     getPaneElements = () => {
-        if( this.state.isPeerReviewOpen )
+        if (this.state.isPeerReviewOpen)
             return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane(), this.getPeerReviewPane()];
-        else
-            return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
+        else return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
     };
 
     // Modals

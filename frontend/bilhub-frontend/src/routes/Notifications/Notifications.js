@@ -10,6 +10,7 @@ import {
     getUserGroupsRequest,
     getInstructedCoursesRequest,
     getNewCommentsRequest,
+    getCourseRequest,
 } from '../../API';
 import './Notifications.css';
 import {
@@ -109,10 +110,65 @@ class Notifications extends Component {
             console.log(response);
         });
 
-        this.setState({
-            myProjects: dummyMyProjectsList,
-            instructedCourses: dummyInstructedCoursesList,
+        getInstructedCoursesRequest(this.props.userId).then((response) => {
+            if (!response.data.success) return;
 
+            const instructedCourse = [];
+            for (let i = 0; i < response.data.data.length; i++) {
+                instructedCourse.push({
+                    courseId: response.data.data[i].id,
+                    courseCode:
+                        response.data.data[i].name +
+                        ' ' +
+                        response.data.data[i].courseSemester +
+                        '-' +
+                        response.data.data[i].year,
+                    isActive: response.data.data[i].isActive,
+                });
+            }
+
+            this.setState({
+                instructedCourses: instructedCourse,
+            });
+        });
+
+        getUserGroupsRequest(this.props.userId).then((response) => {
+            if (!response.data.success) return;
+
+            const data = response.data.data;
+            const requests = [];
+            for (let i = 0; i < data.length; i++) {
+                let courseId = data[i].affiliatedCourseId;
+                requests.push(getCourseRequest(courseId));
+            }
+
+            const myProjects = [];
+            axios.all(requests).then(
+                axios.spread((...responses) => {
+                    for (let i = 0; i < responses.length; i++) {
+                        if (!responses[i].data.success) {
+                            myProjects.push({
+                                projectName: data[i].name,
+                                projectId: data[i].id,
+                            });
+                        }
+
+                        let courseData = responses[i].data.data;
+                        myProjects.push({
+                            courseCode: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
+                            projectName: data[i].name,
+                            isActive: courseData.isActive,
+                            projectId: data[i].id,
+                        });
+                        this.setState({
+                            myProjects: myProjects,
+                        });
+                    }
+                })
+            );
+        });
+
+        this.setState({
             incomingRequests: dummyIncomingRequests,
             outgoingRequests: dummyOutgoingRequests,
             newFeedbacks: dummyNewFeedbacks,

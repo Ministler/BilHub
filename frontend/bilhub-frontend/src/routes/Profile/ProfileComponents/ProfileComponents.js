@@ -55,6 +55,7 @@ export const TabExampleSecondaryPointing = (props) => {
                             peerGrade={project.peerGrade}
                             projectGrade={project.projectGrade}
                             instructor={project.instructor}
+                            information={project.information}
                             onUserClicked={(userId) => props.onUserClicked(userId)}
                             onProjectClicked={() => props.onProjectClicked(project.projectId)}
                         />
@@ -91,11 +92,7 @@ export const ProjectCardElement = (props) => {
                             )}
                         </Grid.Column>
                     </Grid>
-                    <p style={{ marginTop: '15px' }}>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus a fugit amet rem officia id
-                        voluptate sint cumque hic odit incidunt, cum alias perspiciatis voluptas! Quasi similique
-                        tenetur corporis itaque.
-                    </p>
+                    <p style={{ marginTop: '15px' }}>{props.information}</p>
                 </Card.Description>
             </Card.Content>
             <Card.Content className="ProjectCardExtra">
@@ -125,11 +122,7 @@ export const CourseCardElement = (props) => {
                             {convertMembersToMemberElement(props.TAs, props.onUserClicked)}
                         </Grid.Column>
                     </Grid>
-                    <p style={{ marginTop: '15px' }}>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus a fugit amet rem officia id
-                        voluptate sint cumque hic odit incidunt, cum alias perspiciatis voluptas! Quasi similique
-                        tenetur corporis itaque.
-                    </p>
+                    <p style={{ marginTop: '15px' }}>{props.information}</p>
                 </Card.Description>
             </Card.Content>
         </Card>

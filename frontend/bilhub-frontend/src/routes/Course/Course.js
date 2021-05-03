@@ -161,7 +161,7 @@ class Course extends Component {
                 currentSection: courseInformation.currentUserSection ? courseInformation.currentUserSection - 1 : 0,
             });
 
-            if (courseData.isLocked) {
+            if (!courseData.isLocked) {
                 const sectionRequests = [];
                 for (let i = 0; i < courseData?.sections.length; i++) {
                     sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
@@ -187,15 +187,14 @@ class Course extends Component {
                 //             groupId: 1,
                 //             groupName: 'BilH123ub',
                 //         },
-
                 axios.all(sectionRequests).then(
                     axios.spread((...responses) => {
                         const groups = [[]];
                         for (let i = 0; i < responses.length; i++) {
                             const data = responses[i].data.data;
-
                             const section = [];
                             for (let group of data.projectGroups) {
+                                console.log(group);
                             }
                         }
                     })
