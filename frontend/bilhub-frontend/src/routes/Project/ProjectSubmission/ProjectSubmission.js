@@ -78,6 +78,8 @@ class ProjectAssignment extends Component {
         console.log(this.state.currentFeedbackText2);
         console.log(this.state.currentFeedbackGrade2);
         console.log(this.state.currentMaxFeedbackGrade2);
+
+        
     };
     
     onAssignmentFileClicked = () => {
@@ -374,12 +376,12 @@ class ProjectAssignment extends Component {
             <Grid>
             <div class="sixteen wide column">
             <NewCommentModal2  
-                text={this.state.currentFeedbackText2}
-                grade={this.state.currentFeedbackGrade2}
-                maxGrade={this.state.currentMaxFeedbackGrade2}
-                onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
-                onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
-                onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                text={this.state.currentFeedbackText}
+                grade={this.state.currentFeedbackGrade}
+                maxGrade={this.state.currentMaxFeedbackGrade}
+                onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
+                onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 onGiveFeedback={(e) => this.onGiveFeedback(e)}
                 />
             </div>

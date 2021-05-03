@@ -44,3 +44,23 @@ a:hover {
     color: #3a58c4;
     text-decoration: underline;
 }
+
+.edit:hover {
+    cursor: pointer;
+    color: #3a58c4;
+}
+.checkmark:hover {
+    cursor: pointer;
+}
+.x:hover {
+    cursor: pointer;
+}
+.close:hover {
+    cursor: pointer;
+}
+.undo:hover {
+    cursor: pointer;
+}
+.setting:hover {
+    cursor: pointer;
+}
