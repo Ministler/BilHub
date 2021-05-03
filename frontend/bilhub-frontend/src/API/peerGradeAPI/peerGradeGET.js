@@ -12,6 +12,7 @@ export const getPeerGradeRequest = async (peerGradeId) => {
 };
 
 export const getPeerGradeRequestWithReviewer = async (projectGroupId, reviewerId) => {
+    console.log(projectGroupId, reviewerId);
     const url = projectGroupId + '/' + reviewerId;
 
     return authAxios

@@ -167,7 +167,6 @@ class Project extends Component {
                     newInformation: projectGroupData.projectInformation,
                     newName: projectGroupData.affiliatedCourse.name,
                 };
-                console.log(this.props.match.params.projectId, this.props.userId);
                 if (auth.data.data) {
                     getPeerGradeRequestWithReviewer(this.props.match.params.projectId, this.props.userId).then(
                         (users) => {
@@ -175,11 +174,12 @@ class Project extends Component {
                         }
                     );
                 } else {
-                    getPeerGradeRequestWithReviewee(this.props.match.params.projectId, this.state.currentPeer).then(
-                        (users) => {
-                            console.log(users.data.data);
-                        }
-                    );
+                    getPeerGradeRequestWithReviewee(
+                        parseInt(this.props.match.params.projectId),
+                        this.state.currentPeer
+                    ).then((users) => {
+                        console.log(users.data.data);
+                    });
                 }
                 this.setState({
                     projectGroup: projectInformation,
