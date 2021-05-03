@@ -9,7 +9,7 @@ export {
     getIdByEmailRequest,
 } from './authAPI';
 export {} from './userAPI';
-export {} from './commentAPI';
+export { postCommentRequest } from './commentAPI';
 export {
     getAssignmentFeedsRequest,
     getUpcomingAssignmentFeedsRequest,
@@ -42,4 +42,12 @@ export {
     getOutgoingMergeRequest,
     getOutgoingJoinRequest,
 } from './requestAPI';
-export { getNewCommentsRequest, getSubmissionRequest } from './submissionAPI';
+export {
+    deleteSubmissionRequest,
+    deleteSubmissionFileRequest,
+    getNewCommentsRequest,
+    getSubmissionRequest,
+    postSubmissionRequest,
+    postSubmissionFileRequest,
+    putSubmissionRequest,
+} from './submissionAPI';

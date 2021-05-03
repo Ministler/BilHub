@@ -24,6 +24,7 @@ import {
 import { ProjectSubmission } from './ProjectSubmission';
 import { InstructorPeerReviewPane, StudentPeerReviewPane } from '../../components/Tab/TabUI';
 import {
+    getGroupAssignmentsRequest,
     getGroupInstructorCommentsRequest,
     getGroupStudentCommentsRequest,
     getGroupTACommentsRequest,
@@ -31,6 +32,8 @@ import {
 } from '../../API/projectGroupAPI/projectGroupGET';
 import { putProjectGroupInformationRequest } from '../../API/projectGroupAPI/projectGroupPUT';
 import { getAssignmentFileRequest } from '../../API/assignmentAPI/assignmentGET';
+import { getProjectGradeByIdRequest } from '../../API/projectGradeAPI/projectGradeGET';
+import { inputDateToDateObject } from '../../utils';
 
 class Project extends Component {
     constructor(props) {
@@ -83,7 +86,7 @@ class Project extends Component {
     };
 
     changeGroupInformation = (newInformation) => {
-        //putProjectGroupInformationRequest(newInformation, this.props.match.params.projectId);
+        putProjectGroupInformationRequest(this.props.match.params.projectId, newInformation);
     };
 
     onAssignmentFileClicked = (assignmentId) => {
@@ -172,31 +175,64 @@ class Project extends Component {
             });
         });
 
+        getGroupAssignmentsRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+            const projectAssignments = response.data.data;
+            const temp = [];
+            const status = { 0: 'notsubmitted', 1: 'submitted', 2: 'graded' };
+            for (var i in projectAssignments) {
+                temp.push({
+                    title: projectAssignments[i].title,
+                    status: status[projectAssignments[i].status],
+                    caption: projectAssignments[i].caption,
+                    publisher: projectAssignments[i].publisher,
+                    dueDate: inputDateToDateObject(projectAssignments[i].dueDate),
+                    publishmentDate: inputDateToDateObject(projectAssignments[i].publishmentDate),
+                    projectId: this.props.match.params.projectId,
+                    submissionId: projectAssignments[i].submissionId,
+                });
+            }
+            this.setState({
+                assignments: temp,
+            });
+        });
+
+        /*const dummyAssignmentsList = [
+            {
+                title: 'CS319-2021Spring / Desing Report Assignment',
+                status: 'graded',
+                caption:
+                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+                publisher: 'Erdem Tuna',
+                publishmentDate: new Date(2023, 3, 13, 12, 0),
+                dueDate: new Date(2025, 4, 16, 23, 59),
+                projectId: 1,
+                submissionId: 1,
+            },*/
+
+        /* getProjectGradeByIdRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+        });*/
+
         //this.setState({
         //    assignments: dummyAssignmentsList,
         //    grades: dummyGrades,
         //    feedbacks: dummyFeedbacks,
-        //    isPeerReviewOpen: true,
+        //    isPeerReviewOpen: true, due date gecince de kapali
         //});
 
         getGroupInstructorCommentsRequest(this.props.match.params.projectId).then((response) => {
             if (!response.data.success) return;
             const instructorComments = response.data.data;
             const arr = [];
-            /*for(var i in instructorComments){
-
-            }*/
-            console.log(instructorComments);
         });
         getGroupTACommentsRequest(this.props.match.params.projectId).then((response) => {
             if (!response.data.success) return;
             const TAComments = response.data.data;
-            console.log(TAComments);
         });
         getGroupStudentCommentsRequest(this.props.match.params.projectId).then((response) => {
             if (!response.data.success) return;
             const studentComments = response.data.data;
-            console.log(studentComments);
         });
     }
 

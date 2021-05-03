@@ -58,6 +58,10 @@ class Course extends Component {
             currentPeerReviewGroup: {},
             currentPeerReviewStudent: {},
             currentReviews: {},
+
+            //
+            courseGrades: {},
+            finalGrades: [],
         };
     }
 
@@ -225,6 +229,7 @@ class Course extends Component {
                 assignments: assignments,
             });
         });
+        this.setState({ courseGrades: dummyCourseGrades, finalGrades: dummyFinalGrades });
     }
 
     onPeerReviewsOpen = (dropdownValues) => {
@@ -448,7 +453,7 @@ class Course extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getCourseStatistics(dummyCourseGrades, dummyFinalGrades)} </>,
+            content: <>{getCourseStatistics(this.state.courseGrades, this.state.finalGrades)} </>,
         };
     };
 
