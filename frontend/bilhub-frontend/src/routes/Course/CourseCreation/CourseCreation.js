@@ -81,7 +81,6 @@ export class CourseCreation extends Component {
             //group formation
             minSize: 1,
             maxSize: 1,
-            groupFormationDate: '',
         };
     }
 
@@ -92,7 +91,6 @@ export class CourseCreation extends Component {
             }
         }
         //System.DateTime
-        let date = inputDateToDateObject(this.state.groupFormationDate);
 
         postCourseRequest(
             this.state.code,
@@ -116,6 +114,7 @@ export class CourseCreation extends Component {
                 idRequests.push(getIdByEmailRequest(authList[i]));
             }
 
+<<<<<<< HEAD
             axios.all(idRequests).then(
                 axios.spread((...responses) => {
                     for (let i = 0; i < responses.length; i++) {
@@ -123,6 +122,11 @@ export class CourseCreation extends Component {
                     }
                 })
             );
+=======
+            minSize: this.state.minSize,
+            maxSize: this.state.maxSize,
+        };
+>>>>>>> yusuf-dev
 
             for (let i = 0; i < this.state.studentAutoList.length; i++) {
                 let studentIdRequests = [];
@@ -499,8 +503,6 @@ export class CourseCreation extends Component {
                                 value={this.state.maxSize}
                                 onChange={this.handleChange}
                                 type="number"></Input>
-                            Group Formation Date
-                            <Input type="datetime-local" name="groupFormationDate" onChange={this.handleChange}></Input>
                         </div>
                     </Form.Field>
                 </Form.Group>

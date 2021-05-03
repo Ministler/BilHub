@@ -31,3 +31,4 @@ export {
     FormedGroupsBriefList,
 } from './BriefList';
 export { GradesTabel, GroupNoGradeGraph, GradeGroupGraph } from './Statistics';
+export { Logo } from './Logo'
