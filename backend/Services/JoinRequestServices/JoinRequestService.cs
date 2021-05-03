@@ -565,7 +565,7 @@ namespace backend.Services.JoinRequestServices
 
             response.Success = true;
 
-            if( joinRequest.Resolved )
+            if( joinRequest.Resolved || joinRequest.Accepted )
             {
                 response.Data = "Resolved";
                 return response;
@@ -578,7 +578,7 @@ namespace backend.Services.JoinRequestServices
             }
             
             
-            response.Data = "Accepted";
+            response.Data = "Unresolved";
             return response;
         }
         

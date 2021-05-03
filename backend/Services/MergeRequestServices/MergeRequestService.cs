@@ -588,7 +588,7 @@ namespace backend.Services.MergeRequestServices
             response.Success = true;
 
             
-            if( mergeRequest.Resolved )
+            if( mergeRequest.Resolved || mergeRequest.Accepted )
             {
                 response.Data = "Resolved";
                 return response;
@@ -600,7 +600,7 @@ namespace backend.Services.MergeRequestServices
                 return response;
             }
             
-            response.Data = "Accepted";
+            response.Data = "Unresolved";
             return response;
         }
     }
