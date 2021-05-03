@@ -11,7 +11,8 @@ export {
     getProfileInfo,
 } from './authAPI';
 export {} from './userAPI';
-export { postCommentRequest } from './commentAPI';
+export { getProjectGradeDownloadByIdRequest } from './projectGradeAPI';
+export { postCommentRequest, getCommentFileRequest } from './commentAPI';
 export {
     getSubmissionFileRequest,
     deleteSubmissionSrsGradeRequest,

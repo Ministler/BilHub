@@ -1,4 +1,4 @@
 export {} from './projectGradeDELETE';
-export {} from './projectGradeGET';
+export { getProjectGradeDownloadByIdRequest } from './projectGradeGET';
 export {} from './projectGradePUT';
 export {} from './projectGradePOST';

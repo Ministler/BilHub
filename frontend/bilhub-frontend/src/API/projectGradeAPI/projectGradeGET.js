@@ -1,5 +1,7 @@
 import { authAxios, BASE_PROJECT_GRADE_URL } from '../axiosConfigs';
 
+import FileDownload from 'js-file-download';
+
 export const getProjectGradeByIdRequest = async (projectGradeId) => {
     const url = 'getById/' + projectGradeId;
 
@@ -15,8 +17,10 @@ export const getProjectGradeDownloadByIdRequest = async (gradeId) => {
     const url = 'DownloadById/' + gradeId;
 
     return authAxios
-        .get(BASE_PROJECT_GRADE_URL + url)
-        .then((response) => response)
+        .get(BASE_PROJECT_GRADE_URL + url, { responseType: 'blob' })
+        .then((response) => {
+            FileDownload(response.data, 'file.pdf');
+        })
         .catch((error) => {
             throw error;
         });

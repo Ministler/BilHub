@@ -111,7 +111,7 @@ export const NewCommentModal2 = (props) => {
                             onChange={(e) => props.onGradeChange(e)}
                         />
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="file" onChange={(e) => this.props.onFileChanged(e.target.files[0])} />
+                        <input type="file" onChange={(e) => props.onFileChanged(e.target.files[0])} />
                     </Grid.Column>
                     <Grid.Column width={7}>
                         <Button

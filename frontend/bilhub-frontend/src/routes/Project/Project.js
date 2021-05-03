@@ -41,6 +41,7 @@ import { postPeerGradeRequest } from '../../API/peerGradeAPI/peerGradePOST';
 import { deleteSrsGradeRequest } from '../../API/projectGroupAPI/projectGroupDELETE';
 import { putProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePUT';
 import { getPeerGradeRequestWithReviewee, getPeerGradeRequestWithReviewer } from '../../API/peerGradeAPI/peerGradeGET';
+import { getProjectGradeDownloadByIdRequest } from '../../API';
 
 class Project extends Component {
     constructor(props) {
@@ -119,6 +120,7 @@ class Project extends Component {
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
+                console.log(this.state.currentFeedbackFile);
                 postProjectGradeRequest(
                     this.props.match.params.projectId,
                     this.state.currentFeedbackMaxGrade,
@@ -131,7 +133,8 @@ class Project extends Component {
                     this.state.currentFeedbackId,
                     this.state.currentFeedbackMaxGrade,
                     this.state.currentFeedbackGrade,
-                    this.state.currentFeedbackText
+                    this.state.currentFeedbackText,
+                    this.state.currentFeedbackFile
                 );
             } else if (modalType === 'isDeleteFeedbackOpen') {
                 deleteProjectGradeRequest(this.state.currentFeedbackId);
@@ -241,6 +244,7 @@ class Project extends Component {
             axios.spread((...responses) => {
                 let instGrade = 0;
                 for (let i in responses[0].data.data) {
+                    console.log(responses[0].data.data[i]);
                     feedbacks.InstructorComments.push({
                         name: responses[0].data.data[i].userInProjectGradeDto.name,
                         caption: responses[0].data.data[i].comment,
@@ -248,6 +252,7 @@ class Project extends Component {
                         date: inputDateToDateObject(responses[0].data.data[i].lastEdited),
                         commentId: responses[0].data.data[i].id,
                         userId: responses[0].data.data[i].userInProjectGradeDto.id,
+                        hasFile: responses[0].data.data[i].hasFile,
                     });
                     persons.push({
                         name: responses[0].data.data[i].userInProjectGradeDto.name,
@@ -265,6 +270,7 @@ class Project extends Component {
                         date: inputDateToDateObject(responses[1].data.data[i].lastEdited),
                         commentId: responses[1].data.data[i].id,
                         userId: responses[1].data.data[i].userInProjectGradeDto.id,
+                        hasFile: responses[1].data.data[i].hasFile,
                     });
                     persons.push({
                         name: responses[1].data.data[i].userInProjectGradeDto.name,
@@ -283,6 +289,7 @@ class Project extends Component {
                         date: inputDateToDateObject(responses[2].data.data[i].lastEdited),
                         commentId: responses[2].data.data[i].id,
                         userId: responses[2].data.data[i].userInProjectGradeDto.id,
+                        hasFile: responses[2].data.data[i].hasFile,
                     });
                     studentAvg += responses[2].data.data[i].grade;
                 }
@@ -509,11 +516,13 @@ class Project extends Component {
         });
     };
     onGiveFeedback = (e) => {
+        console.log(this.state.currentFeedbackFile);
         postProjectGradeRequest(
             this.props.match.params.projectId,
             this.state.currentMaxFeedbackGrade2,
             this.state.currentFeedbackGrade2,
-            this.state.currentFeedbackText2
+            this.state.currentFeedbackText2,
+            this.state.currentFeedbackFile
         );
     };
 
@@ -709,7 +718,7 @@ class Project extends Component {
 
     getNewCommentButton = () => {
         let newCommentButton = null;
-        if (this.state.projectGroup?.canUserComment) {
+        if (this.state.projectGroup?.canUserComment && this.state.projectGroup.isInGroup) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -725,23 +734,11 @@ class Project extends Component {
     };
 
     onFeedbackFileClicked = (feedbackId) => {
-        let headers = new Headers();
-
-        headers.append(
-            'Authorization',
-            'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJjYWdyaUBkdXJndXQiLCJuYmYiOjE2MTk3ODAwODUsImV4cCI6MTYxOTg2NjQ4NSwiaWF0IjoxNjE5NzgwMDg1fQ.eOGYYn_ZCDarcW2v73y-CFr8esM5cQCl4LeGdi_H08Zmwkk_Oi24FhlmQ8MRJyc6XphdLH7mao-ESzkmjun00g'
-        );
-
-        axios
-            .get('https://bb63990cfdb4.ngrok.io/Comment/2', {
-                headers: headers,
-            })
-            .then((response) => {
-                console.log(response);
-            });
+        getProjectGradeDownloadByIdRequest(feedbackId);
     };
 
     onFileChanged = (file) => {
+        console.log(file);
         this.setState({
             currentFeedbackFile: file,
         });
