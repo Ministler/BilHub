@@ -12,7 +12,7 @@ export const getCourseRequest = async (courseId) => {
 };
 
 export const getCourseStatisticRequest = async (courseId) => {
-    const url = 'Statistic/' + courseId;
+    const url = 'Statistics/' + courseId;
 
     return authAxios
         .get(BASE_COURSE_URL + url)

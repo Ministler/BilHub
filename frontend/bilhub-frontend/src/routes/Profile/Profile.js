@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TextArea, Icon, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
-import { getUserGroupsRequest, getInstructedCoursesRequest } from '../../API';
+import { getUserGroupsRequest, getInstructedCoursesRequest, getGroupSrsGradeRequest } from '../../API';
 import './Profile.css';
 import { TabExampleSecondaryPointing, ProfilePrompt } from './ProfileComponents';
 
@@ -42,22 +42,38 @@ class Profile extends Component {
                         name: member.name,
                     });
                 }
-                console.log(group);
-                projects.push({
-                    courseName: group.affiliatedCourse.name,
-                    groupName: group.name,
-                    projectId: group.id,
-                    isActive: group.isActive,
-                    groupMembers: groupMembers,
-                    information: group.projectInformation,
-                    //peerGrade:,
-                    //projectGrade:,
+
+                getGroupSrsGradeRequest(group.id).then((res) => {
+                    if (!res.data.success) return;
+                    if (!res.data.data.isGraded) {
+                        projects.push({
+                            courseName: group.affiliatedCourse.name,
+                            groupName: group.name,
+                            projectId: group.id,
+                            isActive: group.isActive,
+                            groupMembers: groupMembers,
+                            information: group.projectInformation,
+                            //peerGrade:,
+                            projectGrade: 'NotGraded',
+                        });
+                    } else {
+                        projects.push({
+                            courseName: group.affiliatedCourse.name,
+                            groupName: group.name,
+                            projectId: group.id,
+                            isActive: group.isActive,
+                            groupMembers: groupMembers,
+                            information: group.projectInformation,
+                            //peerGrade:,
+                            projectGrade: res.data.data.srsGrade,
+                        });
+                    }
+
+                    this.setState({
+                        projects: projects,
+                    });
                 });
             }
-
-            this.setState({
-                projects: projects,
-            });
         });
 
         getInstructedCoursesRequest(this.props.userId).then((response) => {
@@ -86,7 +102,7 @@ class Profile extends Component {
                     courseId: course.id,
                     TAs: courseTAs,
                     instructors: courseInstructors,
-                    //information: course.information,
+                    information: course.courseDescription,
                 });
             }
 

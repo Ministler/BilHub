@@ -8,8 +8,9 @@ export {
     forgotPasswordRequest,
     getIdByEmailRequest,
 } from './authAPI';
-export {} from './userAPI';
+export { getSubmissionFileRequest } from './submissionAPI';
 export {} from './commentAPI';
+
 export {
     getAssignmentFeedsRequest,
     getUpcomingAssignmentFeedsRequest,
@@ -21,6 +22,7 @@ export {
     putAssignmentRequest,
     postAssignmentFileRequest,
     postAssignmentRequest,
+    getAssignmentStatisticsRequest,
 } from './assignmentAPI';
 export {
     getCourseRequest,
@@ -35,7 +37,7 @@ export {
     getCourseAssignmentRequest,
 } from './courseAPI';
 export { getSectionRequest, deleteStudentFromSectionRequest, postStudentToSectionRequest } from './sectionAPI';
-export { getUserGroupsRequest } from './projectGroupAPI';
+export { getUserGroupsRequest, getGroupSrsGradeRequest } from './projectGroupAPI';
 export {
     getIncomingJoinRequest,
     getIncomingMergeRequest,

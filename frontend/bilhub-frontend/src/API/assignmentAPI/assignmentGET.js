@@ -57,3 +57,14 @@ export const getUpcomingAssignmentFeedsRequest = async () => {
             throw error;
         });
 };
+
+export const getAssignmentStatisticsRequest = async (assignmentId) => {
+    const url = 'Statistics/' + assignmentId;
+
+    return authAxios
+        .get(BASE_ASSIGNMENT_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

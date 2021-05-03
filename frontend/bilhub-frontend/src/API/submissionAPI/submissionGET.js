@@ -1,4 +1,5 @@
 import { authAxios, BASE_SUBMISSION_URL } from '../axiosConfigs';
+import FileDownload from 'js-file-download';
 
 export const getUngradedSubmissionFileRequest = async (courseId) => {
     const url = 'File/Ungraded/' + courseId;
@@ -92,8 +93,10 @@ export const getSubmissionFileRequest = async (submissionId) => {
     const url = 'File/' + submissionId;
 
     return authAxios
-        .get(BASE_SUBMISSION_URL + url)
-        .then((response) => response)
+        .get(BASE_SUBMISSION_URL + url, { responseType: 'blob' })
+        .then((response) => {
+            FileDownload(response.data, 'file.pdf');
+        })
         .catch((error) => {
             throw error;
         });

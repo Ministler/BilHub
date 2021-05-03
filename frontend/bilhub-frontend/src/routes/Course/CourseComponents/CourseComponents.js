@@ -321,8 +321,9 @@ export class EditAssignmentModal extends Component {
     allEntered = () => {
         return this.state.title !== '' && this.state.type !== 0 && this.state.dueDate !== '';
     };
+
     componentDidMount() {
-        let d = dateObjectToInputDate(this.props.curAssignment.dueDate);
+        let d = this.props.curAssignment.dueDate; //dateObjectToInputDate(this.props.curAssignment.dueDate);
 
         this.setState({
             title: this.props.curAssignment.title,
