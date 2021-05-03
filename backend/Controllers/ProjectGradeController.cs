@@ -184,5 +184,17 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+
+        [HttpGet]
+        [Route("GetProjectGradesGivenTo/{projectGroupId}")]
+        public async Task<IActionResult> GetProjectGradesGivenTo( int projectGroupId)
+        {
+            ServiceResponse<List<ProjectGradeInfoDto>> response = await _projectGradeService.GetProjectGradesGivenTo( projectGroupId );
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
     }
 }

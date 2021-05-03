@@ -13,7 +13,6 @@ namespace backend.Models
             IncomingJoinRequests = new Collection<JoinRequest>();
             OutgoingMergeRequest = new Collection<MergeRequest>();
             IncomingMergeRequest = new Collection<MergeRequest>();
-            PeerGrades = new Collection<PeerGrade>();
         }
         public int Id { get; set; }
         public Section AffiliatedSection { get; set; }
@@ -33,7 +32,6 @@ namespace backend.Models
         public ICollection<JoinRequest> IncomingJoinRequests { get; set; }
         public ICollection<MergeRequest> OutgoingMergeRequest { get; set; }
         public ICollection<MergeRequest> IncomingMergeRequest { get; set; }
-        public ICollection<PeerGrade> PeerGrades { get; set; }
         // public Section AffiliatedCourse { get; set; }
         // public int CourseId { get; set; }       
 
