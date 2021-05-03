@@ -133,7 +133,9 @@ export class CourseCreation extends Component {
                 axios.all(studentIdRequests).then(
                     axios.spread((...responses) => {
                         for (let k = 0; k < responses.length; k++) {
-                            postStudentToSectionRequest(responses[k].data.data, this.state.studentAutoList[i].id);
+                            console.log();
+                            console.log(response.data.data.sections[i].id);
+                            postStudentToSectionRequest(responses[k].data.data, response.data.data.sections[i].id);
                         }
                     })
                 );

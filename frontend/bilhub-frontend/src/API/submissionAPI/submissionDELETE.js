@@ -21,3 +21,14 @@ export const deleteSubmissionFileRequest = async (submissionId) => {
             throw error;
         });
 };
+
+export const deleteSubmissionSrsGradeRequest = async (submissionId) => {
+    const url = 'SrsGrade/' + submissionId;
+
+    return authAxios
+        .delete(BASE_SUBMISSION_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
