@@ -33,7 +33,7 @@ namespace backend.Services.SectionServices
 
             Section dbSection = await _context.Sections
                 .Include(c => c.AffiliatedCourse).ThenInclude ( cs => cs.Instructors )
-                .Include(c => c.ProjectGroups)
+                .Include(c => c.ProjectGroups).ThenInclude( cs => cs.GroupMembers ).ThenInclude( css => css.User )
                 .FirstOrDefaultAsync(c => c.Id == sectionId);
 
             if ( dbSection == null ) {
@@ -96,7 +96,7 @@ namespace backend.Services.SectionServices
 
             Section dbSection = await _context.Sections
                 .Include(c => c.AffiliatedCourse).ThenInclude ( cs => cs.Instructors )
-                .Include(c => c.ProjectGroups)
+                .Include(c => c.ProjectGroups).ThenInclude( cs => cs.GroupMembers ).ThenInclude( css => css.User )
                 .FirstOrDefaultAsync(c => c.Id == sectionId);
 
             if ( dbSection == null ) {
@@ -150,7 +150,7 @@ namespace backend.Services.SectionServices
 
             Section dbSection = await _context.Sections
                 .Include(c => c.AffiliatedCourse).ThenInclude ( cs => cs.Instructors )
-                .Include(c => c.ProjectGroups)
+                .Include(c => c.ProjectGroups).ThenInclude( cs => cs.GroupMembers ).ThenInclude( css => css.User )
                 .FirstOrDefaultAsync(c => c.Id == sectionId);
             
             if ( dbSection == null ) {

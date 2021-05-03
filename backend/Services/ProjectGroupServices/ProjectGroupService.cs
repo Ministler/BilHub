@@ -108,6 +108,29 @@ namespace backend.Services.ProjectGroupServices
                 return false;
             return true;
         }
+
+        public async Task<ServiceResponse<bool>> IsUserInstructorOfGroup(int projectGroupId, int userId)
+        {
+            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool> ();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                    .FirstOrDefaultAsync(c => c.Id == projectGroupId);
+
+            if (dbProjectGroup == null) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Project Group not found.";
+                return serviceResponse;
+            }
+
+            User instructorControl = await _context.Users
+                .Include(c => c.InstructedCourses)
+                .FirstOrDefaultAsync(c => (c.Id == userId) && c.InstructedCourses.Any(inst => inst.CourseId == dbProjectGroup.AffiliatedCourseId));
+
+            if (instructorControl == null) 
+                serviceResponse.Data = false;
+            else
+                serviceResponse.Data = true;
+            return serviceResponse;
+        }
         public async Task<ServiceResponse<GetProjectGroupDto>> GetProjectGroupById(int id)
         {
             ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
@@ -248,6 +271,9 @@ namespace backend.Services.ProjectGroupServices
                 .Include(c => c.GroupMembers).ThenInclude(cs => cs.User)
                 .Include(c => c.AffiliatedCourse)
                 .Include(c => c.AffiliatedSection)
+                .Include(c => c.IncomingJoinRequests)
+                .Include(c => c.OutgoingMergeRequest)
+                .Include(c => c.IncomingMergeRequest)
                 .FirstOrDefaultAsync(c => c.Id == projectGroupId);
             if (dbProjectGroup == null)
             {
@@ -274,6 +300,25 @@ namespace backend.Services.ProjectGroupServices
             dbProjectGroup.ConfirmationState = false;
             dbProjectGroup.ConfirmedUserNumber = 0;
             dbProjectGroup.ConfirmedGroupMembers = "";
+
+            foreach ( var i in dbProjectGroup.IncomingJoinRequests )
+            {
+                i.VotedStudents = "";
+                i.AcceptedNumber = 0;
+                _context.JoinRequests.Update(i);
+            }
+
+            foreach ( var i in dbProjectGroup.IncomingMergeRequest )
+            {
+                i.VotedStudents = "";
+                _context.MergeRequests.Update(i);
+            }
+
+            foreach ( var i in dbProjectGroup.OutgoingMergeRequest )
+            {
+                i.VotedStudents = "";
+                _context.MergeRequests.Update(i);
+            }
 
             foreach (var i in dbProjectGroup.GroupMembers)
             {
@@ -519,6 +564,9 @@ namespace backend.Services.ProjectGroupServices
                 .Include(c => c.GroupMembers).ThenInclude(cs => cs.User)
                 .Include(c => c.AffiliatedCourse)
                 .Include(c => c.AffiliatedSection)
+                .Include ( c => c.IncomingJoinRequests )
+                .Include ( c => c.IncomingMergeRequest )
+                .Include ( c => c.OutgoingMergeRequest )
                 .FirstOrDefaultAsync(c => c.Id == projectGroupId);
             if (dbProjectGroup == null)
             {
@@ -551,6 +599,25 @@ namespace backend.Services.ProjectGroupServices
             dbProjectGroup.ConfirmationState = false;
             dbProjectGroup.ConfirmedUserNumber = 0;
             dbProjectGroup.ConfirmedGroupMembers = "";
+
+            foreach ( var i in dbProjectGroup.IncomingJoinRequests )
+            {
+                i.VotedStudents = "";
+                i.AcceptedNumber = 0;
+                _context.JoinRequests.Update(i);
+            }
+
+            foreach ( var i in dbProjectGroup.IncomingMergeRequest )
+            {
+                i.VotedStudents = "";
+                _context.MergeRequests.Update(i);
+            }
+
+            foreach ( var i in dbProjectGroup.OutgoingMergeRequest )
+            {
+                i.VotedStudents = "";
+                _context.MergeRequests.Update(i);
+            }
 
             foreach (var i in dbProjectGroup.GroupMembers)
             {

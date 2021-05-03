@@ -8,6 +8,7 @@ using backend.Data;
 using backend.Dtos.Assignment;
 using backend.Dtos.Course;
 using backend.Dtos.ProjectGroup;
+using backend.Dtos.User;
 using backend.Models;
 using backend.Services.AssignmentServices;
 using backend.Services.ProjectGroupServices;
@@ -611,6 +612,38 @@ namespace backend.Services.CourseServices
                 }
             }
             return response;
+        }
+
+        public async Task<ServiceResponse<List<UsersOfCourseDto>>> GetUsersOfCourse(int courseId)
+        {
+            ServiceResponse<List<UsersOfCourseDto>> serviceResponse = new ServiceResponse<List<UsersOfCourseDto>> ();
+            Course dbCourse = await _context.Courses
+                .Include ( c => c.Instructors ).ThenInclude ( cs => cs.User )
+                .FirstOrDefaultAsync ( c => c.Id == courseId );
+            
+            if ( dbCourse == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Course not found.";
+                return serviceResponse;
+            }
+
+            if ( !dbCourse.Instructors.Any ( c => c.UserId == GetUserId() ) ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User is not authorized to reach this data.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = dbCourse.Instructors.Select ( c => _mapper.Map<UsersOfCourseDto>( c.User ) ).ToList();
+            serviceResponse.Data.AddRange ( 
+                    await _context.Users
+                    .Include ( c => c.ProjectGroups )
+                    .Where ( c => c.ProjectGroups.Any ( cs => cs.ProjectGroup.AffiliatedCourseId == courseId ) )
+                    .Select ( css => _mapper.Map<UsersOfCourseDto> (css) ).ToListAsync()
+            );
+
+            return serviceResponse;
         }
     }
 }

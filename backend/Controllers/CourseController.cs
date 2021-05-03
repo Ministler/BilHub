@@ -86,10 +86,17 @@ namespace backend.Controllers
         {
             return Ok(await _courseService.GetInstructedCoursesOfUser(userId));
         }
+
         [HttpGet("Assignments/{courseId}")]
         public async Task<ActionResult> GetAssignments(int courseId)
         {
             return Ok(await _courseService.GetAssignments(courseId));
+        }
+
+        [HttpGet("UsersOfCourse")]
+        public async Task<ActionResult> GetUsersOfCourse(int courseId)
+        {
+            return Ok(await _courseService.GetUsersOfCourse(courseId));
         }
     }
 }
