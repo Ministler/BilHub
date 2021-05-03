@@ -4,5 +4,6 @@ namespace backend.Dtos.ProjectGroup
     {
         public int Id { get; set; }
         public string ProjectInformation { get; set; }
+        public string Name { get; set; }
     }
 }

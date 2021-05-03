@@ -17,5 +17,6 @@ namespace backend.Dtos.ProjectGroup
         public string ConfirmedGroupMembers { get; set; }
         public bool IsActive { get; set; } = true;
         public string AffiliatedCourseName { get; set; }
+        public bool ConfirmStateOfCurrentUser {get; set;}
     }
 }

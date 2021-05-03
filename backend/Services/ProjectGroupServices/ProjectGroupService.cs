@@ -149,6 +149,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             return serviceResponse;
         }
@@ -182,6 +183,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully updated project group information";
             return serviceResponse;
@@ -259,6 +261,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the operation";
             return serviceResponse;
@@ -357,6 +360,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = newProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = newProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the leaving operation";
             return serviceResponse;
@@ -382,6 +386,7 @@ namespace backend.Services.ProjectGroupServices
             {
                 i.AffiliatedCourseName = dbSection.AffiliatedCourse.Name;
                 i.IsActive = dbSection.AffiliatedCourse.IsActive;
+                i.ConfirmStateOfCurrentUser = IsUserInString(i.ConfirmedGroupMembers, GetUserId());
             }
             serviceResponse.Data = projectGroupDtos;
             return serviceResponse;
@@ -407,6 +412,7 @@ namespace backend.Services.ProjectGroupServices
             {
                 i.AffiliatedCourseName = i.AffiliatedCourse.Name;
                 i.IsActive = i.AffiliatedCourse.IsActive;
+                i.ConfirmStateOfCurrentUser = IsUserInString ( i.ConfirmedGroupMembers, GetUserId() );
             }
             serviceResponse.Data = projectGroupDtos;
             return serviceResponse;
@@ -516,6 +522,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(newProjectGroup);
             projectGroupDto.AffiliatedCourseName = newProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = newProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "New project group for the student is created.";
             return serviceResponse;
@@ -656,6 +663,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the kicking operation";
             return serviceResponse;
@@ -759,6 +767,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbJoinRequest.RequestedGroup);
             projectGroupDto.AffiliatedCourseName = dbJoinRequest.RequestedGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbJoinRequest.RequestedGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Join request is completed.";
             return serviceResponse;
@@ -879,6 +888,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbMergeRequest.ReceiverGroup);
             projectGroupDto.AffiliatedCourseName = dbMergeRequest.ReceiverGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbMergeRequest.ReceiverGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Merge request is completed.";
             return serviceResponse;
@@ -1104,6 +1114,7 @@ namespace backend.Services.ProjectGroupServices
             }
 
             dbProjectGroup.SrsGrade = updateSrsGradeDto.SrsGrade;
+            dbProjectGroup.MaxSrsGrade = updateSrsGradeDto.MaxSrsGrade;
             dbProjectGroup.IsGraded = true;
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();
@@ -1111,7 +1122,8 @@ namespace backend.Services.ProjectGroupServices
             GetSrsGradeDto data = new GetSrsGradeDto
             {
                 SrsGrade = dbProjectGroup.SrsGrade,
-                IsGraded = dbProjectGroup.IsGraded
+                IsGraded = dbProjectGroup.IsGraded,
+                MaxSrsGrade = dbProjectGroup.MaxSrsGrade
             };
 
             serviceResponse.Data = data;
@@ -1133,19 +1145,11 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
-            /*
-            if (!(await isUserInstructorOfGroup(projectGroupId)) && !(dbProjectGroup.GroupMembers.Any(c => c.UserId == GetUserId())))
-            {
-                serviceResponse.Success = false;
-                serviceResponse.Message = "User is not an instructor of this group and not a part of this project group.";
-                return serviceResponse;
-            }
-            */
-
             GetSrsGradeDto data = new GetSrsGradeDto
             {
                 SrsGrade = dbProjectGroup.SrsGrade,
-                IsGraded = dbProjectGroup.IsGraded
+                IsGraded = dbProjectGroup.IsGraded,
+                MaxSrsGrade = dbProjectGroup.MaxSrsGrade
             };
 
             serviceResponse.Data = data;
@@ -1172,6 +1176,7 @@ namespace backend.Services.ProjectGroupServices
             }
 
             dbProjectGroup.SrsGrade = 0;
+            dbProjectGroup.MaxSrsGrade = 0;
             dbProjectGroup.IsGraded = false;
             _context.ProjectGroups.Update(dbProjectGroup);
             await _context.SaveChangesAsync();

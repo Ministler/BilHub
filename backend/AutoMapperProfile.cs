@@ -21,7 +21,8 @@ namespace backend
             CreateMap<ProjectGroup, GetProjectGroupDto>()
                 .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)))
                 .ForMember( dto => dto.AffiliatedCourseName, opt => opt.Ignore() )
-                .ForMember( dto => dto.IsActive, opt => opt.Ignore() );
+                .ForMember( dto => dto.IsActive, opt => opt.Ignore() )
+                .ForMember( dto => dto.ConfirmStateOfCurrentUser, opt => opt.Ignore() );
 
             CreateMap<User, UserInProjectGroupDto>();
             CreateMap<User, InstructorInCourseDto>();
@@ -56,6 +57,8 @@ namespace backend
             CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>();
             CreateMap<MergeRequest,GetMergeRequestDto>();
             CreateMap<User,UsersOfCourseDto>();
+
+            CreateMap<User,GetUserInfoDto>();
         }
 
     }
