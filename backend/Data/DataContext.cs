@@ -72,6 +72,12 @@ namespace backend.Data
             byte[] hash, salt;
             Utility.CreatePasswordHash("cs319", out hash, out salt);
 
+            var crs10221 = 7;
+            var as10221 = 4;
+            var sec10221 = 10;
+            var idseak = 30;
+            var gr10221 = 14;
+
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
@@ -423,6 +429,90 @@ namespace backend.Data
                     UserType = UserTypeClass.Student,
                     Email = "elif@kaya",
                     VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak,
+                    Name = "Selim Aksoy",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Instructor,
+                    Email = "selim@aksoy",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak+1,
+                    Name = "Hasan Kaya",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "selim@aksoy",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak+2,
+                    Name = "Ayse Kaya",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ayse@kaya",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak+3,
+                    Name = "Demir Kaya",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "demir@kaya",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak+4,
+                    Name = "Tuna Dagli",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "tuna@dagli",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak+5,
+                    Name = "Ahmet Mumtaz",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ahmet@mumtaz",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak+6,
+                    Name = "Hakan Sivik",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "hakan@sivik",
+                    VerificationCode = "cs"
                 }
             );
             modelBuilder.Entity<Course>().HasData(
@@ -492,6 +582,17 @@ namespace backend.Data
                     Year = 2021,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
+                }, new Course
+                {
+                    Id = crs10221,
+                    Name = "CS102",
+                    CourseInformation = "Algorithms and Programming",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2021, 1, 27, 6, 0, 0),
+                    CourseSemester = SemesterType.Spring,
+                    Year = 2021,
+                    MinGroupSize = 4,
+                    MaxGroupSize = 6
                 }
             );
             modelBuilder.Entity<CourseUser>().HasData(
@@ -539,6 +640,22 @@ namespace backend.Data
                 {
                     UserId = 15,
                     CourseId = 5
+                }, new CourseUser
+                {
+                    UserId = 15,
+                    CourseId = crs10221
+                }, new CourseUser
+                {
+                    UserId = 5,
+                    CourseId = crs10221
+                }, new CourseUser
+                {
+                    UserId = 6,
+                    CourseId = crs10221
+                }, new CourseUser
+                {
+                    UserId = idseak,
+                    CourseId = crs10221
                 }
             );
             modelBuilder.Entity<Section>().HasData(
@@ -594,6 +711,12 @@ namespace backend.Data
                 {
                     Id = 9,
                     AffiliatedCourseId = 6,
+                    SectionNo = 1
+                },
+                new Section
+                {
+                    Id = sec10221,
+                    AffiliatedCourseId = crs10221,
                     SectionNo = 1
                 }
             );
@@ -728,7 +851,37 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "NewLanguage()",
                     ConfirmedGroupMembers = ""
-                } // 14 - 9'la mergelendi
+                } , new ProjectGroup
+                {
+                    Id = gr10221,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "Course Helper",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 3,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = "31 32 33"
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 1,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "GPS U",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "NewLanguage()",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = 13,
+                    AffiliatedSectionId = 3,
+                    AffiliatedCourseId = 2,
+                    Name = "project name",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "NewLanguage()",
+                    ConfirmedGroupMembers = ""
+                }
             );
             modelBuilder.Entity<ProjectGroupUser>().HasData(
                 new ProjectGroupUser
@@ -896,6 +1049,20 @@ namespace backend.Data
                     AfilliatedCourseId = 1,
                     AssignmentDescription = "This is the first iteration so it won't be graded",
                     DueDate = new DateTime(2021, 3, 15, 23, 59, 59),
+                    CreatedAt = new DateTime(2021, 3, 10, 4, 50, 23),
+                    AcceptedTypes = "pdf, txt, doc, docx",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = false,
+                    HasFile = false
+                }, new Assignment
+                {
+                    Id = as10221,
+                    Title = "Analysis report",
+                    AfilliatedCourseId = crs10221,
+                    AssignmentDescription = "",
+                    DueDate = new DateTime(2021, 6, 15, 23, 59, 59),
                     CreatedAt = new DateTime(2021, 3, 10, 4, 50, 23),
                     AcceptedTypes = "pdf, txt, doc, docx",
                     MaxFileSizeInBytes = 4096,
