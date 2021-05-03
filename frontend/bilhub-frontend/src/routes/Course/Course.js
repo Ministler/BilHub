@@ -708,10 +708,10 @@ class Course extends Component {
 
     getCoursePanes = () => {
         return this.state.courseInformation?.isTAorInstructorOfCourse
-            ? [this.getGroupsPane(), this.getAssignmentPane(), this.getPeerReviewPane()]
-            : [this.getGroupsPane(), this.getAssignmentPane()];
+            ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()]
+            : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()];
     };
-    //this.getStatisticsPane(),this.getStatisticsPane(),
+    //,,
     getAssignmentPage = () => {
         return (
             <CourseAssignment
