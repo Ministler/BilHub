@@ -13,5 +13,6 @@ namespace backend.Dtos.Comment
         public DateTime CreatedAt { get; set; }
         public string FileEndpoint { get; set; }
         public bool HasFile { get; set; }
+        public string FileName { get; set; }
     }
 }

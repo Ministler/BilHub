@@ -285,6 +285,7 @@ namespace backend.Services.AssignmentServices
             response.Data = _mapper.Map<GetAssignmentDto>(assignment);
             response.Data.SubmissionIds = assignment.Submissions.Select(s => s.Id).ToList();
             response.Data.publisher = assignment.AfilliatedCourse.Name;
+            response.Data.FileName = assignment.HasFile ? assignment.FilePath.Split('/').Last() : "";
             return response;
         }
         public async Task<ServiceResponse<GetAssignmentDto>> UpdateAssignment(UpdateAssignmentDto dto)

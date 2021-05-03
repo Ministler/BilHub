@@ -315,6 +315,7 @@ namespace backend.Services.CommentServices
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
+            response.Data.FileName = comment.FileAttachmentAvailability ? comment.FilePath.Split('/').Last() : "";
             return response;
         }
 
@@ -338,6 +339,7 @@ namespace backend.Services.CommentServices
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             response.Data.HasFile = comment.FileAttachmentAvailability;
+            response.Data.FileName = comment.FileAttachmentAvailability ? comment.FilePath.Split('/').Last() : "";
             return response;
 
         }
@@ -372,6 +374,7 @@ namespace backend.Services.CommentServices
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             response.Data.HasFile = comment.FileAttachmentAvailability;
+            response.Data.FileName = comment.FileAttachmentAvailability ? comment.FilePath.Split('/').Last() : "";
             return response;
 
         }

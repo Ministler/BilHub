@@ -298,6 +298,7 @@ namespace backend.Services.SubmissionServices
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetSubmissionDto>(submission);
             response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
+            response.Data.FileName = submission.HasFile ? submission.FilePath.Split('/').Last() : "";
             return response;
         }
 
@@ -329,6 +330,7 @@ namespace backend.Services.SubmissionServices
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetSubmissionDto>(submission);
             response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
+            response.Data.FileName = submission.HasFile ? submission.FilePath.Split('/').Last() : "";
             return response;
         }
 
@@ -396,6 +398,7 @@ namespace backend.Services.SubmissionServices
             response.Data = _mapper.Map<GetSubmissionDto>(submission);
             response.Data.FileEndpoint = string.Format("Submission/File/{0}", submission.Id);
             response.Data.SectionNumber = submission.AffiliatedGroup.AffiliatedSection.SectionNo;
+            response.Data.FileName = submission.HasFile ? submission.FilePath.Split('/').Last() : "";
             return response;
         }
 
