@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../store';
 
 import './Settings.css';
+import { changePassword } from '../../API';
 
 class Settings extends Component {
     constructor(props) {
@@ -38,6 +39,7 @@ class Settings extends Component {
     };
 
     updatePassword = (e) => {
+        const oldPassword = e.target.oldPassword?.value;
         const newPassword = e.target.password?.value;
         const reNewPassword = e.target.passwordRe?.value;
         if (newPassword !== reNewPassword) {
@@ -46,11 +48,9 @@ class Settings extends Component {
             return;
         }
 
-        const request = {
-            newPassword: e.target.password?.value,
-            userId: this.props.userId,
-        };
-        console.log(request);
+        changePassword(this.props.email, oldPassword, newPassword).then((response) => {
+            if (response.data.success) this.props.logout();
+        });
     };
 
     updateEmail = () => {
@@ -95,14 +95,6 @@ class Settings extends Component {
             this.setError('Conformation Code is Wrong');
         }
 
-        console.log(request);
-    };
-
-    updateDarkMode = (e) => {
-        const request = {
-            newDarKMode: e.target.checked,
-            userId: this.props.userId,
-        };
         console.log(request);
     };
 
@@ -224,9 +216,12 @@ class Settings extends Component {
                                 Update
                             </button>
                         )}
-
                         <div class="field">
-                            <label style={{ fontSize: '12px' }}>Change Password</label>
+                            <label style={{ fontSize: '12px' }}>Old Password</label>
+                            <Form.Input type="password" name="oldPassword" style={{ width: '60%' }} />
+                        </div>
+                        <div class="field">
+                            <label style={{ fontSize: '12px' }}>New Password</label>
                             <Form.Input type="password" name="password" style={{ width: '60%' }} />
                         </div>
                         <div class="field">
@@ -329,6 +324,7 @@ const mapStateToProps = (state) => {
     return {
         userName: state.name,
         userId: state.userId,
+        email: state.email,
         darkMode: state.darkMode,
     };
 };

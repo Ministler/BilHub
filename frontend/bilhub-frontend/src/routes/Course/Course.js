@@ -11,6 +11,10 @@ import {
     putCourseRequest,
     getCourseStatisticRequest,
     deleteAssignmentRequest,
+    postJoinRequest,
+    postMergeRequest,
+    postProjectGiveReadyRequest,
+    postLeaveGroupRequest,
 } from '../../API';
 import './Course.css';
 import {
@@ -85,23 +89,6 @@ class Course extends Component {
         getAssignmentFileRequest(assignmentId);
     };
 
-    onNewAssignmentModalClosed = (isSuccess) => {
-        this.setState({
-            isNewAssignmentOpen: false,
-        });
-    };
-    onEditAssignmentModalClosed = (isSuccess) => {
-        this.setState({
-            isEditAssignmentOpen: false,
-        });
-    };
-
-    onDeleteAssignmentModalClosed = (isSuccess) => {
-        this.setState({
-            isDeleteAssignmentOpen: false,
-        });
-    };
-
     onSendRequestModalClosed = (isSuccess, type) => {
         this.setState({
             isSendRequestModalOpen: false,
@@ -109,11 +96,14 @@ class Course extends Component {
         });
         if (!isSuccess) return;
 
-        const request = {
-            groupId: this.state.currentGroupId,
-            message: this.state.currentMessage,
-            type: type, // merge or join
-        };
+        console.log(type);
+        if (type === 'join') {
+            postJoinRequest(this.state.currentGroupId, this.state.currentMessage).then((response) => {
+                console.log(response.data.data);
+            });
+        } else if (type === 'merge') {
+            postMergeRequest(this.state.currentGroupId, this.state.currentMessage);
+        }
     };
 
     onUnformedGroupModalClosed = (e, isSuccess, type) => {
@@ -123,11 +113,12 @@ class Course extends Component {
         if (!isSuccess) return;
 
         let request = 'error';
+        console.log(type);
         if (type === 'exit') {
-            request = {
-                groupId: this.state.currentGroupId,
-                exit: true,
-            };
+            console.log(this.state.currentGroupId);
+            postLeaveGroupRequest(this.state.currentGroupId).then((response) => {
+                console.log(response.data.data);
+            });
         } else if (type === 'update') {
             request = {
                 groupId: this.state.currentGroupId,
@@ -161,6 +152,7 @@ class Course extends Component {
                 minGroupSize: courseData.minGroupSize,
                 maxGroupSize: courseData.maxGroupSize,
             };
+
             this.setState({
                 courseInformation: courseInformation,
                 newInformation: courseInformation.information,
@@ -173,50 +165,6 @@ class Course extends Component {
                     sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
                 }
 
-                // [
-                //     [
-                //         {
-                //             members: [
-                //                 {
-                //                     name: '1Yusuf Uyar',
-                //                     userId: 1,
-                //                 },
-                //                 {
-                //                     name: '1Halil Özgür Demir',
-                //                     userId: 2,
-                //                 },
-                //                 {
-                //                     name: '1Barış Ogün Yörük',
-                //                     userId: 3,
-                //                 },
-                //             ],
-                //             groupId: 1,
-                //             groupName: 'BilH123ub',
-                //         },
-
-                //     isUserReady: true,
-                //     isFormable: true,
-                // },
-                //     groupId: 1,
-                //     notRequestable: true,
-                // },
-                // {
-                //     members: [
-                //         {
-                //             name: '5Yusuf Uyar',
-                //             userId: 1,
-                //         },
-                //         {
-                //             name: '5Halil Özgür Demir',
-                //             userId: 2,
-                //         },
-                //         {
-                //             name: '5Barış Ogün Yörük',
-                //             userId: 3,
-                //         },
-                //     ],
-                //     groupId: 1,
-                // },
                 axios.all(sectionRequests).then(
                     axios.spread((...responses) => {
                         const groups = [];
@@ -258,6 +206,7 @@ class Course extends Component {
                                         isUserInGroup: isUserInGroup,
                                         voteStatus: group.confirmedUserNumber + '/' + members.length,
                                         isFormable: this.state.courseInformation?.minGroupSize <= members.length,
+                                        notRequestable: this.state.courseInformation?.maxGroupSize <= members.length,
                                         //isUserReady:,
                                     };
                                     section.unformed.push(group2);
@@ -295,6 +244,23 @@ class Course extends Component {
             console.log(response.data.data);
         });
     }
+
+    onNewAssignmentModalClosed = () => {
+        this.setState({
+            isNewAssignmentOpen: false,
+        });
+    };
+    onEditAssignmentModalClosed = () => {
+        this.setState({
+            isEditAssignmentOpen: false,
+        });
+    };
+
+    onDeleteAssignmentModalClosed = () => {
+        this.setState({
+            isDeleteAssignmentOpen: false,
+        });
+    };
 
     onPeerReviewsOpen = (dropdownValues) => {
         this.setState({
@@ -508,15 +474,18 @@ class Course extends Component {
                     <Grid columns="equal">
                         <Grid.Row>
                             <Grid.Column>{this.getDropdownForSections()}</Grid.Column>
-                            {( this.state.courseInformation?.isTAorInstructorOfCourse && (
-                            <Grid.Column><Button
-                                content="Lock Groups"
-                                labelPosition="right"
-                                icon="lock"
-                                primary
-                                floated="right"
-                                //onClick={}
-                            /></Grid.Column>))}
+                            {this.state.courseInformation?.isTAorInstructorOfCourse && (
+                                <Grid.Column>
+                                    <Button
+                                        content="Lock Groups"
+                                        labelPosition="right"
+                                        icon="lock"
+                                        primary
+                                        floated="right"
+                                        //onClick={}
+                                    />
+                                </Grid.Column>
+                            )}
                         </Grid.Row>
                     </Grid>
                     {this.state.groups &&

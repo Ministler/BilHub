@@ -16,13 +16,10 @@ export const postProjectGiveReadyRequest = async (projectGroupId, confirmationSt
 };
 
 export const postLeaveGroupRequest = async (projectGroupId) => {
-    const url = 'LeftGroup';
-    const body = {
-        projectGroupId: projectGroupId,
-    };
+    const url = 'LeftGroup?projectGroupId=' + projectGroupId;
 
     return authAxios
-        .post(BASE_PROJECT_GROUP_URL + url, body)
+        .post(BASE_PROJECT_GROUP_URL + url)
         .then((response) => response)
         .catch((error) => {
             throw error;

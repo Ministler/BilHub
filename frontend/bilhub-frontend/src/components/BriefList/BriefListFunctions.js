@@ -6,26 +6,26 @@ import { dateObjectToString } from '../../utils';
 import { SubmissionBriefElement, GroupBriefElement } from './BriefListUI';
 import './BriefListUI.css';
 
-export const convertMyProjectsToBriefList = (myProjects, onProjectClicked) => {
+export const convertMyProjectsToBriefList = (myProjects, onProjectClicked, onCourseClicked) => {
     const myProjectBriefElements = myProjects.map((project) => {
         const icon = project.isActive ? (
             <Icon name="lock open" style={{ color: 'rgb(196, 126, 5)' }} />
         ) : (
             <Icon name="lock" style={{ color: 'rgb(196, 126, 5)' }} />
         );
-        const title = project.isActive ? (
-            project.projectName !== null ? (
-                project.courseCode + '/' + project.projectName
-                ) : (
-                    project.courseCode + '/' + "Formed Group"
-                )
-        ) : (
-             project.courseCode + '/' + "Unformed Group"
-        );
+        const title = project.isActive
+            ? project.projectName !== null
+                ? project.courseCode + '/' + project.projectName
+                : project.courseCode + '/' + 'Formed Group'
+            : project.courseCode + '/' + 'Unformed Group';
+
+        const onClick = project.isLocked
+            ? () => onProjectClicked(project.projectId)
+            : () => onCourseClicked(project.courseId);
 
         return (
             <p className={'BriefListElements'}>
-                <Link style={{ fontWeight: 'bold' }} onClick={() => onProjectClicked(project.projectId)}>
+                <Link style={{ fontWeight: 'bold' }} onClick={onClick}>
                     {icon}
                     {title}
                 </Link>

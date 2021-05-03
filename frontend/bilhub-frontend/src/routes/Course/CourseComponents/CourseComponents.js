@@ -721,7 +721,7 @@ export const UnformedGroupModal = (props) => {
                         <Button
                             floated="right"
                             negative
-                            onClick={() => props.onClosed(true, 'exit')}
+                            onClick={(e) => props.onClosed(e, true, 'exit')}
                             style={{
                                 borderRadius: '10px',
                                 padding: '5px 16px',

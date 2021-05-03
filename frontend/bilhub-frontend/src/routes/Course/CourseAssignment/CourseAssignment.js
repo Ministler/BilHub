@@ -80,7 +80,6 @@ class CourseAssignment extends Component {
 
                     for (let response of responses) {
                         const data = response.data.data;
-                        console.log(data);
                         if (!data.hasSubmission) {
                             submission[data.sectionNumber - 1].notSubmitted.push({
                                 groupName: data.affiliatedGroup.name,
@@ -97,7 +96,6 @@ class CourseAssignment extends Component {
                                 submissionDate: data.updatedAt,
                             });
                         } else {
-                            console.log(data);
                             submission[data.sectionNumber - 1].graded.push({
                                 groupName: data.affiliatedGroup.name,
                                 projectId: data.affiliatedGroup.id,

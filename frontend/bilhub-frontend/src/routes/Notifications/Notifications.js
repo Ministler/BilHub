@@ -92,7 +92,11 @@ class Notifications extends Component {
 
         axios.all(incomingRequests).then(
             axios.spread((...responses) => {
-                console.log(responses);
+                const incomingRequests = { pending: [], unresolved: [], resolved: [] };
+                for (let response of responses) {
+                    const data = response.data.data;
+                    console.log(data);
+                }
             })
         );
 
@@ -102,7 +106,10 @@ class Notifications extends Component {
 
         axios.all(outgoingRequests).then(
             axios.spread((...responses) => {
-                console.log(responses);
+                const outgoingRequests = { pending: [], unresolved: [], resolved: [] };
+                for (let response of responses) {
+                    const data = response.data.data;
+                }
             })
         );
 
@@ -326,45 +333,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(Notifications);
 
-const dummyMyProjectsList = [
-    {
-        courseCode: 'CS319-2021Spring',
-        projectName: 'BilHub',
-        isActive: true,
-        projectId: 1,
-    },
-    {
-        courseCode: 'CS315-2021Spring',
-        projectName: 'AGA',
-        isActive: true,
-        projectId: 2,
-    },
-    {
-        courseCode: 'CS102-2019Fall',
-        projectName: 'BilCalendar',
-        isActive: false,
-        projectId: 3,
-    },
-];
-
-const dummyInstructedCoursesList = [
-    {
-        courseCode: 'CS102-2021Spring',
-        isActive: true,
-        courseId: 1,
-    },
-    {
-        courseCode: 'CS102-2021Fall',
-        isActive: false,
-        courseId: 2,
-    },
-    {
-        courseCode: 'CS102-2021Fall',
-        isActive: false,
-        courseId: 3,
-    },
-];
-
 const dummyIncomingRequests = {
     pending: [
         {
@@ -528,57 +496,6 @@ const dummyIncomingRequests = {
             course: 'CS315-Spring2020',
             approvalDate: new Date(2021, 3, 12, 4, 34),
         },
-        {
-            type: 'Join',
-            requestId: 1,
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            status: 'Disapproved',
-            user: {
-                name: 'Hasan Kaya',
-                userId: 1,
-            },
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            approvalDate: new Date(2021, 3, 12, 4, 34),
-        },
-        {
-            type: 'Merge',
-            requestId: 1,
-            status: 'Disapproved',
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                    requestOwner: true,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            approvalDate: new Date(2021, 3, 12, 4, 34),
-        },
     ],
 };
 
@@ -641,44 +558,10 @@ const dummyOutgoingRequests = {
             type: 'Merge',
             message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
-            isRequestOwner: true,
             yourGroup: [
                 {
                     name: 'Hasan Kaya',
                     userId: 1,
-                    requestOwner: false,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            courseId: 1,
-            requestDate: new Date(2021, 3, 12, 12, 34),
-            formationDate: new Date(2022, 5, 13, 14, 15),
-            voteStatus: '2/5',
-        },
-        {
-            type: 'Merge',
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            requestId: 1,
-            isRequestOwner: false,
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                    requestOwner: true,
                 },
                 {
                     name: 'Ayşe Kaya',
@@ -743,56 +626,6 @@ const dummyOutgoingRequests = {
                 {
                     name: 'Hasan Kaya',
                     userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            courseId: 1,
-            approvalDate: new Date(2020, 12, 14, 15, 54),
-        },
-        {
-            type: 'Join',
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            requestId: 1,
-            status: 'Disapproved',
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            courseId: 1,
-            approvalDate: new Date(2020, 12, 14, 15, 54),
-        },
-        {
-            type: 'Merge',
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            requestId: 1,
-            status: 'Disapproved',
-            isRequestOwner: true,
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                    requestOwner: true,
                 },
                 {
                     name: 'Ayşe Kaya',

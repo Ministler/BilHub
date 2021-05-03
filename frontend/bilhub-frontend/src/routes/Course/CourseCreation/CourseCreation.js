@@ -1,3 +1,13 @@
+/* 
+    Authors:    Barış Ogün Yörük 
+                Halil Özgür Demir
+                Yusuf Uyar
+
+    Date:   <Salla Bişiler> (e.g 03/05/2021)
+
+    Description:    <Dosya Adı> implementation file (e.g. Course Creation implementation file)
+*/
+
 import React, { Component } from 'react';
 import _ from 'lodash';
 import {
@@ -99,7 +109,6 @@ export class CourseCreation extends Component {
             this.state.shortDescription,
             this.state.sectionNumber,
             this.state.isSectionless,
-            date,
             this.state.minSize,
             this.state.maxSize
         ).then((response) => {

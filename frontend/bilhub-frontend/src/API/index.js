@@ -42,12 +42,19 @@ export {
     getCourseAssignmentRequest,
 } from './courseAPI';
 export { getSectionRequest, deleteStudentFromSectionRequest, postStudentToSectionRequest } from './sectionAPI';
-export { getUserGroupsRequest, getGroupSrsGradeRequest } from './projectGroupAPI';
+export {
+    getUserGroupsRequest,
+    getGroupSrsGradeRequest,
+    postLeaveGroupRequest,
+    postProjectGiveReadyRequest,
+} from './projectGroupAPI';
 export {
     getIncomingJoinRequest,
     getIncomingMergeRequest,
     getOutgoingMergeRequest,
     getOutgoingJoinRequest,
+    postMergeRequest,
+    postJoinRequest,
 } from './requestAPI';
 export {
     deleteSubmissionRequest,

@@ -23,9 +23,7 @@ import {
 import reportWebVitals from '../../reportWebVitals';
 import axios from 'axios';
 
-import {
-    convertDate, instructerTypeSplit
-} from '../../utils';
+import { convertDate, instructerTypeSplit } from '../../utils';
 
 class Home extends Component {
     constructor(props) {
@@ -94,6 +92,7 @@ class Home extends Component {
                 if (!response.data.success) return;
 
                 const data = response.data.data;
+                console.log(data);
                 const requests = [];
                 for (let i = 0; i < data.length; i++) {
                     let courseId = data[i].affiliatedCourseId;
@@ -104,12 +103,7 @@ class Home extends Component {
                 axios.all(requests).then(
                     axios.spread((...responses) => {
                         for (let i = 0; i < responses.length; i++) {
-                            if (!responses[i].data.success) {
-                                myProjects.push({
-                                    projectName: data[i].name,
-                                    projectId: data[i].id,
-                                });
-                            }
+                            if (!responses[i].data.success) return;
 
                             let courseData = responses[i].data.data;
                             myProjects.push({
@@ -117,6 +111,8 @@ class Home extends Component {
                                 projectName: data[i].name,
                                 isActive: courseData.isActive,
                                 projectId: data[i].id,
+                                courseId: data[i].affiliatedCourse.id,
+                                isLocked: data[i].affiliatedCourse.isLocked,
                             });
                             this.setState({
                                 myProjects: myProjects,
@@ -161,7 +157,7 @@ class Home extends Component {
 
     render() {
         const myProjectsComponent = this.state.myProjects
-            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked)
+            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked, this.onCourseClicked)
             : null;
 
         const instructedCoursesComponent = this.state.instructedCourses
@@ -218,7 +214,9 @@ class Home extends Component {
                                     <div>
                                         {upcomingAssignmentsComponent}
                                         {notGradedAssignmentsComponent}
-                                        <Button onClick={this.test} fluid>TEST</Button>
+                                        <Button onClick={this.test} fluid>
+                                            TEST
+                                        </Button>
                                     </div>
                                 </GridColumn>
                             </Grid.Row>
@@ -240,9 +238,9 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(Home);
 
-const dumyDate = "2021-05-07T00:00:00";
+const dumyDate = '2021-05-07T00:00:00';
 
-const dumyInstructerList =  [
+const dumyInstructerList = [
     {
         email: 'Yusuf@bilkent',
         name: 'Yusuf Uyar',
@@ -252,7 +250,7 @@ const dumyInstructerList =  [
         email: 'eray@tuzun',
         name: 'Eray Tuzun',
         userType: 'Instructor',
-    },  
+    },
     {
         email: 'Bilal@bilkent',
         name: 'Bilal Uyar',
