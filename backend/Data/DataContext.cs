@@ -71,7 +71,7 @@ namespace backend.Data
 
             byte[] hash, salt;
             Utility.CreatePasswordHash("cs319", out hash, out salt);
-
+            
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
@@ -1366,7 +1366,7 @@ namespace backend.Data
                     CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
                     Accepted = false,
                     Resolved = false
-                }, new MergeRequest
+                }/*, new MergeRequest
                 {
                     Id = 7,
                     SenderGroupId = 14,
@@ -1376,7 +1376,7 @@ namespace backend.Data
                     CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
                     Accepted = true,
                     Resolved = false
-                }, new MergeRequest
+                },*/, new MergeRequest
                 {
                     Id = 8,
                     SenderGroupId = 5,
@@ -1752,6 +1752,7 @@ namespace backend.Data
                     LastEdited = new DateTime( 2021, 4, 1, 2, 1, 14, 0 )
                 }
             );
+            
         }
     }
 }
