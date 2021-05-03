@@ -15,6 +15,7 @@ import {
     postMergeRequest,
     postProjectGiveReadyRequest,
     postLeaveGroupRequest,
+    postLockCourseRequest,
 } from '../../API';
 import './Course.css';
 import {
@@ -71,6 +72,12 @@ class Course extends Component {
         };
     }
 
+    lockGroup = () => {
+        postLockCourseRequest(this.props.match.params.courseId).then((response) => {
+            console.log(response.data.data);
+        });
+    };
+
     changeCourseInformation = (newInformation) => {
         putCourseRequest(
             this.props.match.params.courseId,
@@ -120,6 +127,7 @@ class Course extends Component {
                 console.log(response.data.data);
             });
         } else if (type === 'update') {
+            postProjectGiveReadyRequest(this.state.currentGroupId, e.target.isReady.checked);
             request = {
                 groupId: this.state.currentGroupId,
                 isUserReady: e.target.isReady.checked,
@@ -191,9 +199,11 @@ class Course extends Component {
                                 } else {
                                     const members = [];
                                     let isUserInGroup = false;
+                                    let isUserReady = false;
                                     for (let member of group.groupMembers) {
                                         if (member.id == this.props.userId) {
                                             isUserInGroup = true;
+                                            isUserReady = group.confirmStateOfCurrentUser;
                                         }
                                         members.push({
                                             userId: member.id,
@@ -209,7 +219,7 @@ class Course extends Component {
                                         voteStatus: group.confirmedUserNumber + '/' + members.length,
                                         isFormable: this.state.courseInformation?.minGroupSize <= members.length,
                                         notRequestable: this.state.courseInformation?.maxGroupSize <= members.length,
-                                        //isUserReady:,
+                                        isUserReady: isUserReady,
                                     };
                                     section.unformed.push(group2);
                                 }
@@ -489,7 +499,7 @@ class Course extends Component {
                                         icon="lock"
                                         primary
                                         floated="right"
-                                        //onClick={}
+                                        onClick={() => this.lockGroup()}
                                     />
                                 </Grid.Column>
                             )}
