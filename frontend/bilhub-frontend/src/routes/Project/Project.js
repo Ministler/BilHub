@@ -723,6 +723,12 @@ class Project extends Component {
             });
     };
 
+    onFileChanged = (file) => {
+        this.setState({
+            currentFeedbackFile: file,
+        });
+    };
+
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
@@ -748,6 +754,7 @@ class Project extends Component {
                         onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
                         onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
                         onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                        onFileChanged={this.onFileChanged}
                     />
                 </div>
                 <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
