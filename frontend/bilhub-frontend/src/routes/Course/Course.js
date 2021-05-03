@@ -184,7 +184,6 @@ class Course extends Component {
                                 if (group.confirmationState) {
                                     const members = [];
                                     for (let member of group.groupMembers) {
-                                        console.log(member);
                                         members.push({
                                             userId: member.id,
                                             name: member.name,
@@ -247,7 +246,6 @@ class Course extends Component {
                             for (let group of data.projectGroups) {
                                 const members = [];
                                 for (let member of group.groupMembers) {
-                                    console.log(member);
                                     members.push({
                                         userId: member.id,
                                         name: member.name,
