@@ -34,6 +34,7 @@ import { putProjectGroupInformationRequest } from '../../API/projectGroupAPI/pro
 import { getAssignmentFileRequest } from '../../API/assignmentAPI/assignmentGET';
 import { getProjectGradeByIdRequest } from '../../API/projectGradeAPI/projectGradeGET';
 import { inputDateToDateObject } from '../../utils';
+import { postProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePOST';
 
 class Project extends Component {
     constructor(props) {
@@ -269,12 +270,12 @@ class Project extends Component {
                 let studentAvg = 0;
                 for (let i in responses[2].data.data) {
                     feedbacks.StudentComments.push({
-                        name: responses[2].data.data[i].commentedUser.name,
+                        name: responses[2].data.data[i].userInProjectGradeDto.name,
                         caption: responses[2].data.data[i].comment,
                         grade: responses[2].data.data[i].grade,
                         date: inputDateToDateObject(responses[2].data.data[i].lastEdited),
                         commentId: responses[2].data.data[i].id,
-                        userId: responses[2].data.data[i].commentedUser.id,
+                        userId: responses[2].data.data[i].userInProjectGradeDto.id,
                     });
                     studentAvg += responses[2].data.data[i].grade;
                 }
