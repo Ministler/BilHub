@@ -74,7 +74,6 @@ export class CourseCreation extends Component {
             //group formation
             minSize: 1,
             maxSize: 1,
-            groupFormationDate: '',
         };
     }
 
@@ -85,7 +84,6 @@ export class CourseCreation extends Component {
             }
         }
         //System.DateTime
-        let date = inputDateToDateObject(this.state.groupFormationDate);
 
         const request = {
             courseName: this.state.code + '/' + this.state.year + this.state.semester,
@@ -99,7 +97,6 @@ export class CourseCreation extends Component {
 
             minSize: this.state.minSize,
             maxSize: this.state.maxSize,
-            groupFormationDate: date,
         };
 
         if (true) {
@@ -469,8 +466,6 @@ export class CourseCreation extends Component {
                                 value={this.state.maxSize}
                                 onChange={this.handleChange}
                                 type="number"></Input>
-                            Group Formation Date
-                            <Input type="datetime-local" name="groupFormationDate" onChange={this.handleChange}></Input>
                         </div>
                     </Form.Field>
                 </Form.Group>

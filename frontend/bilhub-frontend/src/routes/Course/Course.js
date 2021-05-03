@@ -342,7 +342,20 @@ class Course extends Component {
             title: 'Groups',
             content: (
                 <>
-                    {this.getDropdownForSections()}
+                    <Grid columns="equal">
+                        <Grid.Row>
+                            <Grid.Column>{this.getDropdownForSections()}</Grid.Column>
+                            {( this.state.courseInformation?.isTAorInstructorOfCourse && (
+                            <Grid.Column><Button
+                                content="Lock Groups"
+                                labelPosition="right"
+                                icon="lock"
+                                primary
+                                floated="right"
+                                //onClick={}
+                            /></Grid.Column>))}
+                        </Grid.Row>
+                    </Grid>
                     {this.state.groups &&
                     (0 <= this.state.currentSection ||
                         this.state.currentSection < this.state.courseInformation.numberOfSections)
