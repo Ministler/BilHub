@@ -28,6 +28,7 @@ import {
     getGroupInstructorCommentsRequest,
     getGroupStudentCommentsRequest,
     getGroupTACommentsRequest,
+    getIsUserInstructorOfGroupRequest,
     getProjectGroupRequest,
 } from '../../API/projectGroupAPI/projectGroupGET';
 import { putProjectGroupInformationRequest, putUpdateSRSGradeRequest } from '../../API/projectGroupAPI/projectGroupPUT';
@@ -39,6 +40,7 @@ import { deleteProjectGradeRequest } from '../../API/projectGradeAPI/projectGrad
 import { postPeerGradeRequest } from '../../API/peerGradeAPI/peerGradePOST';
 import { deleteSrsGradeRequest } from '../../API/projectGroupAPI/projectGroupDELETE';
 import { putProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePUT';
+import { getPeerGradeRequestWithReviewee, getPeerGradeRequestWithReviewer } from '../../API/peerGradeAPI/peerGradeGET';
 
 class Project extends Component {
     constructor(props) {
@@ -109,7 +111,6 @@ class Project extends Component {
 
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
-                //!!!!!!!!!!!!
                 putUpdateSRSGradeRequest(this.props.match.params.projectId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isEditFeedbackOpen') {
                 putUpdateSRSGradeRequest(this.props.match.params.projectId, this.state.currentFeedbackGrade);
@@ -139,27 +140,43 @@ class Project extends Component {
     };
 
     componentDidMount() {
-        getProjectGroupRequest(this.props.match.params.projectId).then((response) => {
-            if (!response.data.success) return;
-            const projectGroupData = response.data.data;
-            let isInGroup;
-            isInGroup = _.includes(projectGroupData.groupMembers, this.props.userId);
-            const projectInformation = {
-                isInGroup: isInGroup,
-                isTAorInstructor: false, //look
-                canUserComment: true,
-                name: projectGroupData.projectInformation,
-                isNameChangeable: true,
-                courseName: projectGroupData.affiliatedCourse.name,
-                isProjectActive: true, //look
-                courseId: projectGroupData.affiliatedCourseId,
-                members: projectGroupData.groupMembers,
-                information: projectGroupData.projectInformation,
-                newInformation: projectGroupData.projectInformation,
-                newName: projectGroupData.affiliatedCourse.name,
-            };
-            this.setState({
-                projectGroup: projectInformation,
+        getIsUserInstructorOfGroupRequest(this.props.match.params.projectId, this.props.userId).then((auth) => {
+            getProjectGroupRequest(this.props.match.params.projectId).then((response) => {
+                if (!response.data.success) return;
+                const projectGroupData = response.data.data;
+                let isInGroup;
+                isInGroup = _.includes(projectGroupData.groupMembers, this.props.userId);
+                const projectInformation = {
+                    isInGroup: isInGroup,
+                    isTAorInstructor: auth.data.data, //look
+                    canUserComment: true,
+                    name: projectGroupData.projectInformation,
+                    isNameChangeable: true,
+                    courseName: projectGroupData.affiliatedCourse.name,
+                    isProjectActive: true, //look
+                    courseId: projectGroupData.affiliatedCourseId,
+                    members: projectGroupData.groupMembers,
+                    information: projectGroupData.projectInformation,
+                    newInformation: projectGroupData.projectInformation,
+                    newName: projectGroupData.affiliatedCourse.name,
+                };
+                console.log(this.props.match.params.projectId, this.props.userId);
+                if (auth.data.data) {
+                    getPeerGradeRequestWithReviewer(this.props.match.params.projectId, this.props.userId).then(
+                        (users) => {
+                            console.log(users.data.data);
+                        }
+                    );
+                } else {
+                    getPeerGradeRequestWithReviewee(this.props.match.params.projectId, this.state.currentPeer).then(
+                        (users) => {
+                            console.log(users.data.data);
+                        }
+                    );
+                }
+                this.setState({
+                    projectGroup: projectInformation,
+                });
             });
         });
 
@@ -182,6 +199,7 @@ class Project extends Component {
                     submissionId: projectAssignments[i].submissionId,
                 });
             }
+
             this.setState({
                 assignments: temp,
             });
@@ -784,10 +802,10 @@ class Project extends Component {
 
     changeReviewingPeer = (userId) => {
         let currentReview = {};
-        for (var i = 0; i < goingDummyPeerReviews.length; i++) {
-            if (goingDummyPeerReviews[i].revieweeId === userId) {
-                currentReview = { ...goingDummyPeerReviews[i] };
-                i = goingDummyPeerReviews.length;
+        for (var i = 0; i < this.state.peerReviews.length; i++) {
+            if (this.state.peerReviews[i].revieweeId === userId) {
+                currentReview = { ...this.state.peerReviews[i] };
+                i = this.state.peerReviews.length;
             }
         }
         console.log(currentReview);
@@ -823,7 +841,7 @@ class Project extends Component {
             content: this.state.isPeerReviewOpen ? (
                 this.props.userType === 'student' ? (
                     <StudentPeerReviewPane
-                        curUser={{ name: 'Halil Özgür Demir', userId: 2 }} //dummy
+                        curUser={{ name: this.props.userName, userId: this.props.userId }} //dummy
                         group={this.state.projectGroup}
                         changePeer={(userId) => this.changeReviewingPeer(userId)}
                         currentPeer={this.state.currentPeer}
@@ -836,7 +854,7 @@ class Project extends Component {
                     />
                 ) : (
                     <InstructorPeerReviewPane
-                        peerReviews={comingDummyPeerReviews} //This will change according to currentPeer
+                        peerReviews={this.state.peerReviews} //This will change according to currentPeer
                         group={this.state.projectGroup}
                         userId={this.props.userId}
                         changePeer={(userId) => this.changeViewingPeer(userId)}
