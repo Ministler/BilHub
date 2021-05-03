@@ -19,6 +19,7 @@ namespace backend.Dtos.Assignment
         public bool CanBeGradedByStudents { get; set; }
         public bool IsItGraded { get; set; }
         public bool HasFile { get; set; }
+        public string FileName { get; set; }
         public List<int> SubmissionIds { get; set; }
     }
 }

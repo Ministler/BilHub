@@ -265,6 +265,13 @@ namespace backend.Services.CommentServices
         public async Task<ServiceResponse<GetCommentDto>> Add(AddCommentDto addCommentDto)
         {
             ServiceResponse<GetCommentDto> response = new ServiceResponse<GetCommentDto>();
+            if (addCommentDto == null)
+            {
+                response.Data = null;
+                response.Message = "There is no data";
+                response.Success = false;
+                return response;
+            }
             User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
             Submission submission = await _context.Submissions.Include(s => s.AffiliatedAssignment)
                 .Include(s => s.Comments)
@@ -315,6 +322,7 @@ namespace backend.Services.CommentServices
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
+            response.Data.FileName = comment.FileAttachmentAvailability ? comment.FilePath.Split('/').Last() : "";
             return response;
         }
 
@@ -338,6 +346,7 @@ namespace backend.Services.CommentServices
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             response.Data.HasFile = comment.FileAttachmentAvailability;
+            response.Data.FileName = comment.FileAttachmentAvailability ? comment.FilePath.Split('/').Last() : "";
             return response;
 
         }
@@ -372,6 +381,7 @@ namespace backend.Services.CommentServices
             response.Data = _mapper.Map<GetCommentDto>(comment);
             response.Data.FileEndpoint = "Comment/File/" + comment.Id;
             response.Data.HasFile = comment.FileAttachmentAvailability;
+            response.Data.FileName = comment.FileAttachmentAvailability ? comment.FilePath.Split('/').Last() : "";
             return response;
 
         }

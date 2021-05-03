@@ -606,6 +606,7 @@ namespace backend.Data
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "BilHub Class Helper",
+                    Name = "BilHub",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -615,6 +616,7 @@ namespace backend.Data
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Yet Another Class Helper",
+                    Name = "project name",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -624,6 +626,7 @@ namespace backend.Data
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Classrom Helper",
+                    Name = "project name",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -631,6 +634,7 @@ namespace backend.Data
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
+                    Name = "project name",
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "AGA Language",
                     ConfirmedGroupMembers = ""
@@ -640,6 +644,7 @@ namespace backend.Data
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
+                    Name = "project name",
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Satis Language",
                     ConfirmedGroupMembers = ""
@@ -647,6 +652,7 @@ namespace backend.Data
                 {
                     Id = 6,
                     AffiliatedSectionId = 2,
+                    Name = "project name",
                     AffiliatedCourseId = 1,
                     ConfirmationState = true,
                     ConfirmedUserNumber = 0,
@@ -659,6 +665,7 @@ namespace backend.Data
                     AffiliatedCourseId = 1,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
+                    Name = "project name",
                     ProjectInformation = "Group A",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
@@ -667,6 +674,7 @@ namespace backend.Data
                     AffiliatedSectionId = 1,
                     AffiliatedCourseId = 1,
                     ConfirmationState = false,
+                    Name = "project name",
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Group B",
                     ConfirmedGroupMembers = ""
@@ -675,6 +683,7 @@ namespace backend.Data
                     Id = 9,
                     AffiliatedSectionId = 1,
                     AffiliatedCourseId = 1,
+                    Name = "project name",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Best Class Management System",
@@ -684,6 +693,7 @@ namespace backend.Data
                     Id = 10,
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
+                    Name = "project name",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "++C",
@@ -695,6 +705,7 @@ namespace backend.Data
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
+                    Name = "project name",
                     ProjectInformation = "Payton",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
@@ -704,6 +715,7 @@ namespace backend.Data
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
+                    Name = "project name",
                     ProjectInformation = "Assembly-ish",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
@@ -711,6 +723,7 @@ namespace backend.Data
                     Id = 13,
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
+                    Name = "project name",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "NewLanguage()",
@@ -852,8 +865,8 @@ namespace backend.Data
                     Title = "Requirements report final",
                     AfilliatedCourseId = 1,
                     AssignmentDescription = "analysis and requirements report final",
-                    DueDate = new DateTime(2021,3,31,23,59,59),
-                    CreatedAt = new DateTime(2021,3,1,14,2,23),
+                    DueDate = new DateTime(2021, 3, 31, 23, 59, 59),
+                    CreatedAt = new DateTime(2021, 3, 1, 14, 2, 23),
                     AcceptedTypes = "pdf",
                     MaxFileSizeInBytes = 4096,
                     VisibilityOfSubmission = true,
@@ -867,8 +880,8 @@ namespace backend.Data
                     Title = "Final report",
                     AfilliatedCourseId = 1,
                     AssignmentDescription = "explain the final version of your project",
-                    DueDate = new DateTime(2021,5,5,23,59,59),
-                    CreatedAt = new DateTime(2021,4,20,4,50,23),
+                    DueDate = new DateTime(2021, 5, 5, 23, 59, 59),
+                    CreatedAt = new DateTime(2021, 4, 20, 4, 50, 23),
                     AcceptedTypes = "pdf",
                     MaxFileSizeInBytes = 4096,
                     VisibilityOfSubmission = true,
@@ -882,8 +895,8 @@ namespace backend.Data
                     Title = "First iteration of design report",
                     AfilliatedCourseId = 1,
                     AssignmentDescription = "This is the first iteration so it won't be graded",
-                    DueDate = new DateTime(2021,3,15,23,59,59),
-                    CreatedAt = new DateTime(2021,3,10,4,50,23),
+                    DueDate = new DateTime(2021, 3, 15, 23, 59, 59),
+                    CreatedAt = new DateTime(2021, 3, 10, 4, 50, 23),
                     AcceptedTypes = "pdf, txt, doc, docx",
                     MaxFileSizeInBytes = 4096,
                     VisibilityOfSubmission = true,
@@ -997,7 +1010,7 @@ namespace backend.Data
                     HasSubmission = true,
                     HasFile = false,
                     CourseId = 1,
-                    SectionId = 1, 
+                    SectionId = 1,
                 }, new Submission
                 {
                     Id = 9,
@@ -1131,6 +1144,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 3, 14, 22, 54, 2),
                     FilePath = "", // check this
                     HasSubmission = true,
+
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 2
@@ -1182,9 +1196,9 @@ namespace backend.Data
                     CommentedUserId = 24,
                     CommentedSubmissionId = 1,
                     CommentText = "You could make these improvements: ....",
-                    MaxGrade = 10, 
+                    MaxGrade = 10,
                     Grade = 8,
-                    CreatedAt = new DateTime( 2021, 4, 14, 12, 2, 3),
+                    CreatedAt = new DateTime(2021, 4, 14, 12, 2, 3),
                     FileAttachmentAvailability = false,
                     FilePath = ""
                 }, new Comment
@@ -1193,9 +1207,9 @@ namespace backend.Data
                     CommentedUserId = 25,
                     CommentedSubmissionId = 1,
                     CommentText = "It's a nice report but I'm still attaching some ideas in a file",
-                    MaxGrade = 10, 
+                    MaxGrade = 10,
                     Grade = (decimal)9.5,
-                    CreatedAt = new DateTime( 2021, 4, 1, 11, 2, 3),
+                    CreatedAt = new DateTime(2021, 4, 1, 11, 2, 3),
                     FileAttachmentAvailability = false,
                     FilePath = ""
                 }, new Comment
@@ -1204,9 +1218,9 @@ namespace backend.Data
                     CommentedUserId = 13,
                     CommentedSubmissionId = 1,
                     CommentText = "Cool",
-                    MaxGrade = 10, 
+                    MaxGrade = 10,
                     Grade = (decimal)10,
-                    CreatedAt = new DateTime( 2021, 4, 2, 11, 2, 3),
+                    CreatedAt = new DateTime(2021, 4, 2, 11, 2, 3),
                     FileAttachmentAvailability = false,
                     FilePath = ""
                 }
@@ -1218,7 +1232,7 @@ namespace backend.Data
                     RequestingStudentId = 14,
                     Description = "Hi, I want to join your group. I know .net",
                     RequestedGroupId = 5,
-                    CreatedAt = new DateTime( 2021, 4, 29, 10, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
                     AcceptedNumber = 0,
                     Accepted = false,
                     Resolved = false,
@@ -1230,7 +1244,7 @@ namespace backend.Data
                     RequestingStudentId = 24,
                     Description = "Hey, you can check out the projects I did on my github profile",
                     RequestedGroupId = 5,
-                    CreatedAt = new DateTime( 2021, 4, 29, 10, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
                     AcceptedNumber = 0,
                     Accepted = false,
                     Resolved = false,
@@ -1242,7 +1256,7 @@ namespace backend.Data
                     RequestingStudentId = 24,
                     Description = "Hey, can I join you?",
                     RequestedGroupId = 7,
-                    CreatedAt = new DateTime( 2021, 4, 29, 10, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
                     AcceptedNumber = 0,
                     Accepted = false,
                     Resolved = false,
@@ -1253,7 +1267,7 @@ namespace backend.Data
                     RequestingStudentId = 13,
                     Description = "Hi, I am very good at Javascript",
                     RequestedGroupId = 6,
-                    CreatedAt = new DateTime( 2021, 4, 29, 10, 29, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 29, 10, 29, 2),
                     AcceptedNumber = 0,
                     Accepted = false,
                     Resolved = false,
@@ -1264,22 +1278,44 @@ namespace backend.Data
                     RequestingStudentId = 9,
                     Description = "Hi, I am looking for a team.",
                     RequestedGroupId = 10,
-                    CreatedAt = new DateTime( 2021, 4, 29, 10, 30, 2 ),
-                    AcceptedNumber = 0,
+                    CreatedAt = new DateTime(2021, 4, 29, 10, 30, 2),
+                    AcceptedNumber = 1,
                     Accepted = false,
                     Resolved = false,
-                    VotedStudents = ""
+                    VotedStudents = "26"
                 }, new JoinRequest
                 {
                     Id = 6,
                     RequestingStudentId = 9,
                     Description = "",
                     RequestedGroupId = 13,
-                    CreatedAt = new DateTime( 2021, 4, 29, 14, 30, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 29, 14, 30, 2),
                     AcceptedNumber = 0,
                     Accepted = false,
                     Resolved = false,
                     VotedStudents = ""
+                }, new JoinRequest
+                {
+                    Id = 7,
+                    RequestingStudentId = 7,
+                    Description = "take me",
+                    RequestedGroupId = 1,
+                    CreatedAt = new DateTime(2021, 4, 15, 14, 30, 2),
+                    AcceptedNumber = 5,
+                    Accepted = true,
+                    Resolved = false,
+                    VotedStudents = "1 3 4 5 6"
+                }, new JoinRequest
+                {
+                    Id = 8,
+                    RequestingStudentId = 25,
+                    Description = "take me",
+                    RequestedGroupId = 1,
+                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                    AcceptedNumber = 2,
+                    Accepted = false,
+                    Resolved = true,
+                    VotedStudents = "1 3 4"
                 }
             );
             modelBuilder.Entity<MergeRequest>().HasData(
@@ -1290,7 +1326,7 @@ namespace backend.Data
                     Description = "Let's merge, we are strong in design",
                     ReceiverGroupId = 9,
                     VotedStudents = "26",
-                    CreatedAt = new DateTime( 2021, 4, 13, 10, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 13, 10, 23, 2),
                     Accepted = false,
                     Resolved = false
                 }, new MergeRequest
@@ -1300,7 +1336,7 @@ namespace backend.Data
                     Description = "You can see our past projects from our pages. We'd be good team if we merged",
                     ReceiverGroupId = 2,
                     VotedStudents = "27",
-                    CreatedAt = new DateTime( 2021, 4, 13, 14, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 13, 14, 23, 2),
                     Accepted = false,
                     Resolved = false
                 }, new MergeRequest
@@ -1310,7 +1346,7 @@ namespace backend.Data
                     Description = "",
                     ReceiverGroupId = 6,
                     VotedStudents = "13",
-                    CreatedAt = new DateTime( 2021, 4, 13, 16, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 13, 16, 23, 2),
                     Accepted = false,
                     Resolved = false
                 }, new MergeRequest
@@ -1320,7 +1356,7 @@ namespace backend.Data
                     Description = "let's merge",
                     ReceiverGroupId = 11,
                     VotedStudents = "9",
-                    CreatedAt = new DateTime( 2021, 4, 13, 17, 23, 2 ),
+                    CreatedAt = new DateTime(2021, 4, 13, 17, 23, 2),
                     Accepted = false,
                     Resolved = false
                 }, new MergeRequest
@@ -1329,8 +1365,8 @@ namespace backend.Data
                     SenderGroupId = 10,
                     Description = "",
                     ReceiverGroupId = 13,
-                    VotedStudents = "26",
-                    CreatedAt = new DateTime( 2021, 4, 13, 17, 23, 2 ),
+                    VotedStudents = "",
+                    CreatedAt = new DateTime(2021, 4, 13, 17, 23, 2),
                     Accepted = false,
                     Resolved = false
                 }, new MergeRequest
@@ -1339,26 +1375,46 @@ namespace backend.Data
                     SenderGroupId = 13,
                     Description = "",
                     ReceiverGroupId = 11,
-                    VotedStudents = "10",
-                    CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
+                    VotedStudents = "10 28",
+                    CreatedAt = new DateTime(2021, 4, 13, 19, 23, 2),
                     Accepted = false,
                     Resolved = false
-                }
+                }/*, new MergeRequest
+                {
+                    Id = 7,
+                    SenderGroupId = 14,
+                    Description = "",
+                    ReceiverGroupId = 1,
+                    VotedStudents = "1 3 4 5 6",
+                    CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
+                    Accepted = true,
+                    Resolved = false
+                },*/, new MergeRequest
+                    {
+                        Id = 8,
+                        SenderGroupId = 5,
+                        Description = "hey, merge",
+                        ReceiverGroupId = 1,
+                        VotedStudents = "1 3 24 4",
+                        CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
+                        Accepted = false,
+                        Resolved = true
+                    }
             );
             modelBuilder.Entity<PeerGradeAssignment>().HasData(
                 new PeerGradeAssignment
                 {
                     Id = 1,
                     CourseId = 1,
-                    DueDate = new DateTime( 2021, 6, 1, 1, 0, 0 ),
-                    LastEdited = new DateTime( 2021, 4, 1, 1, 1, 0, 0 ),
+                    DueDate = new DateTime(2021, 6, 1, 1, 0, 0),
+                    LastEdited = new DateTime(2021, 4, 1, 1, 1, 0, 0),
                     MaxGrade = 10
                 }, new PeerGradeAssignment
                 {
                     Id = 2,
                     CourseId = 2,
-                    DueDate = new DateTime( 2021, 8, 1, 1, 0, 0 ),
-                    LastEdited = new DateTime( 2021, 4, 1, 1, 1, 0, 0 ),
+                    DueDate = new DateTime(2021, 8, 1, 1, 0, 0),
+                    LastEdited = new DateTime(2021, 4, 1, 1, 1, 0, 0),
                     MaxGrade = 5
                 }
             );
@@ -1373,7 +1429,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 10,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 0, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 0, 0)
                 }, new ProjectGrade
                 {
                     Id = 2,
@@ -1384,7 +1440,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 9,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 1, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 1, 0)
                 }, new ProjectGrade
                 {
                     Id = 3,
@@ -1395,7 +1451,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 8,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 2, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 2, 0)
                 }, new ProjectGrade
                 {
                     Id = 4,
@@ -1406,7 +1462,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 10,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 3, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 3, 0)
                 }, new ProjectGrade
                 {
                     Id = 5,
@@ -1417,7 +1473,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 6,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 4, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 4, 0)
                 }, new ProjectGrade
                 {
                     Id = 6,
@@ -1428,7 +1484,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 7,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 5, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 5, 0)
                 }, new ProjectGrade
                 {
                     Id = 7,
@@ -1439,7 +1495,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 8,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 6, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 6, 0)
                 }, new ProjectGrade
                 {
                     Id = 8,
@@ -1450,7 +1506,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 9,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 7, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 7, 0)
                 }, new ProjectGrade
                 {
                     Id = 9,
@@ -1461,7 +1517,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 9,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 8, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 8, 0)
                 }, new ProjectGrade
                 {
                     Id = 10,
@@ -1472,7 +1528,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 9,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 9, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 9, 0)
                 }, new ProjectGrade
                 {
                     Id = 11,
@@ -1483,7 +1539,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 8,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 10, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 10, 0)
                 }, new ProjectGrade
                 {
                     Id = 12,
@@ -1494,7 +1550,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 10,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
                 }, new ProjectGrade
                 {
                     Id = 13,
@@ -1505,7 +1561,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 8,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
                 }, new ProjectGrade
                 {
                     Id = 14,
@@ -1516,7 +1572,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 10,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
                 }, new ProjectGrade
                 {
                     Id = 15,
@@ -1527,7 +1583,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 10,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
                 }, new ProjectGrade
                 {
                     Id = 16,
@@ -1538,7 +1594,7 @@ namespace backend.Data
                     HasFile = false,
                     MaxGrade = 10,
                     Grade = 9,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
                 }
             );
             modelBuilder.Entity<PeerGrade>().HasData(
@@ -1552,7 +1608,7 @@ namespace backend.Data
                     Grade = 10,
                     Comment = "nice term",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 0, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 0, 0)
                 }, new PeerGrade
                 {
                     Id = 2,
@@ -1563,7 +1619,7 @@ namespace backend.Data
                     Grade = 9,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 1, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 1, 0)
                 }, new PeerGrade
                 {
                     Id = 3,
@@ -1574,7 +1630,7 @@ namespace backend.Data
                     Grade = 8,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 2, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 2, 0)
                 }, new PeerGrade
                 {
                     Id = 4,
@@ -1585,7 +1641,7 @@ namespace backend.Data
                     Grade = 8,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 3, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 3, 0)
                 }, new PeerGrade
                 {
                     Id = 5,
@@ -1596,7 +1652,7 @@ namespace backend.Data
                     Grade = 8,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 4, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 4, 0)
                 }, new PeerGrade
                 {
                     Id = 6,
@@ -1607,7 +1663,7 @@ namespace backend.Data
                     Grade = 8,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 5, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 5, 0)
                 }, new PeerGrade
                 {
                     Id = 7,
@@ -1618,7 +1674,7 @@ namespace backend.Data
                     Grade = 6,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 6, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 6, 0)
                 }, new PeerGrade
                 {
                     Id = 8,
@@ -1629,7 +1685,7 @@ namespace backend.Data
                     Grade = 8,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 7, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 7, 0)
                 }, new PeerGrade
                 {
                     Id = 9,
@@ -1640,7 +1696,7 @@ namespace backend.Data
                     Grade = 10,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 8, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 8, 0)
                 }, new PeerGrade
                 {
                     Id = 10,
@@ -1651,7 +1707,7 @@ namespace backend.Data
                     Grade = 10,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 9, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 9, 0)
                 }, new PeerGrade
                 {
                     Id = 11,
@@ -1662,7 +1718,7 @@ namespace backend.Data
                     Grade = 10,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 10, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 10, 0)
                 }, new PeerGrade
                 {
                     Id = 12,
@@ -1673,7 +1729,7 @@ namespace backend.Data
                     Grade = 4,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 11, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
                 }, new PeerGrade
                 {
                     Id = 13,
@@ -1684,7 +1740,7 @@ namespace backend.Data
                     Grade = 8,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 12, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 12, 0)
                 }, new PeerGrade
                 {
                     Id = 14,
@@ -1695,7 +1751,7 @@ namespace backend.Data
                     Grade = 7,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 13, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 13, 0)
                 }, new PeerGrade
                 {
                     Id = 15,
@@ -1706,9 +1762,10 @@ namespace backend.Data
                     Grade = 9,
                     Comment = "",
                     PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime( 2021, 4, 1, 2, 1, 14, 0 )
+                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 14, 0)
                 }
             );
+
         }
     }
 }

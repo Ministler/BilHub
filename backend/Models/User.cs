@@ -22,6 +22,7 @@ namespace backend.Models
         public byte[] PasswordSalt { get; set; }
         public bool VerifiedStatus { get; set; }
         public bool DarkModeStatus { get; set; }
+        public string UserInformation { get; set; }
         public ICollection<CourseUser> InstructedCourses { get; set; }
         public ICollection<ProjectGroupUser> ProjectGroups { get; set; }
         public ICollection<JoinRequest> OutgoingJoinRequests { get; set; }
