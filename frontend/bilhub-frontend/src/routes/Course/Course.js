@@ -193,16 +193,82 @@ class Course extends Component {
                 //             groupId: 1,
                 //             groupName: 'BilH123ub',
                 //         },
+
+                //     isUserReady: true,
+                //     isFormable: true,
+                // },
+                //     groupId: 1,
+                //     notRequestable: true,
+                // },
+                // {
+                //     members: [
+                //         {
+                //             name: '5Yusuf Uyar',
+                //             userId: 1,
+                //         },
+                //         {
+                //             name: '5Halil Özgür Demir',
+                //             userId: 2,
+                //         },
+                //         {
+                //             name: '5Barış Ogün Yörük',
+                //             userId: 3,
+                //         },
+                //     ],
+                //     groupId: 1,
+                // },
                 axios.all(sectionRequests).then(
                     axios.spread((...responses) => {
-                        const groups = [[]];
+                        const groups = [];
                         for (let i = 0; i < responses.length; i++) {
                             const data = responses[i].data.data;
-                            const section = [];
+                            const section = { formed: [], unformed: [] };
                             for (let group of data.projectGroups) {
-                                console.log(group);
+                                if (group.confirmationState) {
+                                    const members = [];
+                                    for (let member of group.groupMembers) {
+                                        console.log(member);
+                                        members.push({
+                                            userId: member.id,
+                                            name: member.name,
+                                        });
+                                    }
+
+                                    const group2 = {
+                                        groupId: group.id,
+                                        members: members,
+                                    };
+                                    section.formed.push(group2);
+                                } else {
+                                    const members = [];
+                                    let isUserInGroup = false;
+                                    for (let member of group.groupMembers) {
+                                        if (member.id == this.props.userId) {
+                                            isUserInGroup = true;
+                                        }
+                                        members.push({
+                                            userId: member.id,
+                                            name: member.name,
+                                        });
+                                    }
+
+                                    const group2 = {
+                                        groupId: group.id,
+                                        members: members,
+                                        isUserInGroup: isUserInGroup,
+                                        voteStatus: group.confirmedUserNumber + '/' + members.length,
+                                        isFormable: this.state.courseInformation?.minGroupSize <= members.length,
+                                        //isUserReady:,
+                                    };
+                                    section.unformed.push(group2);
+                                }
                             }
+                            groups.push(section);
                         }
+                        console.log(groups);
+                        this.setState({
+                            groups: groups,
+                        });
                     })
                 );
             } else {
