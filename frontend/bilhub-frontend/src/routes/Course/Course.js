@@ -222,16 +222,12 @@ class Course extends Component {
                 assignments: assignments,
             });
         });
-<<<<<<< HEAD
-        this.setState({ courseGrades: dummyCourseGrades, finalGrades: dummyFinalGrades });
-=======
 
         getCourseStatisticRequest(this.props.match.params.courseId).then((response) => {
             if (!response.data.success) return;
 
             console.log(response.data.data);
         });
->>>>>>> a77b0be74eb27eb8c60c07164724829d43b88e2e
     }
 
     onPeerReviewsOpen = (dropdownValues) => {
