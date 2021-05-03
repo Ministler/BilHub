@@ -116,6 +116,12 @@ class ProjectAssignment extends Component {
         });
     };
 
+    onSubmissionFileChange = (file) => {
+        this.setState({
+            submissionFile: file,
+        });
+    };
+
     onSubmissionModalClosed = (modalType, isSuccess) => {
         this.setState({
             [modalType]: false,
@@ -198,6 +204,7 @@ class ProjectAssignment extends Component {
                 }
                 const assignment = {
                     title: curSubmission.affiliatedAssignment.title,
+                    id: curSubmission.affiliatedAssignment.id,
                     status: status,
                     caption: curSubmission.affiliatedAssignment.assignmentDescription,
                     publisher: curSubmission.affiliatedAssignment.publisher,
@@ -212,9 +219,16 @@ class ProjectAssignment extends Component {
                     date: inputDateToDateObject(curSubmission.updatedAt),
                     submissionId: curSubmission.id,
                 };
+                let isInGroup = false;
+                for (let i of curSubmission.affiliatedGroup.groupMembers) {
+                    if (i.id === this.props.userId) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
                 const page = {
                     isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
-                    isInGroup: curSubmission.affiliatedGroup.id === this.props.match.params.projectId,
+                    isInGroup: isInGroup,
                     isTAorInstructor: auth.data.data,
                     canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
                     hasSubmission: curSubmission.hasSubmission,
@@ -312,7 +326,6 @@ class ProjectAssignment extends Component {
             this.setState({
                 [modalType]: true,
                 submissionCaption: '',
-                submissionFile: 'empty',
             });
         }
     };
@@ -470,7 +483,7 @@ class ProjectAssignment extends Component {
 
     getNewCommentButton = () => {
         let newCommentButton = null;
-        if (this.state.submissionPage?.canUserComment) {
+        if (this.state.submissionPage?.canUserComment && !this.state.isInGroup) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -602,6 +615,7 @@ class ProjectAssignment extends Component {
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
                     onTextChange={(e) => this.onSubmissionCaptionChanged(e)}
+                    onFileChanged={this.onSubmissionFileChange}
                 />
                 <EditSubmissionModal
                     isOpen={this.state.isEditSubmissionOpen}

@@ -219,7 +219,7 @@ export const NewSubmissionModal = (props) => {
                     {props.instructions}
                 </div>
                 <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
-                <input type="file" />
+                <input type="file" onChange={(e) => props.onFileChanged(e.target.files[0])} />
             </>
         </Modal>
     );
