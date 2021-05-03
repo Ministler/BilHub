@@ -6,5 +6,5 @@ export {
     convertMembersToMemberElement,
     convertSubmissionsToSubmissionElement,
     convertUnformedGroupsToBriefList,
-    convertFormedGroupsToBriefList,
+    FormedGroupsBriefList,
 } from './BriefListFunctions';

@@ -21,17 +21,17 @@ import { checkAuthRequest } from './API';
 
 class App extends Component {
     componentDidMount() {
-        const token = localStorage.getItem('token');
-
-        checkAuthRequest(token)
-            .then((response) => {
-                const userData = response.data.users[0];
-                this.props.authSuccess(token, userData.localId, userData.email, userData.displayName, 'student');
-            })
-            .catch((error) => {
-                console.log(error.response);
-                this.props.logout();
-            });
+        checkAuthRequest().then((response) => {
+            const userData = response.data.data;
+            this.props.authSuccess(
+                localStorage.getItem('token'),
+                userData.id,
+                userData.email,
+                userData.name,
+                userData.userType,
+                userData.darkModeStatus
+            );
+        });
     }
 
     render() {
@@ -59,18 +59,17 @@ class App extends Component {
                     <Route exact path={'/course/:courseId'} component={Course} />
                     <Route exact path={'/course/:courseId/assignment/:assignmentId'} component={Course} />
                     <Route exact path={'/settings'} component={Settings} />
-                    {this.props.userType === 'instructor' ? (
+                    {this.props.userType === 'Instructor' ? (
                         <Route exact path={'/create-new-course'} component={CourseCreation} />
                     ) : null}
-                    {this.props.userType === 'instructor' ? (
-                        <Route exact path={'/course/:id/settings'} component={CourseSettings} />
-                    ) : null}
                     <Route exact path={'/'} component={Home} />
+                    <Route exact path={'/course/:courseId/settings'} component={CourseSettings} />
                     <Redirect to={'/'} />
                 </Switch>
             </AppLayout>
         );
-        return this.props.token ? authenticatedRoutes : unauthenticatedRoutes;
+        const token = localStorage.getItem('token');
+        return token ? authenticatedRoutes : unauthenticatedRoutes;
     }
 }
 
@@ -84,8 +83,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authSuccess: (token, userId, email, name, userType) =>
-            dispatch(actions.authSuccess(token, userId, email, name, userType)),
+        authSuccess: (token, userId, email, name, userType, darkMode) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType, darkMode)),
         logout: () => dispatch(actions.logout()),
     };
 };

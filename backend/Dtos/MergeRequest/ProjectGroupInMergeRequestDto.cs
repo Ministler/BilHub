@@ -13,5 +13,6 @@ namespace backend.Dtos.MergeRequest
         public int ConfirmedUserNumber { get; set; }
         public string ProjectInformation { get; set; }
         public string ConfirmedGroupMembers { get; set; }
+        public ICollection<GroupMemberInMergeRequestDto> GroupMembers {get; set;}
     }
 }

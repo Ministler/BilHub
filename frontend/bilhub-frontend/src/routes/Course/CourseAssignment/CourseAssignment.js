@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
-import { Icon, Dropdown, Button, Accordion } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { Icon, Dropdown, Button } from 'semantic-ui-react';
+import { withRouter, Link } from 'react-router-dom';
 
+import {
+    getAssignmentRequest,
+    getAssignmentFileRequest,
+    getSubmissionRequest,
+    getAssignmentStatisticsRequest,
+    getSubmissionFileRequest,
+} from '../../../API';
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
+import { dateObjectToString } from '../../../utils';
+import axios from 'axios';
 
 class CourseAssignment extends Component {
     constructor(props) {
@@ -15,10 +24,106 @@ class CourseAssignment extends Component {
         };
     }
 
+    onSubmissionFileClicked = (submissionId) => {
+        getSubmissionFileRequest(submissionId);
+    };
+
+    onFileClicked = () => {
+        getAssignmentFileRequest(this.props.match.params.assignmentId);
+    };
+
+    onDownloadAllFiles = () => {
+        console.log('File');
+    };
+
+    onDownloadNotGradedFiles = () => {
+        console.log('file');
+    };
+
     componentDidMount() {
+        getAssignmentRequest(this.props.match.params.assignmentId).then((response) => {
+            if (!response.data.success) return;
+
+            const data = response.data.data;
+
+            const assignment = {
+                title: data.title,
+                caption: data.assignmentDescription,
+                publisher: data.publisher,
+                hasFile: data.hasFile,
+                isUserTAorInstructor: this.props.isUserTAorInstructor,
+                publishmentDate: data.createdAt,
+                dueDate: data.dueDate,
+                currentUserSection: this.props.currentUserSection,
+                numberOfSections: this.props.numberOfSections,
+            };
+
+            this.setState({
+                assignment: assignment,
+            });
+
+            const submissionIds = data.submissionIds;
+            const requests = [];
+            for (let id of submissionIds) {
+                requests.push(getSubmissionRequest(id));
+            }
+
+            axios.all(requests).then(
+                axios.spread((...responses) => {
+                    const submission = [];
+                    for (let i = 0; i < this.props.numberOfSections; i++) {
+                        submission.push({
+                            graded: [],
+                            submitted: [],
+                            notSubmitted: [],
+                        });
+                    }
+                    console.log(data.sectionNumber);
+                    console.log(submission);
+                    for (let response of responses) {
+                        const data = response.data.data;
+                        console.log(data);
+                        if (!data.hasSubmission) {
+                            submission[data.sectionNumber - 1].notSubmitted.push({
+                                groupName: data.affiliatedGroup.name,
+                                projectId: data.affiliatedGroup.id,
+                                submissionId: data.id,
+                            });
+                        } else if (!data.isGraded) {
+                            console.log(submission);
+                            submission[data.sectionNumber - 1].submitted.push({
+                                groupName: data.affiliatedGroup.name,
+                                projectId: data.affiliatedGroup.id,
+                                submissionId: data.id,
+                                hasFile: data.hasFile,
+                                submissionDate: data.updatedAt,
+                            });
+                        } else {
+                            submission[data.sectionNumber - 1].graded.push({
+                                groupName: data.affiliatedGroup.name,
+                                projectId: data.affiliatedGroup.id,
+                                submissionId: data.id,
+                                hasFile: data.hasFile,
+                                submissionDate: data.updatedAt,
+                                grade: data.srsGrade,
+                            });
+                        }
+                    }
+
+                    this.setState({
+                        submissions: submission,
+                    });
+                })
+            );
+        });
+
+        getAssignmentStatisticsRequest(this.props.match.params.assignmentId).then((response) => {
+            if (!response.data.success) return;
+            console.log(response.data.data);
+        });
+
         this.setState({
-            assignment: dummyAssignment,
-            submissions: dummyGroupSubmissions,
+            currentSection: this.props.currentUserSection ? this.props.currentUserSection - 1 : 0,
         });
     }
 
@@ -26,17 +131,23 @@ class CourseAssignment extends Component {
         this.props.history.replace('/course/' + this.props.match.params.courseId);
     };
 
-    onFileClicked = () => {
-        console.log('File');
-    };
-
     getAssignmentControlIcons = () => {
         let controlIcons = null;
-        if (this.props.isCourseActive && this.state.assignment?.isUserTAorInstructor) {
+        if (this.props.isTAorInstructorOfCourse) {
             controlIcons = (
                 <>
-                    <Icon name="edit" />
-                    <Icon name="close" />
+                    <Icon
+                        name="close"
+                        color="red"
+                        style={{ float: 'right' }}
+                        onClick={this.props.onDeleteAssignmentModalOpened}
+                    />
+                    <Icon
+                        name="edit"
+                        color="blue"
+                        style={{ float: 'right' }}
+                        onClick={this.props.onEditAssignmentModalOpened}
+                    />
                 </>
             );
         }
@@ -52,14 +163,18 @@ class CourseAssignment extends Component {
                     title={this.props.courseName + ' / ' + this.state.assignment?.title}
                     caption={this.state.assignment?.caption}
                     publisher={this.state.assignment?.publisher}
-                    fileIcon={this.state.assignment?.file ? <Icon name="file" /> : null}
+                    fileIcon={this.state.assignment?.hasFile ? <Icon name="file" color="grey" /> : null}
                     fileClicked={this.onFileClicked}
                     date={
                         'Publishment Date: ' +
-                        this.state.assignment?.publishmentDate +
+                        (typeof this.state.assignment?.publishmentDate === 'object'
+                            ? dateObjectToString(this.state.assignment?.publishmentDate)
+                            : this.state.assignment?.publishmentDate) +
                         ' / ' +
                         'Due Date: ' +
-                        this.state.assignment?.dueDate
+                        (typeof this.state.assignment?.dueDate === 'object'
+                            ? dateObjectToString(this.state.assignment?.dueDate)
+                            : this.state.assignment?.dueDate)
                     }
                     titleIcon={this.getAssignmentControlIcons()}
                 />
@@ -85,10 +200,9 @@ class CourseAssignment extends Component {
             }
             return (
                 <Dropdown
-                    defaultValue={0}
-                    fluid
                     selection
                     options={sectionOptions}
+                    value={this.state.currentSection}
                     onChange={(e, dropdownValues) => this.onSectionChanged(dropdownValues)}
                 />
             );
@@ -101,17 +215,15 @@ class CourseAssignment extends Component {
         this.props.history.push('/project/' + projectId + '/submission/' + submissionId);
     };
 
-    onSubmissionFileClicked = () => {
-        console.log('CLICKED');
-    };
-
     getSubmissionsPane = () => {
         return {
             title: 'Submissions',
             content: (
                 <>
                     {this.getDropdownForSection()}
-                    {this.state.submissions?.length >= 1
+                    {this.state.submissions?.length >= 1 &&
+                    this.state.currentSection < this.state.submissions?.length &&
+                    0 <= this.state.submissions?.length
                         ? getSubmissionsAsAccordion(
                               this.state.submissions[this.state.currentSection],
                               this.onSubmissionPageClicked,
@@ -127,7 +239,7 @@ class CourseAssignment extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getAssignmentStatistics(dummyAssignmentGrades)}</>,
+            content: <>{getAssignmentStatistics(dummyAssignmentGrades, dummyFinalGrades)}</>,
         };
     };
 
@@ -140,8 +252,12 @@ class CourseAssignment extends Component {
         if (this.state.assignment?.isUserTAorInstructor) {
             buttons = (
                 <>
-                    <Button icon={'download'}>Download All Files</Button>
-                    <Button icon={'download'}>Donwload Only Submitted Files</Button>
+                    <Button color="green" compact onClick={this.onDownloadAllFiles} icon labelPosition="right">
+                        Download All Files <Icon name="download" />
+                    </Button>
+                    <Button color="green" compact onClick={this.onDownloadNotGradedFiles} icon labelPosition="right">
+                        Donwload Only Not Graded Files <Icon name="download" />
+                    </Button>
                 </>
             );
         }
@@ -150,8 +266,19 @@ class CourseAssignment extends Component {
 
     render() {
         return (
-            <div>
-                <Icon onClick={this.onReturnProjectPage} size="huge" name="angle left" />
+            <div class="inline">
+                <Icon
+                    onClick={this.onReturnProjectPage}
+                    size="big"
+                    name="angle left"
+                    color="blue"
+                    style={{ display: 'inline' }}
+                />
+                <Link
+                    onClick={this.onReturnProjectPage}
+                    style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
+                    Back To Course Page
+                </Link>
                 <Tab tabPanes={this.getPaneElements()} />
             </div>
         );
@@ -163,11 +290,12 @@ const dummyAssignment = {
     caption:
         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
     publisher: 'Elgun Jabrayilzade',
-    file: 'file',
+    hasFile: 'file',
     isUserTAorInstructor: true,
-    publishmentDate: '12 March 2021 12:00',
-    dueDate: '12 March 2021 12:00',
-    numberOfSections: 5,
+    publishmentDate: new Date(2021, 3, 12, 12, 0),
+    dueDate: new Date(2021, 3, 12, 12, 0),
+    numberOfSections: 3,
+    currentUserSection: 2,
 };
 
 const dummyGroupSubmissions = [
@@ -176,18 +304,18 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -196,16 +324,68 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
+                projectId: 2,
+                submissionId: 2,
+            },
+        ],
+        notSubmitted: [
+            {
+                groupName: 'BilHub',
+                projectId: 1,
+                submissionId: 1,
+            },
+            {
+                groupName: 'Classroom Helper',
+                projectId: 2,
+                submissionId: 2,
+            },
+        ],
+    },
+    {
+        graded: [
+            {
+                groupName: 'BilHub2',
+                fileName: '21_1_analysisReport.pdf',
+                hasFile: '2file',
+                grade: '2/10',
+                submissionDate: new Date(2021, 3, 2, 17, 0),
+                projectId: 1,
+                submissionId: 1,
+            },
+            {
+                groupName: 'Classroom Helper',
+                fileName: '1_1_analysisReport.pdf',
+                hasFile: 'file',
+                grade: '7/10',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
+                projectId: 2,
+                submissionId: 2,
+            },
+        ],
+        submitted: [
+            {
+                groupName: 'BilHub',
+                fileName: '1_1_analysisReport.pdf',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
+                projectId: 1,
+                submissionId: 1,
+            },
+            {
+                groupName: 'Classroom Helper',
+                fileName: '1_1_analysisReport.pdf',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -228,18 +408,18 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
+                hasFile: 'file',
                 grade: '7/10',
-                submissionDate: '15 March 2021',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -248,16 +428,16 @@ const dummyGroupSubmissions = [
             {
                 groupName: 'BilHub',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 1,
                 submissionId: 1,
             },
             {
                 groupName: 'Classroom Helper',
                 fileName: '1_1_analysisReport.pdf',
-                file: 'file',
-                submissionDate: '15 March 2021',
+                hasFile: 'file',
+                submissionDate: new Date(2021, 3, 15, 17, 0),
                 projectId: 2,
                 submissionId: 2,
             },
@@ -286,5 +466,16 @@ const dummyAssignmentGrades = {
         { name: 'Website', grades: [46, 87, 24, 10, 94] },
     ],
 };
+
+const dummyFinalGrades = [
+    { group: 'BilHub', grade: 90 },
+    { group: 'BilHub2', grade: 20 },
+    { group: 'BilHub3', grade: 80 },
+    { group: 'BilHubNot', grade: 78 },
+    { group: 'OZCO1000', grade: 80 },
+    { group: 'BilCalendar', grade: 78 },
+    { group: 'Yusuf Keke', grade: 80 },
+    { group: 'Website', grade: 78 },
+];
 
 export default withRouter(CourseAssignment);

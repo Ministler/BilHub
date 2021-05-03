@@ -1,18 +1,20 @@
 import React from 'react';
-import { Segment, Icon, Card } from 'semantic-ui-react';
+import { Segment, Icon, Card, Grid } from 'semantic-ui-react';
 
 import { convertMembersToMemberElement, Tab } from '../../../components';
 
 export const ProfilePrompt = (props) => {
     return (
-        <Segment>
+        <Segment style={{ boxShadow: 'none', border: '0' }}>
             <h2 className="ui center aligned icon header">
-                <Icon circular name="user" size="Massive" />
+                <Icon circular name="user" />
                 {props.name}
             </h2>
             <p align="center">{props.email}</p>
             <h4 style={{ marginLeft: '20px' }}>Information</h4>
-            {props.informationElement}
+            <p className="InformationText" style={{ display: 'inline-block' }}>
+                {props.informationElement}
+            </p>
             {props.icon}
         </Segment>
     );
@@ -31,6 +33,7 @@ export const TabExampleSecondaryPointing = (props) => {
                             instructors={course.instructors}
                             onUserClicked={(userId) => props.onUserClicked(userId)}
                             onCourseClicked={() => props.onCourseClicked(course.courseId)}
+                            information={course.information}
                         />
                     );
                 })
@@ -40,7 +43,7 @@ export const TabExampleSecondaryPointing = (props) => {
         },
     ];
 
-    if (props.userType !== 'instructor') {
+    if (props.userType !== 'Instructor') {
         panes.unshift({
             title: 'Projects',
             content: props.projects ? (
@@ -52,6 +55,7 @@ export const TabExampleSecondaryPointing = (props) => {
                             peerGrade={project.peerGrade}
                             projectGrade={project.projectGrade}
                             instructor={project.instructor}
+                            information={project.information}
                             onUserClicked={(userId) => props.onUserClicked(userId)}
                             onProjectClicked={() => props.onProjectClicked(project.projectId)}
                         />
@@ -68,12 +72,28 @@ export const TabExampleSecondaryPointing = (props) => {
 
 export const ProjectCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement">
+        <Card className="ProjectCardElement" fluid style={{ width: '95%' }}>
             <Card.Content>
-                <Card.Header>
+                <Card.Header className="clickableChangeColor">
                     <div onClick={props.onProjectClicked}>{props.title}</div>
                 </Card.Header>
-                <Card.Description>{convertMembersToMemberElement(props.members, props.onUserClicked)}</Card.Description>
+                <Card.Description>
+                    <Grid columns={2} divided>
+                        <Grid.Column>
+                            {convertMembersToMemberElement(
+                                props.members.slice(0, Math.ceil(props.members.length / 2)),
+                                props.onUserClicked
+                            )}
+                        </Grid.Column>
+                        <Grid.Column>
+                            {convertMembersToMemberElement(
+                                props.members.slice(Math.ceil(props.members.length / 2)),
+                                props.onUserClicked
+                            )}
+                        </Grid.Column>
+                    </Grid>
+                    <p style={{ marginTop: '15px' }}>{props.information}</p>
+                </Card.Description>
             </Card.Content>
             <Card.Content className="ProjectCardExtra">
                 <div className="ProjectGrade">
@@ -86,18 +106,23 @@ export const ProjectCardElement = (props) => {
 
 export const CourseCardElement = (props) => {
     return (
-        <Card className="ProjectCardElement">
+        <Card className="ProjectCardElement" fluid style={{ width: '95%' }}>
             <Card.Content>
-                <Card.Header>
+                <Card.Header className="clickableChangeColor">
                     <div onClick={props.onCourseClicked}>{props.title}</div>
                 </Card.Header>
                 <Card.Description>
-                    <h4>TAs</h4>
-                    {convertMembersToMemberElement(props.TAs, props.onUserClicked)}
-                </Card.Description>
-                <Card.Description>
-                    <h4>Instructors</h4>
-                    {convertMembersToMemberElement(props.instructors, props.onUserClicked)}
+                    <Grid columns={2} divided>
+                        <Grid.Column>
+                            <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Instructors</label>
+                            {convertMembersToMemberElement(props.instructors, props.onUserClicked)}
+                        </Grid.Column>
+                        <Grid.Column>
+                            <label style={{ fontSize: '14px', fontWeight: 'bold' }}>TAs</label>
+                            {convertMembersToMemberElement(props.TAs, props.onUserClicked)}
+                        </Grid.Column>
+                    </Grid>
+                    <p style={{ marginTop: '15px' }}>{props.information}</p>
                 </Card.Description>
             </Card.Content>
         </Card>

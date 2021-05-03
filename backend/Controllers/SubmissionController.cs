@@ -150,18 +150,18 @@ namespace backend.Controllers
             }
         }
 
-        // [HttpPost]
-        // public async Task<IActionResult> SubmitAssignment([FromForm] AddSubmissionwithAttachmentDto addwithAttachment)
-        // {
-        //     ServiceResponse<GetSubmissionDto> response = await _submissionService.AddSubmission(addwithAttachment.addSubmissionDto);
-        //     if (response.Success)
-        //     {
-        //         if (addwithAttachment.file != null)
-        //             await _submissionService.SubmitAssignment(new AddSubmissionFileDto { File = addwithAttachment.file, SubmissionId = response.Data.Id });
-        //         return Ok(response);
-        //     }
-        //     return NotFound(response);
-        // }
+        [HttpPost]
+        public async Task<IActionResult> SubmitAssignment([FromForm] AddSubmissionwithAttachmentDto addwithAttachment)
+        {
+            ServiceResponse<GetSubmissionDto> response = await _submissionService.AddSubmission(addwithAttachment.addSubmissionDto);
+            if (response.Success)
+            {
+                if (addwithAttachment.file != null)
+                    await _submissionService.SubmitAssignment(new AddSubmissionFileDto { File = addwithAttachment.file, SubmissionId = response.Data.Id });
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
 
         [HttpDelete]
         [Route("{submissionId}")]
@@ -246,8 +246,6 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
-
-
         [HttpPut]
         public async Task<IActionResult> UpdateAssignment([FromForm] UpdateSubmissionWithAttachment updateSubmissionWithAttachment)
         {

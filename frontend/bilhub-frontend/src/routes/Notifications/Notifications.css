@@ -1,0 +1,18 @@
+.MyProjectsBlock {
+    margin-top: 20px;
+    padding-left: 25px;
+}
+
+.MyProjectsBlock > div {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.InstructedCoursesBlock {
+    margin-top: 15px;
+    padding-left: 25px;
+}
+
+.InstructedCoursesBlock > div {
+    padding-bottom: 10px;
+}

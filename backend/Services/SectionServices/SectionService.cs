@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using backend.Data;
+using backend.Dtos.ProjectGroup;
 using backend.Dtos.Section;
 using backend.Models;
 using backend.Services.ProjectGroupServices;
@@ -87,6 +89,15 @@ namespace backend.Services.SectionServices
             } 
 
             serviceResponse.Data = _mapper.Map<GetSectionDto> ( dbSection );
+            var tmp = await _projectGroupService.GetProjectGroupsOfSection ( dbSection.Id );
+            if ( tmp.Success == false )
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "There might be some errors. Please check the information of section and user.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data.ProjectGroups = tmp.Data;
             return serviceResponse;
         }
 
@@ -141,6 +152,15 @@ namespace backend.Services.SectionServices
             await _context.SaveChangesAsync();
             
             serviceResponse.Data = _mapper.Map<GetSectionDto> ( dbSection );
+            var tmp = await _projectGroupService.GetProjectGroupsOfSection ( dbSection.Id );
+            if ( tmp.Success == false )
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "There might be some errors. Please check the information of section and user.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data.ProjectGroups = tmp.Data;
             return serviceResponse;
         }
 
@@ -160,6 +180,102 @@ namespace backend.Services.SectionServices
             }
 
             serviceResponse.Data = _mapper.Map<GetSectionDto> ( dbSection );
+            var tmp = await _projectGroupService.GetProjectGroupsOfSection ( dbSection.Id );
+            if ( tmp.Success == false )
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "There might be some errors. Please check the information of section and user.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data.ProjectGroups = tmp.Data;
+            return serviceResponse;
+        }
+
+        private async Task<int> SizeOfGroup ( int projectGroupId )
+        {
+            ProjectGroup tmp = await _context.ProjectGroups
+                .Include(c =>c.GroupMembers)
+                .FirstOrDefaultAsync( c => c.Id == projectGroupId);
+            if ( tmp == null )
+                return 0;
+            return tmp.GroupMembers.Count;
+        }
+        public async Task<ServiceResponse<string>> LockGroupFormation(int sectionId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string> ();
+            
+            Section dbSection = await _context.Sections
+                .Include ( c => c.AffiliatedCourse )
+                .Include ( c => c.ProjectGroups ).ThenInclude ( cs => cs.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.Id == sectionId );
+
+            if ( dbSection == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Section not found";
+                return serviceResponse;
+            }
+
+            List<int> unformedGroups = new List<int>();
+            List<int> formedGroups = new List<int>();
+            foreach ( var i in dbSection.ProjectGroups ) {
+                
+                if ( i.GroupMembers.Count >= dbSection.AffiliatedCourse.MinGroupSize && i.GroupMembers.Count <= dbSection.AffiliatedCourse.MaxGroupSize )
+                {
+                    foreach ( var j in dbSection.ProjectGroups )
+                    {
+                        foreach ( var k in j.GroupMembers )
+                            await _projectGroupService.ForceConfirmStudent (k.UserId,j.Id);
+                    }
+
+                    formedGroups.Add ( i.Id );
+                }
+                else {
+                    if ( i.ConfirmationState )
+                        formedGroups.Add ( i.Id );
+                    else
+                        unformedGroups.Add ( i.Id );
+                }
+            }
+            
+            while ( unformedGroups.Count > 1 )
+            {
+                bool flag = false;
+
+                for ( int i = 0 ; i < unformedGroups.Count ; i++ ) {
+                    for ( int j = i+1 ; j < unformedGroups.Count ; j++ ) {
+                        int vali = unformedGroups.ElementAt(i);
+                        int valj = unformedGroups.ElementAt(j);
+                        int szi  = await SizeOfGroup( vali );
+                        int szj  = await SizeOfGroup( valj );
+                        if ( szi + szj <= dbSection.AffiliatedCourse.MaxGroupSize )
+                        {
+                            await _projectGroupService.ForceMerge ( vali, valj );
+                            unformedGroups.Remove(vali);
+                            if ( szi + szj >= dbSection.AffiliatedCourse.MaxGroupSize )
+                            {
+                                foreach ( var k in dbSection.ProjectGroups.Where( c => c.Id == valj ).ElementAt(0).GroupMembers )
+                                {
+                                    await _projectGroupService.ForceConfirmStudent (k.UserId,valj);
+                                }
+
+                                unformedGroups.Remove(valj);
+                            }
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if ( flag )
+                        break;
+                }
+
+                if ( flag == false )
+                    break;
+
+            }
+
+            serviceResponse.Data = "Possible merges are done.";
             return serviceResponse;
         }
     }

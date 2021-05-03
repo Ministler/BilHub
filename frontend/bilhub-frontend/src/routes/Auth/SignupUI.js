@@ -15,8 +15,14 @@ export const SignupUI = (props) => {
                     </h2>
                     {props.error && (
                         <div className="ui negative message" style={{ fontSize: '12px' }}>
-                            <i className="close icon" onClick={props.onErrorClosed}></i>
+                            <i className="close icon" onClick={props.onPopupClosed}></i>
                             {props.error}
+                        </div>
+                    )}
+                    {props.information && (
+                        <div className="ui postive message" style={{ fontSize: '12px' }}>
+                            <i className="close icon" onClick={props.onPopupClosed}></i>
+                            {props.information}
                         </div>
                     )}
                     <Segment>

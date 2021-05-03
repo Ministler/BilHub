@@ -1,14 +1,10 @@
 .AssignmentCard {
-    width: 100% !important;
+    width: 95% !important;
 }
 
 .docFile i {
     margin: 5px;
     float: right;
-}
-
-.FeedbackCardExtra {
-    display: flex;
 }
 
 .FeedbackCardElement > .content > .header {
@@ -21,4 +17,5 @@
 
 .FeedbackCardElement {
     width: 95% !important;
+    margin-left: 20px !important;
 }

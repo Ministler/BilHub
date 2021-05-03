@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
-import { Icon, Input, TextArea, Segment, Button } from 'semantic-ui-react';
+import { Icon, Input, TextArea, Segment, Button, Grid, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import axios from 'axios';
+import _ from 'lodash';
 
 import './Project.css';
-import { InformationSection, NewCommentModal, EditCommentModal, DeleteCommentModal } from './ProjectComponents';
+import {
+    InformationSection,
+    NewCommentModal,
+    EditCommentModal,
+    DeleteCommentModal,
+    NewCommentModal2,
+} from './ProjectComponents';
 import {
     Tab,
     convertAssignmentsToAssignmentList,
@@ -14,6 +22,26 @@ import {
     FeedbacksPane,
 } from '../../components';
 import { ProjectSubmission } from './ProjectSubmission';
+import { InstructorPeerReviewPane, StudentPeerReviewPane } from '../../components/Tab/TabUI';
+import {
+    getGroupAssignmentsRequest,
+    getGroupInstructorCommentsRequest,
+    getGroupStudentCommentsRequest,
+    getGroupTACommentsRequest,
+    getIsUserInstructorOfGroupRequest,
+    getProjectGroupRequest,
+} from '../../API/projectGroupAPI/projectGroupGET';
+import { putProjectGroupInformationRequest, putUpdateSRSGradeRequest } from '../../API/projectGroupAPI/projectGroupPUT';
+import { getAssignmentFileRequest } from '../../API/assignmentAPI/assignmentGET';
+import { getProjectGradeByIdRequest } from '../../API/projectGradeAPI/projectGradeGET';
+import { inputDateToDateObject } from '../../utils';
+import { postProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePOST';
+import { deleteProjectGradeRequest } from '../../API/projectGradeAPI/projectGradeDELETE';
+import { postPeerGradeRequest } from '../../API/peerGradeAPI/peerGradePOST';
+import { deleteSrsGradeRequest } from '../../API/projectGroupAPI/projectGroupDELETE';
+import { putProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePUT';
+import { getPeerGradeRequestWithReviewee, getPeerGradeRequestWithReviewer } from '../../API/peerGradeAPI/peerGradeGET';
+import { getProjectGradeDownloadByIdRequest, putProjectGroupRequest } from '../../API';
 
 class Project extends Component {
     constructor(props) {
@@ -31,6 +59,7 @@ class Project extends Component {
             newInformation: '',
 
             // States regarding open modals of right part
+
             isGiveFeedbackOpen: false,
             isEditFeedbackOpen: false,
             isDeleteFeedbackOpen: false,
@@ -40,29 +69,34 @@ class Project extends Component {
             currentFeedbackGrade: 10,
             currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
+
+            // testing
+            currentFeedbackText2: '',
+            currentFeedbackGrade2: 10,
+            currentMaxFeedbackGrade2: 10,
+
+            //Peer Review
+            isPeerReviewOpen: true,
+            currentReviewComment: '',
+            currentReviewGrade: -1,
+            currentPeer: 0,
+            maxReviewGrade: 10, //will be taken from project groups peer reviewing assignment
+            peerReviews: [],
         };
     }
-
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     changeGroupName = (newName) => {
-        const request = {
-            newName: newName,
-            groupId: this.props.match.params.projectId,
-        };
-
-        console.log(request);
+        putProjectGroupRequest(this.props.match.params.projectId, this.state.projectGroup.information, newName);
     };
 
     changeGroupInformation = (newInformation) => {
-        const request = {
-            newInformation: newInformation,
-            groupId: this.props.match.params.projectId,
-        };
-
-        console.log(request);
+        putProjectGroupInformationRequest(this.props.match.params.projectId, newInformation);
     };
 
-    onAssignmentFileClicked = () => {
-        console.log('FILE');
+    onAssignmentFileClicked = (assignmentId) => {
+        getAssignmentFileRequest(assignmentId).then((response) => {
+            if (!response.data.success) return;
+        });
     };
 
     onModalClosed = (modalType, isSuccess) => {
@@ -71,64 +105,343 @@ class Project extends Component {
         });
         if (!isSuccess) return;
 
-        let request = 'error';
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
-                request = {
-                    grade: this.state.currentFeedbackGrade,
-                    maxGrade: this.state.currentMaxFeedbackGrade,
-                    userId: this.props.userId,
-                };
+                putUpdateSRSGradeRequest(this.props.match.params.projectId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isEditFeedbackOpen') {
-                request = {
-                    grade: this.state.currentFeedbackGrade,
-                    maxGrade: this.state.currentMaxFeedbackGrade,
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                putUpdateSRSGradeRequest(this.props.match.params.projectId, this.state.currentFeedbackGrade);
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                request = {
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                deleteSrsGradeRequest(this.props.match.params.projectId);
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
-                request = {
-                    newGrade: this.state.currentFeedbackGrade,
-                    newText: this.state.currentFeedbackText,
-                    newFile: this.state.currentFeedbackFile,
-                    userId: this.props.userId,
-                };
+                console.log(this.state.currentFeedbackFile);
+                postProjectGradeRequest(
+                    this.props.match.params.projectId,
+                    this.state.currentFeedbackMaxGrade,
+                    this.state.currentFeedbackGrade,
+                    this.state.currentFeedbackText,
+                    this.state.currentFeedbackFile
+                );
             } else if (modalType === 'isEditFeedbackOpen') {
-                request = {
-                    newGrade: this.state.currentFeedbackGrade,
-                    newText: this.state.currentFeedbackText,
-                    newFile: this.state.currentFeedbackFile,
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                putProjectGradeRequest(
+                    this.state.currentFeedbackId,
+                    this.state.currentFeedbackMaxGrade,
+                    this.state.currentFeedbackGrade,
+                    this.state.currentFeedbackText,
+                    this.state.currentFeedbackFile
+                );
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                request = {
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                deleteProjectGradeRequest(this.state.currentFeedbackId);
             }
         }
-
-        console.log(request);
     };
 
     componentDidMount() {
-        this.setState({
-            projectGroup: dummyProjectGroup,
-            assignments: dummyAssignmentsList,
-            grades: dummyGrades,
-            feedbacks: dummyFeedbacks,
-
-            newName: dummyProjectGroup.name,
-            newInformation: dummyProjectGroup.information,
+        getIsUserInstructorOfGroupRequest(this.props.match.params.projectId, this.props.userId).then((auth) => {
+            getProjectGroupRequest(this.props.match.params.projectId).then((response) => {
+                if (!response.data.success) return;
+                const projectGroupData = response.data.data;
+                let isInGroup = false;
+                for (let i of projectGroupData.groupMembers) {
+                    if (i.id === this.props.userId) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
+                console.log(projectGroupData.groupMembers);
+                const projectInformation = {
+                    isInGroup: isInGroup,
+                    isTAorInstructor: auth.data.data, //look
+                    canUserComment: true,
+                    name: projectGroupData.name,
+                    isNameChangeable: true,
+                    courseName: projectGroupData.affiliatedCourse.name,
+                    isProjectActive: true, //look
+                    courseId: projectGroupData.affiliatedCourseId,
+                    members: projectGroupData.groupMembers,
+                    information: projectGroupData.projectInformation,
+                    newInformation: projectGroupData.projectInformation,
+                    newName: projectGroupData.affiliatedCourse.name,
+                };
+                if (!auth.data.data) {
+                    console.log(this.props.match.params.projectId, this.props.userId);
+                    getPeerGradeRequestWithReviewer(this.props.match.params.projectId, this.props.userId).then(
+                        (users) => {
+                            this.setState({ peerReviews: users.data.data });
+                        }
+                    );
+                } else {
+                    getPeerGradeRequestWithReviewee(
+                        parseInt(this.props.match.params.projectId),
+                        this.state.currentPeer
+                    ).then((users) => {
+                        this.setState({ peerReviews: users.data.data });
+                    });
+                }
+                this.setState({
+                    projectGroup: projectInformation,
+                });
+            });
         });
+
+        //isTAorInstructor
+
+        getGroupAssignmentsRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+            const projectAssignments = response.data.data;
+            const temp = [];
+            const status = { 0: 'notsubmitted', 1: 'submitted', 2: 'graded' };
+            for (var i in projectAssignments) {
+                temp.push({
+                    title: projectAssignments[i].title,
+                    status: status[projectAssignments[i].status],
+                    caption: projectAssignments[i].caption,
+                    publisher: projectAssignments[i].publisher,
+                    dueDate: inputDateToDateObject(projectAssignments[i].dueDate),
+                    publishmentDate: inputDateToDateObject(projectAssignments[i].publishmentDate),
+                    projectId: this.props.match.params.projectId,
+                    submissionId: projectAssignments[i].submissionId,
+                });
+            }
+
+            this.setState({
+                assignments: temp,
+            });
+        });
+
+        /*const dummyAssignmentsList = [
+            {
+                title: 'CS319-2021Spring / Desing Report Assignment',
+                status: 'graded',
+                caption:
+                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
+                publisher: 'Erdem Tuna',
+                publishmentDate: new Date(2023, 3, 13, 12, 0),
+                dueDate: new Date(2025, 4, 16, 23, 59),
+                projectId: 1,
+                submissionId: 1,
+            },*/
+
+        /* getProjectGradeByIdRequest(this.props.match.params.projectId).then((response) => {
+            if (!response.data.success) return;
+        });*/
+
+        //this.setState({
+        //    assignments: dummyAssignmentsList,
+        //    grades: dummyGrades,
+        //    feedbacks: dummyFeedbacks,
+        //    isPeerReviewOpen: true, due date gecince de kapali
+        //});
+
+        const feedbackRequests = [];
+        const persons = [];
+
+        feedbackRequests.push(getGroupInstructorCommentsRequest(this.props.match.params.projectId));
+        feedbackRequests.push(getGroupTACommentsRequest(this.props.match.params.projectId));
+        feedbackRequests.push(getGroupStudentCommentsRequest(this.props.match.params.projectId));
+        //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
+        const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
+        axios.all(feedbackRequests).then(
+            axios.spread((...responses) => {
+                let instGrade = 0;
+                for (let i in responses[0].data.data) {
+                    console.log(responses[0].data.data[i]);
+                    feedbacks.InstructorComments.push({
+                        name: responses[0].data.data[i].userInProjectGradeDto.name,
+                        caption: responses[0].data.data[i].comment,
+                        grade: responses[0].data.data[i].grade,
+                        date: inputDateToDateObject(responses[0].data.data[i].lastEdited),
+                        commentId: responses[0].data.data[i].id,
+                        userId: responses[0].data.data[i].userInProjectGradeDto.id,
+                        hasFile: responses[0].data.data[i].hasFile,
+                    });
+                    persons.push({
+                        name: responses[0].data.data[i].userInProjectGradeDto.name,
+                        type: 'Instructor',
+                        grade: responses[0].data.data[i].grade,
+                        userId: responses[0].data.data[i].userInProjectGradeDto.id,
+                    });
+                    instGrade += responses[0].data.data[i].grade;
+                }
+                for (let i in responses[1].data.data) {
+                    feedbacks.TAComments.push({
+                        name: responses[1].data.data[i].userInProjectGradeDto.name,
+                        caption: responses[1].data.data[i].comment,
+                        grade: responses[1].data.data[i].grade,
+                        date: inputDateToDateObject(responses[1].data.data[i].lastEdited),
+                        commentId: responses[1].data.data[i].id,
+                        userId: responses[1].data.data[i].userInProjectGradeDto.id,
+                        hasFile: responses[1].data.data[i].hasFile,
+                    });
+                    persons.push({
+                        name: responses[1].data.data[i].userInProjectGradeDto.name,
+                        type: 'TA',
+                        grade: responses[1].data.data[i].grade,
+                        userId: responses[1].data.data[i].userInProjectGradeDto.id,
+                    });
+                    instGrade += responses[1].data.data[i].grade;
+                }
+                let studentAvg = 0;
+                for (let i in responses[2].data.data) {
+                    feedbacks.StudentComments.push({
+                        name: responses[2].data.data[i].userInProjectGradeDto.name,
+                        caption: responses[2].data.data[i].comment,
+                        grade: responses[2].data.data[i].grade,
+                        date: inputDateToDateObject(responses[2].data.data[i].lastEdited),
+                        commentId: responses[2].data.data[i].id,
+                        userId: responses[2].data.data[i].userInProjectGradeDto.id,
+                        hasFile: responses[2].data.data[i].hasFile,
+                    });
+                    studentAvg += responses[2].data.data[i].grade;
+                }
+                studentAvg = studentAvg === 0 ? 0 : studentAvg / responses[2].data.data.length;
+                const projectAverage =
+                    (studentAvg + instGrade) / (responses[0].data.data.length + responses[1].data.data.length + 1);
+                const grades = {
+                    persons: persons,
+                    studentAvg: studentAvg,
+                    projectAverage: projectAverage,
+                    courseAverage: 8, //kendim belirledim
+                    finalGrade: 40, //kendim belirledim
+                };
+                this.setState({ feedbacks: feedbacks, grades: grades });
+            })
+        );
+
+        /*const dummyGrades = {
+    persons: [
+        {
+            name: 'Eray Tüzün',
+            type: 'Project Instructor',
+            grade: '9.5',
+        },
+        {
+            name: 'Alper Sarıkan',
+            type: 'Instructor',
+            grade: '8.1',
+        },
+        {
+            name: 'Erdem Tuna',
+            type: 'TA',
+            grade: '7.1',
+        },
+        {
+            name: 'Elgun Jabrayilzade',
+            type: 'TA',
+            grade: '8.1',
+        },
+    ],
+    studentsAverage: 8,
+    projectAverage: 7.1,
+    courseAverage: 6.5,
+    finalGrade: 38,
+};
+*/
+
+        /*const dummyFeedbacks = {
+    // SRSResult: {
+    //     grade: '9.5',
+    //     maxGrade: '11',
+    // },
+    InstructorComments: [
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            commentId: 3,
+            userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            commentId: 3,
+            userId: 2,
+        },
+    ],
+    TAComments: [
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            commentId: 4,
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+    ],
+    StudentComments: [
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lcaptionorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            commentId: 5,
+            userId: 1,
+            userGroupName: 'ClassRoom Helper',
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+            userGroupName: 'ProjectManager',
+        },
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+    ],
+};*/
     }
 
     // LEFT SIDE LOGIC
@@ -186,16 +499,43 @@ class Project extends Component {
         });
     };
 
+    onCurrentFeedbackTextChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackText2: e.target.value,
+        });
+    };
+    onCurrentFeedbackGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackGrade2: e.target.value,
+        });
+    };
+    onCurrentFeedbackMaxGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade2: e.target.value,
+        });
+    };
+    onGiveFeedback = (e) => {
+        console.log(this.state.currentFeedbackFile);
+        postProjectGradeRequest(
+            this.props.match.params.projectId,
+            this.state.currentMaxFeedbackGrade2,
+            this.state.currentFeedbackGrade2,
+            this.state.currentFeedbackText2,
+            this.state.currentFeedbackFile
+        );
+    };
+
     onModalOpened = (modalType, isFeedbackSRS) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
-                currentMaxFeedbackGrade: 10,
             });
         } else {
             this.setState({
                 isFeedbackSRS: false,
-                currentMaxFeedbackGrade: 10,
             });
         }
 
@@ -203,6 +543,7 @@ class Project extends Component {
             this.setState({
                 [modalType]: true,
                 currentFeedbackGrade: 10,
+                currentMaxFeedbackGrade: 10,
                 currentFeedbackFile: 'empty',
                 currentFeedbackText: '',
             });
@@ -258,7 +599,13 @@ class Project extends Component {
     getGroupNameElement = () => {
         let groupNameElement = this.state.projectGroup.name;
         if (this.state.nameEditMode) {
-            groupNameElement = <Input onChange={(e) => this.onInputChanged(e, 'newName')} value={this.state.newName} />;
+            groupNameElement = (
+                <Input
+                    className="GroupNameChangeInput"
+                    onChange={(e) => this.onInputChanged(e, 'newName')}
+                    value={this.state.newName}
+                />
+            );
         }
 
         return groupNameElement;
@@ -276,6 +623,7 @@ class Project extends Component {
                         this.onEditModeToggled('nameEditMode');
                     }}
                     name={'check'}
+                    color="blue"
                 />
             ) : (
                 <Icon
@@ -284,6 +632,7 @@ class Project extends Component {
                         this.onEditModeToggled('nameEditMode');
                     }}
                     name={'edit'}
+                    color="blue"
                 />
             );
         }
@@ -315,6 +664,8 @@ class Project extends Component {
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'check'}
+                    color="blue"
+                    style={{ float: 'right', marginTop: '-10px' }}
                 />
             ) : (
                 <Icon
@@ -323,6 +674,8 @@ class Project extends Component {
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'edit'}
+                    color="blue"
+                    style={{ float: 'right', marginTop: '-15px' }}
                 />
             );
         }
@@ -367,7 +720,7 @@ class Project extends Component {
 
     getNewCommentButton = () => {
         let newCommentButton = null;
-        if (this.state.projectGroup?.canUserComment) {
+        if (this.state.projectGroup?.canUserComment && this.state.projectGroup.isInGroup) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -382,20 +735,63 @@ class Project extends Component {
         return newCommentButton;
     };
 
+    onFeedbackFileClicked = (feedbackId) => {
+        getProjectGradeDownloadByIdRequest(feedbackId);
+    };
+
+    onFileChanged = (file) => {
+        console.log(file);
+        this.setState({
+            currentFeedbackFile: file,
+        });
+    };
+
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
-            <FeedbacksPane
-                feedbacksAccordion={getFeedbacksAsAccordion(
-                    this.state.feedbacks,
-                    this.state.projectGroup?.isTAorInstructor,
-                    this.onModalOpenedWithComment,
-                    this.onAuthorClicked,
-                    this.props.userId,
-                    this.onModalOpened
-                )}
-                newCommentButton={newCommentButton}
-            />
+            <Grid>
+                {/* <div class="sixteen wide column">
+                    <p>Your Feedback:</p>
+                    <Form reply style={{width: "95%"}}>
+                        <Form.TextArea rows="5"/>
+                        <Button content='Upload File' floated='left' Compact icon labelPosition='right'>Upload File<Icon name='file' /></Button>
+                        <Button content='Grade Placeholder' floated='left'/>
+                        <Button content='Give Feedback' primary floated='right' Compact/>
+                    </Form>
+                </div>
+                <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                    <Divider/>
+                </div> */}
+                <div class="sixteen wide column">
+                    <NewCommentModal2
+                        text={this.state.currentFeedbackText2}
+                        grade={this.state.currentFeedbackGrade2}
+                        maxGrade={this.state.currentMaxFeedbackGrade2}
+                        onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
+                        onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
+                        onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                        onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                        onFileChanged={this.onFileChanged}
+                    />
+                </div>
+                <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
+                    <Divider />
+                </div>
+                <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
+                    <FeedbacksPane
+                        feedbacksAccordion={getFeedbacksAsAccordion(
+                            this.state.feedbacks,
+                            this.state.projectGroup?.isTAorInstructor,
+                            this.onModalOpenedWithComment,
+                            this.onAuthorClicked,
+                            this.props.userId,
+                            this.onFeedbackFileClicked,
+                            this.onModalOpened
+                        )}
+                        //newCommentButton={newCommentButton}
+                    />
+                </div>
+            </Grid>
         );
         return {
             title: 'Feedbacks',
@@ -403,8 +799,75 @@ class Project extends Component {
         };
     };
 
+    changeReviewingPeer = (userId) => {
+        let currentReview = {};
+        for (var i = 0; i < this.state.peerReviews.length; i++) {
+            if (this.state.peerReviews[i].revieweeId === userId) {
+                currentReview = { ...this.state.peerReviews[i] };
+                i = this.state.peerReviews.length;
+            }
+        }
+        console.log(currentReview);
+
+        this.setState({
+            currentPeer: userId,
+            currentReviewComment: currentReview.comment ? currentReview.comment : '',
+            currentReviewGrade: currentReview.grade ? currentReview.grade : -1,
+        });
+    };
+
+    changeViewingPeer = (userId) => {
+        this.setState({ currentPeer: userId });
+    };
+
+    submitReview = () => {
+        console.log(this.state.currentReviewGrade);
+        if (this.state.currentReviewGrade === -1 || this.state.currentPeer === 0 /* check existance */) {
+            window.alert('You need to enter both grade and reviewee');
+        } /*if()*/ else {
+            postPeerGradeRequest(
+                this.props.match.params.projectId,
+                this.state.currentPeer,
+                this.state.currentReviewGrade,
+                this.state.currentReviewComment
+            );
+        }
+    };
+
+    getPeerReviewPane = () => {
+        return {
+            title: 'Peer Review',
+            content: this.state.isPeerReviewOpen ? (
+                this.props.userType === 'student' ? (
+                    <StudentPeerReviewPane
+                        curUser={{ name: this.props.userName, userId: this.props.userId }} //dummy
+                        group={this.state.projectGroup}
+                        changePeer={(userId) => this.changeReviewingPeer(userId)}
+                        currentPeer={this.state.currentPeer}
+                        commentChange={(d) => this.setState({ currentReviewComment: d.value })}
+                        gradeChange={(d) => this.setState({ currentReviewGrade: d.value })}
+                        comment={this.state.currentReviewComment}
+                        grade={this.state.currentReviewGrade}
+                        submitReview={this.submitReview}
+                        maxGrade={this.state.maxReviewGrade}
+                    />
+                ) : (
+                    <InstructorPeerReviewPane
+                        peerReviews={this.state.peerReviews} //This will change according to currentPeer
+                        group={this.state.projectGroup}
+                        userId={this.props.userId}
+                        changePeer={(userId) => this.changeViewingPeer(userId)}
+                        currentPeer={this.state.currentPeer}
+                    />
+                )
+            ) : null,
+        };
+    };
+
     getPaneElements = () => {
-        return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
+        if (this.state.isPeerReviewOpen)
+            return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane(), this.getPeerReviewPane()];
+        else return [this.getAssignmentPane(), this.getGradesPane(), this.getFeedbacksPane()];
     };
 
     // Modals
@@ -451,9 +914,9 @@ class Project extends Component {
     render() {
         return (
             <div class="ui centered grid">
-                <div class="row">
+                <Grid.Row divided>
                     <div class="four wide column">
-                        <Segment>{this.getInformationPart()}</Segment>
+                        <Segment style={{ boxShadow: 'none', border: '0' }}>{this.getInformationPart()}</Segment>
                     </div>
                     <div class="twelve wide column">
                         {!this.props.match.params.submissionId ? (
@@ -467,7 +930,7 @@ class Project extends Component {
                             />
                         )}
                     </div>
-                </div>
+                </Grid.Row>
                 {this.getModals()}
             </div>
         );
@@ -512,8 +975,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 1,
         submissionId: 1,
     },
@@ -523,8 +986,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 2,
         submissionId: 2,
         file: 'dummyFile',
@@ -535,8 +998,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -546,8 +1009,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -557,8 +1020,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -568,8 +1031,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -579,8 +1042,8 @@ const dummyAssignmentsList = [
         caption:
             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
         publisher: 'Erdem Tuna',
-        publishmentDate: '13 March 2023 12:00',
-        dueDate: '16 April 2025, 23:59',
+        publishmentDate: new Date(2023, 3, 13, 12, 0),
+        dueDate: new Date(2025, 4, 16, 23, 59),
         projectId: 3,
         submissionId: 3,
     },
@@ -615,28 +1078,126 @@ const dummyGrades = {
     finalGrade: 38,
 };
 
-const dummyFeedbacks = {
-    SRSResult: {
-        grade: '9.5',
-        maxGrade: '11',
+const dummyPeerReview = {
+    ProjectGroupId: 12,
+    reviewerId: 1,
+    revieweeId: 2,
+    Id: 14,
+    maxGrade: 5,
+    grade: 2,
+    comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+    createdAt: new Date(2012, 12, 12, 12, 12),
+};
+
+const goingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 2,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
     },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 4,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 1,
+        revieweeId: 6,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
+const comingDummyPeerReviews = [
+    {
+        ProjectGroupId: 12,
+        reviewerId: 3,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 2,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 4,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 5,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+    {
+        ProjectGroupId: 12,
+        reviewerId: 6,
+        revieweeId: 1,
+        Id: 14,
+        maxGrade: 5,
+        grade: 2,
+        comment: 'lorem5 ur adipisicing elit. Cumque neque ullam a 0',
+        createdAt: new Date(2012, 12, 12, 12, 12),
+    },
+];
+
+const dummyFeedbacks = {
+    // SRSResult: {
+    //     grade: '9.5',
+    //     maxGrade: '11',
+    // },
     InstructorComments: [
         {
             name: 'Eray Tüzün',
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 3,
             userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
             grade: '8.1',
+            commentId: 3,
             userId: 2,
         },
     ],
@@ -646,13 +1207,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 4,
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -666,14 +1227,14 @@ const dummyFeedbacks = {
             caption:
                 'Lcaptionorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             commentId: 5,
             userId: 1,
             userGroupName: 'ClassRoom Helper',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -686,12 +1247,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -703,12 +1264,12 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 4, 11),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',

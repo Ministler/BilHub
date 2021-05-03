@@ -16,6 +16,7 @@
     bottom: 20px;
     background-color: white;
     background-size: cover;
+    margin-left: 20px;
 }
 
 .BriefListElements {
@@ -29,11 +30,6 @@
     padding-left: 5px;
     padding-right: 5px;
 }
-
-/*.BriefListElements i.icon {
-    margin-right: 4px;
-    margin-left: 4px;
-}*/
 
 .DueDate {
     margin-bottom: 8px !important;

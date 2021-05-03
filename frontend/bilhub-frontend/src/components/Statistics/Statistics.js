@@ -1,8 +1,10 @@
 import _ from 'lodash';
 import { Table } from 'semantic-ui-react';
 import React from 'react';
+import Chart from 'react-google-charts';
+import './Statistics.css';
 
-/*function tableReducer(state, action) {
+function tableReducer(state, action) {
     switch (action.type) {
         case 'CHANGE_SORT':
             if (state.column === action.column) {
@@ -21,50 +23,74 @@ import React from 'react';
         default:
             throw new Error();
     }
-}*/
+}
 
 export const GradesTabel = (props) => {
-    /*const [state, dispatch] = React.useReducer(tableReducer, {
+    let tempData = [];
+    for (let i = 0; i < props.groups.length; i++) {
+        tempData.push({ group: props.groups[i].name });
+        for (let k = 0; k < props.graders.length; k++) {
+            tempData[i][k] = props.groups[i].grades[k];
+        }
+    }
+    const [state, dispatch] = React.useReducer(tableReducer, {
         column: null,
-        data: props,
+        data: tempData,
         direction: null,
-    });*/
-    //const { column, data, direction } = state;
+    });
+
+    const { column, data, direction } = state;
     return (
         <Table sortable celled fixed>
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell
-                    //sorted={column === 'groups' ? direction : null}
-                    //onClick={() => dispatch({ type: 'CHANGE_SORT', column: 'group' })}>
-                    >
+                        sorted={column === 'group' ? direction : null}
+                        onClick={() => dispatch({ type: 'CHANGE_SORT', column: 'group' })}>
                         Groups
                     </Table.HeaderCell>
-                    {props.graders.map((grader) => (
-                        <Table.HeaderCell /*
-                            sorted={column === grader ? direction : null}
-                            onClick={() => dispatch({ type: 'CHANGE_SORT', column: grader })}*/
-                        >
+                    {}
+                    {props.graders.map((grader, index) => (
+                        <Table.HeaderCell
+                            sorted={column === index ? direction : null}
+                            onClick={() => dispatch({ type: 'CHANGE_SORT', column: index })}>
                             {grader}
                         </Table.HeaderCell>
                     ))}
                 </Table.Row>
             </Table.Header>
             <Table.Body>
-                {props.groups.map(({ name, grades }) => (
-                    <Table.Row key={name}>
-                        <Table.Cell>{name}</Table.Cell>
-                        {console.log(grades)}
-                        {grades.map((grade) => (
-                            <Table.Cell>{grade}</Table.Cell>
-                        ))}
+                {data.map((group) => (
+                    <Table.Row>
+                        <Table.Cell>{group['group']}</Table.Cell>
+                        {Object.keys(group).map(
+                            (element) => element !== 'group' && <Table.Cell>{group[element]}</Table.Cell>
+                        )}
                     </Table.Row>
                 ))}
             </Table.Body>
         </Table>
     );
 };
+export const GradeGroupGraph = (props) => {
+    let data = [['Group', 'Grade', { role: 'style' }]];
+    for (let i = 0; i < props.groups.length; i++) {
+        let randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        data.push([props.groups[i].group, props.groups[i].grade, randomColor]);
+    }
 
-export const GroupNoGradeGraph = (props) => {};
+    return <Chart className="Graph" chartType="ColumnChart" width="100%" height="200px" data={data} />;
+};
 
-export const GradeGroupGraph = (props) => {};
+export const GroupNoGradeGraph = (props) => {
+    let data = [['Grade', 'Group Number', { role: 'style' }]];
+    for (let i = 5; i <= 100; i += 5) {
+        let randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        data.push([i - 5 + '-' + i, 0, randomColor]);
+    }
+
+    for (let i = 0; i < props.groups.length; i++) {
+        data[Math.floor((props.groups[i].grade - 1) / 5 + 1)][1]++;
+    }
+    return <Chart className="Graph" chartType="ColumnChart" width="100%" height="200px" data={data} />;
+};

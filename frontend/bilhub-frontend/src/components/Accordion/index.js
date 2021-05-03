@@ -6,3 +6,4 @@ export {
     getAssignmentStatistics,
     getCourseStatistics,
 } from './AccordionFunctions';
+export { MyAccordion as Accordion } from './AccordionUI';

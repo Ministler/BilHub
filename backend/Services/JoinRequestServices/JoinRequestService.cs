@@ -320,25 +320,25 @@ namespace backend.Services.JoinRequestServices
                 return response;
             }
 
-            if ( !IsUserInString ( joinRequest.VotedStudents, GetUserId() ) && joinRequestDto.accept == false )
+            if (!IsUserInString(joinRequest.VotedStudents, GetUserId()) && joinRequestDto.accept == false)
             {
                 joinRequest.Resolved = true;
-                _context.JoinRequests.Update ( joinRequest );
+                _context.JoinRequests.Update(joinRequest);
                 await _context.SaveChangesAsync();
                 response.Message = "Join request is cancelled by the negative vote";
                 return response;
             }
 
-            if ( IsUserInString ( joinRequest.VotedStudents, GetUserId() ) && joinRequestDto.accept == false )
+            if (IsUserInString(joinRequest.VotedStudents, GetUserId()) && joinRequestDto.accept == false)
             {
-                joinRequest.VotedStudents = RemoveUserFromString ( joinRequest.VotedStudents, GetUserId() );
+                joinRequest.VotedStudents = RemoveUserFromString(joinRequest.VotedStudents, GetUserId());
                 joinRequest.AcceptedNumber--;
-                _context.JoinRequests.Update ( joinRequest );
+                _context.JoinRequests.Update(joinRequest);
                 await _context.SaveChangesAsync();
                 response.Message = "Your vote is taken back successfully.";
                 return response;
             }
-            if (IsUserInString ( joinRequest.VotedStudents, GetUserId() ) && joinRequestDto.accept == true )
+            if (IsUserInString(joinRequest.VotedStudents, GetUserId()) && joinRequestDto.accept == true)
             {
                 response.Success = false;
                 response.Message = "User is already voted accepted for this request";
@@ -348,9 +348,9 @@ namespace backend.Services.JoinRequestServices
             int maxSize = (await _context.Courses.FirstOrDefaultAsync(c => c.Id == joinRequest.RequestedGroup.AffiliatedCourseId)).MaxGroupSize;
 
             joinRequest.AcceptedNumber++;
-            joinRequest.VotedStudents = AddUserToString ( joinRequest.VotedStudents, GetUserId() );
+            joinRequest.VotedStudents = AddUserToString(joinRequest.VotedStudents, GetUserId());
 
-            if (joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count &&  joinRequest.RequestedGroup.GroupMembers.Count+1 <= maxSize )
+            if (joinRequest.AcceptedNumber >= joinRequest.RequestedGroup.GroupMembers.Count && joinRequest.RequestedGroup.GroupMembers.Count + 1 <= maxSize)
             {
                 int newSize = joinRequest.RequestedGroup.GroupMembers.Count + 1;
                 joinRequest.Accepted = true;
@@ -373,13 +373,13 @@ namespace backend.Services.JoinRequestServices
             }
 
 
-            response.Data = new JoinRequestInfoDto 
-            { 
-                Id = joinRequestDto.Id, 
-                Accepted = joinRequest.Accepted, 
-                Resolved = joinRequest.Resolved, 
-                AcceptedNumber = joinRequest.AcceptedNumber, 
-                VotedStudents = joinRequest.VotedStudents 
+            response.Data = new JoinRequestInfoDto
+            {
+                Id = joinRequestDto.Id,
+                Accepted = joinRequest.Accepted,
+                Resolved = joinRequest.Resolved,
+                AcceptedNumber = joinRequest.AcceptedNumber,
+                VotedStudents = joinRequest.VotedStudents
             };
 
             response.Message = "You succesfully voted";
@@ -484,7 +484,8 @@ namespace backend.Services.JoinRequestServices
             ServiceResponse<GetJoinRequestDto> response = new ServiceResponse<GetJoinRequestDto>();
             JoinRequest joinRequest = await _context.JoinRequests
                 .Include(jr => jr.RequestingStudent)
-                .Include(jr => jr.RequestedGroup)
+                .Include(jr => jr.RequestedGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(jr => jr.RequestedGroup).ThenInclude(cs => cs.AffiliatedCourse)
                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestId);
 
             if (joinRequest == null)
@@ -510,6 +511,11 @@ namespace backend.Services.JoinRequestServices
             }
 
             response.Data = _mapper.Map<GetJoinRequestDto>(joinRequest);
+            response.Data.LockDate = joinRequest.RequestedGroup.AffiliatedCourse.LockDate;
+            response.Data.CourseName = joinRequest.RequestedGroup.AffiliatedCourse.Name;
+            response.Data.CurrentUserVote = IsUserInString(joinRequest.VotedStudents, GetUserId());
+            if (joinRequest.RequestingStudentId == GetUserId())
+                response.Data.CurrentUserVote = true;
             response.Message = "Success";
             response.Success = true;
 
@@ -518,33 +524,57 @@ namespace backend.Services.JoinRequestServices
 
         public async Task<ServiceResponse<List<GetJoinRequestDto>>> GetOutgoingJoinRequestsOfUser()
         {
-            ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>> ();
+            ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>>();
             List<JoinRequest> dbJoinRequests = await _context.JoinRequests
                 .Include(jr => jr.RequestingStudent)
-                .Include(jr => jr.RequestedGroup)
-                .Where ( c => c.RequestingStudentId == GetUserId() ).ToListAsync();
+                .Include(jr => jr.RequestedGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(jr => jr.RequestedGroup).ThenInclude(cs => cs.AffiliatedCourse)
+                .Where(c => c.RequestingStudentId == GetUserId()).ToListAsync();
 
-            serviceResponse.Data = dbJoinRequests.Select(c => _mapper.Map<GetJoinRequestDto>(c)).ToList();
+            List<GetJoinRequestDto> dtos = new List<GetJoinRequestDto>();
+            foreach (var i in dbJoinRequests)
+            {
+                GetJoinRequestDto tmp = _mapper.Map<GetJoinRequestDto>(i);
+                tmp.LockDate = i.RequestedGroup.AffiliatedCourse.LockDate;
+                tmp.CourseName = i.RequestedGroup.AffiliatedCourse.Name;
+                tmp.CurrentUserVote = IsUserInString(i.VotedStudents, GetUserId());
+                if (i.RequestingStudentId == GetUserId())
+                    tmp.CurrentUserVote = true;
+                dtos.Add(tmp);
+            }
+            serviceResponse.Data = dtos;
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<GetJoinRequestDto>>> GetIncomingJoinRequestsOfUser()
         {
-            ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>> ();
+            ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>>();
             List<JoinRequest> dbJoinRequests = await _context.JoinRequests
                 .Include(jr => jr.RequestingStudent)
-                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers )
-                .Where ( c => c.RequestedGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() ) ).ToListAsync();
+                .Include(jr => jr.RequestedGroup).ThenInclude(g => g.AffiliatedCourse)
+                .Include(jr => jr.RequestedGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Where(c => c.RequestedGroup.GroupMembers.Any(cs => cs.UserId == GetUserId())).ToListAsync();
 
-            serviceResponse.Data = dbJoinRequests.Select(c => _mapper.Map<GetJoinRequestDto>(c)).ToList();
+            List<GetJoinRequestDto> dtos = new List<GetJoinRequestDto>();
+            foreach (var i in dbJoinRequests)
+            {
+                GetJoinRequestDto tmp = _mapper.Map<GetJoinRequestDto>(i);
+                tmp.LockDate = i.RequestedGroup.AffiliatedCourse.LockDate;
+                tmp.CourseName = i.RequestedGroup.AffiliatedCourse.Name;
+                tmp.CurrentUserVote = IsUserInString(i.VotedStudents, GetUserId());
+                if (i.RequestingStudentId == GetUserId())
+                    tmp.CurrentUserVote = true;
+                dtos.Add(tmp);
+            }
+            serviceResponse.Data = dtos;
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<string>> GetVoteOfUser( int joinRequestId )
+        public async Task<ServiceResponse<string>> GetVoteOfUser(int joinRequestId)
         {
-            ServiceResponse<string> response = new ServiceResponse<string> ();
+            ServiceResponse<string> response = new ServiceResponse<string>();
             JoinRequest joinRequest = await _context.JoinRequests
-                .Include(jr => jr.RequestedGroup).ThenInclude( rq => rq.GroupMembers )
+                .Include(jr => jr.RequestedGroup).ThenInclude(cs => cs.GroupMembers).ThenInclude(css => css.User)
                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestId);
 
             if (joinRequest == null)
@@ -565,23 +595,23 @@ namespace backend.Services.JoinRequestServices
 
             response.Success = true;
 
-            if( joinRequest.Resolved || joinRequest.Accepted )
+            if (joinRequest.Resolved || joinRequest.Accepted)
             {
                 response.Data = "Resolved";
                 return response;
             }
 
-            if( !IsUserInString( joinRequest.VotedStudents, GetUserId() ) )
+            if (!IsUserInString(joinRequest.VotedStudents, GetUserId()))
             {
                 response.Data = "Pending";
                 return response;
             }
-            
-            
+
+
             response.Data = "Unresolved";
             return response;
         }
-        
+
 
         //////// ADD LOCK DATE
 

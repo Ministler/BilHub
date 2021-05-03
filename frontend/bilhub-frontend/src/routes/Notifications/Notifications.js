@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
-import { Grid, GridColumn } from 'semantic-ui-react';
+import { Grid, GridColumn, Divider, ListItem } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
+import {
+    getOutgoingJoinRequest,
+    getOutgoingMergeRequest,
+    getIncomingMergeRequest,
+    getIncomingJoinRequest,
+    getUserGroupsRequest,
+    getInstructedCoursesRequest,
+    getNewCommentsRequest,
+    getCourseRequest,
+    putJoinRequest,
+    putMergeRequest,
+} from '../../API';
 import './Notifications.css';
 import {
     ProfilePrompt,
@@ -11,7 +23,14 @@ import {
     Tab,
     getNewFeedbacksAsAccordion,
 } from '../../components';
-import { RequestApprovalModal, RequestDisapprovalModal } from './NotificationsComponents';
+import {
+    RequestApprovalModal,
+    RequestDisapprovalModal,
+    RequestUndoModal,
+    RequestDeleteModal,
+} from './NotificationsComponents';
+import axios from 'axios';
+import { NewCommentModal } from '../Project/ProjectComponents';
 
 class Notifications extends Component {
     constructor(props) {
@@ -27,6 +46,8 @@ class Notifications extends Component {
 
             isApprovalModalOpen: false,
             isDisapprovalModalOpen: false,
+            isUndoModalOpen: false,
+            isDeleteModalOpen: false,
 
             currentRequestId: null,
             currentRequestType: null,
@@ -40,28 +61,351 @@ class Notifications extends Component {
         });
         if (!isSuccess) return;
 
-        let isApproved = false;
-        if (modalType === 'isApprovalModalOpen') {
-            isApproved = true;
+        let request = 'error';
+        if (modalType === 'isApprovalModalOpen' || modalType === 'isDisapprovalModalOpen') {
+            let isApproved = false;
+            if (modalType === 'isApprovalModalOpen') {
+                isApproved = true;
+            }
+
+            request = {
+                requestId: this.state.currentRequestId,
+                isApproved: isApproved,
+            };
+        } else if (modalType === 'isUndoModalOpen') {
+            if (this.state.currentRequestType === 'Join') {
+                putJoinRequest(this.state.currentRequestId, false);
+            } else if (this.state.currentRequestType === 'Merge') {
+                putMergeRequest(this.state.currentRequestId, false);
+            }
+        } else if (modalType === 'isDeleteModalOpen') {
+            request = {
+                requestId: this.state.currentRequestId,
+                deleteRequest: true,
+            };
         }
-
-        const request = {
-            requestId: this.state.currentRequestId,
-            isApproved: isApproved,
-        };
-
-        console.log(request);
     };
 
     componentDidMount() {
-        this.setState({
-            myProjects: dummyMyProjectsList,
-            instructedCourses: dummyInstructedCoursesList,
+        let incomingRequests = [];
+        incomingRequests.push(getIncomingJoinRequest());
+        incomingRequests.push(getIncomingMergeRequest());
 
-            incomingRequests: dummyIncomingRequests,
-            outgoingRequests: dummyOutgoingRequests,
-            newFeedbacks: dummyNewFeedbacks,
+        axios.all(incomingRequests).then(
+            axios.spread((...responses) => {
+                let incomingRequests = { pending: [], unresolved: [], resolved: [] };
+                let i = 0;
+                for (let response of responses) {
+                    let data = response.data.data;
+                    for (let req of data) {
+                        let request = {};
+                        if (req.resolved) {
+                            if (i === 0) {
+                                let myGroup = [];
+                                for (let member of req.requestedGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            } else {
+                                let myGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let otherGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            }
+                            incomingRequests.resolved.push(request);
+                        } else if (req.accepted) {
+                            let myGroup = [];
+                            for (let member of req.requestedGroup.groupMembers) {
+                                myGroup.push({
+                                    userId: member.id,
+                                    name: member.name,
+                                });
+                            }
+                            if (i === 0) {
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: 'Approved',
+                                    yourGroup: myGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            } else {
+                                let myGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let otherGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: 'Approved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            }
+                            incomingRequests.resolved.push(request);
+                        } else if (req.currentUserVote) {
+                            if (i === 0) {
+                                let myGroup = [];
+                                for (let member of req.requestedGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            } else {
+                                let myGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let otherGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            }
+                            incomingRequests.unresolved.push(request);
+                        } else {
+                            if (i === 0) {
+                                let myGroup = [];
+                                for (let member of req.requestedGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            } else {
+                                let myGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let otherGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            }
+                            incomingRequests.pending.push(request);
+                        }
+                    }
+                    i++;
+                }
+
+                this.setState({
+                    incomingRequests: incomingRequests,
+                });
+            })
+        );
+
+        let outgoingRequests = [];
+        outgoingRequests.push(getOutgoingJoinRequest());
+        outgoingRequests.push(getOutgoingMergeRequest());
+
+        axios.all(outgoingRequests).then(
+            axios.spread((...responses) => {
+                let outgoingRequests = { pending: [], unresolved: [], resolved: [] };
+                for (let response of responses) {
+                    let data = response.data.data;
+                }
+            })
+        );
+
+        getNewCommentsRequest().then((response) => {
+            console.log(response);
         });
+
+        getInstructedCoursesRequest(this.props.userId).then((response) => {
+            if (!response.data.success) return;
+
+            let instructedCourse = [];
+            for (let i = 0; i < response.data.data.length; i++) {
+                instructedCourse.push({
+                    courseId: response.data.data[i].id,
+                    courseCode:
+                        response.data.data[i].name +
+                        ' ' +
+                        response.data.data[i].courseSemester +
+                        '-' +
+                        response.data.data[i].year,
+                    isActive: response.data.data[i].isActive,
+                });
+            }
+
+            this.setState({
+                instructedCourses: instructedCourse,
+            });
+        });
+
+        getUserGroupsRequest(this.props.userId).then((response) => {
+            if (!response.data.success) return;
+
+            let data = response.data.data;
+            let requests = [];
+            for (let i = 0; i < data.length; i++) {
+                let courseId = data[i].affiliatedCourseId;
+                requests.push(getCourseRequest(courseId));
+            }
+
+            let myProjects = [];
+            axios.all(requests).then(
+                axios.spread((...responses) => {
+                    for (let i = 0; i < responses.length; i++) {
+                        if (!responses[i].data.success) {
+                            myProjects.push({
+                                projectName: data[i].name,
+                                projectId: data[i].id,
+                            });
+                        }
+
+                        let courseData = responses[i].data.data;
+                        myProjects.push({
+                            courseCode: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
+                            projectName: data[i].name,
+                            isActive: courseData.isActive,
+                            projectId: data[i].id,
+                            courseId: data[i].affiliatedCourse.id,
+                            isLocked: data[i].affiliatedCourse.isLocked,
+                        });
+                        this.setState({
+                            myProjects: myProjects,
+                        });
+                    }
+                })
+            );
+        });
+
+        // this.setState({
+        //     outgoingRequests: dummyOutgoingRequests,
+        //     newFeedbacks: dummyNewFeedbacks,
+        // });
     }
 
     onProjectClicked = (projectId) => {
@@ -76,21 +420,16 @@ class Notifications extends Component {
         this.props.history.push('/profile/' + userId);
     };
 
-    onRequestApproved = (requestId, requestType, userName) => {
-        this.setState({
-            currentRequestId: requestId,
-            currentRequestType: requestType,
-            currentRequestUserName: userName,
-            isApprovalModalOpen: true,
-        });
+    onProfilePromptClicked = () => {
+        this.props.history.push('/profile');
     };
 
-    onRequestDisapproved = (requestId, requestType, userName) => {
+    onRequestAction = (requestModal, requestId, requestType, userName) => {
         this.setState({
             currentRequestId: requestId,
             currentRequestType: requestType,
             currentRequestUserName: userName,
-            isDisapprovalModalOpen: true,
+            [requestModal]: true,
         });
     };
 
@@ -105,8 +444,7 @@ class Notifications extends Component {
                 this.state.incomingRequests,
                 'incoming',
                 this.onUserClicked,
-                this.onRequestApproved,
-                this.onRequestDisapproved
+                this.onRequestAction
             ),
         };
     };
@@ -118,8 +456,7 @@ class Notifications extends Component {
                 this.state.outgoingRequests,
                 'outgoing',
                 this.onUserClicked,
-                this.onRequestApproved,
-                this.onRequestDisapproved
+                this.onRequestAction
             ),
         };
     };
@@ -154,15 +491,27 @@ class Notifications extends Component {
                     requestType={this.state.currentRequestType}
                     userName={this.state.currentRequestUserName}
                 />
+                <RequestUndoModal
+                    isOpen={this.state.isUndoModalOpen}
+                    closeModal={(isSuccess) => this.onModalClosed('isUndoModalOpen', isSuccess)}
+                    requestType={this.state.currentRequestType}
+                    userName={this.state.currentRequestUserName}
+                />
+                <RequestDeleteModal
+                    isOpen={this.state.isDeleteModalOpen}
+                    closeModal={(isSuccess) => this.onModalClosed('isDeleteModalOpen', isSuccess)}
+                    requestType={this.state.currentRequestType}
+                    userName={this.state.currentRequestUserName}
+                />
             </>
         );
     };
 
     render() {
-        const myProjectsComponent = this.state.myProjects
-            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked)
+        let myProjectsComponent = this.state.myProjects
+            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked, this.onCourseClicked)
             : null;
-        const instructedCoursesComponent = this.state.instructedCourses
+        let instructedCoursesComponent = this.state.instructedCourses
             ? convertInstructedCoursesToBriefList(this.state.instructedCourses, this.onCourseClicked)
             : null;
 
@@ -172,16 +521,25 @@ class Notifications extends Component {
                     <GridColumn width={4}>
                         <div className={'HomeDivLeft'}>
                             <ProfilePrompt name={this.props.name} onClick={this.onProfilePromptClicked} />
-                            {myProjectsComponent}
-                            {instructedCoursesComponent}
+                            {myProjectsComponent && (
+                                <div className="MyProjectsBlock">
+                                    <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
+                                    {myProjectsComponent}
+                                </div>
+                            )}
+                            {myProjectsComponent && instructedCoursesComponent && (
+                                <Divider style={{ width: '70%', margin: 'auto', marginTop: '20px' }} />
+                            )}
+                            {instructedCoursesComponent && (
+                                <div className="InstructedCoursesBlock">
+                                    <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
+                                    {instructedCoursesComponent}
+                                </div>
+                            )}
                         </div>
                     </GridColumn>
                     <GridColumn width={12}>
                         <Tab tabPanes={this.getPaneElements()} />
-                        <div>
-                            {}
-                            {}
-                        </div>
                     </GridColumn>
                 </Grid>
                 {this.getModals()}
@@ -190,7 +548,7 @@ class Notifications extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+let mapStateToProps = (state) => {
     return {
         userType: state.userType,
         name: state.name,
@@ -201,46 +559,7 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(Notifications);
 
-const dummyMyProjectsList = [
-    {
-        courseCode: 'CS319-2021Spring',
-        projectName: 'BilHub',
-        isActive: true,
-        projectId: 1,
-    },
-    {
-        courseCode: 'CS315-2021Spring',
-        projectName: 'AGA',
-        isActive: true,
-        projectId: 2,
-    },
-    {
-        courseCode: 'CS102-2019Fall',
-        projectName: 'BilCalendar',
-        isActive: false,
-        projectId: 3,
-    },
-];
-
-const dummyInstructedCoursesList = [
-    {
-        courseCode: 'CS102-2021Spring',
-        isActive: true,
-        courseId: 1,
-    },
-    {
-        courseCode: 'CS102-2021Fall',
-        isActive: false,
-        courseId: 2,
-    },
-    {
-        courseCode: 'CS102-2021Fall',
-        isActive: false,
-        courseId: 3,
-    },
-];
-
-const dummyIncomingRequests = {
+let dummyIncomingRequests = {
     pending: [
         {
             type: 'Join',
@@ -261,8 +580,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
         {
@@ -291,8 +610,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
     ],
@@ -316,8 +635,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
         {
@@ -346,8 +665,8 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 0, 15),
+            formationDate: new Date(2022, 4, 5, 12, 21),
             voteStatus: '2/5',
         },
     ],
@@ -372,7 +691,7 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2021, 3, 12, 4, 34),
         },
         {
             type: 'Merge',
@@ -401,66 +720,16 @@ const dummyIncomingRequests = {
                 },
             ],
             course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
-        },
-        {
-            type: 'Join',
-            requestId: 1,
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            status: 'Disapproved',
-            user: {
-                name: 'Hasan Kaya',
-                userId: 1,
-            },
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
-        },
-        {
-            type: 'Merge',
-            requestId: 1,
-            status: 'Disapproved',
-            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                    requestOwner: true,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2021, 3, 12, 4, 34),
         },
     ],
 };
 
-const dummyOutgoingRequests = {
+let dummyOutgoingRequests = {
     pending: [
         {
             type: 'Merge',
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 3,
             yourGroup: [
                 {
@@ -485,15 +754,15 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
     ],
     unresolved: [
         {
             type: 'Join',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             otherGroup: [
                 {
@@ -507,20 +776,18 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
         {
             type: 'Merge',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
-            isRequestOwner: true,
             yourGroup: [
                 {
                     name: 'Hasan Kaya',
                     userId: 1,
-                    requestOwner: false,
                 },
                 {
                     name: 'Ayşe Kaya',
@@ -539,15 +806,15 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            requestDate: '12 March 2021',
-            formationDate: '22 March 2021',
+            requestDate: new Date(2021, 3, 12, 12, 34),
+            formationDate: new Date(2022, 5, 13, 14, 15),
             voteStatus: '2/5',
         },
     ],
     resolved: [
         {
             type: 'Join',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             status: 'Approved',
             otherGroup: [
@@ -562,11 +829,11 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2020, 12, 14, 15, 54),
         },
         {
             type: 'Merge',
-
+            message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, optio.',
             requestId: 1,
             status: 'Approved',
             isRequestOwner: false,
@@ -593,62 +860,12 @@ const dummyOutgoingRequests = {
             ],
             course: 'CS315-Spring2020',
             courseId: 1,
-            approvalDate: '12 March 2021',
-        },
-        {
-            type: 'Join',
-
-            requestId: 1,
-            status: 'Disapproved',
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            courseId: 1,
-            approvalDate: '12 March 2021',
-        },
-        {
-            type: 'Merge',
-
-            requestId: 1,
-            status: 'Disapproved',
-            isRequestOwner: true,
-            yourGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            otherGroup: [
-                {
-                    name: 'Hasan Kaya',
-                    userId: 1,
-                    requestOwner: true,
-                },
-                {
-                    name: 'Ayşe Kaya',
-                    userId: 2,
-                },
-            ],
-            course: 'CS315-Spring2020',
-            courseId: 1,
-            approvalDate: '12 March 2021',
+            approvalDate: new Date(2020, 12, 14, 15, 54),
         },
     ],
 };
 
-const dummyNewFeedbacks = {
+let dummyNewFeedbacks = {
     SRSResults: [
         {
             user: {
@@ -656,9 +873,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -675,9 +892,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -695,9 +912,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -714,9 +931,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -735,9 +952,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -756,9 +973,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -778,9 +995,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',
@@ -799,9 +1016,9 @@ const dummyNewFeedbacks = {
             },
             feedback: {
                 caption: 'Please download the complete feedback file',
-                date: '11 March 2021',
+                date: new Date(2029, 10, 13, 23, 32),
                 commentId: 1,
-                grade: '10/10',
+                grade: '10',
             },
             course: {
                 courseName: 'CS319-2021Spring',

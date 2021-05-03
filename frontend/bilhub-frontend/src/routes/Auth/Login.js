@@ -9,11 +9,44 @@ class Login extends Component {
     constructor(props) {
         super(props);
 
+        let information = null;
+        if (this.props?.location?.state?.redirectedFrom === 'signup') {
+            information = 'Your Account Created';
+        }
+        if (this.props?.location?.state?.redirectedFrom === 'newPassword') {
+            information = 'Your New Password been sent your Email';
+        }
+
         this.state = {
             form: {},
             error: null,
+            information: information,
         };
     }
+
+    onSubmit = () => {
+        if (!this.state.form.email?.length || !this.state.form.password?.length) {
+            this.setError('Please fill the every blank');
+            return;
+        }
+
+        loginRequest(this.state.form.email, this.state.form.password)
+            .then((response) => {
+                const userData = response.data.data;
+                this.props.authSuccess(
+                    userData.token,
+                    userData.id,
+                    userData.email,
+                    userData.name,
+                    userData.userType,
+                    userData.darkModeStatus
+                );
+            })
+            .catch(() => {
+                this.setInformation(null);
+                this.setError('Server Error');
+            });
+    };
 
     setForm = (form) => {
         this.setState({
@@ -29,26 +62,8 @@ class Login extends Component {
         this.setState({ error: error });
     };
 
-    onSubmit = () => {
-        if (!this.state.form.email?.length || !this.state.form.password?.length) {
-            this.setError('Please fill the every blank');
-            return;
-        }
-
-        loginRequest(this.state.form.email, this.state.form.password)
-            .then((response) => {
-                const userData = response.data;
-                this.props.authSuccess(
-                    userData.idToken,
-                    userData.localId,
-                    userData.email,
-                    userData.displayName,
-                    'student'
-                );
-            })
-            .catch(() => {
-                this.setError('Server Error');
-            });
+    setInformation = (information) => {
+        this.setState({ information: information });
     };
 
     render() {
@@ -57,8 +72,12 @@ class Login extends Component {
                 onSubmit={this.onSubmit}
                 onChange={(e, { name, value }) => this.onChange(name, value)}
                 form={this.state.form}
-                onErrorClosed={() => this.setError(null)}
+                onPopupClosed={() => {
+                    this.setError(null);
+                    this.setInformation(null);
+                }}
                 error={this.state.error}
+                information={this.state.information}
             />
         );
     }
@@ -66,8 +85,8 @@ class Login extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        authSuccess: (token, userId, email, name, userType) =>
-            dispatch(actions.authSuccess(token, userId, email, name, userType)),
+        authSuccess: (token, userId, email, name, userType, darkMode) =>
+            dispatch(actions.authSuccess(token, userId, email, name, userType, darkMode)),
     };
 };
 

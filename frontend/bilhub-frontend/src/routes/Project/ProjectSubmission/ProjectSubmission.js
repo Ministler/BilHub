@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button } from 'semantic-ui-react';
-import { withRouter } from 'react-router-dom';
+import { Icon, Button, Divider, Grid } from 'semantic-ui-react';
+import { withRouter, Link } from 'react-router-dom';
 import {
     NewCommentModal,
+    NewCommentModal2,
     EditCommentModal,
     DeleteCommentModal,
     NewSubmissionModal,
@@ -18,6 +19,27 @@ import {
     FeedbacksPane,
     SubmissionPane,
 } from '../../../components';
+import { dateObjectToString, inputDateToDateObject } from '../../../utils';
+import {
+    getSubmissionRequest,
+    postCommentRequest,
+    postSubmissionRequest,
+    putSubmissionRequest,
+    deleteSubmissionRequest,
+    getAssignmentFileRequest,
+    deleteSubmissionSrsGradeRequest,
+    postSubmissionSrsGradeRequest,
+} from '../../../API';
+import {
+    getSubmissionFileRequest,
+    getSubmissionInstructorCommentsRequest,
+    getSubmissionSrsGradeRequest,
+    getSubmissionStudentCommentsRequest,
+    getSubmissionTACommentsRequest,
+} from '../../../API/submissionAPI/submissionGET';
+import axios from 'axios';
+import { deleteCommentRequest, putCommentRequest } from '../../../API/commentAPI';
+import { getIsUserInstructorOfGroupRequest } from '../../../API/projectGroupAPI/projectGroupGET';
 
 class ProjectAssignment extends Component {
     constructor(props) {
@@ -44,43 +66,272 @@ class ProjectAssignment extends Component {
             currentFeedbackText: '',
             currentFeedbackFile: null,
             currentFeedbackGrade: 10,
+            currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
+
+            //testing
+            currentFeedbackText2: '',
+            currentFeedbackGrade2: 10,
+            currentMaxFeedbackGrade2: 10,
         };
     }
 
-    componentDidMount() {
+    onCurrentFeedbackTextChanged2 = (e) => {
+        e.preventDefault();
         this.setState({
-            assignment: dummyAssignment,
-            grades: dummyGrades,
-            feedbacks: dummyFeedbacks,
-            submission: dummySubmission,
-            submissionPage: dummySubmissionPage,
+            currentFeedbackText2: e.target.value,
         });
+    };
+    onCurrentFeedbackGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackGrade2: e.target.value,
+        });
+    };
+    onCurrentFeedbackMaxGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade2: e.target.value,
+        });
+    };
+    onGiveFeedback = (e) => {
+        postCommentRequest(
+            null,
+            this.state.submission.submissionId,
+            this.state.currentFeedbackText2,
+            this.state.currentMaxFeedbackGrade2,
+            this.state.currentFeedbackGrade2
+        );
+    };
+
+    onAssignmentFileClicked = () => {
+        getAssignmentFileRequest(this.props.match.params.submissionId).then((response) => {
+            if (!response.data.success) return;
+        });
+    };
+
+    onSubmissionFileClicked = () => {
+        getSubmissionFileRequest(this.state.submission.submissionId).then((response) => {
+            if (!response.data.success) return;
+        });
+    };
+
+    onSubmissionFileChange = (file) => {
+        this.setState({
+            submissionFile: file,
+        });
+    };
+
+    onSubmissionModalClosed = (modalType, isSuccess) => {
+        this.setState({
+            [modalType]: false,
+        });
+        if (!isSuccess) return;
+
+        let request = 'error';
+        if (modalType === 'isAddSubmissionOpen') {
+            postSubmissionRequest(
+                this.state.submissionFile,
+                this.state.submissionCaption,
+                this.props.match.params.submissionId
+            );
+        } else if (modalType === 'isEditSubmissionOpen') {
+            putSubmissionRequest(
+                this.state.submissionFile,
+                this.state.submissionCaption,
+                this.state.submission.submissionId
+            );
+        } else if (modalType === 'isDeleteSubmissionOpen') {
+            deleteSubmissionRequest(this.state.submission.submissionId);
+        }
+
+        console.log(request);
+    };
+
+    onModalClosed = (modalType, isSuccess) => {
+        this.setState({
+            [modalType]: false,
+        });
+        if (!isSuccess) return;
+
+        let request = 'error';
+        if (this.state.isFeedbackSRS) {
+            if (modalType === 'isGiveFeedbackOpen') {
+                postSubmissionSrsGradeRequest(this.props.match.params.submissionId, this.state.currentFeedbackGrade);
+            } else if (modalType === 'isEditFeedbackOpen') {
+                postSubmissionSrsGradeRequest(this.props.match.params.submissionId, this.state.currentFeedbackGrade);
+            } else if (modalType === 'isDeleteFeedbackOpen') {
+                deleteSubmissionSrsGradeRequest(this.state.submission.submissionId);
+            }
+        } else {
+            if (modalType === 'isGiveFeedbackOpen') {
+                postCommentRequest(
+                    this.state.currentFeedbackFile,
+                    this.submission.submissionId,
+                    this.state.currentFeedbackText,
+                    10,
+                    this.state.currentFeedbackGrade
+                );
+            } else if (modalType === 'isEditFeedbackOpen') {
+                putCommentRequest(
+                    this.state.currentFeedbackFile,
+                    this.state.currentFeedbackId,
+                    this.state.currentFeedbackText,
+                    10,
+                    this.state.currentFeedbackGrade
+                );
+            } else if (modalType === 'isDeleteFeedbackOpen') {
+                deleteCommentRequest(this.state.currentFeedbackId);
+            }
+        }
+
+        console.log(request);
+    };
+
+    componentDidMount() {
+        getIsUserInstructorOfGroupRequest(this.props.match.params.projectId, this.props.userId).then((auth) => {
+            getSubmissionRequest(this.props.match.params.submissionId).then((response) => {
+                if (!response.data.success) return;
+                const curSubmission = response.data.data;
+                console.log(curSubmission);
+
+                let status;
+                if (curSubmission.isGraded) {
+                    status = 2;
+                } else if (curSubmission.hasSubmission) {
+                    status = 1;
+                } else {
+                    status = 0;
+                }
+                const assignment = {
+                    title: curSubmission.affiliatedAssignment.title,
+                    id: curSubmission.affiliatedAssignment.id,
+                    status: status,
+                    caption: curSubmission.affiliatedAssignment.assignmentDescription,
+                    publisher: curSubmission.affiliatedAssignment.publisher,
+                    publishmentDate: inputDateToDateObject(curSubmission.affiliatedAssignment.createdAt),
+                    dueDate: inputDateToDateObject(curSubmission.affiliatedAssignment.dueDate),
+                    file: curSubmission.affiliatedAssignment.hasFile ? curSubmission.affiliatedAssignment.fileName : '',
+                    submissionInfo: '',
+                };
+                const submission = {
+                    caption: curSubmission.description,
+                    file: curSubmission.fileName,
+                    date: inputDateToDateObject(curSubmission.updatedAt),
+                    submissionId: curSubmission.id,
+                };
+                let isInGroup = false;
+                for (let i of curSubmission.affiliatedGroup.groupMembers) {
+                    if (i.id === this.props.userId) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
+                const page = {
+                    isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
+                    isInGroup: true,
+                    isTAorInstructor: auth.data.data,
+                    canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
+                    hasSubmission: curSubmission.hasSubmission,
+                    isLate: submission.date > assignment.dueDate,
+                    isEdittable: true, //ask
+                };
+                this.setState({ assignment: assignment, submissionPage: page, submission: submission });
+                console.log(this.state.submission.submissionId);
+                feedbackRequests.push(getSubmissionInstructorCommentsRequest(this.state.submission.submissionId));
+                feedbackRequests.push(getSubmissionTACommentsRequest(this.state.submission.submissionId));
+                feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission.submissionId));
+                //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
+                const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
+                axios.all(feedbackRequests).then(
+                    axios.spread((...responses) => {
+                        let instGrade = 0;
+                        for (let i in responses[0].data.data) {
+                            feedbacks.InstructorComments.push({
+                                name: responses[0].data.data[i].commentedUser.name,
+                                caption: responses[0].data.data[i].commentText,
+                                grade: responses[0].data.data[i].grade,
+                                date: inputDateToDateObject(responses[0].data.data[i].createdAt),
+                                commentId: responses[0].data.data[i].id,
+                                userId: responses[0].data.data[i].commentedUser.id,
+                            });
+                            persons.push({
+                                name: responses[0].data.data[i].commentedUser.name,
+                                type: responses[0].data.data[i].commentedUser.userType,
+                                grade: responses[0].data.data[i].grade,
+                                userId: responses[0].data.data[i].commentedUser.id,
+                            });
+                            instGrade += responses[0].data.data[i].grade;
+                        }
+                        for (let i in responses[1].data.data) {
+                            feedbacks.TAComments.push({
+                                name: responses[1].data.data[i].commentedUser.name,
+                                caption: responses[1].data.data[i].commentText,
+                                grade: responses[1].data.data[i].grade,
+                                date: inputDateToDateObject(responses[1].data.data[i].createdAt),
+                                commentId: responses[1].data.data[i].id,
+                                userId: responses[1].data.data[i].commentedUser.id,
+                            });
+                            persons.push({
+                                name: responses[1].data.data[i].commentedUser.name,
+                                type: responses[1].data.data[i].commentedUser.userType,
+                                grade: responses[1].data.data[i].grade,
+                                userId: responses[1].data.data[i].commentedUser.id,
+                            });
+                            instGrade += responses[1].data.data[i].grade;
+                        }
+                        let studentAvg = 0;
+                        for (let i in responses[2].data.data) {
+                            feedbacks.StudentComments.push({
+                                name: responses[2].data.data[i].commentedUser.name,
+                                caption: responses[2].data.data[i].commentText,
+                                grade: responses[2].data.data[i].grade,
+                                date: inputDateToDateObject(responses[2].data.data[i].createdAt),
+                                commentId: responses[2].data.data[i].id,
+                                userId: responses[2].data.data[i].commentedUser.id,
+                            });
+                            studentAvg += responses[2].data.data[i].grade;
+                        }
+                        studentAvg = studentAvg === 0 ? 0 : studentAvg / responses[2].data.data.length;
+                        const projectAverage =
+                            (studentAvg + instGrade) /
+                            (responses[0].data.data.length + responses[1].data.data.length + 1);
+                        const grades = {
+                            persons: persons,
+                            studentAvg: studentAvg,
+                            projectAverage: projectAverage,
+                            courseAverage: 8, //kendim belirledim
+                            finalGrade: 40, //kendim belirledim
+                        };
+                        this.setState({ feedbacks: feedbacks, grades: grades });
+                    })
+                );
+            });
+        });
+        const feedbackRequests = [];
+        const persons = [];
+
+        /*const dummyFeedbacks = {
+    SRSResult: {
+        grade: '9.5',
+        maxGrade: '11',
+    },*/
     }
 
     onReturnProjectPage = () => {
         this.props.history.replace('/project/' + this.props.projectId);
     };
 
-    onAssignmentFileClicked = () => {
-        console.log('file');
-    };
-
-    onSubmissionFileClicked = () => {
-        console.log('file');
-    };
-
-    onSubmissionmodalOpened = (modalType) => {
+    onSubmissionModalOpened = (modalType) => {
         if (modalType) {
             this.setState({
                 [modalType]: true,
                 submissionCaption: '',
-                submissionFile: 'empty',
             });
         }
     };
 
-    onExistingSubmissionmodalOpened = (modalType, submissionCaption, submissionFile) => {
+    onExistingSubmissionModalOpened = (modalType, submissionCaption, submissionFile) => {
         if (modalType) {
             this.setState({
                 [modalType]: true,
@@ -90,12 +341,6 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onSubmissionModalClosed = (modalType, isSuccess) => {
-        this.setState({
-            [modalType]: false,
-        });
-        if (!isSuccess) return;
-    };
     onCurrentFeedbackTextChanged = (e) => {
         e.preventDefault();
         this.setState({
@@ -107,6 +352,13 @@ class ProjectAssignment extends Component {
         e.preventDefault();
         this.setState({
             currentFeedbackGrade: e.target.value,
+        });
+    };
+
+    onCurrentFeedbackMaxGradeChanged = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade: e.target.value,
         });
     };
 
@@ -133,20 +385,31 @@ class ProjectAssignment extends Component {
             this.setState({
                 [modalType]: true,
                 currentFeedbackGrade: 10,
+                currentMaxFeedbackGrade: 10,
                 currentFeedbackFile: 'empty',
                 currentFeedbackText: '',
             });
         }
     };
 
-    onmodalOpenedWithCommentOpened = (modalType, isFeedbackSRS, commentId, commentText, commentGrade, commentFile) => {
+    onModalOpenedWithCommentOpened = (
+        modalType,
+        isFeedbackSRS,
+        commentId,
+        commentText,
+        commentGrade,
+        commentFile,
+        SRSMaxGrade
+    ) => {
         if (isFeedbackSRS) {
             this.setState({
                 isFeedbackSRS: true,
+                currentMaxFeedbackGrade: SRSMaxGrade,
             });
         } else {
             this.setState({
                 isFeedbackSRS: false,
+                currentMaxFeedbackGrade: 10,
             });
         }
 
@@ -161,47 +424,33 @@ class ProjectAssignment extends Component {
         }
     };
 
-    onSubmissionModalClosed = (modalType, isSuccess) => {
-        this.setState({
-            [modalType]: false,
-        });
-        if (!isSuccess) return;
-    };
-
-    onModalClosed = (modalType, isSuccess) => {
-        this.setState({
-            [modalType]: false,
-        });
-        if (!isSuccess) return;
-    };
-
     getSubmissionButtons = () => {
         if (this.state.submissionPage?.isInGroup) {
             if (!this.state.submissionPage.hasSubmission) {
                 return (
-                    <Button onClick={() => this.onSubmissionmodalOpened('isAddSubmissionOpen')}>
+                    <Button onClick={() => this.onSubmissionModalOpened('isAddSubmissionOpen')}>
                         Add New Submission
                     </Button>
                 );
-            } else {
+            } else if (this.state.submissionPage.isEdittable) {
                 return (
                     <>
                         <Button
                             onClick={() =>
-                                this.openExistingSubmissionmodal(
+                                this.onExistingSubmissionModalOpened(
                                     'isEditSubmissionOpen',
                                     this.state.submission.caption,
-                                    this.state.submission.file
+                                    this.state.submission.hasFile
                                 )
                             }>
                             Edit Submission
                         </Button>
                         <Button
                             onClick={() =>
-                                this.openExistingSubmissionmodal(
+                                this.onExistingSubmissionModalOpened(
                                     'isDeleteSubmissionOpen',
                                     this.state.submission.caption,
-                                    this.state.submission.file
+                                    this.state.submission.hasFile
                                 )
                             }>
                             Delete Submission
@@ -235,7 +484,7 @@ class ProjectAssignment extends Component {
 
     getNewCommentButton = () => {
         let newCommentButton = null;
-        if (this.state.submissionPage?.canUserComment) {
+        if (this.state.submissionPage?.canUserComment && !this.state.isInGroup) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -257,16 +506,35 @@ class ProjectAssignment extends Component {
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
-            <FeedbacksPane
-                feedbacksAccordion={getFeedbacksAsAccordion(
-                    this.state.feedbacks,
-                    this.state.submissionPage?.isTAorInstructor,
-                    this.onmodalOpenedWithCommentOpened,
-                    this.onAuthorClicked,
-                    this.props.userId
-                )}
-                newCommentButton={newCommentButton}
-            />
+            <Grid>
+                <div class="sixteen wide column">
+                    <NewCommentModal2
+                        text={this.state.currentFeedbackText2}
+                        grade={this.state.currentFeedbackGrade2}
+                        maxGrade={this.state.currentMaxFeedbackGrade2}
+                        onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
+                        onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
+                        onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                        onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                    />
+                </div>
+                <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
+                    <Divider />
+                </div>
+                <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
+                    <FeedbacksPane
+                        feedbacksAccordion={getFeedbacksAsAccordion(
+                            this.state.feedbacks,
+                            this.state.submissionPage?.isTAorInstructor,
+                            this.onModalOpenedWithCommentOpened,
+                            this.onAuthorClicked,
+                            this.props.userId,
+                            this.onModalOpened
+                        )}
+                        //newCommentButton={newCommentButton}
+                    />
+                </div>
+            </Grid>
         );
         return {
             title: 'Feedbacks',
@@ -277,7 +545,14 @@ class ProjectAssignment extends Component {
     getPaneElements = () => {
         const assignment = {
             ...this.state.assignment,
-            date: this.state.assignment.publishmentDate + ' / ' + this.state.assignment.dueDate,
+            date:
+                (typeof this.state.assignment.publishmentDate === 'object'
+                    ? dateObjectToString(this.state.assignment.publishmentDate)
+                    : this.state.assignment.publishmentDate) +
+                ' / ' +
+                (typeof this.state.assignment.dueDate === 'object'
+                    ? dateObjectToString(this.state.assignment.dueDate)
+                    : this.state.assignment.dueDate),
         };
 
         const submissionButtons = this.getSubmissionButtons();
@@ -293,6 +568,7 @@ class ProjectAssignment extends Component {
                     <SubmissionPane
                         assignment={assignment}
                         submission={'anonim'}
+                        isLate={this.state.submissionPage?.isLate}
                         onAssignmentFileClicked={this.onAssignmentFileClicked}
                         buttons={submissionButtons}
                     />
@@ -302,6 +578,7 @@ class ProjectAssignment extends Component {
                     <SubmissionPane
                         assignment={assignment}
                         submission={this.state.submission}
+                        isLate={this.state.submissionPage?.isLate}
                         onAssignmentFileClicked={this.onAssignmentFileClicked}
                         onSubmissionFileClicked={this.onSubmissionFileClicked}
                         buttons={submissionButtons}
@@ -334,17 +611,20 @@ class ProjectAssignment extends Component {
             <>
                 <NewSubmissionModal
                     isOpen={this.state.isAddSubmissionOpen}
+                    instructions={this.state.assignment.submissionInfo}
                     closeModal={(isSuccess) => this.onSubmissionModalClosed('isAddSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
                     onTextChange={(e) => this.onSubmissionCaptionChanged(e)}
+                    onFileChanged={this.onSubmissionFileChange}
                 />
                 <EditSubmissionModal
                     isOpen={this.state.isEditSubmissionOpen}
+                    instructions={this.state.assignment.submissionInfo}
                     closeModal={(isSuccess) => this.onSubmissionModalClosed('isEditSubmissionOpen', isSuccess)}
                     assignmentName={this.state.assignment.title}
                     text={this.state.submissionCaption}
-                    onTextChange={(e) => this.onSubmissionCaptionChange(e)}
+                    onTextChange={(e) => this.onSubmissionCaptionChanged(e)}
                 />
                 <DeleteSubmissionModal
                     isOpen={this.state.isDeleteSubmissionOpen}
@@ -359,8 +639,10 @@ class ProjectAssignment extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                     onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
                     onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                    onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 />
                 <EditCommentModal
                     isOpen={this.state.isEditFeedbackOpen}
@@ -369,8 +651,10 @@ class ProjectAssignment extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                     onTextChange={(e) => this.onCurrentFeedbackTextChanged(e)}
                     onGradeChange={(e) => this.onCurrentFeedbackGradeChanged(e)}
+                    onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged(e)}
                 />
                 <DeleteCommentModal
                     isOpen={this.state.isDeleteFeedbackOpen}
@@ -379,6 +663,7 @@ class ProjectAssignment extends Component {
                     isTitleSRS={this.state.isFeedbackSRS}
                     text={this.state.currentFeedbackText}
                     grade={this.state.currentFeedbackGrade}
+                    maxGrade={this.state.currentMaxFeedbackGrade}
                 />
             </>
         );
@@ -386,8 +671,19 @@ class ProjectAssignment extends Component {
 
     render() {
         return (
-            <div>
-                <Icon onClick={this.onReturnProjectPage} size="huge" name="angle left" />
+            <div class="inline">
+                <Icon
+                    onClick={this.onReturnProjectPage}
+                    size="big"
+                    name="angle left"
+                    color="blue"
+                    style={{ display: 'inline' }}
+                />
+                <Link
+                    onClick={this.onReturnProjectPage}
+                    style={{ display: 'inline', fontSize: '16px', fontWeight: 'bold', color: 'rgb(33, 133, 208)' }}>
+                    Back To Assigments
+                </Link>
                 <Tab tabPanes={this.getPaneElements()} />
                 {this.getModals()}
             </div>
@@ -407,71 +703,24 @@ const dummyAssignment = {
     caption:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis numquam voluptas deserunt a nemo architecto assumenda suscipit ad! Doloribus dolorum ducimus laudantium exercitationem fugiat. Quibusdam ad soluta animi quasi! Voluptatum.',
     publisher: 'Erdem Tuna',
-    publisherId: 1,
-    publishmentDate: '13 March 2023 12:00',
-    dueDate: '16 April 2025, 23:59',
+    publishmentDate: new Date(2023, 3, 13, 12, 0),
+    dueDate: new Date(2025, 4, 16, 23, 59),
     file: 'deneme',
     submissionInfo: 'Please name your submission file as: surname_name_id_section.pdf',
-};
-
-const dummySubmissionPage = {
-    isSubmissionAnonim: true,
-    isInGroup: false,
-    isTAorInstructor: false,
-    canUserComment: true,
-    hasSubmission: true,
 };
 
 const dummySubmission = {
     caption:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident dicta dignissimos dolore quo iure, et ipsam corporis accusamus ad eligendi, inventore consequatur, repellendus laboriosam vitae sed quam fugit. Omnis dignissimos eos libero facilis quisquam quidem. Labore veritatis eaque non vero asperiores, soluta, qui nisi adipisci, fugit corrupti praesentium voluptatem enim?',
     file: 'file',
-    date: '16 April 2025, 12:31',
+    date: new Date(2025, 4, 16, 12, 31),
     submissionId: 1,
-};
-
-const dummyGrades = {
-    persons: [
-        {
-            name: 'Eray Tüzün',
-            type: 'Project Instructor',
-            grade: '9.5',
-            userId: 1,
-        },
-        {
-            name: 'Alper Sarıkan',
-            type: 'Instructor',
-            grade: '8.1',
-            userId: 2,
-        },
-        {
-            name: 'Erdem Tuna',
-            type: 'TA',
-            grade: '7.1',
-            userId: 3,
-        },
-        {
-            name: 'Elgun Jabrayilzade',
-            type: 'TA',
-            grade: '8.1',
-            userId: 4,
-        },
-    ],
-    studentsAverage: 8,
-    projectAverage: 7.1,
-    courseAverage: 6.5,
-    finalGrade: 38,
 };
 
 const dummyFeedbacks = {
     SRSResult: {
-        name: 'Elgun Jabrayilzade',
-        caption: 'Please download the complete feedback file',
-        file: 'dummyFile',
-        date: '11 March 2021',
-        commentId: 1,
-        userId: 1,
-        grade: 9.5,
+        grade: '9.5',
+        maxGrade: '11',
     },
     InstructorComments: [
         {
@@ -479,13 +728,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             commentId: 3,
-            userId: 1,
+            userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -499,13 +748,13 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             commentId: 4,
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -515,38 +764,17 @@ const dummyFeedbacks = {
     ],
     StudentComments: [
         {
-            name: 'Eray Tüzün',
+            //name: 'Eray Tüzün',
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
-            grade: '9.5',
-            date: '11 March 2021',
+            //grade: '9.5',
+            date: new Date(2021, 3, 11, 12, 0),
             commentId: 5,
             userId: 1,
-            userGroupName: 'ClassRoom Helper',
-            userGroupId: 5,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
-            caption:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
-            file: 'dummyFile',
-            grade: '8.1',
-            userId: 2,
-            userGroupName: 'ProjectManager',
-            userGroupId: 4,
-        },
-        {
-            name: 'Eray Tüzün',
-            caption:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
-            grade: '9.5',
-            date: '11 March 2021',
-            userId: 1,
-        },
-        {
-            name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
@@ -558,12 +786,29 @@ const dummyFeedbacks = {
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             grade: '9.5',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
             userId: 1,
         },
         {
             name: 'Alper Sarıkan',
-            date: '11 March 2021',
+            date: new Date(2021, 3, 11, 12, 0),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 3, 11, 12, 0),
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 3, 11, 12, 0),
             caption:
                 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
             file: 'dummyFile',
