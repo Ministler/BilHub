@@ -484,7 +484,8 @@ namespace backend.Services.JoinRequestServices
             ServiceResponse<GetJoinRequestDto> response = new ServiceResponse<GetJoinRequestDto>();
             JoinRequest joinRequest = await _context.JoinRequests
                 .Include(jr => jr.RequestingStudent)
-                .Include(jr => jr.RequestedGroup)
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.AffiliatedCourse )
                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestId);
 
             if (joinRequest == null)
@@ -510,6 +511,11 @@ namespace backend.Services.JoinRequestServices
             }
 
             response.Data = _mapper.Map<GetJoinRequestDto>(joinRequest);
+            response.Data.LockDate = joinRequest.RequestedGroup.AffiliatedCourse.LockDate;
+            response.Data.CourseName = joinRequest.RequestedGroup.AffiliatedCourse.Name;
+            response.Data.CurrentUserVote = IsUserInString( joinRequest.VotedStudents ,GetUserId() );
+                if ( joinRequest.RequestingStudentId == GetUserId() )
+                    response.Data.CurrentUserVote = true;
             response.Message = "Success";
             response.Success = true;
 
@@ -521,10 +527,21 @@ namespace backend.Services.JoinRequestServices
             ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>> ();
             List<JoinRequest> dbJoinRequests = await _context.JoinRequests
                 .Include(jr => jr.RequestingStudent)
-                .Include(jr => jr.RequestedGroup)
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.AffiliatedCourse )
                 .Where ( c => c.RequestingStudentId == GetUserId() ).ToListAsync();
 
-            serviceResponse.Data = dbJoinRequests.Select(c => _mapper.Map<GetJoinRequestDto>(c)).ToList();
+            List<GetJoinRequestDto> dtos = new List<GetJoinRequestDto>();
+            foreach ( var i in dbJoinRequests ) {
+                GetJoinRequestDto tmp = _mapper.Map<GetJoinRequestDto>(i);
+                tmp.LockDate = i.RequestedGroup.AffiliatedCourse.LockDate;
+                tmp.CourseName = i.RequestedGroup.AffiliatedCourse.Name;
+                tmp.CurrentUserVote = IsUserInString( i.VotedStudents ,GetUserId() );
+                if ( i.RequestingStudentId == GetUserId() )
+                    tmp.CurrentUserVote = true;
+                dtos.Add ( tmp );
+            }
+            serviceResponse.Data = dtos;
             return serviceResponse;
         }
 
@@ -533,10 +550,20 @@ namespace backend.Services.JoinRequestServices
             ServiceResponse<List<GetJoinRequestDto>> serviceResponse = new ServiceResponse<List<GetJoinRequestDto>> ();
             List<JoinRequest> dbJoinRequests = await _context.JoinRequests
                 .Include(jr => jr.RequestingStudent)
-                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers )
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
                 .Where ( c => c.RequestedGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() ) ).ToListAsync();
 
-            serviceResponse.Data = dbJoinRequests.Select(c => _mapper.Map<GetJoinRequestDto>(c)).ToList();
+            List<GetJoinRequestDto> dtos = new List<GetJoinRequestDto>();
+            foreach ( var i in dbJoinRequests ) {
+                GetJoinRequestDto tmp = _mapper.Map<GetJoinRequestDto>(i);
+                tmp.LockDate = i.RequestedGroup.AffiliatedCourse.LockDate;
+                tmp.CourseName = i.RequestedGroup.AffiliatedCourse.Name;
+                tmp.CurrentUserVote = IsUserInString( i.VotedStudents ,GetUserId() );
+                if ( i.RequestingStudentId == GetUserId() )
+                    tmp.CurrentUserVote = true;
+                dtos.Add ( tmp );
+            }
+            serviceResponse.Data = dtos;
             return serviceResponse;
         }
 
@@ -544,7 +571,7 @@ namespace backend.Services.JoinRequestServices
         {
             ServiceResponse<string> response = new ServiceResponse<string> ();
             JoinRequest joinRequest = await _context.JoinRequests
-                .Include(jr => jr.RequestedGroup).ThenInclude( rq => rq.GroupMembers )
+                .Include(jr => jr.RequestedGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
                 .FirstOrDefaultAsync(jr => jr.Id == joinRequestId);
 
             if (joinRequest == null)

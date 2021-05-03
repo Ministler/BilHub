@@ -9,5 +9,6 @@ namespace backend.Services.SectionServices
         Task<ServiceResponse<GetSectionDto>> AddStudentToSection ( int userId, int sectionId );
         Task<ServiceResponse<GetSectionDto>> RemoveStudentFromSection ( int userId, int sectionId );
         Task<ServiceResponse<GetSectionDto>> GetSectionInfo ( int sectionId );
+        Task<ServiceResponse<string>> LockGroupFormation ( int sectionId );
     }
 }

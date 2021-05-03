@@ -12,6 +12,7 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<GetProjectGroupDto>> GetProjectGroupById(int id);
         Task<ServiceResponse<GetProjectGroupDto>> UpdateProjectGroupInformation(UpdateProjectGroupDto updateProjectGroupDto);
         Task<ServiceResponse<GetProjectGroupDto>> ConfirmationOfStudent(ConfirmationAnswerDto confirmationAnswerDto);
+        Task<ServiceResponse<GetProjectGroupDto>> ForceConfirmStudent (int userId, int projectGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> LeaveGroup(int projectGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> KickStudentFromGroup(int projectGroupId, int userId, bool fromInside);
         Task<ServiceResponse<List<GetProjectGroupDto>>> GetProjectGroupsOfSection(int sectionId);
@@ -20,6 +21,7 @@ namespace backend.Services.ProjectGroupServices
         Task<ServiceResponse<string>> ForceCancelGroup(int projectGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> CompleteJoinRequest(int joinRequestId);
         Task<ServiceResponse<GetProjectGroupDto>> CompleteMergeRequest(int mergeRequestId);
+        Task<ServiceResponse<GetProjectGroupDto>> ForceMerge (int senderGroupId, int receiverGroupId);
         Task<ServiceResponse<GetProjectGroupDto>> CreateNewProjectGroupForStudentInSection(int userId, int sectionId);
         Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetInstructorComments(int projectGroupId);
         Task<ServiceResponse<List<ProjectGradeInfoDto>>> GetTaComments(int projectGroupId);

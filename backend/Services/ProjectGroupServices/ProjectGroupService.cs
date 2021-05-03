@@ -268,6 +268,72 @@ namespace backend.Services.ProjectGroupServices
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<GetProjectGroupDto>> ForceConfirmStudent(int userId, int projectGroupId)
+        {
+            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                .Include(c => c.GroupMembers).ThenInclude(cs => cs.User)
+                .Include(c => c.AffiliatedCourse)
+                .Include(c => c.AffiliatedSection)
+                .FirstOrDefaultAsync(c => c.Id == projectGroupId);
+            if (dbProjectGroup == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Project group not found.";
+                return serviceResponse;
+            }
+
+            if (!IsUserInGroup(dbProjectGroup, userId))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not in project group";
+                return serviceResponse;
+            }
+
+            if (IsUserInString(dbProjectGroup.ConfirmedGroupMembers, userId))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User confirmation state is already confirmed";
+                return serviceResponse;
+            }
+
+
+            string newConfirmedGroupMembers = "";
+            if (true)
+            {
+                newConfirmedGroupMembers = AddUserToString(dbProjectGroup.ConfirmedGroupMembers, userId);
+                dbProjectGroup.ConfirmedUserNumber++;
+
+                if (dbProjectGroup.ConfirmedUserNumber == dbProjectGroup.GroupMembers.Count
+                    && dbProjectGroup.ConfirmedUserNumber >= dbProjectGroup.AffiliatedCourse.MinGroupSize
+                    && dbProjectGroup.ConfirmedUserNumber <= dbProjectGroup.AffiliatedCourse.MaxGroupSize)
+                {
+
+                    dbProjectGroup.ConfirmationState = true;
+                    _context.JoinRequests.RemoveRange(_context.JoinRequests.Where(c => c.RequestedGroupId == dbProjectGroup.Id));
+                    _context.MergeRequests.RemoveRange(_context.MergeRequests.Where(c => c.ReceiverGroupId == dbProjectGroup.Id || c.SenderGroupId == dbProjectGroup.Id));
+                    foreach (var i in dbProjectGroup.GroupMembers)
+                    {
+                        _context.JoinRequests.RemoveRange(_context.JoinRequests.Where(c => c.RequestingStudentId == i.UserId));
+                    }
+                    await _context.SaveChangesAsync();
+                }
+            }
+            
+            dbProjectGroup.ConfirmedGroupMembers = newConfirmedGroupMembers;
+
+            _context.ProjectGroups.Update(dbProjectGroup);
+            await _context.SaveChangesAsync();
+
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
+            projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , userId );
+            serviceResponse.Data = projectGroupDto;
+            serviceResponse.Message = "Successfully applied the operation";
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<GetProjectGroupDto>> LeaveGroup(int projectGroupId)
         {
             ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
@@ -771,6 +837,124 @@ namespace backend.Services.ProjectGroupServices
             projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Join request is completed.";
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetProjectGroupDto>> ForceMerge(int senderGroupId, int receiverGroupId)
+        {
+            ServiceResponse<GetProjectGroupDto> serviceResponse = new ServiceResponse<GetProjectGroupDto>();
+
+            ProjectGroup SenderGroup = await _context.ProjectGroups
+                .Include(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(cs => cs.AffiliatedCourse)
+                .FirstOrDefaultAsync ( c => c.Id == senderGroupId );
+
+            ProjectGroup ReceiverGroup = await _context.ProjectGroups
+                .Include(cs => cs.GroupMembers).ThenInclude(css => css.User)
+                .Include(cs => cs.AffiliatedCourse)
+                .FirstOrDefaultAsync ( c => c.Id == receiverGroupId );
+
+            if (SenderGroup == null || ReceiverGroup == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Cannot find the merge request groups. Make sure the MergeRequest object is in correct form.";
+                return serviceResponse;
+            }
+
+            if ( !(await isUserInstructorOfGroup(receiverGroupId)))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Neither user is not an instructor of this course nor the request is accepted by all people.";
+                return serviceResponse;
+            }
+
+            // if (((dbMergeRequest.ReceiverGroup.GroupMembers.Count + dbMergeRequest.SenderGroup.GroupMembers.Count) > (await _context.Courses.FirstOrDefaultAsync(c => c.Id == dbMergeRequest.ReceiverGroup.AffiliatedCourseId)).MaxGroupSize)
+            //     // && !(await isUserInstructorOfGroup( dbMergeRequest.ReceiverGroupId ))
+            //     )
+            // {
+            //     serviceResponse.Success = false;
+            //     serviceResponse.Message = "This operation exceeds the maximum group size allowed. Thus, it is not permitted.";
+            //     return serviceResponse;
+            // }
+
+            while (SenderGroup.GroupMembers.Count > 1)
+            {
+                int currentUserId = SenderGroup.GroupMembers.ElementAt(0).User.Id;
+                User tmpUser = SenderGroup.GroupMembers.ElementAt(0).User;
+
+                SenderGroup.ConfirmationState = false;
+                SenderGroup.ConfirmedUserNumber = 0;
+                SenderGroup.ConfirmedGroupMembers = "";
+
+                foreach (var i in SenderGroup.GroupMembers)
+                {
+                    if (i.UserId == SenderGroup.GroupMembers.ElementAt(0).UserId)
+                    {
+                        _context.ProjectGroupUsers.Remove(i);
+                        break;
+                    }
+                }
+
+                if (SenderGroup.GroupMembers.ElementAt(0).User.Id == currentUserId)
+                    SenderGroup.GroupMembers.Remove(SenderGroup.GroupMembers.ElementAt(0));
+
+                ProjectGroupUser newProjectGroupUserTmp = new ProjectGroupUser
+                {
+                    User = tmpUser,
+                    UserId = tmpUser.Id,
+                    ProjectGroup = ReceiverGroup,
+                    ProjectGroupId = receiverGroupId
+                };
+                ReceiverGroup.GroupMembers.Add(newProjectGroupUserTmp);
+                _context.ProjectGroups.Update(ReceiverGroup);
+            }
+
+            User lastUser = SenderGroup.GroupMembers.ElementAt(0).User;
+            await DeleteProjectGroup(SenderGroup.Id);
+
+            ProjectGroupUser newProjectGroupUser = new ProjectGroupUser
+            {
+                User = lastUser,
+                UserId = lastUser.Id,
+                ProjectGroup = ReceiverGroup,
+                ProjectGroupId = receiverGroupId
+            };
+            ReceiverGroup.GroupMembers.Add(newProjectGroupUser);
+            _context.ProjectGroups.Update(ReceiverGroup);
+
+            // TEST ETMEK LAZIM
+            List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
+                .Where(c => c.RequestedGroupId == senderGroupId || c.RequestedGroupId == receiverGroupId).ToListAsync();
+
+            foreach (var i in resetedJoinRequests)
+            {
+                i.VotedStudents = "";
+                i.AcceptedNumber = 0;
+                i.Accepted = false;
+            }
+            _context.JoinRequests.UpdateRange(resetedJoinRequests);
+
+            List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
+                .Where(c => c.ReceiverGroupId == receiverGroupId
+                   || c.ReceiverGroupId == senderGroupId
+                   || c.SenderGroupId == receiverGroupId
+                   || c.SenderGroupId == senderGroupId).ToListAsync();
+
+            foreach (var i in resetedMergeRequests)
+            {
+                i.VotedStudents = "";
+                i.Accepted = false;
+            }
+            _context.MergeRequests.UpdateRange(resetedMergeRequests);
+            //
+
+            await _context.SaveChangesAsync();
+            GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(ReceiverGroup);
+            projectGroupDto.AffiliatedCourseName = ReceiverGroup.AffiliatedCourse.Name;
+            projectGroupDto.IsActive = ReceiverGroup.AffiliatedCourse.IsActive;
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            serviceResponse.Data = projectGroupDto;
+            serviceResponse.Message = "Merge request is completed.";
             return serviceResponse;
         }
 

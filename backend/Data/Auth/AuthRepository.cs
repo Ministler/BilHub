@@ -286,6 +286,10 @@ namespace backend.Data.Auth
             dbUser.DarkModeStatus = userUpdateDto.DarkModeStatus;
             dbUser.Name = userUpdateDto.Name;
             dbUser.ProfileInfo = userUpdateDto.ProfileInfo;
+
+            _context.Users.Update ( dbUser );
+            await _context.SaveChangesAsync();
+
             serviceResponse.Data = _mapper.Map<GetUserInfoDto> (dbUser);
             return serviceResponse;
         }

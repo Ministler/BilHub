@@ -23,6 +23,6 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<List<GetCourseDto>>> GetInstructedCoursesOfUser(int userId);
         Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId);
         Task<ServiceResponse<List<UsersOfCourseDto>>> GetUsersOfCourse (int courseId);
-
+        Task<ServiceResponse<string>> LockGroupFormation(int courseId);
     }
 }

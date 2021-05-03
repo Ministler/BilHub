@@ -13,5 +13,7 @@ namespace backend.Dtos.JoinRequest
         public int ConfirmedUserNumber { get; set; }
         public string ProjectInformation { get; set; }
         public string ConfirmedGroupMembers { get; set; }
+
+        public ICollection<GroupMemberInJoinRequestDto> GroupMembers {get; set;}
     }
 }
