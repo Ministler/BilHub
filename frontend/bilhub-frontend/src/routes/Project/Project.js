@@ -73,10 +73,10 @@ class Project extends Component {
             currentReviewComment: '',
             currentReviewGrade: -1,
             currentPeer: 0,
-            maxReviewGrade: 5, //will be taken from project groups peer reviewing assignment
+            maxReviewGrade: 10, //will be taken from project groups peer reviewing assignment
         };
     }
-
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     changeGroupName = (newName) => {
         const request = {
             newName: newName,
@@ -105,6 +105,7 @@ class Project extends Component {
         let request = 'error';
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
+                //!!!!!!!!!!!!
                 postProjectGradeRequest(
                     this.props.match.params.projectId,
                     this.state.currentMaxFeedbackGrade,
@@ -125,13 +126,13 @@ class Project extends Component {
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
-                /* postProjectGradeRequest(this.props.match.params.projectId,
-                    newGrade: this.state.currentFeedbackGrade,
-                    newText: this.state.currentFeedbackText,
-                    newFile: this.state.currentFeedbackFile,
-                    userId: this.props.userId,
-                    groupId: ,
-                };*/
+                postProjectGradeRequest(
+                    this.props.match.params.projectId,
+                    this.state.currentFeedbackMaxGrade,
+                    this.state.currentFeedbackGrade,
+                    this.state.currentFeedbackText,
+                    this.state.currentFeedbackFile
+                );
             } else if (modalType === 'isEditFeedbackOpen') {
                 request = {
                     newGrade: this.state.currentFeedbackGrade,
