@@ -111,11 +111,12 @@ namespace backend.Services.ProjectGroupServices
 
         public async Task<ServiceResponse<bool>> IsUserInstructorOfGroup(int projectGroupId, int userId)
         {
-            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool> ();
+            ServiceResponse<bool> serviceResponse = new ServiceResponse<bool>();
             ProjectGroup dbProjectGroup = await _context.ProjectGroups
                     .FirstOrDefaultAsync(c => c.Id == projectGroupId);
 
-            if (dbProjectGroup == null) {
+            if (dbProjectGroup == null)
+            {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Project Group not found.";
                 return serviceResponse;
@@ -125,7 +126,7 @@ namespace backend.Services.ProjectGroupServices
                 .Include(c => c.InstructedCourses)
                 .FirstOrDefaultAsync(c => (c.Id == userId) && c.InstructedCourses.Any(inst => inst.CourseId == dbProjectGroup.AffiliatedCourseId));
 
-            if (instructorControl == null) 
+            if (instructorControl == null)
                 serviceResponse.Data = false;
             else
                 serviceResponse.Data = true;
@@ -149,7 +150,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             return serviceResponse;
         }
@@ -183,7 +184,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully updated project group information";
             return serviceResponse;
@@ -261,7 +262,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the operation";
             return serviceResponse;
@@ -304,20 +305,20 @@ namespace backend.Services.ProjectGroupServices
             dbProjectGroup.ConfirmedUserNumber = 0;
             dbProjectGroup.ConfirmedGroupMembers = "";
 
-            foreach ( var i in dbProjectGroup.IncomingJoinRequests )
+            foreach (var i in dbProjectGroup.IncomingJoinRequests)
             {
                 i.VotedStudents = "";
                 i.AcceptedNumber = 0;
                 _context.JoinRequests.Update(i);
             }
 
-            foreach ( var i in dbProjectGroup.IncomingMergeRequest )
+            foreach (var i in dbProjectGroup.IncomingMergeRequest)
             {
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
 
-            foreach ( var i in dbProjectGroup.OutgoingMergeRequest )
+            foreach (var i in dbProjectGroup.OutgoingMergeRequest)
             {
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
@@ -360,7 +361,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = newProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = newProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the leaving operation";
             return serviceResponse;
@@ -412,7 +413,7 @@ namespace backend.Services.ProjectGroupServices
             {
                 i.AffiliatedCourseName = i.AffiliatedCourse.Name;
                 i.IsActive = i.AffiliatedCourse.IsActive;
-                i.ConfirmStateOfCurrentUser = IsUserInString ( i.ConfirmedGroupMembers, GetUserId() );
+                i.ConfirmStateOfCurrentUser = IsUserInString(i.ConfirmedGroupMembers, GetUserId());
             }
             serviceResponse.Data = projectGroupDtos;
             return serviceResponse;
@@ -522,7 +523,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(newProjectGroup);
             projectGroupDto.AffiliatedCourseName = newProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = newProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "New project group for the student is created.";
             return serviceResponse;
@@ -571,9 +572,9 @@ namespace backend.Services.ProjectGroupServices
                 .Include(c => c.GroupMembers).ThenInclude(cs => cs.User)
                 .Include(c => c.AffiliatedCourse)
                 .Include(c => c.AffiliatedSection)
-                .Include ( c => c.IncomingJoinRequests )
-                .Include ( c => c.IncomingMergeRequest )
-                .Include ( c => c.OutgoingMergeRequest )
+                .Include(c => c.IncomingJoinRequests)
+                .Include(c => c.IncomingMergeRequest)
+                .Include(c => c.OutgoingMergeRequest)
                 .FirstOrDefaultAsync(c => c.Id == projectGroupId);
             if (dbProjectGroup == null)
             {
@@ -607,20 +608,20 @@ namespace backend.Services.ProjectGroupServices
             dbProjectGroup.ConfirmedUserNumber = 0;
             dbProjectGroup.ConfirmedGroupMembers = "";
 
-            foreach ( var i in dbProjectGroup.IncomingJoinRequests )
+            foreach (var i in dbProjectGroup.IncomingJoinRequests)
             {
                 i.VotedStudents = "";
                 i.AcceptedNumber = 0;
                 _context.JoinRequests.Update(i);
             }
 
-            foreach ( var i in dbProjectGroup.IncomingMergeRequest )
+            foreach (var i in dbProjectGroup.IncomingMergeRequest)
             {
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
 
-            foreach ( var i in dbProjectGroup.OutgoingMergeRequest )
+            foreach (var i in dbProjectGroup.OutgoingMergeRequest)
             {
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
@@ -663,7 +664,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the kicking operation";
             return serviceResponse;
@@ -767,7 +768,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbJoinRequest.RequestedGroup);
             projectGroupDto.AffiliatedCourseName = dbJoinRequest.RequestedGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbJoinRequest.RequestedGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Join request is completed.";
             return serviceResponse;
@@ -888,7 +889,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbMergeRequest.ReceiverGroup);
             projectGroupDto.AffiliatedCourseName = dbMergeRequest.ReceiverGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbMergeRequest.ReceiverGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Merge request is completed.";
             return serviceResponse;
@@ -909,7 +910,7 @@ namespace backend.Services.ProjectGroupServices
 
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser).Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
-                .Where( c => c.GradedProjectGroupID == projectGroupId ) // just added
+                .Where(c => c.GradedProjectGroupID == projectGroupId) // just added
                 .Select(c => new ProjectGradeInfoDto
                 {
                     Id = c.Id,
@@ -926,7 +927,8 @@ namespace backend.Services.ProjectGroupServices
                     GradingUserId = c.GradingUserId,
 
                     FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
-                    GradedProjectGroupID = c.GradedProjectGroup.Id
+                    GradedProjectGroupID = c.GradedProjectGroup.Id,
+                    HasFile = c.HasFile
                 }).ToList();
 
             response.Data = projectGrades;
@@ -952,7 +954,7 @@ namespace backend.Services.ProjectGroupServices
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser)
                 //.Where(c => c.GradingUser.UserType == UserTypeClass.Instructor)
-                .Where( c => c.GradedProjectGroupID == projectGroupId ) // just added
+                .Where(c => c.GradedProjectGroupID == projectGroupId) // just added
                 .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
                 .Where(c => intrs.Contains(c.GradingUserId))
                 .Select(c => new ProjectGradeInfoDto
@@ -997,7 +999,7 @@ namespace backend.Services.ProjectGroupServices
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser)
                 .Where(c => c.GradingUser.UserType == UserTypeClass.Student)
-                .Where( c => c.GradedProjectGroupID == projectGroupId ) // just added
+                .Where(c => c.GradedProjectGroupID == projectGroupId) // just added
                 .Where(c => !intrs.Contains(c.GradingUserId))
                 .Select(c => new ProjectGradeInfoDto
                 {

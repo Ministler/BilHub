@@ -482,7 +482,7 @@ namespace backend.Services.ProjectGradeServices
                 return response;
             }
 
-            if (projectGrade.HasFile)
+            if (!projectGrade.HasFile)
             {
                 response.Data = null;
                 response.Message = "There is no file in this project grade";
@@ -559,7 +559,7 @@ namespace backend.Services.ProjectGradeServices
 
             List<ProjectGradeInfoDto> projectGrades = _context.ProjectGrades
                 .Include(c => c.GradingUser)
-                .Where( c => c.GradedProjectGroupID == projectGroupId ) 
+                .Where(c => c.GradedProjectGroupID == projectGroupId)
                 .Select(c => new ProjectGradeInfoDto
                 {
                     Id = c.Id,
