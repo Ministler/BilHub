@@ -679,43 +679,43 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Best Class Management System",
                     ConfirmedGroupMembers = ""
-                }/*, new ProjectGroup
+                }, new ProjectGroup
                 {
                     Id = 10,
-                    AffiliatedSectionId = 1,
-                    AffiliatedCourseId = 1,
+                    AffiliatedSectionId = 3,
+                    AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "rakip grup",
+                    ProjectInformation = "++C",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 11,
-                    AffiliatedSectionId = 9,
-                    AffiliatedCourseId = 6,
-                    ConfirmationState = true,
+                    AffiliatedSectionId = 3,
+                    AffiliatedCourseId = 2,
+                    ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "o sen olsan bari",
-                    ConfirmedGroupMembers = "5"
+                    ProjectInformation = "Payton",
+                    ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 12,
-                    AffiliatedSectionId = 8,
-                    AffiliatedCourseId = 5,
+                    AffiliatedSectionId = 3,
+                    AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "She abunai hanasu cancu",
+                    ProjectInformation = "Assembly-ish",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 13,
-                    AffiliatedSectionId = 8,
-                    AffiliatedCourseId = 5,
+                    AffiliatedSectionId = 3,
+                    AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "cotomate cotomate",
+                    ProjectInformation = "NewLanguage()",
                     ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                }/*, new ProjectGroup
                 {
                     Id = 14,
                     AffiliatedSectionId = 6,
@@ -733,7 +733,7 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Hazin gelmiyor ama gelebilirdi",
                     ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                }/*, new ProjectGroup
                 {
                     Id = 16,
                     AffiliatedSectionId = 1,
@@ -881,7 +881,32 @@ namespace backend.Data
                 {
                     UserId = 29,
                     ProjectGroupId = 9,
+                }, new ProjectGroupUser
+                {
+                    UserId = 26,
+                    ProjectGroupId = 10,
+                }, new ProjectGroupUser
+                {
+                    UserId = 27,
+                    ProjectGroupId = 10,
+                }, new ProjectGroupUser
+                {
+                    UserId = 28,
+                    ProjectGroupId = 11,
+                }, new ProjectGroupUser
+                {
+                    UserId = 29,
+                    ProjectGroupId = 11,
+                }, new ProjectGroupUser
+                {
+                    UserId = 9,
+                    ProjectGroupId = 12,
+                }, new ProjectGroupUser
+                {
+                    UserId = 10,
+                    ProjectGroupId = 13,
                 }
+
             );
             modelBuilder.Entity<Assignment>().HasData(
                 new Assignment
@@ -912,7 +937,7 @@ namespace backend.Data
                     VisibilityOfSubmission = true,
                     CanBeGradedByStudents = false,
                     IsItGraded = true,
-                    HasFile = true
+                    HasFile = false
                 },
                 new Assignment
                 {
@@ -927,7 +952,7 @@ namespace backend.Data
                     VisibilityOfSubmission = true,
                     CanBeGradedByStudents = true,
                     IsItGraded = false,
-                    HasFile = true
+                    HasFile = false
                 }
             );
             modelBuilder.Entity<Submission>().HasData(
@@ -942,7 +967,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 3, 31, 22, 54, 2),
                     FilePath = "", // check this
                     HasSubmission = true,
-                    HasFile = true,
+                    HasFile = false,
                     CourseId = 1,
                     SectionId = 1
                 }, new Submission
@@ -956,7 +981,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 3, 31, 23, 51, 12),
                     FilePath = "", // check this
                     HasSubmission = true,
-                    HasFile = true,
+                    HasFile = false,
                     CourseId = 1,
                     SectionId = 1
                 }, new Submission
@@ -1007,7 +1032,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 5, 3, 1, 44, 20),
                     FilePath = "", // check this
                     HasSubmission = true,
-                    HasFile = true,
+                    HasFile = false,
                     CourseId = 1,
                     SectionId = 1
                 }, new Submission
@@ -1020,7 +1045,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 3, 13, 1, 44, 20),
                     FilePath = "", // check this
                     HasSubmission = true,
-                    HasFile = true,
+                    HasFile = false,
                     CourseId = 1,
                     SectionId = 1
                 }, new Submission
@@ -1033,7 +1058,7 @@ namespace backend.Data
                     UpdatedAt = new DateTime(2021, 3, 14, 1, 44, 20),
                     FilePath = "", // check this
                     HasSubmission = true,
-                    HasFile = true,
+                    HasFile = false,
                     CourseId = 1,
                     SectionId = 1, 
                 }, new Submission
@@ -1071,7 +1096,7 @@ namespace backend.Data
                     MaxGrade = 10, 
                     Grade = (decimal)9.5,
                     CreatedAt = new DateTime( 2021, 4, 1, 11, 2, 3),
-                    FileAttachmentAvailability = true,
+                    FileAttachmentAvailability = false,
                     FilePath = ""
                 }, new Comment
                 {
@@ -1082,7 +1107,7 @@ namespace backend.Data
                     MaxGrade = 10, 
                     Grade = (decimal)10,
                     CreatedAt = new DateTime( 2021, 4, 2, 11, 2, 3),
-                    FileAttachmentAvailability = true,
+                    FileAttachmentAvailability = false,
                     FilePath = ""
                 }
             );
@@ -1122,14 +1147,35 @@ namespace backend.Data
                     Accepted = false,
                     Resolved = false,
                     VotedStudents = ""
-                }, 
-                new JoinRequest
+                }, new JoinRequest
                 {
                     Id = 4,
                     RequestingStudentId = 13,
                     Description = "Hi, I am very good at Javascript",
                     RequestedGroupId = 6,
                     CreatedAt = new DateTime( 2021, 4, 29, 10, 29, 2 ),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                }, new JoinRequest
+                {
+                    Id = 5,
+                    RequestingStudentId = 9,
+                    Description = "Hi, I am looking for a team.",
+                    RequestedGroupId = 10,
+                    CreatedAt = new DateTime( 2021, 4, 29, 10, 30, 2 ),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                }, new JoinRequest
+                {
+                    Id = 6,
+                    RequestingStudentId = 9,
+                    Description = "",
+                    RequestedGroupId = 13,
+                    CreatedAt = new DateTime( 2021, 4, 29, 14, 30, 2 ),
                     AcceptedNumber = 0,
                     Accepted = false,
                     Resolved = false,
@@ -1165,6 +1211,36 @@ namespace backend.Data
                     ReceiverGroupId = 6,
                     VotedStudents = "13",
                     CreatedAt = new DateTime( 2021, 4, 13, 16, 23, 2 ),
+                    Accepted = false,
+                    Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 4,
+                    SenderGroupId = 12,
+                    Description = "let's merge",
+                    ReceiverGroupId = 11,
+                    VotedStudents = "9",
+                    CreatedAt = new DateTime( 2021, 4, 13, 17, 23, 2 ),
+                    Accepted = false,
+                    Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 5,
+                    SenderGroupId = 10,
+                    Description = "",
+                    ReceiverGroupId = 13,
+                    VotedStudents = "26",
+                    CreatedAt = new DateTime( 2021, 4, 13, 17, 23, 2 ),
+                    Accepted = false,
+                    Resolved = false
+                }, new MergeRequest
+                {
+                    Id = 6,
+                    SenderGroupId = 13,
+                    Description = "",
+                    ReceiverGroupId = 11,
+                    VotedStudents = "10",
+                    CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
                     Accepted = false,
                     Resolved = false
                 }
