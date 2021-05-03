@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon, Segment, Label, Popup, Header, Grid, Button, Dropdown } from 'semantic-ui-react';
+import { Icon, Segment, Label, Popup, Header, Grid, Button, Dropdown, DimmerDimmable } from 'semantic-ui-react';
 import { dateObjectToString } from '../../utils';
 
 import { SubmissionBriefElement, GroupBriefElement } from './BriefListUI';
@@ -49,7 +49,7 @@ export const convertInstructedCoursesToBriefList = (instructedCourses, onCourseC
 };
 
 export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAssignmentClicked) => {
-    const upcomingAssignmentsBriefElements = upcomingAssignments ? (
+    const upcomingAssignmentsBriefElements = (upcomingAssignments && upcomingAssignments.length !== 0) ? (
         upcomingAssignments.map((assignment) => {
             const title = assignment.courseCode + '/' + assignment.assignmentName;
             return (
@@ -70,17 +70,18 @@ export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAss
     );
 
     return (
+        (upcomingAssignments && upcomingAssignments.length !== 0) ? (
         <Segment.Group raised>
             <Label attached="top" style={{ backgroundColor: 'rgb(33,133,208)', color: 'white', textAlign: 'center' }}>
                 Upcoming Assignments
             </Label>
             {upcomingAssignmentsBriefElements}
-        </Segment.Group>
+        </Segment.Group>) : (<div></div>)
     );
 };
 
 export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onAssignmentClicked) => {
-    const notGradedAssignmentsBriefElements = notGradedAssignments ? (
+    const notGradedAssignmentsBriefElements = (notGradedAssignments && notGradedAssignments.length !== 0) ? (
         notGradedAssignments.map((assignment) => {
             const title = assignment.courseCode + '/' + assignment.assignmentName;
             return (
@@ -101,12 +102,13 @@ export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onA
     );
 
     return (
+        (notGradedAssignments && notGradedAssignments.length !== 0) ? (
         <Segment.Group raised>
             <Label attached="top" style={{ backgroundColor: 'rgb(219,40,40)', color: 'white', textAlign: 'center' }}>
                 Not Graded Assignments
             </Label>
             {notGradedAssignmentsBriefElements}
-        </Segment.Group>
+        </Segment.Group>) : (<div></div>)
     );
 };
 

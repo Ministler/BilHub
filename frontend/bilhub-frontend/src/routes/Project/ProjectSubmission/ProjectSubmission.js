@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button } from 'semantic-ui-react';
+import { Icon, Button, Divider, Grid } from 'semantic-ui-react';
 import { withRouter, Link } from 'react-router-dom';
 import {
     NewCommentModal,
+    NewCommentModal2,
     EditCommentModal,
     DeleteCommentModal,
     NewSubmissionModal,
@@ -47,9 +48,38 @@ class ProjectAssignment extends Component {
             currentFeedbackGrade: 10,
             currentMaxFeedbackGrade: 10,
             currentFeedbackId: 0,
+
+            //testing
+            currentFeedbackText2: '',
+            currentFeedbackGrade2: 10,
+            currentMaxFeedbackGrade2: 10,
         };
     }
 
+    onCurrentFeedbackTextChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackText2: e.target.value,
+        });
+    };
+    onCurrentFeedbackGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentFeedbackGrade2: e.target.value,
+        });
+    };
+    onCurrentFeedbackMaxGradeChanged2 = (e) => {
+        e.preventDefault();
+        this.setState({
+            currentMaxFeedbackGrade2: e.target.value,
+        });
+    };
+    onGiveFeedback = (e) => {
+        console.log(this.state.currentFeedbackText2);
+        console.log(this.state.currentFeedbackGrade2);
+        console.log(this.state.currentMaxFeedbackGrade2);
+    };
+    
     onAssignmentFileClicked = () => {
         console.log('file');
     };
@@ -341,6 +371,22 @@ class ProjectAssignment extends Component {
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
+            <Grid>
+            <div class="sixteen wide column">
+            <NewCommentModal2  
+                text={this.state.currentFeedbackText2}
+                grade={this.state.currentFeedbackGrade2}
+                maxGrade={this.state.currentMaxFeedbackGrade2}
+                onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
+                onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
+                onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                />
+            </div>
+            <div class="sixteen wide column" style={{marginTop: "-20px"}}>
+                <Divider/>
+            </div>    
+            <div class="sixteen wide column" style={{marginTop: "-20px"}}>
             <FeedbacksPane
                 feedbacksAccordion={getFeedbacksAsAccordion(
                     this.state.feedbacks,
@@ -350,8 +396,8 @@ class ProjectAssignment extends Component {
                     this.props.userId,
                     this.onModalOpened
                 )}
-                newCommentButton={newCommentButton}
-            />
+                //newCommentButton={newCommentButton}
+            /></div></Grid>
         );
         return {
             title: 'Feedbacks',

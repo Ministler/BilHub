@@ -228,6 +228,12 @@ class Course extends Component {
         });
     }
 
+    onPeerReviewsOpen = (dropdownValues) => {
+        this.setState({
+            isPeerReviewOpen: true,
+        });
+    };
+
     onNewAssignmentModalOpened = () => {
         this.setState({
             isNewAssignmentOpen: true,
@@ -608,7 +614,14 @@ class Course extends Component {
                     handleSectionChange={(data) => this.handleSectionChange(data)}
                 />
             ) : (
-                <div>Peer reviewing is currently closed.</div>
+                <Button
+                    content="Open Peer Reviews"
+                    labelPosition="right"
+                    icon="add"
+                    primary
+                    style={{ marginTop: '20px' }}
+                    onClick={this.onPeerReviewsOpen}
+                />
             ),
         };
     };
@@ -738,7 +751,7 @@ const dummyCourseInformation = {
     isTAorInstructorOfCourse: true,
     isUserInFormedGroup: false,
     isUserAlone: false,
-    isLocked: true,
+    isLocked: false,
     formationDate: new Date(2020, 12, 15, 15, 0),
     numberOfSections: 3,
     currentUserSection: 1,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon, TextArea } from 'semantic-ui-react';
+import { Button, Icon, TextArea, Form, Grid, Input } from 'semantic-ui-react';
 
 import './ProjectComponents.css';
 import { Modal } from '../../../components';
@@ -89,6 +89,30 @@ export const NewCommentModal = (props) => {
     );
 };
 
+export const NewCommentModal2 = (props) => {    
+    return (
+    <div class="sixteen wide column"> 
+        <p>Your Feedback:</p>
+        <Form reply style={{width: "95%"}}>
+            <Form.TextArea rows="5" onChange={(e) => props.onTextChange(e)} value={props.text}/>
+        </Form> 
+        <Grid style={{marginTop:"10px", width: "98%"}}><Grid.Row columns={2}><Grid.Column width={9}>
+                <p style={{display: 'inline'}}>Grade &nbsp;</p>
+                <Input type="number" content='Grade Placeholder' max={props.maxGrade} min="0" floated='left' type="number" value={props.grade} onChange={(e) => props.onGradeChange(e)}/>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="file" />
+            </Grid.Column>
+            <Grid.Column width={7}>
+                <Button content='Give Feedback' primary Compact floated="right"
+                    labelPosition="right"
+                    icon="plus"
+                    onClick={(e) => props.onGiveFeedback(e)}/>
+            </Grid.Column>
+            </Grid.Row></Grid>
+    </div>
+    );
+};
+
 export const EditCommentModal = (props) => {
     let title = props.isTitleSRS ? 'SRS - ' : '';
     title = title + 'Edit Feedback to ' + props.projectName + "'s Analysis Report";
@@ -160,6 +184,31 @@ export const DeleteCommentModal = (props) => {
 };
 
 export const NewSubmissionModal = (props) => {
+    const title = 'Add Submission for ' + props.assignmentName;
+    const actions = (
+        <Button
+            content="Add Submission"
+            labelPosition="right"
+            icon="checkmark"
+            onClick={() => props.closeModal(true)}
+            positive
+        />
+    );
+    return (
+        <Modal isOpen={props.isOpen} closeModal={() => props.closeModal(false)} title={title} actions={actions}>
+            <>
+                <div>
+                    <Icon name="info" />
+                    {props.instructions}
+                </div>
+                <TextArea onChange={(e) => props.onTextChange(e)} value={props.text} />
+                <input type="file" />
+            </>
+        </Modal>
+    );
+};
+
+export const NewSubmissionModal2 = (props) => {
     const title = 'Add Submission for ' + props.assignmentName;
     const actions = (
         <Button
