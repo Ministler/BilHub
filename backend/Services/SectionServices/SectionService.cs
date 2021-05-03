@@ -192,16 +192,6 @@ namespace backend.Services.SectionServices
             return serviceResponse;
         }
 
-        private async void ForceConfirm ( int projectGroupId )
-        {
-            ProjectGroup dbProjectGroup = await _context.ProjectGroups
-                .Include ( c => c.GroupMembers )
-                .FirstOrDefaultAsync ( c => c.Id == projectGroupId );
-            
-            foreach ( var i in dbProjectGroup.GroupMembers )
-                await _projectGroupService.ForceConfirmStudent(i.UserId, projectGroupId);
-        }
-
         private async Task<int> SizeOfGroup ( int projectGroupId )
         {
             ProjectGroup tmp = await _context.ProjectGroups
@@ -233,7 +223,12 @@ namespace backend.Services.SectionServices
                 
                 if ( i.GroupMembers.Count >= dbSection.AffiliatedCourse.MinGroupSize && i.GroupMembers.Count <= dbSection.AffiliatedCourse.MaxGroupSize )
                 {
-                    ForceConfirm( i.Id );
+                    foreach ( var j in dbSection.ProjectGroups )
+                    {
+                        foreach ( var k in j.GroupMembers )
+                            await _projectGroupService.ForceConfirmStudent (k.UserId,j.Id);
+                    }
+
                     formedGroups.Add ( i.Id );
                 }
                 else {
@@ -248,8 +243,8 @@ namespace backend.Services.SectionServices
             {
                 bool flag = false;
 
-                for ( int i = 0 ; i < unformedGroups.Count ; i++ )
-                    for ( int j = i+1 ; j < unformedGroups.Count ; i++ ) {
+                for ( int i = 0 ; i < unformedGroups.Count ; i++ ) {
+                    for ( int j = i+1 ; j < unformedGroups.Count ; j++ ) {
                         int vali = unformedGroups.ElementAt(i);
                         int valj = unformedGroups.ElementAt(j);
                         int szi  = await SizeOfGroup( vali );
@@ -260,13 +255,20 @@ namespace backend.Services.SectionServices
                             unformedGroups.Remove(vali);
                             if ( szi + szj >= dbSection.AffiliatedCourse.MaxGroupSize )
                             {
-                                ForceConfirm(valj);
+                                foreach ( var k in dbSection.ProjectGroups.Where( c => c.Id == valj ).ElementAt(0).GroupMembers )
+                                {
+                                    await _projectGroupService.ForceConfirmStudent (k.UserId,valj);
+                                }
+
                                 unformedGroups.Remove(valj);
                             }
                             flag = true;
                             break;
                         }
                     }
+                    if ( flag )
+                        break;
+                }
 
                 if ( flag == false )
                     break;
