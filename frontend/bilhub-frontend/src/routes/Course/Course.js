@@ -3,7 +3,13 @@ import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup } from 'semantic
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-import { getCourseRequest, getSectionRequest } from '../../API';
+import {
+    getCourseRequest,
+    getSectionRequest,
+    getCourseAssignmentRequest,
+    getAssignmentFileRequest,
+    putCourseRequest,
+} from '../../API';
 import './Course.css';
 import {
     InformationSection,
@@ -56,16 +62,21 @@ class Course extends Component {
     }
 
     changeCourseInformation = (newInformation) => {
-        const request = {
-            newInformation: newInformation,
-            courseId: this.state.courseInformation?.courseId,
-        };
-
-        console.log(request);
+        putCourseRequest(
+            this.props.match.params.courseId,
+            this.state.courseInformation.name,
+            this.state.courseInformation.courseSemester,
+            this.state.courseInformation.year,
+            this.state.courseInformation.description,
+            this.state.courseInformation.lockDate,
+            this.state.courseInformation.minGroupSize,
+            this.state.courseInformation.maxGroupSize,
+            newInformation
+        );
     };
 
-    onAssignmentFileClicked = () => {
-        console.log('file');
+    onAssignmentFileClicked = (assignmentId) => {
+        getAssignmentFileRequest(assignmentId);
     };
 
     onNewAssignmentModalClosed = (isSuccess) => {
@@ -97,8 +108,6 @@ class Course extends Component {
             message: this.state.currentMessage,
             type: type, // merge or join
         };
-
-        console.log(request);
     };
 
     onUnformedGroupModalClosed = (e, isSuccess, type) => {
@@ -119,8 +128,6 @@ class Course extends Component {
                 isUserReady: e.target.isReady.checked,
             };
         }
-
-        console.log(request);
     };
 
     componentDidMount() {
@@ -129,21 +136,24 @@ class Course extends Component {
 
             const courseData = response.data?.data;
             const courseInformation = {
+                name: courseData?.name,
+                year: courseData?.year,
+                courseSemester: courseData?.courseSemester,
                 courseName: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
                 description: courseData?.courseInformation,
                 instructors: courseData?.instructors,
                 formationDate: courseData?.lockDate,
                 numberOfSections: courseData?.numberOfSections,
                 isCourseActive: courseData?.isActive,
-                // TAs: ,// BURA
-                // information:, // BURA
-                // isLocked:, // BURA
-
-                // currentUserSection:, // BURA
-                // isTAorInstructorOfCourse:, // BURA
-                // isUserInFormedGroup:, // BURA
-                // isUserAlone:, // BURA
-                // assignments: // BURA,
+                information: courseData.courseDescription,
+                isLocked: courseData.isLocked,
+                lockDate: courseData.lockDate,
+                currentUserSection: courseData.currentUserSectionId,
+                isTAorInstructorOfCourse: courseData.isInstructorOrTAInCourse,
+                isUserInFormedGroup: courseData.isUserInFormedGroup,
+                isUserAlone: courseData.isUserAlone,
+                minGroupSize: courseData.minGroupSize,
+                maxGroupSize: courseData.maxGroupSize,
             };
             this.setState({
                 courseInformation: courseInformation,
@@ -151,25 +161,70 @@ class Course extends Component {
                 currentSection: courseInformation.currentUserSection ? courseInformation.currentUserSection - 1 : 0,
             });
 
-            console.log(courseData);
+            if (courseData.isLocked) {
+                const sectionRequests = [];
+                for (let i = 0; i < courseData?.sections.length; i++) {
+                    sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
+                }
 
-            const sectionRequests = [];
-            for (let i = 0; i < courseData?.sections.length; i++) {
-                sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
+                // [
+                //     [
+                //         {
+                //             members: [
+                //                 {
+                //                     name: '1Yusuf Uyar',
+                //                     userId: 1,
+                //                 },
+                //                 {
+                //                     name: '1Halil Özgür Demir',
+                //                     userId: 2,
+                //                 },
+                //                 {
+                //                     name: '1Barış Ogün Yörük',
+                //                     userId: 3,
+                //                 },
+                //             ],
+                //             groupId: 1,
+                //             groupName: 'BilH123ub',
+                //         },
+
+                axios.all(sectionRequests).then(
+                    axios.spread((...responses) => {
+                        const groups = [[]];
+                        for (let i = 0; i < responses.length; i++) {
+                            const data = responses[i].data.data;
+
+                            const section = [];
+                            for (let group of data.projectGroups) {
+                            }
+                        }
+                    })
+                );
+            } else {
+            }
+        });
+
+        // {
+        //     title: 'Design Report',
+        //     caption:
+        //         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
+        //     assignmentId: 2,
+        //     publisher: 'Erdem Tuna',
+        //     publishmentDate: new Date(2021, 3, 12, 12, 0),
+        //     dueDate: new Date(2021, 4, 12, 12, 0),
+        // },
+        getCourseAssignmentRequest(this.props.match.params.courseId).then((response) => {
+            if (!response.data.success) return;
+
+            const data = response.data.data;
+            const assignments = [];
+            for (let assignment of data) {
+                assignments.push(assignment);
             }
 
-            axios.all(sectionRequests).then(
-                axios.spread((...responses) => {
-                    const sections = [];
-                    for (let i = 0; i < responses?.data?.data?.length; i++) {
-                        sections.push(responses?.data?.data[i]);
-                    }
-
-                    this.setState({
-                        sections: sections,
-                    });
-                })
-            );
+            this.setState({
+                assignments: assignments,
+            });
         });
     }
 
@@ -249,7 +304,7 @@ class Course extends Component {
 
     getInformationEditIcon = () => {
         let informationEditIcon = null;
-        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
+        if (this.state.courseInformation?.isTAorInstructorOfCourse) {
             informationEditIcon = this.state.informationEditMode ? (
                 <Icon
                     className="clickableChangeColor"
@@ -295,7 +350,7 @@ class Course extends Component {
 
     getCourseSettingsIcon = () => {
         let icon = null;
-        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
+        if (this.state.courseInformation?.isTAorInstructorOfCourse) {
             icon = <Icon name="setting" onClick={this.onCourseSettingsClicked} color="grey" />;
         }
         return icon;
@@ -394,7 +449,7 @@ class Course extends Component {
 
     getNewAssignmentButton = () => {
         let button = null;
-        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
+        if (this.state.courseInformation?.isTAorInstructorOfCourse) {
             button = (
                 <Button
                     content="New Assignment"
@@ -418,7 +473,6 @@ class Course extends Component {
                 section: value,
                 assignment: -1,
             };
-            console.log(request);
         }
     };
 
@@ -478,7 +532,7 @@ class Course extends Component {
 
     getAssignmentControlIcons = () => {
         let controlIcons = null;
-        if (this.state.courseInformation?.isCourseActive && this.state.courseInformation?.isTAorInstructorOfCourse) {
+        if (this.state.courseInformation?.isTAorInstructorOfCourse) {
             controlIcons = (
                 <>
                     <Icon
@@ -534,7 +588,6 @@ class Course extends Component {
             currentPeerReviewStudent: {},
             currentReviews: {},
         });
-        console.log(this.state.currentPeerReviewStudents);
     };
 
     handleStudentChange = (data) => {
@@ -569,6 +622,9 @@ class Course extends Component {
     getAssignmentPage = () => {
         return (
             <CourseAssignment
+                isTAorInstructorOfCourse={this.state.courseInformation?.isTAorInstructorOfCourse}
+                numberOfSections={this.state.courseInformation?.numberOfSections}
+                currentUserSection={this.state.courseInformation?.currentUserSection}
                 isCourseActive={this.state.courseInformation?.isCourseActive}
                 courseName={this.state.courseInformation?.courseName}
                 onEditAssignmentModalOpened={this.onEditAssignmentModalOpened}
@@ -578,9 +634,7 @@ class Course extends Component {
             />
         );
     };
-    deleteAssignment = (assignment) => {
-        console.log(assignment + ' will be deleted');
-    };
+    deleteAssignment = (assignment) => {};
     getModals = () => {
         return (
             <>
@@ -735,6 +789,7 @@ const dummySections = [
     { sectionId: 2, id: 44 },
     { sectionId: 3, id: 45 },
 ];
+
 const dummyGroupsLocked = [
     [
         {

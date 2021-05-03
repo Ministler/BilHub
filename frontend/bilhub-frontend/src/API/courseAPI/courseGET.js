@@ -32,3 +32,14 @@ export const getInstructedCoursesRequest = async (userId) => {
             throw error;
         });
 };
+
+export const getCourseAssignmentRequest = async (courseId) => {
+    const url = 'Assignments/' + courseId;
+
+    return authAxios
+        .get(BASE_COURSE_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

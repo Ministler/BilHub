@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Icon, Dropdown, Button } from 'semantic-ui-react';
 import { withRouter, Link } from 'react-router-dom';
 
-
+import { getAssignmentRequest, getAssignmentFileRequest, getSubmissionRequest } from '../../../API';
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
 import { dateObjectToString } from '../../../utils';
+import axios from 'axios';
 
 class CourseAssignment extends Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class CourseAssignment extends Component {
     };
 
     onFileClicked = () => {
-        console.log('File');
+        getAssignmentFileRequest(this.props.match.params.assignmentId);
     };
 
     onDownloadAllFiles = () => {
@@ -34,10 +35,107 @@ class CourseAssignment extends Component {
     };
 
     componentDidMount() {
+        getAssignmentRequest(this.props.match.params.assignmentId).then((response) => {
+            if (!response.data.success) return;
+
+            const data = response.data.data;
+            console.log(data);
+            const assignment = {
+                title: data.title,
+                caption: data.assignmentDescription,
+                publisher: data.publisher,
+                hasFile: data.hasFile,
+                isUserTAorInstructor: this.props.isUserTAorInstructor,
+                publishmentDate: data.createdAt,
+                dueDate: data.dueDate,
+                currentUserSection: this.props.currentUserSection,
+                numberOfSections: this.props.numberOfSections,
+            };
+
+            this.setState({
+                assignment: assignment,
+            });
+
+            const submissionIds = data.submissionIds;
+            const requests = [];
+            for (let id of submissionIds) {
+                requests.push(getSubmissionRequest(id));
+            }
+
+            // {
+            //     groupName: 'Classroom Helper',
+            //     fileName: '1_1_analysisReport.pdf',
+            //     hasFile: 'file',
+            //     grade: '7/10',
+            //     submissionDate: new Date(2021, 3, 15, 17, 0),
+            //     projectId: 2,
+            //     submissionId: 2,
+            // },
+            // {
+            //     groupName: 'BilHub',
+            //     fileName: '1_1_analysisReport.pdf',
+            //     hasFile: 'file',
+            //     submissionDate: new Date(2021, 3, 15, 17, 0),
+            //     projectId: 1,
+            //     submissionId: 1,
+            // },
+            // {
+            //     groupName: 'BilHub',
+            //     projectId: 1,
+            //     submissionId: 1,
+            // },
+
+            axios.all(requests).then(
+                axios.spread((...responses) => {
+                    const submission = [];
+                    for (let i = 0; i < this.props.numberOfSections; i++) {
+                        submission.push({
+                            graded: [],
+                            submitted: [],
+                            notSubmitted: [],
+                        });
+                    }
+
+                    for (let response of responses) {
+                        const data = response.data.data;
+                        console.log(data);
+                        if (!data.hasSubmission) {
+                            submission[data.sectionNumber - 1].notSubmitted.push({
+                                groupName: 'deneme',
+                                projectId: data.affiliatedGroup.id,
+                                submissionId: data.id,
+                            });
+                        } else if (!data.isGraded) {
+                            console.log(submission);
+                            submission[data.sectionNumber - 1].submitted.push({
+                                groupName: 'deneme',
+                                projectId: data.affiliatedGroup.id,
+                                submissionId: data.id,
+                                hasFile: data.hasFile,
+                                submissionDate: data.updatedAt,
+                            });
+                        } else {
+                            submission[data.sectionNumber - 1].graded.push({
+                                groupName: 'deneme',
+                                projectId: data.affiliatedGroup.id,
+                                submissionId: data.id,
+                                hasFile: data.hasFile,
+                                submissionDate: data.updatedAt,
+                                grade: data.srsGrade,
+                            });
+                        }
+                    }
+
+                    console.log(submission);
+                    this.setState({
+                        submissions: submission,
+                    });
+                })
+            );
+        });
+
         this.setState({
-            assignment: dummyAssignment,
-            submissions: dummyGroupSubmissions,
-            currentSection: dummyAssignment.currentUserSection ? dummyAssignment.currentUserSection - 1 : 0,
+            currentSection: this.props.currentUserSection ? this.props.currentUserSection - 1 : 0,
         });
     }
 
@@ -47,7 +145,7 @@ class CourseAssignment extends Component {
 
     getAssignmentControlIcons = () => {
         let controlIcons = null;
-        if (this.props.isCourseActive && this.state.assignment?.isUserTAorInstructor) {
+        if (this.props.isTAorInstructorOfCourse) {
             controlIcons = (
                 <>
                     <Icon
@@ -70,7 +168,6 @@ class CourseAssignment extends Component {
     };
 
     getAssignmentPane = () => {
-        console.log(typeof this.state.assignment?.publishmentDate);
         return {
             title: 'Assignment Information',
             content: (
@@ -168,10 +265,10 @@ class CourseAssignment extends Component {
             buttons = (
                 <>
                     <Button color="green" compact onClick={this.onDownloadAllFiles} icon labelPosition="right">
-                        Download All Files  <Icon name="download" />
+                        Download All Files <Icon name="download" />
                     </Button>
                     <Button color="green" compact onClick={this.onDownloadNotGradedFiles} icon labelPosition="right">
-                        Donwload Only Not Graded Files  <Icon name="download" />
+                        Donwload Only Not Graded Files <Icon name="download" />
                     </Button>
                 </>
             );

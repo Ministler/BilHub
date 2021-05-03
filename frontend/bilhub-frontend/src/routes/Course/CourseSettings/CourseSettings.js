@@ -198,9 +198,8 @@ export class CourseSettings extends Component {
                 semester: courseData.courseSemester,
                 shortDescription: courseData.courseInformation,
                 isSectionless: courseData.isSectionless,
-                //isLocked: ,
+                isLocked: courseData.isLocked,
                 numberOfSections: numberOfSections,
-                //sections: sections,
                 instructorList: [],
                 currentInstructor: '',
                 TAList: [],
@@ -214,9 +213,11 @@ export class CourseSettings extends Component {
                 minSize: courseData.minGroupSize,
                 maxSize: courseData.maxGroupSize,
                 groupFormationDate: date,
-                //groups: dummyGroups,
-                //users: dummyUsers,
             });
+
+            //groups: dummyGroups,
+            //users: dummyUsers,
+            //sections: sections,
         });
     }
 

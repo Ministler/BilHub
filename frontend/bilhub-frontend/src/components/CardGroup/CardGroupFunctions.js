@@ -42,7 +42,9 @@ export const convertAssignmentsToAssignmentList = (
                 titleClicked={onAssignmentClickedId}
                 caption={assignment.caption}
                 fileIcon={fileIcon}
-                fileClicked={() => onAssignmentFileClicked(assignment.submissionId)}
+                fileClicked={() =>
+                    onAssignmentFileClicked(assignment.submissionId ? assignment.submissionId : assignment.assignmentId)
+                }
                 date={date}
                 publisher={assignment.publisher}
             />

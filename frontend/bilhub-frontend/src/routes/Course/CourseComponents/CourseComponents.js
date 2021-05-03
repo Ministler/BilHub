@@ -104,7 +104,6 @@ export class NewAssignmentModal extends Component {
 
     onFormSubmit() {
         let d = inputDateToDateObject(this.state.dueDate);
-        console.log(d);
         const request = {
             title: this.state.title,
             description: this.state.description,
@@ -117,7 +116,6 @@ export class NewAssignmentModal extends Component {
             dueDate: d,
             hasFile: this.state.hasFile,
         };
-        console.log(request);
     }
     closeModal = () => {
         this.setState({
@@ -343,7 +341,6 @@ export class EditAssignmentModal extends Component {
 
     onOpen = () => {
         let d = dateObjectToInputDate(this.props.curAssignment.dueDate);
-        console.log(this.props.curAssignment.title);
         this.setState({
             title: this.props.curAssignment.title,
             description: this.props.curAssignment.caption,
@@ -360,7 +357,6 @@ export class EditAssignmentModal extends Component {
     };
 
     handleChange = (event, data) => {
-        console.log(this.state.dueDate);
         event.preventDefault();
         let name = data.name;
         let value = data.value;
@@ -394,7 +390,6 @@ export class EditAssignmentModal extends Component {
     };
     onFormSubmit() {
         let d = inputDateToDateObject(this.state.dueDate);
-        console.log(d);
         const request = {
             title: this.state.title,
             description: this.state.description,

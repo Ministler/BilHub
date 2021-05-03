@@ -1,4 +1,4 @@
 export {} from './submissionDELETE';
-export {} from './submissionGET';
+export { getNewCommentsRequest, getSubmissionRequest } from './submissionGET';
 export {} from './submissionPOST';
 export {} from './submissionPUT';

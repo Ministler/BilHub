@@ -33,6 +33,17 @@ export const getSubmissionRequest = async (submissionId) => {
         });
 };
 
+export const getNewCommentsRequest = async (submissionId) => {
+    const url = 'Feedbacks';
+
+    return authAxios
+        .get(BASE_SUBMISSION_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
+
 export const getSubmissionInstructorCommentsRequest = async (submissionId) => {
     const url = 'InstructorComments/' + submissionId;
 

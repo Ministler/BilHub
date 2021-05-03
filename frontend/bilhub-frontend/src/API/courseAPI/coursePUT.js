@@ -8,10 +8,11 @@ export const putCourseRequest = async (
     courseInformation,
     lockDate,
     minGroupSize,
-    maxGroupSize
+    maxGroupSize,
+    courseDescription
 ) => {
     const body = {
-        id,
+        id: id,
         name: name,
         courseSemester: courseSemester,
         year: year,
@@ -19,6 +20,7 @@ export const putCourseRequest = async (
         lockDate: lockDate,
         minGroupSize: minGroupSize,
         maxGroupSize: maxGroupSize,
+        courseDescription: courseDescription,
     };
 
     return authAxios

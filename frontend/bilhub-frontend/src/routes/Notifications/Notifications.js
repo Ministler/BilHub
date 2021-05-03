@@ -2,6 +2,15 @@ import React, { Component } from 'react';
 import { Grid, GridColumn, Divider } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
+import {
+    getOutgoingJoinRequest,
+    getOutgoingMergeRequest,
+    getIncomingMergeRequest,
+    getIncomingJoinRequest,
+    getUserGroupsRequest,
+    getInstructedCoursesRequest,
+    getNewCommentsRequest,
+} from '../../API';
 import './Notifications.css';
 import {
     ProfilePrompt,
@@ -17,6 +26,8 @@ import {
     RequestUndoModal,
     RequestDeleteModal,
 } from './NotificationsComponents';
+import axios from 'axios';
+import { NewCommentModal } from '../Project/ProjectComponents';
 
 class Notifications extends Component {
     constructor(props) {
@@ -74,6 +85,30 @@ class Notifications extends Component {
     };
 
     componentDidMount() {
+        const incomingRequests = [];
+        incomingRequests.push(getIncomingJoinRequest());
+        incomingRequests.push(getIncomingMergeRequest());
+
+        axios.all(incomingRequests).then(
+            axios.spread((...responses) => {
+                console.log(responses);
+            })
+        );
+
+        const outgoingRequests = [];
+        outgoingRequests.push(getOutgoingJoinRequest());
+        outgoingRequests.push(getOutgoingMergeRequest());
+
+        axios.all(outgoingRequests).then(
+            axios.spread((...responses) => {
+                console.log(responses);
+            })
+        );
+
+        getNewCommentsRequest().then((response) => {
+            console.log(response);
+        });
+
         this.setState({
             myProjects: dummyMyProjectsList,
             instructedCourses: dummyInstructedCoursesList,

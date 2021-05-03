@@ -9,7 +9,8 @@ export const postCourseRequest = async (
     isSectionless,
     lockDate,
     minGroupSize,
-    maxGroupSize
+    maxGroupSize,
+    courseDescription
 ) => {
     const body = {
         name: name,
@@ -21,6 +22,7 @@ export const postCourseRequest = async (
         lockDate: lockDate,
         minGroupSize: minGroupSize,
         maxGroupSize: maxGroupSize,
+        courseDescription: courseDescription,
     };
 
     return authAxios

@@ -7,9 +7,7 @@ import { SubmissionBriefElement, GroupBriefElement } from './BriefListUI';
 import './BriefListUI.css';
 
 export const convertMyProjectsToBriefList = (myProjects, onProjectClicked) => {
-    console.log(myProjects);
     const myProjectBriefElements = myProjects.map((project) => {
-        console.log(project);
         const icon = project.isActive ? (
             <Icon name="lock open" style={{ color: 'rgb(196, 126, 5)' }} />
         ) : (
