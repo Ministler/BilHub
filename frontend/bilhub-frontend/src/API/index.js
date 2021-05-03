@@ -7,6 +7,8 @@ export {
     verifyRequest,
     forgotPasswordRequest,
     getIdByEmailRequest,
+    updateProfile,
+    getProfileInfo,
 } from './authAPI';
 export {} from './userAPI';
 export { postCommentRequest } from './commentAPI';
@@ -55,6 +57,8 @@ export {
     getOutgoingJoinRequest,
     postMergeRequest,
     postJoinRequest,
+    putMergeRequest,
+    putJoinRequest,
 } from './requestAPI';
 export {
     deleteSubmissionRequest,
@@ -64,4 +68,5 @@ export {
     postSubmissionRequest,
     postSubmissionFileRequest,
     putSubmissionRequest,
+    postSubmissionSrsGradeRequest,
 } from './submissionAPI';

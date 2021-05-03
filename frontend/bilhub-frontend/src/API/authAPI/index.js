@@ -6,4 +6,5 @@ export {
     forgotPasswordRequest,
     resendRequest,
 } from './authPOST';
-export { checkAuthRequest, getIdByEmailRequest } from './authGET';
+export { checkAuthRequest, getIdByEmailRequest, getProfileInfo } from './authGET';
+export { updateProfile } from './authPUT';

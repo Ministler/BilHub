@@ -200,6 +200,7 @@ class Course extends Component {
                                         });
                                     }
 
+                                    console.log(group);
                                     const group2 = {
                                         groupId: group.id,
                                         members: members,

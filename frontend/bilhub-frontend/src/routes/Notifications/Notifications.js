@@ -11,6 +11,8 @@ import {
     getInstructedCoursesRequest,
     getNewCommentsRequest,
     getCourseRequest,
+    putJoinRequest,
+    putMergeRequest,
 } from '../../API';
 import './Notifications.css';
 import {
@@ -71,10 +73,11 @@ class Notifications extends Component {
                 isApproved: isApproved,
             };
         } else if (modalType === 'isUndoModalOpen') {
-            request = {
-                requestId: this.state.currentRequestId,
-                undoVote: true,
-            };
+            if (this.state.currentRequestType === 'Join') {
+                putJoinRequest(this.state.currentRequestId, false);
+            } else if (this.state.currentRequestType === 'Merge') {
+                putMergeRequest(this.state.currentRequestId, false);
+            }
         } else if (modalType === 'isDeleteModalOpen') {
             request = {
                 requestId: this.state.currentRequestId,
@@ -90,13 +93,126 @@ class Notifications extends Component {
         incomingRequests.push(getIncomingJoinRequest());
         incomingRequests.push(getIncomingMergeRequest());
 
+        //         yourGroup: [
+        //             {
+        //                 name: 'Hasan Kaya',
+        //                 userId: 1,
+        //             },
+        //             {
+        //                 name: 'Ayşe Kaya',
+        //                 userId: 2,
+        //             },
+        //         ],
+        //         otherGroup: [
+        //             {
+        //                 name: 'Hasan Kaya',
+        //                 userId: 1,
+        //                 requestOwner: true,
+        //             },
+        //             {
+        //                 name: 'Ayşe Kaya',
+        //                 userId: 2,
+        //             },
+        //         ],
+        //         course: 'CS315-Spring2020',
         axios.all(incomingRequests).then(
             axios.spread((...responses) => {
                 const incomingRequests = { pending: [], unresolved: [], resolved: [] };
+                let i = 0;
                 for (let response of responses) {
                     const data = response.data.data;
-                    console.log(data);
+
+                    for (let req of data) {
+                        let request = {};
+                        if (req.resolved) {
+                            if (i === 0) {
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: 'Dissapproved',
+                                    // yourGroup,
+                                    // user,
+                                    // course:,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            } else {
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: 'Dissapproved',
+                                    // yourGroup,
+                                    // otherGroup,
+                                    // course:,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            }
+                            incomingRequests.resolved.push(request);
+                        } else if (req.accepted) {
+                            console.log(req);
+                            if (i === 0) {
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: 'Approved',
+                                    // yourGroup,
+                                    // user,
+                                    // course:,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            } else {
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: 'Approved',
+                                    // yourGroup,
+                                    // otherGroup,
+                                    // course:,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            }
+                            incomingRequests.resolved.push(request);
+                        } else {
+                            if (i === 0) {
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    // yourGroup,
+                                    // user,
+                                    // course:,
+                                    requestDate: req.createdAt,
+                                    //formationDate:,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            } else {
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    // yourGroup,
+                                    // otherGroup,
+                                    // course:,
+                                    requestDate: req.createdAt,
+                                    //formationDate:,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            }
+                            incomingRequests.pending.push(request);
+                        }
+                    }
+
+                    i++;
                 }
+
+                this.setState({
+                    incomingRequests: incomingRequests,
+                });
             })
         );
 
@@ -166,6 +282,8 @@ class Notifications extends Component {
                             projectName: data[i].name,
                             isActive: courseData.isActive,
                             projectId: data[i].id,
+                            courseId: data[i].affiliatedCourse.id,
+                            isLocked: data[i].affiliatedCourse.isLocked,
                         });
                         this.setState({
                             myProjects: myProjects,
@@ -176,7 +294,6 @@ class Notifications extends Component {
         });
 
         this.setState({
-            incomingRequests: dummyIncomingRequests,
             outgoingRequests: dummyOutgoingRequests,
             newFeedbacks: dummyNewFeedbacks,
         });
@@ -283,7 +400,7 @@ class Notifications extends Component {
 
     render() {
         const myProjectsComponent = this.state.myProjects
-            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked)
+            ? convertMyProjectsToBriefList(this.state.myProjects, this.onProjectClicked, this.onCourseClicked)
             : null;
         const instructedCoursesComponent = this.state.instructedCourses
             ? convertInstructedCoursesToBriefList(this.state.instructedCourses, this.onCourseClicked)

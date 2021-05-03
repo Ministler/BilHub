@@ -21,3 +21,14 @@ export const getIdByEmailRequest = async (email) => {
             throw error;
         });
 };
+
+export const getProfileInfo = async (userId) => {
+    const url = 'GetProfileInfo?userId=' + userId;
+
+    return authAxios
+        .get(BASE_AUTH_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

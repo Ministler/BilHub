@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import { TextArea, Icon, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
-import { getUserGroupsRequest, getInstructedCoursesRequest, getGroupSrsGradeRequest } from '../../API';
+import {
+    getUserGroupsRequest,
+    getInstructedCoursesRequest,
+    getGroupSrsGradeRequest,
+    updateProfile,
+    getProfileInfo,
+} from '../../API';
 import './Profile.css';
 import { TabExampleSecondaryPointing, ProfilePrompt } from './ProfileComponents';
 
@@ -13,24 +19,18 @@ class Profile extends Component {
             userInformation: null,
             projects: null,
             courses: null,
-
+            userId: this.props.match.params.id ? this.props.match.params.id : this.props.userId,
             informationEditMode: false,
             newInformation: '',
         };
-        console.log(this.props);
     }
 
     changeUserInformation = (newInformation) => {
-        const request = {
-            newInformation: newInformation,
-            userId: this.props.userId,
-        };
-
-        console.log(request);
+        updateProfile(this.state.email, this.state.name, newInformation, false);
     };
 
     componentDidMount() {
-        getUserGroupsRequest(this.props.userId).then((response) => {
+        getUserGroupsRequest(this.state.userId).then((response) => {
             if (!response.data.success) return;
 
             const projects = [];
@@ -76,7 +76,7 @@ class Profile extends Component {
             }
         });
 
-        getInstructedCoursesRequest(this.props.userId).then((response) => {
+        getInstructedCoursesRequest(this.state.userId).then((response) => {
             if (!response.data.success) return;
 
             const courses = [];
@@ -111,9 +111,16 @@ class Profile extends Component {
             });
         });
 
-        this.setState({
-            userInformation: dummyUser.userInformation,
-            newInformation: dummyUser.userInformation,
+        getProfileInfo(this.state.userId).then((response) => {
+            if (!response.data.success) return;
+
+            this.setState({
+                userInformation: response.data.data.profileInfo,
+                newInformation: response.data.data.profileInfo,
+                userTpe: response.data.data.userType,
+                email: response.data.data.email,
+                name: response.data.data.name,
+            });
         });
     }
 
@@ -189,15 +196,15 @@ class Profile extends Component {
                 <Grid.Row divided>
                     <div class="four wide column">
                         <ProfilePrompt
-                            name={this.props.name}
-                            email={this.props.email}
+                            name={this.state.name}
+                            email={this.state.email}
                             informationElement={this.getInformationElement()}
                             icon={this.getEditInformationIcon()}
                         />
                     </div>
                     <div class="twelve wide column">
                         <TabExampleSecondaryPointing
-                            userType={this.props.userType}
+                            userType={this.state.userType}
                             projects={this.state.projects}
                             courses={this.state.courses}
                             onUserClicked={(userId) => this.onUserClicked(userId)}

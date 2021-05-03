@@ -9,5 +9,5 @@ export {
     getSubmissionFileRequest,
     getSubmissionSrsGradeRequest,
 } from './submissionGET';
-export { postSubmissionRequest, postSubmissionFileRequest } from './submissionPOST';
+export { postSubmissionRequest, postSubmissionFileRequest, postSubmissionSrsGradeRequest } from './submissionPOST';
 export { putSubmissionRequest } from './submissionPUT';

@@ -28,3 +28,17 @@ export const postSubmissionFileRequest = async (file, submissionId) => {
             throw error;
         });
 };
+
+export const postSubmissionSrsGradeRequest = async (submissionId, srsGrade) => {
+    const url = 'SrsGrade/' + submissionId;
+    const body = {
+        srsGrade: srsGrade,
+    };
+
+    return authAxios
+        .post(BASE_SUBMISSION_URL + url, body)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};
