@@ -5,6 +5,7 @@ export {
     getAssignmentFeedsRequest,
     getNotGradedAssignmentRequest,
     getUpcomingAssignmentFeedsRequest,
+    getAssignmentStatisticsRequest,
 } from './assignmentGET';
 export { postAssignmentFileRequest, postAssignmentRequest } from './assignmentPOST';
 export { putAssignmentRequest } from './assignmentPUT';

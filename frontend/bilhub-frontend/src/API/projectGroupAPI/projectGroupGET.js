@@ -76,3 +76,14 @@ export const getGroupAssignmentsRequest = async (ProjectGroupId) => {
             throw error;
         });
 };
+
+export const getGroupSrsGradeRequest = async (ProjectGroupId) => {
+    const url = 'GetSrsGrade?projectGroupId=' + ProjectGroupId;
+
+    return authAxios
+        .get(BASE_PROJECT_GROUP_URL + url)
+        .then((response) => response)
+        .catch((error) => {
+            throw error;
+        });
+};

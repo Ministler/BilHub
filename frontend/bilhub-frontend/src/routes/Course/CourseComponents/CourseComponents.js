@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Checkbox } from 'semantic-ui-react';
 import _ from 'lodash';
 
+import { postAssignmentRequest, putAssignmentRequest, deleteAssignmentRequest } from '../../../API';
 import { convertMembersToMemberElement } from '../../../components';
 import './CourseComponents.css';
 import {
@@ -65,7 +66,9 @@ export class NewAssignmentModal extends Component {
             warning: false,
         };
     }
+
     handleChange = (event, data) => {
+        console.log(data);
         event.preventDefault();
         let name = data.name;
         let value = data.value;
@@ -105,18 +108,21 @@ export class NewAssignmentModal extends Component {
     onFormSubmit() {
         let d = inputDateToDateObject(this.state.dueDate);
         const request = {
-            title: this.state.title,
-            description: this.state.description,
-            type: this.state.type,
-            isStudentComments: this.state.isStudentComments,
-            isCommentsAnonymous: this.state.isCommentsAnonymous,
-            isCommentsGraded: this.state.isCommentsGraded,
-            isSubmissionVisible: this.state.isSubmissionVisible,
-            isLateSubmissionsAllowed: this.state.isLateSubmissionsAllowed,
-            dueDate: d,
-            hasFile: this.state.hasFile,
+            //isCommentsAnonymous: this.state.isCommentsAnonymous,
         };
+
+        postAssignmentRequest(
+            this.state.file,
+            this.props.courseId,
+            this.state.title,
+            this.state.description,
+            d,
+            this.state.isSubmissionVisible,
+            this.state.isStudentComments,
+            this.state.isCommentsGraded
+        );
     }
+
     closeModal = () => {
         this.setState({
             title: '',
@@ -132,6 +138,7 @@ export class NewAssignmentModal extends Component {
             warning: false,
         });
     };
+
     render() {
         return (
             <Modal
@@ -264,7 +271,7 @@ export class NewAssignmentModal extends Component {
                                         onChange={this.handleChange}
                                         name="file"
                                         type="file"
-                                        value={this.state.hasFile}
+                                        value={this.state.file}
                                         label="Add File"
                                     />
                                 </Form.Group>
@@ -321,8 +328,9 @@ export class EditAssignmentModal extends Component {
     allEntered = () => {
         return this.state.title !== '' && this.state.type !== 0 && this.state.dueDate !== '';
     };
+
     componentDidMount() {
-        let d = dateObjectToInputDate(this.props.curAssignment.dueDate);
+        let d = this.props.curAssignment.dueDate; //dateObjectToInputDate(this.props.curAssignment.dueDate);
 
         this.setState({
             title: this.props.curAssignment.title,
@@ -340,7 +348,7 @@ export class EditAssignmentModal extends Component {
     }
 
     onOpen = () => {
-        let d = dateObjectToInputDate(this.props.curAssignment.dueDate);
+        let d = this.props.curAssignment.dueDate;
         this.setState({
             title: this.props.curAssignment.title,
             description: this.props.curAssignment.caption,
@@ -355,6 +363,8 @@ export class EditAssignmentModal extends Component {
             warning: false,
         });
     };
+
+    onFormSubmit = () => {};
 
     handleChange = (event, data) => {
         event.preventDefault();
@@ -388,22 +398,6 @@ export class EditAssignmentModal extends Component {
             });
         }
     };
-    onFormSubmit() {
-        let d = inputDateToDateObject(this.state.dueDate);
-        const request = {
-            title: this.state.title,
-            description: this.state.description,
-            type: this.state.type,
-            isStudentComments: this.state.isStudentComments,
-            isCommentsAnonymous: this.state.isCommentsAnonymous,
-            isCommentsGraded: this.state.isCommentsGraded,
-            isSubmissionVisible: this.state.isSubmissionVisible,
-            isLateSubmissionsAllowed: this.state.isLateSubmissionsAllowed,
-            dueDate: d,
-            hasFile: this.state.hasFile,
-        };
-        console.log(request);
-    }
     render() {
         return (
             <Modal
@@ -595,7 +589,7 @@ export const DeleteAssignmentModal = (props) => {
                 <Button
                     color="red"
                     onClick={() => {
-                        props.deleteAssignment(props.curAssignment);
+                        props.deleteAssignment(props.curAssignment.assignmentId);
                         props.onClosed(false);
                     }}
                     style={{

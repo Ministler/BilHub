@@ -9,9 +9,11 @@ export const convertAssignmentsToAssignmentList = (
     onAssignmentClicked,
     onSubmissionClicked,
     onAssignmentFileClicked,
-    assignmentIcons
+    onEditAssignmentModalOpened,
+    onDeleteAssignmentModalOpened,
+    isTAorInstructorOfCourse
 ) => {
-    const assignmentCardElements = assignments?.map((assignment) => {
+    const assignmentCardElements = assignments?.map((assignment, index) => {
         const date =
             'Publishment Date: ' +
             (typeof assignment.publishmentDate === 'object'
@@ -34,6 +36,29 @@ export const convertAssignmentsToAssignmentList = (
         let onAssignmentClickedId = assignment.submissionId
             ? () => onSubmissionClicked(assignment.projectId, assignment.submissionId)
             : () => onAssignmentClicked(assignment.courseId, assignment.assignmentId);
+
+        let assignmentIcons = null;
+        if (isTAorInstructorOfCourse) {
+            assignmentIcons = (
+                <>
+                    {' '}
+                    <Icon
+                        name="close"
+                        color="red"
+                        size="small"
+                        style={{ float: 'right' }}
+                        onClick={() => onDeleteAssignmentModalOpened(index)}
+                    />
+                    <Icon
+                        name="edit"
+                        color="blue"
+                        size="small"
+                        style={{ float: 'right' }}
+                        onClick={() => onEditAssignmentModalOpened(index)}
+                    />
+                </>
+            );
+        }
 
         return (
             <AssignmentCardElement
@@ -90,7 +115,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                 );
             }
             return (
-                <FeedbackCardElement 
+                <FeedbackCardElement
                     titleElement={titleElement}
                     caption={feedback.feedback?.caption}
                     grade={feedback.feedback?.grade}

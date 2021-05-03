@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import { Icon, Dropdown, Button } from 'semantic-ui-react';
 import { withRouter, Link } from 'react-router-dom';
 
-import { getAssignmentRequest, getAssignmentFileRequest, getSubmissionRequest } from '../../../API';
+import {
+    getAssignmentRequest,
+    getAssignmentFileRequest,
+    getSubmissionRequest,
+    getAssignmentStatisticsRequest,
+    getSubmissionFileRequest,
+} from '../../../API';
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
 import { dateObjectToString } from '../../../utils';
@@ -18,8 +24,8 @@ class CourseAssignment extends Component {
         };
     }
 
-    onSubmissionFileClicked = () => {
-        console.log('CLICKED');
+    onSubmissionFileClicked = (submissionId) => {
+        getSubmissionFileRequest(submissionId);
     };
 
     onFileClicked = () => {
@@ -39,7 +45,6 @@ class CourseAssignment extends Component {
             if (!response.data.success) return;
 
             const data = response.data.data;
-            console.log(data);
             const assignment = {
                 title: data.title,
                 caption: data.assignmentDescription,
@@ -62,29 +67,6 @@ class CourseAssignment extends Component {
                 requests.push(getSubmissionRequest(id));
             }
 
-            // {
-            //     groupName: 'Classroom Helper',
-            //     fileName: '1_1_analysisReport.pdf',
-            //     hasFile: 'file',
-            //     grade: '7/10',
-            //     submissionDate: new Date(2021, 3, 15, 17, 0),
-            //     projectId: 2,
-            //     submissionId: 2,
-            // },
-            // {
-            //     groupName: 'BilHub',
-            //     fileName: '1_1_analysisReport.pdf',
-            //     hasFile: 'file',
-            //     submissionDate: new Date(2021, 3, 15, 17, 0),
-            //     projectId: 1,
-            //     submissionId: 1,
-            // },
-            // {
-            //     groupName: 'BilHub',
-            //     projectId: 1,
-            //     submissionId: 1,
-            // },
-
             axios.all(requests).then(
                 axios.spread((...responses) => {
                     const submission = [];
@@ -101,22 +83,23 @@ class CourseAssignment extends Component {
                         console.log(data);
                         if (!data.hasSubmission) {
                             submission[data.sectionNumber - 1].notSubmitted.push({
-                                groupName: 'deneme',
+                                groupName: data.affiliatedGroup.name,
                                 projectId: data.affiliatedGroup.id,
                                 submissionId: data.id,
                             });
                         } else if (!data.isGraded) {
                             console.log(submission);
                             submission[data.sectionNumber - 1].submitted.push({
-                                groupName: 'deneme',
+                                groupName: data.affiliatedGroup.name,
                                 projectId: data.affiliatedGroup.id,
                                 submissionId: data.id,
                                 hasFile: data.hasFile,
                                 submissionDate: data.updatedAt,
                             });
                         } else {
+                            console.log(data);
                             submission[data.sectionNumber - 1].graded.push({
-                                groupName: 'deneme',
+                                groupName: data.affiliatedGroup.name,
                                 projectId: data.affiliatedGroup.id,
                                 submissionId: data.id,
                                 hasFile: data.hasFile,
@@ -126,12 +109,16 @@ class CourseAssignment extends Component {
                         }
                     }
 
-                    console.log(submission);
                     this.setState({
                         submissions: submission,
                     });
                 })
             );
+        });
+
+        getAssignmentStatisticsRequest(this.props.match.params.assignmentId).then((response) => {
+            if (!response.data.success) return;
+            console.log(response.data.data);
         });
 
         this.setState({

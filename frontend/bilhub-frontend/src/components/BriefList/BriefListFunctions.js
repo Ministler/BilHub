@@ -49,66 +49,70 @@ export const convertInstructedCoursesToBriefList = (instructedCourses, onCourseC
 };
 
 export const convertUpcomingAssignmentsToBriefList = (upcomingAssignments, onAssignmentClicked) => {
-    const upcomingAssignmentsBriefElements = (upcomingAssignments && upcomingAssignments.length !== 0) ? (
-        upcomingAssignments.map((assignment) => {
-            const title = assignment.courseCode + '/' + assignment.assignmentName;
-            return (
-                <Segment>
-                    <Link onClick={() => onAssignmentClicked(assignment.projectId, assignment.submissionId)}>
-                        {title}
-                    </Link>
-                    <div align="right" className="DueDate">
-                        {typeof assignment.dueDate === 'object'
-                            ? dateObjectToString(assignment.dueDate)
-                            : assignment.dueDate}
-                    </div>
-                </Segment>
-            );
-        })
-    ) : (
-        <div></div>
-    );
+    const upcomingAssignmentsBriefElements =
+        upcomingAssignments && upcomingAssignments.length !== 0 ? (
+            upcomingAssignments.map((assignment) => {
+                const title = assignment.courseCode + '/' + assignment.assignmentName;
+                return (
+                    <Segment>
+                        <Link onClick={() => onAssignmentClicked(assignment.projectId, assignment.submissionId)}>
+                            {title}
+                        </Link>
+                        <div align="right" className="DueDate">
+                            {typeof assignment.dueDate === 'object'
+                                ? dateObjectToString(assignment.dueDate)
+                                : assignment.dueDate}
+                        </div>
+                    </Segment>
+                );
+            })
+        ) : (
+            <div></div>
+        );
 
-    return (
-        (upcomingAssignments && upcomingAssignments.length !== 0) ? (
+    return upcomingAssignments && upcomingAssignments.length !== 0 ? (
         <Segment.Group raised>
             <Label attached="top" style={{ backgroundColor: 'rgb(33,133,208)', color: 'white', textAlign: 'center' }}>
                 Upcoming Assignments
             </Label>
             {upcomingAssignmentsBriefElements}
-        </Segment.Group>) : (<div></div>)
+        </Segment.Group>
+    ) : (
+        <div></div>
     );
 };
 
 export const convertNotGradedAssignmentsToBriefList = (notGradedAssignments, onAssignmentClicked) => {
-    const notGradedAssignmentsBriefElements = (notGradedAssignments && notGradedAssignments.length !== 0) ? (
-        notGradedAssignments.map((assignment) => {
-            const title = assignment.courseCode + '/' + assignment.assignmentName;
-            return (
-                <Segment>
-                    <Link onClick={() => onAssignmentClicked(assignment.courseId, assignment.assignmentId)}>
-                        {title}
-                    </Link>
-                    <div align="right" className="DueDate">
-                        {typeof assignment.dueDate === 'object'
-                            ? dateObjectToString(assignment.dueDate)
-                            : assignment.dueDate}
-                    </div>
-                </Segment>
-            );
-        })
-    ) : (
-        <div></div>
-    );
+    const notGradedAssignmentsBriefElements =
+        notGradedAssignments && notGradedAssignments.length !== 0 ? (
+            notGradedAssignments.map((assignment) => {
+                const title = assignment.courseCode + '/' + assignment.assignmentName;
+                return (
+                    <Segment>
+                        <Link onClick={() => onAssignmentClicked(assignment.courseId, assignment.assignmentId)}>
+                            {title}
+                        </Link>
+                        <div align="right" className="DueDate">
+                            {typeof assignment.dueDate === 'object'
+                                ? dateObjectToString(assignment.dueDate)
+                                : assignment.dueDate}
+                        </div>
+                    </Segment>
+                );
+            })
+        ) : (
+            <div></div>
+        );
 
-    return (
-        (notGradedAssignments && notGradedAssignments.length !== 0) ? (
+    return notGradedAssignments && notGradedAssignments.length !== 0 ? (
         <Segment.Group raised>
             <Label attached="top" style={{ backgroundColor: 'rgb(219,40,40)', color: 'white', textAlign: 'center' }}>
                 Not Graded Assignments
             </Label>
             {notGradedAssignmentsBriefElements}
-        </Segment.Group>) : (<div></div>)
+        </Segment.Group>
+    ) : (
+        <div></div>
     );
 };
 
@@ -142,7 +146,7 @@ export const convertSubmissionsToSubmissionElement = (
             <SubmissionBriefElement
                 submission={submission}
                 onSubmissionPageClicked={() => onSubmissionPageClicked(submission.projectId, submission.submissionId)}
-                onSubmissionFileClicked={() => onSubmissionFileClicked()}
+                onSubmissionFileClicked={() => onSubmissionFileClicked(submission.submissionId)}
             />
         );
     });

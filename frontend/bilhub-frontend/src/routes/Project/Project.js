@@ -104,14 +104,14 @@ class Project extends Component {
         let request = 'error';
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
-                //postCommentRequest(File, CommentedSubmissionId, CommentText, this.state.currentMaxFeedbackGrade, this.state.currentFeedbackGrade)
-                request = {
-                    grade: this.state.currentFeedbackGrade,
-                    maxGrade: this.state.currentMaxFeedbackGrade,
-                    userId: this.props.userId,
-                    groupId: this.props.match.params.projectId,
-                };
+                postProjectGradeRequest(
+                    this.props.match.params.projectId,
+                    this.state.currentMaxFeedbackGrade,
+                    this.state.currentFeedbackGrade,
+                    ''
+                );
             } else if (modalType === 'isEditFeedbackOpen') {
+                // putProjectGradeRequest(projectGradeId, this.state.currentMaxFeedbackGrade, this.state.currentFeedbackGrade)
                 request = {
                     grade: this.state.currentFeedbackGrade,
                     maxGrade: this.state.currentMaxFeedbackGrade,
@@ -124,13 +124,13 @@ class Project extends Component {
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
-                request = {
+                /* postProjectGradeRequest(this.props.match.params.projectId,
                     newGrade: this.state.currentFeedbackGrade,
                     newText: this.state.currentFeedbackText,
                     newFile: this.state.currentFeedbackFile,
                     userId: this.props.userId,
-                    groupId: this.props.match.params.projectId,
-                };
+                    groupId: ,
+                };*/
             } else if (modalType === 'isEditFeedbackOpen') {
                 request = {
                     newGrade: this.state.currentFeedbackGrade,
@@ -221,19 +221,210 @@ class Project extends Component {
         //    isPeerReviewOpen: true, due date gecince de kapali
         //});
 
-        getGroupInstructorCommentsRequest(this.props.match.params.projectId).then((response) => {
-            if (!response.data.success) return;
-            const instructorComments = response.data.data;
-            const arr = [];
-        });
-        getGroupTACommentsRequest(this.props.match.params.projectId).then((response) => {
-            if (!response.data.success) return;
-            const TAComments = response.data.data;
-        });
-        getGroupStudentCommentsRequest(this.props.match.params.projectId).then((response) => {
-            if (!response.data.success) return;
-            const studentComments = response.data.data;
-        });
+        const feedbackRequests = [];
+        const persons = [];
+
+        feedbackRequests.push(getGroupInstructorCommentsRequest(this.props.match.params.projectId));
+        feedbackRequests.push(getGroupTACommentsRequest(this.props.match.params.projectId));
+        feedbackRequests.push(getGroupStudentCommentsRequest(this.props.match.params.projectId));
+        //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
+        const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
+        axios.all(feedbackRequests).then(
+            axios.spread((...responses) => {
+                let instGrade = 0;
+                for (let i in responses[0].data.data) {
+                    feedbacks.InstructorComments.push({
+                        name: responses[0].data.data[i].userInProjectGradeDto.name,
+                        caption: responses[0].data.data[i].comment,
+                        grade: responses[0].data.data[i].grade,
+                        date: inputDateToDateObject(responses[0].data.data[i].lastEdited),
+                        commentId: responses[0].data.data[i].id,
+                        userId: responses[0].data.data[i].userInProjectGradeDto.id,
+                    });
+                    persons.push({
+                        name: responses[0].data.data[i].userInProjectGradeDto.name,
+                        type: 'Instructor',
+                        grade: responses[0].data.data[i].grade,
+                        userId: responses[0].data.data[i].userInProjectGradeDto.id,
+                    });
+                    instGrade += responses[0].data.data[i].grade;
+                }
+                for (let i in responses[1].data.data) {
+                    feedbacks.TAComments.push({
+                        name: responses[1].data.data[i].userInProjectGradeDto.name,
+                        caption: responses[1].data.data[i].comment,
+                        grade: responses[1].data.data[i].grade,
+                        date: inputDateToDateObject(responses[1].data.data[i].lastEdited),
+                        commentId: responses[1].data.data[i].id,
+                        userId: responses[1].data.data[i].userInProjectGradeDto.id,
+                    });
+                    persons.push({
+                        name: responses[1].data.data[i].userInProjectGradeDto.name,
+                        type: 'TA',
+                        grade: responses[1].data.data[i].grade,
+                        userId: responses[1].data.data[i].userInProjectGradeDto.id,
+                    });
+                    instGrade += responses[1].data.data[i].grade;
+                }
+                let studentAvg = 0;
+                for (let i in responses[2].data.data) {
+                    feedbacks.StudentComments.push({
+                        name: responses[2].data.data[i].commentedUser.name,
+                        caption: responses[2].data.data[i].comment,
+                        grade: responses[2].data.data[i].grade,
+                        date: inputDateToDateObject(responses[2].data.data[i].lastEdited),
+                        commentId: responses[2].data.data[i].id,
+                        userId: responses[2].data.data[i].commentedUser.id,
+                    });
+                    studentAvg += responses[2].data.data[i].grade;
+                }
+                studentAvg = studentAvg === 0 ? 0 : studentAvg / responses[2].data.data.length;
+                const projectAverage =
+                    (studentAvg + instGrade) / (responses[0].data.data.length + responses[1].data.data.length + 1);
+                const grades = {
+                    persons: persons,
+                    studentAvg: studentAvg,
+                    projectAverage: projectAverage,
+                    courseAverage: 8, //kendim belirledim
+                    finalGrade: 40, //kendim belirledim
+                };
+                this.setState({ feedbacks: feedbacks, grades: grades });
+            })
+        );
+
+        /*const dummyGrades = {
+    persons: [
+        {
+            name: 'Eray Tüzün',
+            type: 'Project Instructor',
+            grade: '9.5',
+        },
+        {
+            name: 'Alper Sarıkan',
+            type: 'Instructor',
+            grade: '8.1',
+        },
+        {
+            name: 'Erdem Tuna',
+            type: 'TA',
+            grade: '7.1',
+        },
+        {
+            name: 'Elgun Jabrayilzade',
+            type: 'TA',
+            grade: '8.1',
+        },
+    ],
+    studentsAverage: 8,
+    projectAverage: 7.1,
+    courseAverage: 6.5,
+    finalGrade: 38,
+};
+*/
+
+        /*const dummyFeedbacks = {
+    // SRSResult: {
+    //     grade: '9.5',
+    //     maxGrade: '11',
+    // },
+    InstructorComments: [
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            commentId: 3,
+            userId: 'dD3wUcJiDHTM9aDs8livI9HpY3h2',
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            commentId: 3,
+            userId: 2,
+        },
+    ],
+    TAComments: [
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            commentId: 4,
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+    ],
+    StudentComments: [
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lcaptionorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            commentId: 5,
+            userId: 1,
+            userGroupName: 'ClassRoom Helper',
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+            userGroupName: 'ProjectManager',
+        },
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+        {
+            name: 'Eray Tüzün',
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            grade: '9.5',
+            date: new Date(2021, 4, 11),
+            userId: 1,
+        },
+        {
+            name: 'Alper Sarıkan',
+            date: new Date(2021, 4, 11),
+            caption:
+                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque neque ullam a ad quia aut vitae voluptate animi dolor delectus?',
+            file: 'dummyFile',
+            grade: '8.1',
+            userId: 2,
+        },
+    ],
+};*/
     }
 
     // LEFT SIDE LOGIC

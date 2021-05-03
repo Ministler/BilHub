@@ -9,6 +9,8 @@ import {
     getCourseAssignmentRequest,
     getAssignmentFileRequest,
     putCourseRequest,
+    getCourseStatisticRequest,
+    deleteAssignmentRequest,
 } from '../../API';
 import './Course.css';
 import {
@@ -207,15 +209,6 @@ class Course extends Component {
             }
         });
 
-        // {
-        //     title: 'Design Report',
-        //     caption:
-        //         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
-        //     assignmentId: 2,
-        //     publisher: 'Erdem Tuna',
-        //     publishmentDate: new Date(2021, 3, 12, 12, 0),
-        //     dueDate: new Date(2021, 4, 12, 12, 0),
-        // },
         getCourseAssignmentRequest(this.props.match.params.courseId).then((response) => {
             if (!response.data.success) return;
 
@@ -229,7 +222,16 @@ class Course extends Component {
                 assignments: assignments,
             });
         });
+<<<<<<< HEAD
         this.setState({ courseGrades: dummyCourseGrades, finalGrades: dummyFinalGrades });
+=======
+
+        getCourseStatisticRequest(this.props.match.params.courseId).then((response) => {
+            if (!response.data.success) return;
+
+            console.log(response.data.data);
+        });
+>>>>>>> a77b0be74eb27eb8c60c07164724829d43b88e2e
     }
 
     onPeerReviewsOpen = (dropdownValues) => {
@@ -244,14 +246,16 @@ class Course extends Component {
         });
     };
 
-    onEditAssignmentModalOpened = () => {
+    onEditAssignmentModalOpened = (index) => {
         this.setState({
+            index: index,
             isEditAssignmentOpen: true,
         });
     };
 
-    onDeleteAssignmentModalOpened = () => {
+    onDeleteAssignmentModalOpened = (index) => {
         this.setState({
+            index: index,
             isDeleteAssignmentOpen: true,
         });
     };
@@ -527,7 +531,9 @@ class Course extends Component {
                         this.onAssignmentClicked,
                         null,
                         this.onAssignmentFileClicked,
-                        this.getAssignmentControlIcons()
+                        this.onEditAssignmentModalOpened,
+                        this.onDeleteAssignmentModalOpened,
+                        this.state.courseInformation?.isTAorInstructorOfCourse
                     )}
                     {this.getNewAssignmentButton()}
                 </>
@@ -540,32 +546,6 @@ class Course extends Component {
         };
     };
 
-    getAssignmentControlIcons = () => {
-        let controlIcons = null;
-        if (this.state.courseInformation?.isTAorInstructorOfCourse) {
-            controlIcons = (
-                <>
-                    <Icon
-                        name="close"
-                        color="red"
-                        size="small"
-                        style={{ float: 'right' }}
-                        onClick={this.onDeleteAssignmentModalOpened}
-                    />
-                    <Icon
-                        name="edit"
-                        color="blue"
-                        size="small"
-                        style={{ float: 'right' }}
-                        onClick={this.onEditAssignmentModalOpened}
-                    />
-                </>
-            );
-        }
-
-        return controlIcons;
-    };
-
     handleSectionChange = (data) => {
         let index;
         for (var i = 0; i < data.options.length; i++) {
@@ -576,7 +556,7 @@ class Course extends Component {
         }
         this.setState({
             currentPeerReviewSection: data.value,
-            currentPeerReviewGroups: dummyGroupsLocked[index],
+            currentPeerReviewGroups: this.state.groups[index],
             currentPeerReviewGroup: {},
             currentPeerReviewStudents: [],
             currentPeerReviewStudent: {},
@@ -651,25 +631,38 @@ class Course extends Component {
             />
         );
     };
-    deleteAssignment = (assignment) => {};
+
+    deleteAssignment = (assignmentId) => {
+        deleteAssignmentRequest(assignmentId);
+    };
+
     getModals = () => {
         return (
             <>
                 <NewAssignmentModal
+                    courseId={this.props.match.params.courseId}
                     onClosed={this.onNewAssignmentModalClosed}
                     isOpen={this.state.isNewAssignmentOpen}
                 />
-                <EditAssignmentModal
-                    curAssignment={dummyCourseAssignments[0]}
-                    onClosed={this.onEditAssignmentModalClosed}
-                    isOpen={this.state.isEditAssignmentOpen}
-                />
-                <DeleteAssignmentModal
-                    curAssignment={dummyCourseAssignments[0]}
-                    onClosed={this.onDeleteAssignmentModalClosed}
-                    isOpen={this.state.isDeleteAssignmentOpen}
-                    deleteAssignment={this.deleteAssignment}
-                />
+                {this.state.assignments?.length > this.state.index ? (
+                    <EditAssignmentModal
+                        curAssignment={this.state.assignments[this.state.index]}
+                        onClosed={this.onEditAssignmentModalClosed}
+                        isOpen={this.state.isEditAssignmentOpen}
+                    />
+                ) : null}
+                {this.state.assignments?.length > this.state.index ? (
+                    <DeleteAssignmentModal
+                        curAssignment={
+                            this.state.assignments?.length > this.state.index
+                                ? this.state.assignments[this.state.index]
+                                : null
+                        }
+                        onClosed={this.onDeleteAssignmentModalClosed}
+                        isOpen={this.state.isDeleteAssignmentOpen}
+                        deleteAssignment={this.deleteAssignment}
+                    />
+                ) : null}
                 <SendRequestModal
                     onClosed={this.onSendRequestModalClosed}
                     isOpen={this.state.isSendRequestModalOpen}
@@ -725,748 +718,6 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(Course);
-
-const dummyCourseInformation = {
-    courseName: 'CS319-2021Spring',
-    description: 'Object-Oriented Software Engineering',
-    isCourseActive: true,
-    instructors: [
-        {
-            name: 'Eray Tüzün',
-            userId: 1,
-        },
-        {
-            name: 'Alper Sarıkan',
-            userId: 2,
-        },
-    ],
-    TAs: [
-        {
-            name: 'Erdem Tuna',
-            userId: 1,
-        },
-        {
-            name: 'Kraliçe Irmak',
-            userId: 2,
-        },
-    ],
-    information:
-        'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio, et assumenda fugiat repudiandae doloribus eaque at possimus tenetur cum ratione, non voluptatibus? Provident nam cum et cupiditate corporis earum vel ut? Illum beatae molestiae praesentium cumque sapiente, quasi neque consequatur distinctio iste possimus in dolor. Expedita rem totam ex distinctio!',
-    isTAorInstructorOfCourse: true,
-    isUserInFormedGroup: false,
-    isUserAlone: false,
-    isLocked: false,
-    formationDate: new Date(2020, 12, 15, 15, 0),
-    numberOfSections: 3,
-    currentUserSection: 1,
-};
-
-const dummyCourseAssignments = [
-    {
-        title: 'Analysis Report',
-        caption:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
-        assignmentId: 1,
-        type: 1,
-        publisher: 'Elgun Jabrayilzade',
-        hasFile: 'file',
-        publishmentDate: new Date(2021, 3, 12, 12, 0),
-        dueDate: new Date(2021, 4, 12, 12, 0),
-    },
-    {
-        title: 'Design Report',
-        caption:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
-        assignmentId: 2,
-        publisher: 'Erdem Tuna',
-        publishmentDate: new Date(2021, 3, 12, 12, 0),
-        dueDate: new Date(2021, 4, 12, 12, 0),
-    },
-    {
-        title: 'Design Report',
-        caption:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
-        assignmentId: 2,
-        publisher: 'Erdem Tuna',
-        publishmentDate: new Date(2021, 3, 12, 12, 0),
-        dueDate: new Date(2021, 4, 12, 12, 0),
-    },
-    {
-        title: 'Design Report',
-        caption:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur optio dolores modi illo, soluta nesciunt? Explicabo dicta ad nulla ea.',
-        assignmentId: 2,
-        publisher: 'Erdem Tuna',
-        publishmentDate: new Date(2021, 3, 12, 12, 0),
-        dueDate: new Date(2021, 4, 12, 12, 0),
-    },
-];
-const dummySections = [
-    { sectionId: 1, id: 43 },
-    { sectionId: 2, id: 44 },
-    { sectionId: 3, id: 45 },
-];
-
-const dummyGroupsLocked = [
-    [
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '2Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '2Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '2Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 4,
-            groupName: 'NoBilhub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 1,
-            groupName: 'BilH123ub',
-        },
-    ],
-    [
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 3,
-            groupName: 'BilHub',
-        },
-        {
-            members: [
-                {
-                    name: '2Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '2Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '2Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 4,
-            groupName: 'Not Bilhub',
-        },
-    ],
-    [
-        {
-            members: [
-                {
-                    name: '1Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '1Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '1Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 5,
-            groupName: 'BilHub',
-        },
-        {
-            members: [
-                {
-                    name: '2Yusuf Uyar',
-                    userId: 1,
-                },
-                {
-                    name: '2Halil Özgür Demir',
-                    userId: 2,
-                },
-                {
-                    name: '2Barış Ogün Yörük',
-                    userId: 3,
-                },
-            ],
-            groupId: 6,
-            groupName: 'Not Bilhub',
-        },
-    ],
-];
-
-const dummyGroups = [
-    {
-        formed: [
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '2Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '2Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '2Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '1Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '1Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '1Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-        ],
-        unformed: [
-            {
-                members: [
-                    {
-                        name: '3Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '3Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '3Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '4Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '4Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '4Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-                isUserInGroup: true,
-                voteStatus: '2/3',
-                isUserReady: true,
-                isFormable: true,
-            },
-            {
-                members: [
-                    {
-                        name: '4Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '4Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '4Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-                notRequestable: true,
-            },
-        ],
-    },
-    {
-        formed: [
-            {
-                members: [
-                    {
-                        name: '5Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '5Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '5Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '6Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '6Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '6Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-        ],
-        unformed: [
-            {
-                members: [
-                    {
-                        name: '7Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '7Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '7Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '8Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '8Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '8Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-        ],
-    },
-    {
-        formed: [
-            {
-                members: [
-                    {
-                        name: '9Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '9Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '9Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '10Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '10Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '10Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-        ],
-        unformed: [
-            {
-                members: [
-                    {
-                        name: '11Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '11Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '11Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-            {
-                members: [
-                    {
-                        name: '12Yusuf Uyar',
-                        userId: 1,
-                    },
-                    {
-                        name: '12Halil Özgür Demir',
-                        userId: 2,
-                    },
-                    {
-                        name: '12Barış Ogün Yörük',
-                        userId: 3,
-                    },
-                ],
-                groupId: 1,
-            },
-        ],
-    },
-];
 
 const dummyCourseGrades = {
     graders: ['Eray Tüzün', 'Alper Sarıkan', 'Erdem Tuna', 'Kraliçe Irmak', 'Students'],
