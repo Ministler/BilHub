@@ -17,6 +17,6 @@ namespace backend.Services.MergeRequestServices
         Task<ServiceResponse<GetMergeRequestDto>> GetMergeRequestById(int Id);
         Task<ServiceResponse<List<GetMergeRequestDto>>> GetOutgoingMergeRequestsOfUser ();
         Task<ServiceResponse<List<GetMergeRequestDto>>> GetIncomingMergeRequestsOfUser ();
-        
+        Task<ServiceResponse<string>> GetVoteOfUser( int mergeRequestId );
     }
 }

@@ -105,5 +105,17 @@ namespace backend.Controllers
             }
             return NotFound(response);
         }
+        
+        [HttpGet]
+        [Route("GetVoteOfUser/{joinRequestId}")]
+        public async Task<IActionResult> GetVote ( int joinRequestId )
+        {
+            ServiceResponse<string> response = await _joinRequestService.GetVoteOfUser(joinRequestId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
     }
 }

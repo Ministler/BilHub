@@ -715,7 +715,7 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "NewLanguage()",
                     ConfirmedGroupMembers = ""
-                }
+                } // 14 - 9'la mergelendi
             );
             modelBuilder.Entity<ProjectGroupUser>().HasData(
                 new ProjectGroupUser

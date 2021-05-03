@@ -15,5 +15,6 @@ namespace backend.Services.JoinRequestServices
         Task<ServiceResponse<GetJoinRequestDto>> GetJoinRequestById(int Id);
         Task<ServiceResponse<List<GetJoinRequestDto>>> GetOutgoingJoinRequestsOfUser ();
         Task<ServiceResponse<List<GetJoinRequestDto>>> GetIncomingJoinRequestsOfUser ();
+        Task<ServiceResponse<string>> GetVoteOfUser( int userId );
     }
 }
