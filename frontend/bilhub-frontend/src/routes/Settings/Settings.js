@@ -170,7 +170,7 @@ class Settings extends Component {
                             rows="5"
                             defaultValue={this.state.userInformation}
                             name="information"
-                            style={{ width: '60%' }}></textarea>
+                            style={{ width: '70%' }}></textarea>
                     </div>
                     <button class="ui primary button">Update</button>
                 </Form>

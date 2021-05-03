@@ -13,7 +13,16 @@ export const convertMyProjectsToBriefList = (myProjects, onProjectClicked) => {
         ) : (
             <Icon name="lock" style={{ color: 'rgb(196, 126, 5)' }} />
         );
-        const title = project.courseCode + '/' + project.projectName;
+        const title = project.isActive ? (
+            project.projectName !== null ? (
+                project.courseCode + '/' + project.projectName
+                ) : (
+                    project.courseCode + '/' + "Formed Group"
+                )
+        ) : (
+             project.courseCode + '/' + "Unformed Group"
+        );
+
         return (
             <p className={'BriefListElements'}>
                 <Link style={{ fontWeight: 'bold' }} onClick={() => onProjectClicked(project.projectId)}>

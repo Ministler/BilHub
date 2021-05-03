@@ -10,7 +10,11 @@ export {
 } from './authAPI';
 export {} from './userAPI';
 export { postCommentRequest } from './commentAPI';
-export { getSubmissionFileRequest } from './submissionAPI';
+export {
+    getSubmissionFileRequest,
+    deleteSubmissionSrsGradeRequest,
+    getSubmissionSrsGradeRequest,
+} from './submissionAPI';
 
 export {
     getAssignmentFeedsRequest,
