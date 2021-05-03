@@ -35,6 +35,8 @@ import { getAssignmentFileRequest } from '../../API/assignmentAPI/assignmentGET'
 import { getProjectGradeByIdRequest } from '../../API/projectGradeAPI/projectGradeGET';
 import { inputDateToDateObject } from '../../utils';
 import { postProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePOST';
+import { deleteProjectGradeRequest } from '../../API/projectGradeAPI/projectGradeDELETE';
+import { postPeerGradeRequest } from '../../API/peerGradeAPI/peerGradePOST';
 
 class Project extends Component {
     constructor(props) {
@@ -102,7 +104,6 @@ class Project extends Component {
         });
         if (!isSuccess) return;
 
-        let request = 'error';
         if (this.state.isFeedbackSRS) {
             if (modalType === 'isGiveFeedbackOpen') {
                 //!!!!!!!!!!!!
@@ -114,15 +115,15 @@ class Project extends Component {
                 );
             } else if (modalType === 'isEditFeedbackOpen') {
                 // putProjectGradeRequest(projectGradeId, this.state.currentMaxFeedbackGrade, this.state.currentFeedbackGrade)
-                request = {
+                /*request = {
                     grade: this.state.currentFeedbackGrade,
                     maxGrade: this.state.currentMaxFeedbackGrade,
                     userId: this.props.userId,
-                };
+                };*/
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                request = {
+                /*request = {
                     userId: this.props.userId,
-                };
+                };*/
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
@@ -134,22 +135,18 @@ class Project extends Component {
                     this.state.currentFeedbackFile
                 );
             } else if (modalType === 'isEditFeedbackOpen') {
-                request = {
+                //putProjectGradeRequest(this.state.currentFeedbackId, 10, this.state.currentFeedbackGrade);
+                /*request = {
                     newGrade: this.state.currentFeedbackGrade,
                     newText: this.state.currentFeedbackText,
                     newFile: this.state.currentFeedbackFile,
                     commentId: this.state.currentFeedbackId,
                     userId: this.props.userId,
-                };
+                };*/
             } else if (modalType === 'isDeleteFeedbackOpen') {
-                request = {
-                    commentId: this.state.currentFeedbackId,
-                    userId: this.props.userId,
-                };
+                deleteProjectGradeRequest(this.state.currentFeedbackId);
             }
         }
-
-        console.log(request);
     };
 
     componentDidMount() {
@@ -503,9 +500,12 @@ class Project extends Component {
         });
     };
     onGiveFeedback = (e) => {
-        console.log(this.state.currentFeedbackText2);
-        console.log(this.state.currentFeedbackGrade2);
-        console.log(this.state.currentMaxFeedbackGrade2);
+        postProjectGradeRequest(
+            this.props.match.params.projectId,
+            this.state.currentMaxFeedbackGrade2,
+            this.state.currentFeedbackGrade2,
+            this.state.currentFeedbackText2
+        );
     };
 
     onModalOpened = (modalType, isFeedbackSRS) => {
@@ -810,14 +810,12 @@ class Project extends Component {
         if (this.state.currentReviewGrade === -1 || this.state.currentPeer === 0 /* check existance */) {
             window.alert('You need to enter both grade and reviewee');
         } else {
-            const request = {
-                ProjectGroupId: 12, //nasil alcagimi bilmiyom
-                comment: this.state.currentReviewComment,
-                grade: this.state.currentReviewGrade,
-                revieweeId: this.state.currentPeer,
-                maxGrade: 5, //will be taken from assignment
-            };
-            console.log(request);
+            postPeerGradeRequest(
+                this.props.match.params.projectId,
+                this.state.currentPeer,
+                this.state.currentReviewGrade,
+                this.state.currentReviewComment
+            );
         }
     };
 
