@@ -42,7 +42,8 @@ namespace backend
                 .ForMember ( dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
 
             CreateMap<Section, GetSectionOfCourseDto>();
-            CreateMap<Section, GetSectionDto>();
+            CreateMap<Section, GetSectionDto>()
+                .ForMember( dto => dto.ProjectGroups, opt => opt.Ignore() );
             CreateMap<Assignment, GetAssignmentDto>();
             CreateMap<Submission, GetSubmissionDto>();
             CreateMap<Comment, GetCommentDto>();
@@ -51,11 +52,21 @@ namespace backend
             CreateMap<PeerGrade, PeerGradeInfoDto>();
 
             CreateMap<User,UserInJoinRequestDto>();
-            CreateMap<ProjectGroup,ProjectGroupInJoinRequestDto>();
-            CreateMap<JoinRequest,GetJoinRequestDto>();
-
-            CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>();
-            CreateMap<MergeRequest,GetMergeRequestDto>();
+            CreateMap<User,GroupMemberInJoinRequestDto>();
+            CreateMap<ProjectGroup,ProjectGroupInJoinRequestDto>()
+                .ForMember( c => c.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
+            CreateMap<JoinRequest,GetJoinRequestDto>()
+                .ForMember( dto => dto.CourseName, opt => opt.Ignore() )
+                .ForMember( dto => dto.LockDate, opt => opt.Ignore() )
+                .ForMember( dto => dto.CurrentUserVote, opt => opt.Ignore() );
+                
+            CreateMap<User,GroupMemberInMergeRequestDto>();
+            CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>()
+                .ForMember( c => c.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
+            CreateMap<MergeRequest,GetMergeRequestDto>()
+                .ForMember( dto => dto.CourseName, opt => opt.Ignore() )
+                .ForMember( dto => dto.LockDate, opt => opt.Ignore() )
+                .ForMember( dto => dto.CurrentUserVote, opt => opt.Ignore() );
             CreateMap<User,UsersOfCourseDto>();
 
             CreateMap<User,GetUserInfoDto>();

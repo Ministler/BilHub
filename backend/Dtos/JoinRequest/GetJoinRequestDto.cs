@@ -17,5 +17,8 @@ namespace backend.Dtos.JoinRequest
         public bool Resolved { get; set; }
         public string VotedStudents { get; set; }
         public string Description { get; set; }
+        public string CourseName {get;set;}
+        public DateTime LockDate {get; set;}
+        public bool CurrentUserVote {get; set;}
     }
 }

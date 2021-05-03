@@ -181,7 +181,7 @@ namespace backend.Services.MergeRequestServices
             await _context.SaveChangesAsync();
 
             response.Data = newMergeRequest;
-            response.Message = "Merge request is successfully sent " + receiverGroup.GroupMembers.Count + " " + receiverGroup.GroupMembers.Count;
+            response.Message = "Merge request is successfully sent " + senderGroup.GroupMembers.Count + " " + receiverGroup.GroupMembers.Count;
             response.Success = true;
 
             return response;
@@ -470,8 +470,10 @@ namespace backend.Services.MergeRequestServices
         {
             ServiceResponse<GetMergeRequestDto> response = new ServiceResponse<GetMergeRequestDto>();
             MergeRequest mergeRequest = await _context.MergeRequests
-                .Include(jr => jr.SenderGroup)
-                .Include(jr => jr.ReceiverGroup)
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.AffiliatedCourse )
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.AffiliatedCourse )
                 .FirstOrDefaultAsync(jr => jr.Id == mergeRequestId);
 
             if (mergeRequest == null)
@@ -496,41 +498,10 @@ namespace backend.Services.MergeRequestServices
                 return response;
             }
 
-            /*
-            GetMergeRequestDto dto = new GetMergeRequestDto
-            {
-                Id = mergeRequestId,
-                SenderGroup = new ProjectGroupInMergeRequestDto
-                {
-                    Id = mergeRequest.SenderGroup.Id,
-                    AffiliatedSectionId = mergeRequest.SenderGroup.AffiliatedSectionId,
-                    AffiliatedCourseId = mergeRequest.SenderGroup.AffiliatedCourseId,
-                    ConfirmationState = mergeRequest.SenderGroup.ConfirmationState,
-                    ConfirmedUserNumber = mergeRequest.SenderGroup.ConfirmedUserNumber,
-                    ProjectInformation = mergeRequest.SenderGroup.ProjectInformation,
-                    ConfirmedGroupMembers = mergeRequest.SenderGroup.ConfirmedGroupMembers,
-                },
-                SenderGroupId = mergeRequest.SenderGroupId,
-                ReceiverGroup = new ProjectGroupInMergeRequestDto
-                {
-                    Id = mergeRequest.ReceiverGroup.Id,
-                    AffiliatedSectionId = mergeRequest.ReceiverGroup.AffiliatedSectionId,
-                    AffiliatedCourseId = mergeRequest.ReceiverGroup.AffiliatedCourseId,
-                    ConfirmationState = mergeRequest.ReceiverGroup.ConfirmationState,
-                    ConfirmedUserNumber = mergeRequest.ReceiverGroup.ConfirmedUserNumber,
-                    ProjectInformation = mergeRequest.ReceiverGroup.ProjectInformation,
-                    ConfirmedGroupMembers = mergeRequest.ReceiverGroup.ConfirmedGroupMembers,
-                },
-                ReceiverGroupId = mergeRequest.ReceiverGroupId,
-                CreatedAt = mergeRequest.CreatedAt,
-                Accepted = mergeRequest.Accepted,
-                Resolved = mergeRequest.Resolved,
-                VotedStudents = mergeRequest.VotedStudents,
-                Description = mergeRequest.Description
-            };
-            */
-
             response.Data = _mapper.Map<GetMergeRequestDto> (mergeRequest);
+            response.Data.LockDate = mergeRequest.SenderGroup.AffiliatedCourse.LockDate;
+            response.Data.CourseName = mergeRequest.SenderGroup.AffiliatedCourse.Name;
+            response.Data.CurrentUserVote = IsUserInString( mergeRequest.VotedStudents, GetUserId() );
             response.Message = "Success";
             response.Success = true;
 
@@ -541,11 +512,21 @@ namespace backend.Services.MergeRequestServices
         {
             ServiceResponse<List<GetMergeRequestDto>> serviceResponse = new ServiceResponse<List<GetMergeRequestDto>> ();
             List<MergeRequest> dbMergeRequests = await _context.MergeRequests
-                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers )
-                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers )
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.AffiliatedCourse )
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.AffiliatedCourse )
                 .Where ( c => c.SenderGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() )).ToListAsync();
 
-            serviceResponse.Data = dbMergeRequests.Select(c => _mapper.Map<GetMergeRequestDto>(c)).ToList();
+            List<GetMergeRequestDto> dtos = new List<GetMergeRequestDto>();
+            foreach ( var i in dbMergeRequests ) {
+                GetMergeRequestDto tmp = _mapper.Map<GetMergeRequestDto>(i);
+                tmp.LockDate = i.SenderGroup.AffiliatedCourse.LockDate;
+                tmp.CourseName = i.SenderGroup.AffiliatedCourse.Name;
+                tmp.CurrentUserVote = IsUserInString( i.VotedStudents, GetUserId() );
+                dtos.Add ( tmp );
+            }
+            serviceResponse.Data = dtos;
             return serviceResponse;
         }
 
@@ -553,11 +534,21 @@ namespace backend.Services.MergeRequestServices
         {
             ServiceResponse<List<GetMergeRequestDto>> serviceResponse = new ServiceResponse<List<GetMergeRequestDto>> ();
             List<MergeRequest> dbMergeRequests = await _context.MergeRequests
-                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers )
-                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers )
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.GroupMembers ).ThenInclude ( css => css.User )
+                .Include(jr => jr.ReceiverGroup).ThenInclude( cs => cs.AffiliatedCourse )
+                .Include(jr => jr.SenderGroup).ThenInclude( cs => cs.AffiliatedCourse )
                 .Where ( c => c.ReceiverGroup.GroupMembers.Any ( cs => cs.UserId == GetUserId() )).ToListAsync();
 
-            serviceResponse.Data = dbMergeRequests.Select(c => _mapper.Map<GetMergeRequestDto>(c)).ToList();
+            List<GetMergeRequestDto> dtos = new List<GetMergeRequestDto>();
+            foreach ( var i in dbMergeRequests ) {
+                GetMergeRequestDto tmp = _mapper.Map<GetMergeRequestDto>(i);
+                tmp.LockDate = i.SenderGroup.AffiliatedCourse.LockDate;
+                tmp.CourseName = i.SenderGroup.AffiliatedCourse.Name;
+                tmp.CurrentUserVote = IsUserInString( i.VotedStudents, GetUserId() );
+                dtos.Add ( tmp );
+            }
+            serviceResponse.Data = dtos;
             return serviceResponse;
         }
 

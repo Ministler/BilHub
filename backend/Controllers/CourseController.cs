@@ -98,5 +98,11 @@ namespace backend.Controllers
         {
             return Ok(await _courseService.GetUsersOfCourse(courseId));
         }
+
+        [HttpPost("LockGroupFormation")]
+        public async Task<ActionResult> LockGroupFormation(int courseId)
+        {
+            return Ok(await _courseService.LockGroupFormation(courseId));
+        }
     }
 }
