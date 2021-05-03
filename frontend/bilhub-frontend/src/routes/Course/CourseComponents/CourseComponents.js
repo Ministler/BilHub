@@ -171,17 +171,6 @@ export class NewAssignmentModal extends Component {
                                         }}>
                                         Title
                                     </p>
-                                    <Dropdown
-                                        name="type"
-                                        style={{ display: 'flex' }}
-                                        item
-                                        selection
-                                        text="Assignment Type"
-                                        direction="right"
-                                        options={options}
-                                        onChange={this.handleChange}
-                                        value={this.state.type}
-                                    />
                                 </Form.Group>
                                 <Form.Input
                                     name="title"
@@ -203,7 +192,6 @@ export class NewAssignmentModal extends Component {
                                 <Form.Group grouped>
                                     <Grid columns={2}>
                                         <GridColumn>
-                                            {(this.state.type === 1 || this.state.type === 2) && (
                                                 <>
                                                     <Checkbox
                                                         className="AssignmentCheckbox"
@@ -222,10 +210,8 @@ export class NewAssignmentModal extends Component {
                                                         type="checkbox"
                                                     />
                                                 </>
-                                            )}
                                         </GridColumn>
                                         <GridColumn>
-                                            {this.state.type === 1 && (
                                                 <>
                                                     <Checkbox
                                                         className="AssignmentCheckbox"
@@ -258,7 +244,6 @@ export class NewAssignmentModal extends Component {
                                                         </>
                                                     )}
                                                 </>
-                                            )}
                                         </GridColumn>
                                     </Grid>
                                     <Form.Input

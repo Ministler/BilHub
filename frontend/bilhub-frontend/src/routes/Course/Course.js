@@ -607,9 +607,9 @@ class Course extends Component {
     };
 
     getCoursePanes = () => {
-        return this.props.userType === 'Student'
-            ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()]
-            : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()];
+        return this.state.courseInformation?.isTAorInstructorOfCourse
+            ? [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane(), this.getPeerReviewPane()]
+            : [this.getGroupsPane(), this.getStatisticsPane(), this.getAssignmentPane()];
     };
 
     getAssignmentPage = () => {
