@@ -85,19 +85,3 @@ export const postCompleteMergeRequest = async (mergeRequestId) => {
             throw error;
         });
 };
-
-export const postUpdateSRSGradeRequest = async (projectGroupId, newSrsGrade, maxSrsGrade) => {
-    const url = 'UpdateSrsGrade';
-    const body = {
-        projectGroupId: projectGroupId,
-        newSrsGrade: newSrsGrade,
-        maxSrsGrade: maxSrsGrade,
-    };
-
-    return authAxios
-        .post(BASE_PROJECT_GROUP_URL + url, body)
-        .then((response) => response)
-        .catch((error) => {
-            throw error;
-        });
-};

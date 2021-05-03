@@ -114,7 +114,6 @@ export class CourseCreation extends Component {
                 idRequests.push(getIdByEmailRequest(authList[i]));
             }
 
-<<<<<<< HEAD
             axios.all(idRequests).then(
                 axios.spread((...responses) => {
                     for (let i = 0; i < responses.length; i++) {
@@ -122,11 +121,6 @@ export class CourseCreation extends Component {
                     }
                 })
             );
-=======
-            minSize: this.state.minSize,
-            maxSize: this.state.maxSize,
-        };
->>>>>>> yusuf-dev
 
             for (let i = 0; i < this.state.studentAutoList.length; i++) {
                 let studentIdRequests = [];
