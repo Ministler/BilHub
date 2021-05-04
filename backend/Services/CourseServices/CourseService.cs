@@ -656,6 +656,51 @@ namespace backend.Services.CourseServices
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<string>> LockGroupFormationWithBalancePriority(int courseId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            Course dbCourse = await _context.Courses
+                .Include(c => c.Instructors)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Course not found";
+                return serviceResponse;
+            }
+
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User is not authorized to perform this action";
+                return serviceResponse;
+            }
+
+            dbCourse.IsLocked = true;
+            _context.Courses.Update(dbCourse);
+            await _context.SaveChangesAsync();
+
+            bool flag = false;
+            foreach (var i in dbCourse.Sections)
+            {
+                await _context.SaveChangesAsync();
+                var tmp = await _sectionService.LockGroupFormationWithBalancePriority(i.Id);
+                if (tmp.Success == false)
+                    flag = true;
+            }
+
+            if (!flag)
+            {
+                serviceResponse.Message = "Successfully performed the operation";
+                return serviceResponse;
+            }
+            serviceResponse.Success = false;
+            serviceResponse.Message = "There were problems in one or more sections, instructor needs to fix the groups of these sections manually.";
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<string>> LockGroupFormation(int courseId)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();

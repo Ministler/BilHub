@@ -26,5 +26,6 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<List<UsersOfCourseDto>>> GetUsersOfCourse (int courseId);
         Task<ServiceResponse<string>> LockGroupFormation(int courseId);
         Task<ServiceResponse<GetSectionDto>> RemoveStudentFromCourse(int userId, int courseId);
+        Task<ServiceResponse<string>> LockGroupFormationWithBalancePriority(int courseId);
     }
 }

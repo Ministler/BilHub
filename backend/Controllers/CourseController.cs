@@ -105,6 +105,12 @@ namespace backend.Controllers
             return Ok(await _courseService.LockGroupFormation(courseId));
         }
 
+        [HttpPost("LockGroupFormationWithBalancePriority")]
+        public async Task<ActionResult> LockGroupFormationWithBalancePriority(int courseId)
+        {
+            return Ok(await _courseService.LockGroupFormationWithBalancePriority(courseId));
+        }
+
         [HttpDelete("RemoveStudentFromCourse")]
         public async Task<ActionResult> RemoveStudentFromCourse(int userId, int courseId)
         {
