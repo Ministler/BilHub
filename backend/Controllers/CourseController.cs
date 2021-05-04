@@ -104,5 +104,11 @@ namespace backend.Controllers
         {
             return Ok(await _courseService.LockGroupFormation(courseId));
         }
+
+        [HttpDelete("RemoveStudentFromCourse")]
+        public async Task<ActionResult> RemoveStudentFromCourse(int userId, int courseId)
+        {
+            return Ok(await _courseService.RemoveStudentFromCourse(userId, courseId));
+        }
     }
 }

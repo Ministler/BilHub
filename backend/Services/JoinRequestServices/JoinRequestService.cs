@@ -283,13 +283,13 @@ namespace backend.Services.JoinRequestServices
         public async Task<ServiceResponse<JoinRequestInfoDto>> Vote(VoteJoinRequestDto joinRequestDto)
         {
             ServiceResponse<JoinRequestInfoDto> response = new ServiceResponse<JoinRequestInfoDto>();
-            JoinRequest joinRequest = await _context.JoinRequests.Include(jr => jr.RequestedGroup)
-                                    .ThenInclude(pg => pg.GroupMembers)
-                                    .Include(jr => jr.RequestedGroup)
-                                    .ThenInclude(pg => pg.AffiliatedCourse)
-                                .FirstOrDefaultAsync(jr => jr.Id == joinRequestDto.Id);
+            JoinRequest joinRequest = await _context.JoinRequests
+                .Include (jr => jr.RequestingStudent )
+                .Include(jr => jr.RequestedGroup).ThenInclude(pg => pg.GroupMembers).ThenInclude( css => css.User )
+                .Include(jr => jr.RequestedGroup).ThenInclude(pg => pg.AffiliatedCourse)
+                .FirstOrDefaultAsync(jr => jr.Id == joinRequestDto.Id);
             User user = await _context.Users
-                                .FirstOrDefaultAsync(u => u.Id == GetUserId());
+                .FirstOrDefaultAsync(u => u.Id == GetUserId());
 
             if (joinRequest == null)
             {
@@ -360,6 +360,7 @@ namespace backend.Services.JoinRequestServices
                 int reqId = joinRequest.RequestedGroupId;
 
                 var tmp = await _projectGroupService.CompleteJoinRequest(joinRequest.Id);
+
                 if (newSize >= maxSize)
                 {
                     await DeleteAllJoinRequestsOfGroup(new DeleteAllJoinRequestsGroupDto { projectGroupId = reqId });
@@ -369,6 +370,8 @@ namespace backend.Services.JoinRequestServices
                 await _context.SaveChangesAsync();
 
                 response.Message = "Join request is accepted by all members. The user joined the group successfully";
+                if ( !tmp.Success )
+                    response.Message = tmp.Message;
                 return response;
             }
 
