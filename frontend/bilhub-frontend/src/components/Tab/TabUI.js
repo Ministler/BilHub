@@ -88,11 +88,11 @@ export const StudentPeerReviewPane = (props) => {
     const points = [];
 
     for (var i = 0; i < props.group.members.length; i++) {
-        if (props.curUser.userId !== props.group.members[i].userId) {
+        if (props.curUser.userId !== props.group.members[i].id) {
             options.push({
                 text: props.group.members[i].name,
-                key: props.group.members[i].userId,
-                value: props.group.members[i].userId,
+                key: props.group.members[i].id,
+                value: props.group.members[i].id,
             });
         }
     }

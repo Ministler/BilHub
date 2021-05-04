@@ -26,6 +26,7 @@ class Profile extends Component {
     }
 
     changeUserInformation = (newInformation) => {
+        this.setState({ userInformation: newInformation });
         updateProfile(this.state.email, this.state.name, newInformation, false);
     };
 

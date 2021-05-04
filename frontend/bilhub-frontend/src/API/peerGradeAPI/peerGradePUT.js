@@ -1,7 +1,7 @@
 import { authAxios, BASE_PEER_GRADE_URL } from '../axiosConfigs';
 
-export const putPeerGradeRequest = async (peerGradeId, maxGrade, grade) => {
-    const url = peerGradeId + '/' + maxGrade + '/' + grade;
+export const putPeerGradeRequest = async (peerGradeId, grade, comment) => {
+    const url = peerGradeId + '/' + grade + '?comment=' + comment;
 
     return authAxios
         .put(BASE_PEER_GRADE_URL + url)

@@ -42,6 +42,7 @@ import { deleteSrsGradeRequest } from '../../API/projectGroupAPI/projectGroupDEL
 import { putProjectGradeRequest } from '../../API/projectGradeAPI/projectGradePUT';
 import { getPeerGradeRequestWithReviewee, getPeerGradeRequestWithReviewer } from '../../API/peerGradeAPI/peerGradeGET';
 import { getProjectGradeDownloadByIdRequest, putProjectGroupRequest } from '../../API';
+import { putPeerGradeRequest } from '../../API/peerGradeAPI';
 
 class Project extends Component {
     constructor(props) {
@@ -84,12 +85,19 @@ class Project extends Component {
             peerReviews: [],
         };
     }
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //Change Name
     changeGroupName = (newName) => {
+        const t = { ...this.state.projectGroup };
+        t.name = newName;
+        this.setState({ projectGroup: t });
         putProjectGroupRequest(this.props.match.params.projectId, this.state.projectGroup.information, newName);
     };
 
+    //Change Info
     changeGroupInformation = (newInformation) => {
+        const t = { ...this.state.projectGroup };
+        t.information = newInformation;
+        this.setState({ projectGroup: t });
         putProjectGroupInformationRequest(this.props.match.params.projectId, newInformation);
     };
 
@@ -165,9 +173,9 @@ class Project extends Component {
                     newName: projectGroupData.affiliatedCourse.name,
                 };
                 if (!auth.data.data) {
-                    console.log(this.props.match.params.projectId, this.props.userId);
                     getPeerGradeRequestWithReviewer(this.props.match.params.projectId, this.props.userId).then(
                         (users) => {
+                            console.log(users.data.data);
                             this.setState({ peerReviews: users.data.data });
                         }
                     );
@@ -302,7 +310,7 @@ class Project extends Component {
                     persons: persons,
                     studentAvg: studentAvg,
                     projectAverage: projectAverage,
-                    courseAverage: 8, //kendim belirledim
+                    courseAverage: studentAvg,
                     finalGrade: 40, //kendim belirledim
                 };
                 this.setState({ feedbacks: feedbacks, grades: grades });
@@ -630,6 +638,7 @@ class Project extends Component {
                     className="clickableChangeColor"
                     onClick={() => {
                         this.onEditModeToggled('nameEditMode');
+                        this.setState({ newName: this.state.projectGroup.name });
                     }}
                     name={'edit'}
                     color="blue"
@@ -671,6 +680,7 @@ class Project extends Component {
                 <Icon
                     className="clickableChangeColor"
                     onClick={() => {
+                        this.setState({ newInformation: this.state.projectGroup.information });
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'edit'}
@@ -800,6 +810,7 @@ class Project extends Component {
     };
 
     changeReviewingPeer = (userId) => {
+        console.log(userId);
         let currentReview = {};
         for (var i = 0; i < this.state.peerReviews.length; i++) {
             if (this.state.peerReviews[i].revieweeId === userId) {
@@ -821,16 +832,34 @@ class Project extends Component {
     };
 
     submitReview = () => {
-        console.log(this.state.currentReviewGrade);
+        let isExists = false;
+        let reviewId;
+        let reviews = [...this.state.peerReviews];
+        for (let i in this.state.peerReviews) {
+            if (this.state.peerReviews[i].revieweeId === this.state.currentPeer) {
+                isExists = true;
+                reviewId = this.state.peerReviews[i].id;
+                break;
+            }
+        }
         if (this.state.currentReviewGrade === -1 || this.state.currentPeer === 0 /* check existance */) {
             window.alert('You need to enter both grade and reviewee');
-        } /*if()*/ else {
+        } else if (!isExists) {
             postPeerGradeRequest(
                 this.props.match.params.projectId,
                 this.state.currentPeer,
                 this.state.currentReviewGrade,
                 this.state.currentReviewComment
             );
+        } else {
+            putPeerGradeRequest(reviewId, this.state.currentReviewGrade, this.state.currentReviewComment);
+            for (let i in reviews) {
+                if (reviews[i].id === reviewId) {
+                    reviews[i].comment = this.state.currentReviewComment;
+                    reviews[i].grade = this.state.currentReviewGrade;
+                    this.setState({ peerReviews: reviews });
+                }
+            }
         }
     };
 
@@ -838,7 +867,7 @@ class Project extends Component {
         return {
             title: 'Peer Review',
             content: this.state.isPeerReviewOpen ? (
-                this.props.userType === 'student' ? (
+                this.props.userType === 'Student' ? (
                     <StudentPeerReviewPane
                         curUser={{ name: this.props.userName, userId: this.props.userId }} //dummy
                         group={this.state.projectGroup}

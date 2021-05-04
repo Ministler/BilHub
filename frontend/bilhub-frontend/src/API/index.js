@@ -73,3 +73,5 @@ export {
     putSubmissionRequest,
     postSubmissionSrsGradeRequest,
 } from './submissionAPI';
+
+export { putPeerGradeRequest } from './peerGradeAPI';
