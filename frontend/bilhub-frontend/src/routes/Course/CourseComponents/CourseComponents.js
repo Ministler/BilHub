@@ -19,18 +19,25 @@ import {
     Dropdown,
     GridColumn,
 } from 'semantic-ui-react';
-import { dateObjectToInputDate, inputDateToDateObject } from '../../../utils';
+import {
+    dateObjectToInputDate,
+    inputDateToDateObject,
+    instructerTypeSplitgeTAs,
+    instructerTypeSplitInstructers,
+} from '../../../utils';
 
 export const InformationSection = (props) => {
+    console.log(props);
+
     return (
         <div>
             <div style={{ textAlign: 'center' }}>
-                <h1 style={{ display: 'inline', marginLeft: '0px' }}>{  props.courseName}</h1>
+                <h1 style={{ display: 'inline', marginLeft: '0px' }}>{props.courseName}</h1>
                 <span className="CourseNameEdit"> {props.courseSettingsIcon} </span>
                 <p style={{ marginLeft: '-30px' }}>{props.description}</p>
             </div>
             <div className="InstructorsBlock">
-                {convertMembersToMemberElement(props.instructors, props.onUserClicked, 'Instructors')}
+                {convertMembersToMemberElement(props.Ins, props.onUserClicked, 'Instructors')}
             </div>
             <div className="TAsBlock">{convertMembersToMemberElement(props.TAs, props.onUserClicked, "TA's")}</div>
             <div className="InformationBlock">

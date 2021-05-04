@@ -10,7 +10,7 @@ export const LoginUI = (props) => {
             <Grid centered>
                 <Grid.Column style={{ maxWidth: 300, marginTop: 50 }}>
                     <h2 className="ui center aligned icon header">
-                        <Logo/>
+                        <Logo />
                         Sign in to BilHub
                     </h2>
                     {props.error && (
