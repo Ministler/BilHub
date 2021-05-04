@@ -1,13 +1,21 @@
-export function instructerTypeSplit(dataList) {
+export function instructerTypeSplitInstructers(dataList) {
     let instructerList = [];
-    let taList = [];
 
     for (let i = 0; i < dataList.length; i++) {
         if(dataList[i].userType === "Instructor")
-            instructerList.push(dataList[i]);
-        else
+            instructerList.push(dataList[i]);                          
+    }
+
+    return instructerList;
+}
+
+export function instructerTypeSplitgeTAs(dataList) {
+    let taList = [];
+
+    for (let i = 0; i < dataList.length; i++) {
+        if(dataList[i].userType !== "Instructor")
             taList.push(dataList[i]);                            
     }
 
-    return {instructerList, taList};
+    return taList;
 }

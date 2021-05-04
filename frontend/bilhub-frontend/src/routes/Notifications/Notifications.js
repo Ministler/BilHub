@@ -738,16 +738,16 @@ class Notifications extends Component {
                     <GridColumn width={4}>
                         <div className={'HomeDivLeft'}>
                             <ProfilePrompt name={this.props.name} onClick={this.onProfilePromptClicked} />
-                            {myProjectsComponent && (
+                            {(this.state.myProjects && this.state.myProjects.length !==0) && (
                                 <div className="MyProjectsBlock">
                                     <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
                                     {myProjectsComponent}
                                 </div>
                             )}
-                            {myProjectsComponent && instructedCoursesComponent && (
+                            {((this.state.myProjects && this.state.myProjects.length !==0) && (this.state.instructedCourses && this.state.instructedCourses.length !==0 ))  && (
                                 <Divider style={{ width: '70%', margin: 'auto', marginTop: '20px' }} />
                             )}
-                            {instructedCoursesComponent && (
+                            {(this.state.instructedCourses && this.state.instructedCourses.length !==0 ) && (
                                 <div className="InstructedCoursesBlock">
                                     <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
                                     {instructedCoursesComponent}

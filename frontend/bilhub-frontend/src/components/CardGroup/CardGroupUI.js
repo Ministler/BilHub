@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Grid, Icon } from 'semantic-ui-react';
-import { dateObjectToString } from '../../utils';
+import { dateObjectToString, convertDate } from '../../utils';
 
 import './CardGroupUI.css';
 
@@ -23,7 +23,7 @@ export const AssignmentCardElement = (props) => {
             </Card.Content>
             <Card.Content extra textAlign="right">
                 <div>{props.publisher}</div>
-                <div>{typeof props.date === 'object' ? dateObjectToString(props.date) : props.date}</div>
+                <div>{typeof props.date === 'object' ? convertDate(dateObjectToString(props.date)) : convertDate(props.date)}</div>
             </Card.Content>
         </Card>
     );
@@ -53,7 +53,7 @@ export const FeedbackCardElement = (props) => {
                     Grade: {props.grade}/{props.maxGrade ? props.maxGrade : '10'}
                 </div>
                 <div className="FeedbackDate">
-                    {typeof props.date === 'object' ? dateObjectToString(props.date) : props.date}
+                    {typeof props.date === 'object' ? convertDate(dateObjectToString(props.date) ): convertDate(props.date)}
                 </div>
             </Card.Content>
         </Card>
@@ -103,28 +103,28 @@ export const RequestCardElement = (props) => {
                         <span>
                             Request Date:{' '}
                             {typeof props.requestDate === 'object'
-                                ? dateObjectToString(props.requestDate)
-                                : props.requestDate}{' '}
+                                ? convertDate(dateObjectToString(props.requestDate))
+                                : convertDate(props.requestDate)}{' '}
                             / Formation Date:{' '}
                             {typeof props.formationDate === 'object'
-                                ? dateObjectToString(props.formationDate)
-                                : props.formationDate}
+                                ? convertDate(dateObjectToString(props.formationDate))
+                                : convertDate(props.formationDate)}
                         </span>
                     ) : null}
                     {props.approvalDate ? (
                         <span>
                             Approval Date:{' '}
                             {typeof props.approvalDate === 'object'
-                                ? dateObjectToString(props.approvalDate)
-                                : props.approvalDate}
+                                ? convertDate(dateObjectToString(props.approvalDate))
+                                : convertDate(props.approvalDate)}
                         </span>
                     ) : null}
                     {props.disapprovalDate ? (
                         <span>
                             Dispproval Date:{' '}
                             {typeof props.disapprovalDate === 'object'
-                                ? dateObjectToString(props.disapprovalDate)
-                                : props.disapprovalDate}
+                                ? convertDate(dateObjectToString(props.disapprovalDate))
+                                : convertDate(props.disapprovalDate)}
                         </span>
                     ) : null}
                 </div>
