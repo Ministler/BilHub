@@ -8,6 +8,9 @@ import {
     getSubmissionRequest,
     getAssignmentStatisticsRequest,
     getSubmissionFileRequest,
+    getUngradedSubmissionFileRequest,
+    getSubmissionFileOfSectionRequest,
+    getCourseRequest,
 } from '../../../API';
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
@@ -29,93 +32,98 @@ class CourseAssignment extends Component {
     };
 
     onFileClicked = () => {
-        getAssignmentFileRequest(this.props.match.params.assignmentId, this.state.assignment.fileName);
+        getAssignmentFileRequest(this.props.match.params.assignmentId, this.state.assignment?.fileName);
     };
 
     onDownloadAllFiles = () => {
-        console.log('File');
+        getSubmissionFileOfSectionRequest(this.props.match.params.courseId, -1, this.props.match.params.assignmentId);
     };
 
     onDownloadNotGradedFiles = () => {
-        console.log('file');
+        getUngradedSubmissionFileRequest(this.props.match.params.courseId);
     };
 
     componentDidMount() {
         getAssignmentRequest(this.props.match.params.assignmentId).then((response) => {
             if (!response.data.success) return;
 
-            const data = response.data.data;
+            getCourseRequest(this.props.match.params.courseId).then((curResponse) => {
+                if (!curResponse.data.success) return;
 
-            const assignment = {
-                title: data.title,
-                caption: data.assignmentDescription,
-                publisher: data.publisher,
-                hasFile: data.hasFile,
-                fileName: data.fileName,
-                isUserTAorInstructor: this.props.isUserTAorInstructor,
-                publishmentDate: data.createdAt,
-                dueDate: data.dueDate,
-                currentUserSection: this.props.currentUserSection,
-                numberOfSections: this.props.numberOfSections,
-            };
+                const courseData = curResponse.data.data;
+                const data = response.data.data;
+                const assignment = {
+                    title: data.title,
+                    caption: data.assignmentDescription,
+                    publisher: data.publisher,
+                    hasFile: data.hasFile,
+                    fileName: data.fileName,
+                    publishmentDate: data.createdAt,
+                    dueDate: data.dueDate,
 
-            this.setState({
-                assignment: assignment,
-            });
+                    isUserTAorInstructor: courseData.isInstructorOrTAInCourse,
+                    currentUserSection: courseData.currentUserSectionId,
+                    numberOfSections: courseData?.numberOfSections,
+                };
 
-            const submissionIds = data.submissionIds;
-            const requests = [];
-            for (let id of submissionIds) {
-                requests.push(getSubmissionRequest(id));
-            }
+                this.setState({
+                    assignment: assignment,
+                });
 
-            axios.all(requests).then(
-                axios.spread((...responses) => {
-                    const submission = [];
-                    for (let i = 0; i < this.props.numberOfSections; i++) {
-                        submission.push({
-                            graded: [],
-                            submitted: [],
-                            notSubmitted: [],
-                        });
-                    }
-                    for (let response of responses) {
-                        const data = response.data.data;
-                        console.log(data);
-                        if (!data.hasSubmission) {
-                            submission[data.sectionNumber - 1].notSubmitted.push({
-                                groupName: data.affiliatedGroup.name,
-                                projectId: data.affiliatedGroup.id,
-                                submissionId: data.id,
-                            });
-                        } else if (!data.isGraded) {
-                            console.log(submission);
-                            submission[data.sectionNumber - 1].submitted.push({
-                                groupName: data.affiliatedGroup.name,
-                                projectId: data.affiliatedGroup.id,
-                                submissionId: data.id,
-                                hasFile: data.hasFile,
-                                submissionDate: data.updatedAt,
-                                fileName: data.fileName,
-                            });
-                        } else {
-                            submission[data.sectionNumber - 1].graded.push({
-                                groupName: data.affiliatedGroup.name,
-                                projectId: data.affiliatedGroup.id,
-                                submissionId: data.id,
-                                hasFile: data.hasFile,
-                                submissionDate: data.updatedAt,
-                                grade: data.srsGrade,
-                                fileName: data.fileName,
+                const submissionIds = data.submissionIds;
+                const requests = [];
+                for (let id of submissionIds) {
+                    requests.push(getSubmissionRequest(id));
+                }
+
+                axios.all(requests).then(
+                    axios.spread((...responses) => {
+                        const submission = [];
+                        for (let i = 0; i < this.state.assignment?.numberOfSections; i++) {
+                            submission.push({
+                                graded: [],
+                                submitted: [],
+                                notSubmitted: [],
                             });
                         }
-                    }
-                    console.log(submission);
-                    this.setState({
-                        submissions: submission,
-                    });
-                })
-            );
+                        for (let response of responses) {
+                            const data = response.data.data;
+                            console.log(data);
+                            if (!data.hasSubmission) {
+                                submission[data.sectionNumber - 1].notSubmitted.push({
+                                    groupName: data.affiliatedGroup.name,
+                                    projectId: data.affiliatedGroup.id,
+                                    submissionId: data.id,
+                                });
+                            } else if (!data.isGraded) {
+                                console.log(submission);
+                                submission[data.sectionNumber - 1].submitted.push({
+                                    groupName: data.affiliatedGroup.name,
+                                    projectId: data.affiliatedGroup.id,
+                                    submissionId: data.id,
+                                    hasFile: data.hasFile,
+                                    submissionDate: data.updatedAt,
+                                    fileName: data.fileName,
+                                });
+                            } else {
+                                submission[data.sectionNumber - 1].graded.push({
+                                    groupName: data.affiliatedGroup.name,
+                                    projectId: data.affiliatedGroup.id,
+                                    submissionId: data.id,
+                                    hasFile: data.hasFile,
+                                    submissionDate: data.updatedAt,
+                                    grade: data.srsGrade,
+                                    fileName: data.fileName,
+                                });
+                            }
+                        }
+                        console.log(submission);
+                        this.setState({
+                            submissions: submission,
+                        });
+                    })
+                );
+            });
         });
 
         getAssignmentStatisticsRequest(this.props.match.params.assignmentId).then((response) => {
@@ -124,7 +132,9 @@ class CourseAssignment extends Component {
         });
 
         this.setState({
-            currentSection: this.props.currentUserSection ? this.props.currentUserSection - 1 : 0,
+            currentSection: this.state.assignment?.currentUserSection
+                ? this.state.assignment?.currentUserSection - 1
+                : 0,
         });
     }
 
@@ -134,7 +144,7 @@ class CourseAssignment extends Component {
 
     getAssignmentControlIcons = () => {
         let controlIcons = null;
-        if (this.props.isTAorInstructorOfCourse) {
+        if (this.state.assignment?.isUserTAorInstructor) {
             controlIcons = (
                 <>
                     <Icon
@@ -257,7 +267,7 @@ class CourseAssignment extends Component {
                         Download All Files <Icon name="download" />
                     </Button>
                     <Button color="green" compact onClick={this.onDownloadNotGradedFiles} icon labelPosition="right">
-                        Donwload Only Not Graded Files <Icon name="download" />
+                        Download Not Graded Files <Icon name="download" />
                     </Button>
                 </>
             );

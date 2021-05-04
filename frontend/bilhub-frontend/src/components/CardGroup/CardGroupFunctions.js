@@ -61,6 +61,7 @@ export const convertAssignmentsToAssignmentList = (
                 </>
             );
         }
+        console.log(assignment.fileName);
         return (
             <AssignmentCardElement
                 title={assignment.publisher + ' / ' + assignment.title}

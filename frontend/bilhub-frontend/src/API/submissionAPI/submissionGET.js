@@ -5,19 +5,23 @@ export const getUngradedSubmissionFileRequest = async (courseId) => {
     const url = 'File/Ungraded/' + courseId;
 
     return authAxios
-        .get(BASE_SUBMISSION_URL + url)
-        .then((response) => response)
+        .get(BASE_SUBMISSION_URL + url, { responseType: 'blob' })
+        .then((response) => {
+            FileDownload(response.data, 'submissionFiles.zip');
+        })
         .catch((error) => {
             throw error;
         });
 };
 
 export const getSubmissionFileOfSectionRequest = async (courseId, sectionId, assignmentId) => {
-    const url = 'File/' + courseId + '/' + sectionId + '/' + assignmentId;
+    const url = 'File/' + courseId + '/-1/' + assignmentId;
 
     return authAxios
-        .get(BASE_SUBMISSION_URL + url)
-        .then((response) => response)
+        .get(BASE_SUBMISSION_URL + url, { responseType: 'blob' })
+        .then((response) => {
+            FileDownload(response.data, 'submissionFiles.zip');
+        })
         .catch((error) => {
             throw error;
         });

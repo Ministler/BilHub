@@ -103,7 +103,6 @@ class Course extends Component {
     };
 
     onAssignmentFileClicked = (assignmentId, fileName) => {
-        console.log(fileName);
         getAssignmentFileRequest(assignmentId, fileName);
     };
 
@@ -151,7 +150,6 @@ class Course extends Component {
             if (!response.data.success) return;
 
             const courseData = response.data?.data;
-            console.log(courseData);
             const TAs = instructerTypeSplitgeTAs(courseData?.instructors);
             const Ins = instructerTypeSplitInstructers(courseData?.instructors);
             const courseInformation = {
@@ -205,6 +203,7 @@ class Course extends Component {
 
                 axios.all(sectionRequests).then(
                     axios.spread((...responses) => {
+                        console.log(responses);
                         const groups = [];
                         for (let i = 0; i < responses.length; i++) {
                             const data = responses[i].data.data;
@@ -265,7 +264,7 @@ class Course extends Component {
                 for (let i = 0; i < courseData?.sections.length; i++) {
                     sectionRequests.push(getSectionRequest(courseData?.sections[i].id));
                 }
-
+                console.log('responses');
                 axios.all(sectionRequests).then(
                     axios.spread((...responses) => {
                         console.log(responses);
@@ -538,11 +537,11 @@ class Course extends Component {
 
     getGroupsPane = () => {
         let groupsTab = null;
-
+        const currentSection = this.state.currentSection >= this.state.groups?.length ? 0 : this.state.currentSection;
         if (this.state.courseInformation?.isLocked) {
             groupsTab = this.state.groups ? (
                 <GroupsTab
-                    groupsFormed={this.state.groups[this.state.currentSection]}
+                    groupsFormed={this.state.groups[currentSection]}
                     isLocked={this.state.courseInformation?.isLocked}
                     onGroupClicked={this.onGroupClicked}
                 />
@@ -551,11 +550,9 @@ class Course extends Component {
             groupsTab = this.state.groups ? (
                 <GroupsTab
                     isUserInFormedGroup={this.state.courseInformation?.isUserInFormedGroup}
-                    groupsFormed={this.state.groups[this.state.currentSection]?.formed}
-                    groupsUnformed={this.state.groups[this.state.currentSection]?.unformed}
-                    isUserInThisSection={
-                        this.state.courseInformation?.currentUserSection === this.state.currentSection + 1
-                    }
+                    groupsFormed={this.state.groups[currentSection].formed}
+                    groupsUnformed={this.state.groups[currentSection].unformed}
+                    isUserInThisSection={this.state.courseInformation?.currentUserSection === currentSection + 1}
                     onSendRequestModalOpened={this.onSendRequestModalOpened}
                     onUnformedGroupModalOpened={this.onUnformedGroupModalOpened}
                     isLocked={this.state.courseInformation?.isLocked}
@@ -779,10 +776,9 @@ class Course extends Component {
     };
     //,,
     getAssignmentPage = () => {
-        console.log(this.state.courseInformation?.numberOfSections);
         return (
             <CourseAssignment
-                isTAorInstructorOfCourse={this.state.courseInformation?.isTAorInstructorOfCourse}
+                isUserTAorInstructor={this.state.courseInformation?.isTAorInstructorOfCourse}
                 numberOfSections={
                     this.state.courseInformation?.numberOfSections ? this.state.courseInformation.numberOfSections : 1
                 }
