@@ -214,9 +214,6 @@ class Home extends Component {
                                     <div>
                                         {upcomingAssignmentsComponent}
                                         {notGradedAssignmentsComponent}
-                                        <Button onClick={this.test} fluid>
-                                            TEST
-                                        </Button>
                                     </div>
                                 </GridColumn>
                             </Grid.Row>
