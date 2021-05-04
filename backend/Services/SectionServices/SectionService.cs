@@ -100,7 +100,7 @@ namespace backend.Services.SectionServices
             serviceResponse.Data.ProjectGroups = tmp.Data;
             return serviceResponse;
         }
-
+        
         public async Task<ServiceResponse<GetSectionDto>> RemoveStudentFromSection(int userId, int sectionId)
         {
             ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto>();
@@ -140,11 +140,18 @@ namespace backend.Services.SectionServices
                 return serviceResponse;
             }
 
-            int currentProjectGroupId = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedSectionId == sectionId ).ProjectGroupId ;
+            ProjectGroup tmpGroup = await _context.ProjectGroups
+                .Include ( c => c.GroupMembers ).ThenInclude ( cs => cs.User) 
+                .FirstOrDefaultAsync ( c => c.GroupMembers.Any ( cs => cs.UserId == userId ) && c.AffiliatedSectionId == sectionId );
+            int currentProjectGroupId = tmpGroup.Id;
 
-            await _projectGroupService.KickStudentFromGroup ( userId, currentProjectGroupId, true );
+            await _projectGroupService.KickStudentFromGroup ( currentProjectGroupId, userId, true );
 
-            int newProjectGroupId = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedSectionId == sectionId ).ProjectGroupId ;
+            tmpGroup = await _context.ProjectGroups
+                .Include ( c => c.GroupMembers ).ThenInclude ( cs => cs.User) 
+                .FirstOrDefaultAsync ( c => c.GroupMembers.Any ( cs => cs.UserId == userId ) && c.AffiliatedSectionId == sectionId );
+
+            int newProjectGroupId = tmpGroup.Id;
 
             await _projectGroupService.DeleteProjectGroup ( newProjectGroupId );
 
@@ -223,11 +230,8 @@ namespace backend.Services.SectionServices
                 
                 if ( i.GroupMembers.Count >= dbSection.AffiliatedCourse.MinGroupSize && i.GroupMembers.Count <= dbSection.AffiliatedCourse.MaxGroupSize )
                 {
-                    foreach ( var j in dbSection.ProjectGroups )
-                    {
-                        foreach ( var k in j.GroupMembers )
-                            await _projectGroupService.ForceConfirmStudent (k.UserId,j.Id);
-                    }
+                    foreach ( var k in i.GroupMembers )
+                        await _projectGroupService.ForceConfirmStudent (k.UserId,i.Id);
 
                     formedGroups.Add ( i.Id );
                 }
@@ -273,6 +277,115 @@ namespace backend.Services.SectionServices
                 if ( flag == false )
                     break;
 
+            }
+
+            serviceResponse.Data = "Possible merges are done.";
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<string>> LockGroupFormationWithBalancePriority(int sectionId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string> ();
+            
+            Section dbSection = await _context.Sections
+                .Include ( c => c.AffiliatedCourse )
+                .Include ( c => c.ProjectGroups ).ThenInclude ( cs => cs.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.Id == sectionId );
+
+            if ( dbSection == null ) 
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Section not found";
+                return serviceResponse;
+            }
+
+            List<int> unformedGroups = new List<int>();
+            List<int> formedGroups = new List<int>();
+            foreach ( var i in dbSection.ProjectGroups ) {
+                
+                if ( i.GroupMembers.Count >= dbSection.AffiliatedCourse.MinGroupSize && i.GroupMembers.Count <= dbSection.AffiliatedCourse.MaxGroupSize )
+                {
+                    foreach ( var k in i.GroupMembers )
+                        await _projectGroupService.ForceConfirmStudent (k.UserId,i.Id);
+
+                    formedGroups.Add ( i.Id );
+                }
+                else {
+                    if ( i.ConfirmationState )
+                        formedGroups.Add ( i.Id );
+                    else
+                        unformedGroups.Add ( i.Id );
+                }
+            }
+
+
+            foreach ( var i in unformedGroups )
+                await _projectGroupService.ForceCancelGroup (i);
+            
+            unformedGroups.Clear();
+            dbSection = await _context.Sections
+                .Include ( c => c.AffiliatedCourse )
+                .Include ( c => c.ProjectGroups ).ThenInclude ( cs => cs.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.Id == sectionId );
+
+            foreach ( var i in dbSection.ProjectGroups )
+            {
+                if ( i.GroupMembers.Count == 1 )
+                    unformedGroups.Add ( i.Id );
+            }
+            
+            int allowedMin = dbSection.AffiliatedCourse.MinGroupSize;
+            int allowedMax = dbSection.AffiliatedCourse.MaxGroupSize;
+            int n = unformedGroups.Count;
+            List<int> newSizes = new List<int>();
+            int curGrpSize = n/allowedMin;
+            if ( curGrpSize == 0 ) {
+                newSizes.Add (n);
+            }
+            else {
+                int extra = n%allowedMin;
+                if ( curGrpSize*(allowedMax-allowedMin) >= extra ) {
+                    int extraEachGroup = extra/curGrpSize;
+                    int extraOfExtra = extra%curGrpSize;
+
+                    for ( int i = 1 ; i <= curGrpSize - extraOfExtra ; i++ )
+                        newSizes.Add ( allowedMin + extraEachGroup );
+                    for ( int i = 1 ; i <= extraOfExtra ; i++ )
+                        newSizes.Add ( allowedMin + extraEachGroup + 1 );
+                }
+                else {
+                    for ( int i = 1 ; i <= curGrpSize ; i++ )
+                        newSizes.Add ( allowedMin );
+                    newSizes.Add ( extra );
+                }
+            }
+
+            while ( newSizes.Count > 0 )
+            {
+                int curSize = newSizes.ElementAt(0);
+                newSizes.RemoveAt(0);
+
+                List<int> curGroup = new List<int>();
+                for ( int i = 1 ; i <= curSize ; i++ ) {
+                    curGroup.Add ( unformedGroups.ElementAt(0) );
+                    unformedGroups.RemoveAt (0);
+                }
+
+                for ( int i = 1 ; i < curSize ; i++ )
+                {
+                    await _projectGroupService.ForceMerge ( curGroup.ElementAt(i), curGroup.ElementAt(0) );
+                }
+
+                if ( curSize >= allowedMin ) {
+                    ProjectGroup tmpGroup = await _context.ProjectGroups
+                        .Include ( c => c.GroupMembers )
+                        .FirstOrDefaultAsync ( c => c.Id == curGroup.ElementAt(0) );
+                    if ( tmpGroup != null ) 
+                    {
+                        foreach ( var j in tmpGroup.GroupMembers )
+                            await _projectGroupService.ForceConfirmStudent (j.UserId,tmpGroup.Id);
+                    }
+                }
             }
 
             serviceResponse.Data = "Possible merges are done.";

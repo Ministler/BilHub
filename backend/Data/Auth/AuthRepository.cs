@@ -256,9 +256,9 @@ namespace backend.Data.Auth
 
         public async Task<ServiceResponse<int>> IdOfUser(string email)
         {
-            ServiceResponse<int> serviceResponse = new ServiceResponse<int> ();
-            User dbUser = await _context.Users.FirstOrDefaultAsync ( x => x.Email.Equals ( email ) );
-            if ( dbUser == null ) 
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
+            User dbUser = await _context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            if (dbUser == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "There is no such user";
@@ -273,9 +273,9 @@ namespace backend.Data.Auth
         {
             ServiceResponse<GetUserInfoDto> serviceResponse = new ServiceResponse<GetUserInfoDto>();
             User dbUser = await _context.Users
-                .FirstOrDefaultAsync ( c => c.Id == GetUserId() );
-            
-            if ( dbUser == null ) 
+                .FirstOrDefaultAsync(c => c.Id == GetUserId());
+
+            if (dbUser == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User not found";
@@ -287,10 +287,10 @@ namespace backend.Data.Auth
             dbUser.Name = userUpdateDto.Name;
             dbUser.ProfileInfo = userUpdateDto.ProfileInfo;
 
-            _context.Users.Update ( dbUser );
+            _context.Users.Update(dbUser);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = _mapper.Map<GetUserInfoDto> (dbUser);
+            serviceResponse.Data = _mapper.Map<GetUserInfoDto>(dbUser);
             return serviceResponse;
         }
 
@@ -298,16 +298,16 @@ namespace backend.Data.Auth
         {
             ServiceResponse<GetUserInfoDto> serviceResponse = new ServiceResponse<GetUserInfoDto>();
             User dbUser = await _context.Users
-                .FirstOrDefaultAsync ( c => c.Id == userId );
-            
-            if ( dbUser == null ) 
+                .FirstOrDefaultAsync(c => c.Id == userId);
+
+            if (dbUser == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User not found";
                 return serviceResponse;
             }
-            
-            serviceResponse.Data = _mapper.Map<GetUserInfoDto> (dbUser);
+
+            serviceResponse.Data = _mapper.Map<GetUserInfoDto>(dbUser);
             return serviceResponse;
         }
     }

@@ -8,6 +8,7 @@ using backend.Data;
 using backend.Dtos.Assignment;
 using backend.Dtos.Course;
 using backend.Dtos.ProjectGroup;
+using backend.Dtos.Section;
 using backend.Dtos.User;
 using backend.Models;
 using backend.Services.AssignmentServices;
@@ -557,7 +558,7 @@ namespace backend.Services.CourseServices
                 return serviceResponse;
             }
 
-            dbCourse.IsActive = true;
+            dbCourse.IsActive = false;
 
             _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
@@ -611,6 +612,7 @@ namespace backend.Services.CourseServices
                             publishmentDate = a.CreatedAt,
                             dueDate = a.DueDate,
                             hasFile = a.HasFile,
+                            fileName = a.FilePath != null ? a.FilePath.Split('/').Last() : "",
                             fileEndpoint = "Assignment/File/" + a.Id,
                             courseId = a.AfilliatedCourseId
                         }
@@ -654,22 +656,22 @@ namespace backend.Services.CourseServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<string>> LockGroupFormation(int courseId)
+        public async Task<ServiceResponse<string>> LockGroupFormationWithBalancePriority(int courseId)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string> ();
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             Course dbCourse = await _context.Courses
-                .Include ( c => c.Instructors )
-                .Include ( c => c.Sections )
-                .FirstOrDefaultAsync ( c => c.Id == courseId );
+                .Include(c => c.Instructors)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
 
-            if ( dbCourse == null )
+            if (dbCourse == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Course not found";
                 return serviceResponse;
             }
 
-            if ( !dbCourse.Instructors.Any ( c => c.UserId == GetUserId() ) )
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User is not authorized to perform this action";
@@ -677,18 +679,19 @@ namespace backend.Services.CourseServices
             }
 
             dbCourse.IsLocked = true;
-            _context.Courses.Update ( dbCourse );
+            _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
 
             bool flag = false;
-            foreach ( var i in dbCourse.Sections ) {
+            foreach (var i in dbCourse.Sections)
+            {
                 await _context.SaveChangesAsync();
-                var tmp = await _sectionService.LockGroupFormation( i.Id );
-                if ( tmp.Success == false )
+                var tmp = await _sectionService.LockGroupFormationWithBalancePriority(i.Id);
+                if (tmp.Success == false)
                     flag = true;
             }
-            
-            if ( !flag ) 
+
+            if (!flag)
             {
                 serviceResponse.Message = "Successfully performed the operation";
                 return serviceResponse;
@@ -696,6 +699,68 @@ namespace backend.Services.CourseServices
             serviceResponse.Success = false;
             serviceResponse.Message = "There were problems in one or more sections, instructor needs to fix the groups of these sections manually.";
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<string>> LockGroupFormation(int courseId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            Course dbCourse = await _context.Courses
+                .Include(c => c.Instructors)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (dbCourse == null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Course not found";
+                return serviceResponse;
+            }
+
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User is not authorized to perform this action";
+                return serviceResponse;
+            }
+
+            dbCourse.IsLocked = true;
+            _context.Courses.Update(dbCourse);
+            await _context.SaveChangesAsync();
+
+            bool flag = false;
+            foreach (var i in dbCourse.Sections)
+            {
+                await _context.SaveChangesAsync();
+                var tmp = await _sectionService.LockGroupFormation(i.Id);
+                if (tmp.Success == false)
+                    flag = true;
+            }
+
+            if (!flag)
+            {
+                serviceResponse.Message = "Successfully performed the operation";
+                return serviceResponse;
+            }
+            serviceResponse.Success = false;
+            serviceResponse.Message = "There were problems in one or more sections, instructor needs to fix the groups of these sections manually.";
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetSectionDto>> RemoveStudentFromCourse(int userId, int courseId)
+        {
+            ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto> ();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                .Include ( c => c.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.AffiliatedCourseId == courseId && c.GroupMembers.Any ( cs => cs.UserId == userId ) );
+            
+            if ( dbProjectGroup == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found in the course";
+                return serviceResponse;
+            }
+            int sectionId = dbProjectGroup.AffiliatedSectionId;
+            var tmp = await _sectionService.RemoveStudentFromSection (userId, sectionId);
+            return tmp;
         }
     }
 }

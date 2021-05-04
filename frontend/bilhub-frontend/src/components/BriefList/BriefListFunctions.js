@@ -16,8 +16,7 @@ export const convertMyProjectsToBriefList = (myProjects, onProjectClicked, onCou
         const title = project.isLocked
             ? project.projectName !== null
                 ? project.courseCode + '/' + project.projectName
-                : project.courseCode + '/' + 'Formed Group'
-            : project.courseCode + '/' + 'Unformed Group';
+                : project.courseCode + '/' + 'Unlocked Group';
 
         const onClick = project.isLocked
             ? () => onProjectClicked(project.projectId)
