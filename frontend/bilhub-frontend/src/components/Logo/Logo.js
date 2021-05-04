@@ -4,8 +4,8 @@ import logo from '../../assets/logo.png';
 import './Logo.css';
 export class Logo extends Component {
     render() {
-        return <div className="logo-main"></div>;
+        return <Image src={logo} className="logo" />;
     }
 }
-//<img src={logo} />
+//
 //

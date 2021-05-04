@@ -7,7 +7,11 @@ import { Link } from 'react-router-dom';
 export const GroupsTab = (props) => {
     const divGroupFormed = props.groupsFormed?.map((group, index) => {
         const contentGroup = group?.members?.map((member) => {
-            return <p style={{ textAlign: 'center' }}><Link className="courseGroupMember" >{member.name}</Link></p>;
+            return (
+                <p style={{ textAlign: 'center' }}>
+                    <Link className="courseGroupMember">{member.name}</Link>
+                </p>
+            );
         });
 
         let onGroupClicked = null;
@@ -21,9 +25,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(255, 0, 0, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(255, 0, 0, 0.3)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.3)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -34,9 +46,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(162 , 167 , 0, 0.2)', marginBottom: '25px' }}>
-                         { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(162 , 167 , 0, 0.4)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(162 , 167 , 0, 0.4)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -47,9 +67,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(0, 0, 255, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(0, 0, 255, 0.3)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(0, 0, 255, 0.3)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -60,9 +88,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(255, 255, 0, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(255, 215, 59, 0.6)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(255, 215, 59, 0.6)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -73,9 +109,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(255, 0, 255, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(255, 0, 255, 0.3)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(255, 0, 255, 0.3)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -86,9 +130,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(0, 255, 255, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(0, 255, 255, 1)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(0, 255, 255, 1)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -99,9 +151,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(255, 150, 30, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(255, 150, 30, 0.5)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(255, 150, 30, 0.5)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -112,9 +172,17 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(0, 255, 0, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(0, 255, 0, 0.5)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(0, 255, 0, 0.5)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
@@ -125,14 +193,22 @@ export const GroupsTab = (props) => {
                     <Segment
                         onClick={onGroupClicked}
                         style={{ backgroundColor: 'rgba(3 , 94 , 123, 0.2)', marginBottom: '25px' }}>
-                        { group.groupName && (<Label style={{ textAlign: 'center', backgroundColor: 'rgba(3 , 94 , 123, 0.3)', color: "rgb(0,0,0)" }} attached="top">
-                            {group.groupName}
-                        </Label>)}
+                        {group.groupName && (
+                            <Label
+                                style={{
+                                    textAlign: 'center',
+                                    backgroundColor: 'rgba(3 , 94 , 123, 0.3)',
+                                    color: 'rgb(0,0,0)',
+                                }}
+                                attached="top">
+                                {group.groupName}
+                            </Label>
+                        )}
                         {contentGroup}
                     </Segment>
                 </div>
             );
-        return null;
+        return <>There Is Not Any Groups</>;
     });
 
     const divGroupUnformed = props.groupsUnformed?.map((group, index) => {
@@ -198,4 +274,5 @@ export const GroupsTab = (props) => {
             );
         }
     }
+    return;
 };

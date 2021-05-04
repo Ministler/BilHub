@@ -1,18 +1,17 @@
 import React from 'react';
-import { Form, Button, Grid, Segment } from 'semantic-ui-react';
+import { Form, Button, Grid, Segment, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { Logo } from '../../components';
 import './LoginUI.css';
+import logo from '../../assets/logo.png';
 
 export const LoginUI = (props) => {
     return (
         <div>
             <Grid centered>
-                <Grid.Column style={{ maxWidth: 300, marginTop: 50 }}>
-                    <h2 className="ui center aligned icon header">
-                        <Logo />
-                        Sign in to BilHub
-                    </h2>
+                <Grid.Column className="colm" style={{ maxWidth: 300, marginTop: 50 }}>
+                    <Image src={logo} centered size="small" />
+                    <h2 className="ui center aligned icon header">Sign in to BilHub</h2>
                     {props.error && (
                         <div className="ui negative message" style={{ fontSize: '12px' }}>
                             <i

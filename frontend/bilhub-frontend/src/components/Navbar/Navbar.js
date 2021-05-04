@@ -2,7 +2,7 @@ import React from 'react';
 import { Search, Menu, Image, Icon, Dropdown } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-
+import logo from '../../assets/logo.png';
 import './Navbar.css';
 import * as actions from '../../store';
 
@@ -10,7 +10,8 @@ const Navbar = (props) => {
     return (
         <Menu className="NavMenu" fixed="top" inverted size="small">
             <Menu.Item as={NavLink} to="/" exact>
-                <Image size="mini" src="https://react.semantic-ui.com/logo.png" /> {/* TODO: LOGOMOUZU YERLEŞTİR */}
+                <Image circular style={{ backgroundColor: 'rgb(242, 229, 215)' }} size="mini" src={logo} />{' '}
+                {/* TODO: LOGOMOUZU YERLEŞTİR */}
             </Menu.Item>
 
             {/* <Menu.Item>

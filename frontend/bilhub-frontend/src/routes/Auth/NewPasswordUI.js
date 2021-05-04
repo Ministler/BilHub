@@ -1,16 +1,15 @@
 import React from 'react';
-import { Form, Button, Grid, Segment } from 'semantic-ui-react';
+import { Form, Button, Grid, Segment, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
 export const NewPasswordUI = (props) => {
     return (
         <div>
             <Grid centered>
                 <Grid.Column style={{ maxWidth: 300, marginTop: 50 }}>
-                    <h2 className="ui center aligned icon header">
-                        <i className="circular users icon"></i>
-                        Reset your password
-                    </h2>
+                    <Image src={logo} size="small" centered></Image>
+                    <h2 className="ui center aligned icon header">Reset your password</h2>
                     {props.error && (
                         <div className="ui negative message" style={{ fontSize: '12px' }}>
                             <i
@@ -25,8 +24,12 @@ export const NewPasswordUI = (props) => {
                         <Form className="Sign in form">
                             <div className="field">
                                 <label style={{ fontSize: '12px' }}>Please type your Bilkent email</label>
-                                <Form.Input type="email" name="email" value={props.form?.email || ''}
-                                    onChange={props.onChange}/>
+                                <Form.Input
+                                    type="email"
+                                    name="email"
+                                    value={props.form?.email || ''}
+                                    onChange={props.onChange}
+                                />
                             </div>
                             <Button onClick={props.onSubmit} fluid positive className="Sign in button" type="submit">
                                 Send new password
