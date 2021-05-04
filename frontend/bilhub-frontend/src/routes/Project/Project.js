@@ -102,9 +102,8 @@ class Project extends Component {
     };
 
     onAssignmentFileClicked = (assignmentId) => {
-        getAssignmentFileRequest(assignmentId).then((response) => {
-            if (!response.data.success) return;
-        });
+        console.log(assignmentId);
+        getAssignmentFileRequest(assignmentId);
     };
 
     onModalClosed = (modalType, isSuccess) => {
@@ -200,16 +199,20 @@ class Project extends Component {
             const projectAssignments = response.data.data;
             const temp = [];
             const status = { 0: 'notsubmitted', 1: 'submitted', 2: 'graded' };
+
             for (var i in projectAssignments) {
+                console.log(projectAssignments[i]);
                 temp.push({
                     title: projectAssignments[i].title,
                     status: status[projectAssignments[i].status],
                     caption: projectAssignments[i].caption,
+                    hasFile: projectAssignments[i].hasFile,
                     publisher: projectAssignments[i].publisher,
                     dueDate: inputDateToDateObject(projectAssignments[i].dueDate),
                     publishmentDate: inputDateToDateObject(projectAssignments[i].publishmentDate),
                     projectId: this.props.match.params.projectId,
                     submissionId: projectAssignments[i].submissionId,
+                    assignmentId: projectAssignments[i].id,
                 });
             }
 

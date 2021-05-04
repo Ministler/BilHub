@@ -90,11 +90,11 @@ class Course extends Component {
             this.state.courseInformation.maxGroupSize,
             newInformation
         );
-        this.setState({courseInformation: newInformation}); 
+        this.setState({ courseInformation: newInformation });
     };
 
-    onAssignmentFileClicked = (assignmentId) => {
-        getAssignmentFileRequest(assignmentId);
+    onAssignmentFileClicked = (assignmentId, fileName) => {
+        getAssignmentFileRequest(assignmentId, fileName);
     };
 
     onSendRequestModalClosed = (isSuccess, type) => {
@@ -278,6 +278,7 @@ class Course extends Component {
                 assignments.push(assignment);
             }
 
+            console.log(assignments);
             this.setState({
                 assignments: assignments,
             });
@@ -716,7 +717,7 @@ class Course extends Component {
             <CourseAssignment
                 isTAorInstructorOfCourse={this.state.courseInformation?.isTAorInstructorOfCourse}
                 numberOfSections={
-                    this.state.courseInformation.numberOfSections ? this.state.courseInformation.numberOfSections : 1
+                    this.state.courseInformation?.numberOfSections ? this.state.courseInformation.numberOfSections : 1
                 }
                 currentUserSection={this.state.courseInformation?.currentUserSection}
                 isCourseActive={this.state.courseInformation?.isCourseActive}
