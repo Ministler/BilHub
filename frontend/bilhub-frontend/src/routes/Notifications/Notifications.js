@@ -312,7 +312,7 @@ class Notifications extends Component {
                     }
                     i++;
                 }
-
+                console.log(incomingRequests);
                 this.setState({
                     incomingRequests: incomingRequests,
                 });
