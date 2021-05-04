@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using backend.Dtos.Course;
 
 namespace backend.Dtos.Assignment
 {

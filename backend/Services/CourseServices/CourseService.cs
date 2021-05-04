@@ -611,6 +611,7 @@ namespace backend.Services.CourseServices
                             publishmentDate = a.CreatedAt,
                             dueDate = a.DueDate,
                             hasFile = a.HasFile,
+                            fileName = a.FilePath != null ? a.FilePath.Split('/').Last() : "",
                             fileEndpoint = "Assignment/File/" + a.Id,
                             courseId = a.AfilliatedCourseId
                         }
@@ -656,20 +657,20 @@ namespace backend.Services.CourseServices
 
         public async Task<ServiceResponse<string>> LockGroupFormation(int courseId)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string> ();
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             Course dbCourse = await _context.Courses
-                .Include ( c => c.Instructors )
-                .Include ( c => c.Sections )
-                .FirstOrDefaultAsync ( c => c.Id == courseId );
+                .Include(c => c.Instructors)
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
 
-            if ( dbCourse == null )
+            if (dbCourse == null)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Course not found";
                 return serviceResponse;
             }
 
-            if ( !dbCourse.Instructors.Any ( c => c.UserId == GetUserId() ) )
+            if (!dbCourse.Instructors.Any(c => c.UserId == GetUserId()))
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "User is not authorized to perform this action";
@@ -677,18 +678,19 @@ namespace backend.Services.CourseServices
             }
 
             dbCourse.IsLocked = true;
-            _context.Courses.Update ( dbCourse );
+            _context.Courses.Update(dbCourse);
             await _context.SaveChangesAsync();
 
             bool flag = false;
-            foreach ( var i in dbCourse.Sections ) {
+            foreach (var i in dbCourse.Sections)
+            {
                 await _context.SaveChangesAsync();
-                var tmp = await _sectionService.LockGroupFormation( i.Id );
-                if ( tmp.Success == false )
+                var tmp = await _sectionService.LockGroupFormation(i.Id);
+                if (tmp.Success == false)
                     flag = true;
             }
-            
-            if ( !flag ) 
+
+            if (!flag)
             {
                 serviceResponse.Message = "Successfully performed the operation";
                 return serviceResponse;

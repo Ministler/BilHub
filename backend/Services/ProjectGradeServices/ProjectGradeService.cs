@@ -252,7 +252,7 @@ namespace backend.Services.ProjectGradeServices
             ProjectGrade projectGrade = await _context.ProjectGrades.Include(pg => pg.GradedProjectGroup)
                                             .FirstOrDefaultAsync(pg => pg.Id == deleteProjectGradeDto.Id);
 
-            if (projectGrade == null)
+            if (projectGrade == null || !projectGrade.HasFile)
             {
                 response.Data = "Not allowed";
                 response.Message = "There is no project grade with this Id";

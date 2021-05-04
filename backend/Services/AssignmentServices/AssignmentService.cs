@@ -447,8 +447,7 @@ namespace backend.Services.AssignmentServices
                                         title = s.AffiliatedAssignment.Title,
                                         status = s.HasSubmission ? s.IsGraded ? 1 : 2 : 3,
                                         caption = s.AffiliatedAssignment.AssignmentDescription,
-                                        publisher = pg.AffiliatedCourse.Name,
-                                        publisherId = pg.AffiliatedCourse.Id,
+                                        publisher = pg.AffiliatedCourse.Name + "-" + pg.AffiliatedCourse.CourseSemester + " " + pg.AffiliatedCourse.Year,
                                         publishmentDate = s.AffiliatedAssignment.CreatedAt,
                                         dueDate = s.AffiliatedAssignment.DueDate,
                                         hasFile = s.AffiliatedAssignment.HasFile,
@@ -481,11 +480,11 @@ namespace backend.Services.AssignmentServices
                                 {
                                     title = a.Title,
                                     status =
-                                    !a.Submissions.Any(s => !s.HasSubmission) ? !a.Submissions.Any(s => !s.IsGraded) ? 1 : 2 :
-                                    (a.Submissions.Where(s => s.HasSubmission).Count() == 0 || a.Submissions.Where(s => s.HasSubmission).Any(s => s.IsGraded)) ? 3 : 4,
+                                    !a.Submissions.Any(s => !s.HasSubmission) ? !a.Submissions.Any(s => !s.IsGraded) ? 4 : 5 :
+                                    (a.Submissions.Where(s => s.HasSubmission).Count() == 0 || a.Submissions.Where(s => s.HasSubmission).Any(s => s.IsGraded)) ? 4 : 5,
 
                                     caption = a.AssignmentDescription,
-                                    publisher = a.AfilliatedCourse.Name,
+                                    publisher = c.Name + "-" + c.CourseSemester + " " + c.Year,
                                     publisherId = a.AfilliatedCourse.Id,
                                     publishmentDate = a.CreatedAt,
                                     dueDate = a.DueDate,
@@ -529,7 +528,7 @@ namespace backend.Services.AssignmentServices
                                 data.Add(
                                     new NotGradedAsssignmentsDto
                                     {
-                                        courseCode = string.Format("{0}_{1}_{2}", course.Name, course.CourseSemester, course.Year),
+                                        courseCode = string.Format("{0}-{1} {2}", course.Name, course.CourseSemester, course.Year),
                                         assignmentName = s.AffiliatedAssignment.Title,
                                         dueDate = s.AffiliatedAssignment.DueDate,
                                         courseId = s.AffiliatedAssignment.AfilliatedCourseId,
@@ -554,7 +553,7 @@ namespace backend.Services.AssignmentServices
                                 data.Add(
                                    new NotGradedAsssignmentsDto
                                    {
-                                       courseCode = string.Format("{0}_{1}_{2}", c.Name, c.CourseSemester, c.Year),
+                                       courseCode = string.Format("{0}-{1} {2}", c.Name, c.CourseSemester, c.Year),
                                        assignmentName = a.Title,
                                        dueDate = a.DueDate,
                                        courseId = c.Id,
@@ -594,7 +593,7 @@ namespace backend.Services.AssignmentServices
                                 data.Add(
                                     new UpcomingAssignmentsDto
                                     {
-                                        courseCode = string.Format("{0}_{1}_{2}", course.Name, course.CourseSemester, course.Year),
+                                        courseCode = string.Format("{0}-{1} {2}", course.Name, course.CourseSemester, course.Year),
                                         assignmentName = s.AffiliatedAssignment.Title,
                                         dueDate = s.AffiliatedAssignment.DueDate,
                                         projectId = s.AffiliatedGroupId,

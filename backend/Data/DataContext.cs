@@ -72,11 +72,16 @@ namespace backend.Data
             byte[] hash, salt;
             Utility.CreatePasswordHash("cs319", out hash, out salt);
 
+
             var crs10221 = 7;
             var as10221 = 4;
             var sec10221 = 10;
             var idseak = 30;
             var gr10221 = 14;
+            var sub10221 = 22;
+
+            var gr319 = 35;
+            var sub319 = 40;
 
             modelBuilder.Entity<User>().HasData(
                 new User
@@ -443,7 +448,7 @@ namespace backend.Data
                     VerificationCode = "cs"
                 }, new User
                 {
-                    Id = idseak+1,
+                    Id = idseak + 1,
                     Name = "Hasan Kaya",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
@@ -455,7 +460,7 @@ namespace backend.Data
                     VerificationCode = "cs"
                 }, new User
                 {
-                    Id = idseak+2,
+                    Id = idseak + 2,
                     Name = "Ayse Kaya",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
@@ -467,7 +472,7 @@ namespace backend.Data
                     VerificationCode = "cs"
                 }, new User
                 {
-                    Id = idseak+3,
+                    Id = idseak + 3,
                     Name = "Demir Kaya",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
@@ -479,7 +484,7 @@ namespace backend.Data
                     VerificationCode = "cs"
                 }, new User
                 {
-                    Id = idseak+4,
+                    Id = idseak + 4,
                     Name = "Tuna Dagli",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
@@ -491,7 +496,7 @@ namespace backend.Data
                     VerificationCode = "cs"
                 }, new User
                 {
-                    Id = idseak+5,
+                    Id = idseak + 5,
                     Name = "Ahmet Mumtaz",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
@@ -503,39 +508,293 @@ namespace backend.Data
                     VerificationCode = "cs"
                 }, new User
                 {
-                    Id = idseak+6,
+                    Id = idseak + 6,
                     Name = "Hakan Sivik",
                     PasswordHash = hash,
                     SecondPasswordHash = hash,
                     PasswordSalt = salt,
                     VerifiedStatus = true,
+
                     DarkModeStatus = false,
                     UserType = UserTypeClass.Student,
                     Email = "hakan@sivik",
                     VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 7,
+                    Name = "Semih Karay",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "semih@karay",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 8,
+                    Name = "Yagmur Topcu",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "yagmur@topcu",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 9,
+                    Name = "Engin Uygur",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "engin@uygur",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 10,
+                    Name = "Ece Zengin",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ece@zengin",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 11,
+                    Name = "Erim Eraydin",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "erim@eraydin",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 12,
+                    Name = "Yasar Dinc",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "yasar@dinc",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 13,
+                    Name = "Devrim Toker",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "devrim@toker",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 14,
+                    Name = "Onur Gollu",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "onur@gollu",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 15,
+                    Name = "Banu Ceren",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "banu@ceren",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 16,
+                    Name = "Ela Nazif",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ela@nazif",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 17,
+                    Name = "Doga Genc",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "doga@genc",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 18,
+                    Name = "Iskender Koc",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "iskender@koc",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 19,
+                    Name = "Bulut Kucuk",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "bulut@kucuk",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 20,
+                    Name = "Nehir Aksoy",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "nehir@aksoy",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 21,
+                    Name = "Ilkin Aslan",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ilkin@aslan",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 22,
+                    Name = "Kadir Demirci",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "kadir@demirci",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 23,
+                    Name = "Ipek Koc",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "ipek@koc",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 24,
+                    Name = "Murat Aksoy",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "murat@aksoy",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = idseak + 25,
+                    Name = "Muge Uzun",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "muge@uzun",
+                    VerificationCode = "cs"
                 }
-            );
+            ); // 19 - 25
             modelBuilder.Entity<Course>().HasData(
                 new Course
                 {
                     Id = 1,
                     Name = "CS 319",
                     CourseInformation = "Object Oriented Software Engineering",
+                    CourseDescription = "Object Oriented Software Engineering",
                     CourseSemester = SemesterType.Fall,
+                    NumberOfSections = 2,
                     Year = 2021,
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    MinGroupSize = 5,
-                    MaxGroupSize = 6
+                    MinGroupSize = 2,
+                    MaxGroupSize = 6,
+                    IsActive = true,
                 }, new Course
                 {
                     Id = 2,
                     Name = "CS 315",
                     CourseInformation = "Programming Languages",
+                    CourseDescription = "Programming Languages",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
                     CourseSemester = SemesterType.Fall,
+                    NumberOfSections = 2,
                     Year = 2021,
+                    IsActive = true,
                     MinGroupSize = 2,
                     MaxGroupSize = 3
                 }, new Course
@@ -543,22 +802,26 @@ namespace backend.Data
                     Id = 3,
                     Name = "CS 202",
                     CourseInformation = "Data Structures and Algorithms",
+                    CourseDescription = "Data Structures and Algorithms",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
                     CourseSemester = SemesterType.Fall,
                     Year = 2021,
                     MinGroupSize = 1,
+                    IsActive = true,
                     MaxGroupSize = 1
                 }, new Course
                 {
                     Id = 4,
                     Name = "CS 224",
                     CourseInformation = "Computer Organization and Architecture",
+                    CourseDescription = "Computer Organization and Architecture",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
                     CourseSemester = SemesterType.Fall,
                     Year = 2019,
                     MinGroupSize = 2,
+                    IsActive = true,
                     MaxGroupSize = 3
                 }, new Course
                 {
@@ -567,8 +830,10 @@ namespace backend.Data
                     CourseInformation = "History",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
+                    CourseDescription = "Object Oriented Software Engineering",
                     CourseSemester = SemesterType.Fall,
                     Year = 2020,
+                    IsActive = true,
                     MinGroupSize = 4,
                     MaxGroupSize = 5
                 }, new Course
@@ -576,20 +841,41 @@ namespace backend.Data
                     Id = 6,
                     Name = "Math 101",
                     CourseInformation = "Calculus",
+                    CourseDescription = "Basic Calculus",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
                     CourseSemester = SemesterType.Spring,
                     Year = 2021,
+                    IsActive = true,
                     MinGroupSize = 1,
                     MaxGroupSize = 1
                 }, new Course
                 {
                     Id = crs10221,
                     Name = "CS102",
-                    CourseInformation = "Algorithms and Programming",
+                    CourseInformation = "CS102 gives you an opportunity to put the basic computer literacy, design and programming skills you learnt in CS101 into practice. The course has two components. The first is simply a continuation of CS101 aimed at expanding the range of techniques you have available to solve problems. These new techniques will be presented in formal lectures and, as in C"
+                                            + "S101, you will be given lab. assignments designed to let you practice them. Material in this section includes recursion, files and some basic data structures, plus a little about object-oriented programming, event-driven architectures, searching and sorting. There will be written exams on these topics. The second component of the course is a semester"
+                                            + "long design project. The ultimate goal is to produce a commercial-quality program which is fully documented, bug-free and easy to use. You will work in groups, each group selecting possibly a different project. You will be expected to prepare a number of written reports and to present these in class. These documents will include basic requirements, "
+                                            + "pecifications, detailed design and user manuals. Groups will discuss each other's work and offer suggestions and criticisms on it so as to help improve the final product. Projects will be undertaken using Java. Students will be expected to display creativity and an ability to learn independently.",
                     LockDate = DateTime.Today,
+                    CourseDescription = "Algorithms and Programming",
                     StartDate = new DateTime(2021, 1, 27, 6, 0, 0),
                     CourseSemester = SemesterType.Spring,
+                    IsActive = true,
+                    Year = 2021,
+                    MinGroupSize = 3,
+                    MaxGroupSize = 3
+                }, new Course
+                {
+                    Id = crs10221 + 1,
+                    Name = "CS102",
+                    CourseInformation = "Algorithms and Programming",
+                    CourseDescription = "Algorithms and Programming",
+                    LockDate = new DateTime(2020, 1, 17),
+                    StartDate = new DateTime(2019, 9, 27),
+                    CourseSemester = SemesterType.Spring,
+                    IsActive = false,
+                    NumberOfSections = 1,
                     Year = 2021,
                     MinGroupSize = 4,
                     MaxGroupSize = 6
@@ -718,6 +1004,12 @@ namespace backend.Data
                     Id = sec10221,
                     AffiliatedCourseId = crs10221,
                     SectionNo = 1
+                },
+                new Section
+                {
+                    Id = sec10221 + 1,
+                    AffiliatedCourseId = crs10221,
+                    SectionNo = 2
                 }
             );
             modelBuilder.Entity<ProjectGroup>().HasData(
@@ -739,7 +1031,7 @@ namespace backend.Data
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Yet Another Class Helper",
-                    Name = "project name",
+                    Name = "YACH",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -749,7 +1041,7 @@ namespace backend.Data
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Classrom Helper",
-                    Name = "project name",
+                    Name = "ClassHelp",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -757,7 +1049,7 @@ namespace backend.Data
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
-                    Name = "project name",
+                    Name = "AGA inc",
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "AGA Language",
                     ConfirmedGroupMembers = ""
@@ -767,7 +1059,7 @@ namespace backend.Data
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
-                    Name = "project name",
+                    Name = "STS lng",
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Satis Language",
                     ConfirmedGroupMembers = ""
@@ -775,7 +1067,7 @@ namespace backend.Data
                 {
                     Id = 6,
                     AffiliatedSectionId = 2,
-                    Name = "project name",
+                    Name = "SMS company",
                     AffiliatedCourseId = 1,
                     ConfirmationState = true,
                     ConfirmedUserNumber = 0,
@@ -788,8 +1080,8 @@ namespace backend.Data
                     AffiliatedCourseId = 1,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    Name = "project name",
-                    ProjectInformation = "Group A",
+                    Name = "ProCheck",
+                    ProjectInformation = "procheck",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
@@ -797,16 +1089,16 @@ namespace backend.Data
                     AffiliatedSectionId = 1,
                     AffiliatedCourseId = 1,
                     ConfirmationState = false,
-                    Name = "project name",
+                    Name = "Runtime Errors",
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "Group B",
+                    ProjectInformation = "CS319 group",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
                     Id = 9,
                     AffiliatedSectionId = 1,
                     AffiliatedCourseId = 1,
-                    Name = "project name",
+                    Name = "BCMS",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Best Class Management System",
@@ -816,7 +1108,7 @@ namespace backend.Data
                     Id = 10,
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
-                    Name = "project name",
+                    Name = "C++ langugage",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "++C",
@@ -828,17 +1120,18 @@ namespace backend.Data
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    Name = "project name",
+                    Name = "Phyton langug",
                     ProjectInformation = "Payton",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
+
                 {
                     Id = 12,
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    Name = "project name",
+                    Name = "Group languge",
                     ProjectInformation = "Assembly-ish",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
@@ -846,12 +1139,12 @@ namespace backend.Data
                     Id = 13,
                     AffiliatedSectionId = 3,
                     AffiliatedCourseId = 2,
-                    Name = "project name",
+                    Name = "new lang",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "NewLanguage()",
                     ConfirmedGroupMembers = ""
-                } , new ProjectGroup
+                }, new ProjectGroup
                 {
                     Id = gr10221,
                     AffiliatedSectionId = sec10221,
@@ -859,28 +1152,158 @@ namespace backend.Data
                     Name = "Course Helper",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 3,
-                    ProjectInformation = "",
+                    ProjectInformation = "Designing a course helper",
                     ConfirmedGroupMembers = "31 32 33"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 1,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "GPS U",
+                    Name = "GPS Utilizer",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 3,
+                    ProjectInformation = "GPS's are fun",
+                    ConfirmedGroupMembers = "3 4 7"
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 2,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "UNSCO",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 3,
+                    ProjectInformation = "UNESCO",
+                    ConfirmedGroupMembers = "34 35 36"
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 3,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "NewLanguage()",
+                    ProjectInformation = "",
                     ConfirmedGroupMembers = ""
                 }, new ProjectGroup
                 {
-                    Id = 13,
-                    AffiliatedSectionId = 3,
-                    AffiliatedCourseId = 2,
-                    Name = "project name",
+                    Id = gr10221 + 4,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
                     ConfirmationState = false,
                     ConfirmedUserNumber = 0,
-                    ProjectInformation = "NewLanguage()",
+                    ProjectInformation = "",
                     ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 5,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 6,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 7,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 8,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 9,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 10,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 11,
+                    AffiliatedSectionId = sec10221,
+                    AffiliatedCourseId = crs10221,
+                    Name = "",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 12,
+                    AffiliatedSectionId = sec10221 + 1,
+                    AffiliatedCourseId = crs10221,
+                    Name = "Weather Application",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 3,
+                    ProjectInformation = "we are implementing a weather mobile app",
+                    ConfirmedGroupMembers = "49 50 51"
+                }, new ProjectGroup
+                {
+                    Id = gr10221 + 13,
+                    AffiliatedSectionId = sec10221 + 1,
+                    AffiliatedCourseId = crs10221,
+                    Name = "Twitter Bot",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 3,
+                    ProjectInformation = "Twitter Bot to do cool things",
+                    ConfirmedGroupMembers = "52 53 54"
+                }, new ProjectGroup
+                {
+                    Id = gr319,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    Name = "Enhanced Helper",
+                    ConfirmationState = false,
+                    ConfirmedUserNumber = 0,
+                    ProjectInformation = "We will implement a classroom helper",
+                    ConfirmedGroupMembers = ""
+                }, new ProjectGroup
+                {
+                    Id = gr319 + 1,
+                    AffiliatedSectionId = 1,
+                    AffiliatedCourseId = 1,
+                    Name = "Impressive Helper",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 2,
+                    ProjectInformation = "The best project ever",
+                    ConfirmedGroupMembers = "6 7"
                 }
             );
             modelBuilder.Entity<ProjectGroupUser>().HasData(
@@ -895,19 +1318,19 @@ namespace backend.Data
                 }, new ProjectGroupUser
                 {
                     UserId = 4,
-                    ProjectGroupId = 1,
+                    ProjectGroupId = gr319,
                 }, new ProjectGroupUser
                 {
                     UserId = 5,
-                    ProjectGroupId = 1,
+                    ProjectGroupId = gr319,
                 }, new ProjectGroupUser
                 {
                     UserId = 6,
-                    ProjectGroupId = 1,
+                    ProjectGroupId = gr319 + 1,
                 }, new ProjectGroupUser
                 {
                     UserId = 7,
-                    ProjectGroupId = 1,
+                    ProjectGroupId = gr319 + 1,
                 }, new ProjectGroupUser
                 {
                     UserId = 11,
@@ -1006,10 +1429,113 @@ namespace backend.Data
                     ProjectGroupId = 12,
                 }, new ProjectGroupUser
                 {
-                    UserId = 10,
-                    ProjectGroupId = 13,
+                    UserId = idseak + 1,
+                    ProjectGroupId = gr10221,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 2,
+                    ProjectGroupId = gr10221,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 3,
+                    ProjectGroupId = gr10221,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 4,
+                    ProjectGroupId = gr10221 + 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 5,
+                    ProjectGroupId = gr10221 + 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 6,
+                    ProjectGroupId = gr10221 + 2,
+                }, new ProjectGroupUser
+                {
+                    UserId = 3,
+                    ProjectGroupId = gr10221 + 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 4,
+                    ProjectGroupId = gr10221 + 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = 7,
+                    ProjectGroupId = gr10221 + 1,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 7,
+                    ProjectGroupId = gr10221 + 3,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 8,
+                    ProjectGroupId = gr10221 + 3,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 9,
+                    ProjectGroupId = gr10221 + 4,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 10,
+                    ProjectGroupId = gr10221 + 4,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 11,
+                    ProjectGroupId = gr10221 + 5,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 12,
+                    ProjectGroupId = gr10221 + 5,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 13,
+                    ProjectGroupId = gr10221 + 6,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 14,
+                    ProjectGroupId = gr10221 + 7,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 15,
+                    ProjectGroupId = gr10221 + 8,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 16,
+                    ProjectGroupId = gr10221 + 9,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 17,
+                    ProjectGroupId = gr10221 + 10,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 18,
+                    ProjectGroupId = gr10221 + 11,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 19,
+                    ProjectGroupId = gr10221 + 12,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 20,
+                    ProjectGroupId = gr10221 + 12,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 21,
+                    ProjectGroupId = gr10221 + 12,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 22,
+                    ProjectGroupId = gr10221 + 13,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 23,
+                    ProjectGroupId = gr10221 + 13,
+                }, new ProjectGroupUser
+                {
+                    UserId = idseak + 24,
+                    ProjectGroupId = gr10221 + 13,
                 }
-
             );
             modelBuilder.Entity<Assignment>().HasData(
                 new Assignment
@@ -1068,7 +1594,7 @@ namespace backend.Data
                     MaxFileSizeInBytes = 4096,
                     VisibilityOfSubmission = true,
                     CanBeGradedByStudents = true,
-                    IsItGraded = false,
+                    IsItGraded = true,
                     HasFile = false
                 }
             );
@@ -1081,6 +1607,34 @@ namespace backend.Data
                     SrsGrade = (decimal)9.6,
                     AffiliatedAssignmentId = 1,
                     AffiliatedGroupId = 1,
+                    UpdatedAt = new DateTime(2021, 3, 31, 22, 54, 2),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = sub319,
+                    Description = "We have submitted",
+                    IsGraded = true,
+                    SrsGrade = (decimal)8.2,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = gr319,
+                    UpdatedAt = new DateTime(2021, 3, 31, 22, 54, 2),
+                    FilePath = "", // check this
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = sub319 + 1,
+                    Description = "report is here",
+                    IsGraded = true,
+                    SrsGrade = (decimal)9.1,
+                    AffiliatedAssignmentId = 1,
+                    AffiliatedGroupId = gr319 + 1,
                     UpdatedAt = new DateTime(2021, 3, 31, 22, 54, 2),
                     FilePath = "", // check this
                     HasSubmission = true,
@@ -1111,7 +1665,7 @@ namespace backend.Data
                     AffiliatedGroupId = 2,
                     UpdatedAt = new DateTime(2021, 3, 30, 15, 44, 20),
                     FilePath = "", // check this
-                    HasSubmission = true,
+                    HasSubmission = false,
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 2
@@ -1122,6 +1676,30 @@ namespace backend.Data
                     IsGraded = false,
                     AffiliatedAssignmentId = 2,
                     AffiliatedGroupId = 1,
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = sub319 + 2,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = gr319,
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = sub319 + 3,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 2,
+                    AffiliatedGroupId = gr319 + 1,
                     FilePath = "", // check this
                     HasSubmission = false,
                     HasFile = false,
@@ -1148,7 +1726,7 @@ namespace backend.Data
                     AffiliatedGroupId = 2,
                     UpdatedAt = new DateTime(2021, 5, 3, 1, 44, 20),
                     FilePath = "", // check this
-                    HasSubmission = true,
+                    HasSubmission = false,
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 2
@@ -1161,7 +1739,33 @@ namespace backend.Data
                     AffiliatedGroupId = 1,
                     UpdatedAt = new DateTime(2021, 3, 13, 1, 44, 20),
                     FilePath = "", // check this
-                    HasSubmission = true,
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = sub319 + 4,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = gr319,
+                    UpdatedAt = new DateTime(2021, 3, 13, 1, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = 1,
+                    SectionId = 1
+                }, new Submission
+                {
+                    Id = sub319 + 5,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = 3,
+                    AffiliatedGroupId = gr319 + 1,
+                    UpdatedAt = new DateTime(2021, 3, 13, 1, 44, 20),
+                    FilePath = "", // check this
+                    HasSubmission = false,
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 1
@@ -1214,7 +1818,7 @@ namespace backend.Data
                     AffiliatedGroupId = 7,
                     UpdatedAt = new DateTime(2021, 3, 27, 23, 51, 12),
                     FilePath = "", // check this
-                    HasSubmission = true,
+                    HasSubmission = false,
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 1
@@ -1228,7 +1832,7 @@ namespace backend.Data
                     AffiliatedGroupId = 8,
                     UpdatedAt = new DateTime(2021, 3, 29, 15, 44, 20),
                     FilePath = "", // check this
-                    HasSubmission = true,
+                    HasSubmission = false,
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 1
@@ -1354,7 +1958,187 @@ namespace backend.Data
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 1
+                }, new Submission
+                {
+                    Id = sub10221,
+                    Description = "hey, this is our submission",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221,
+                    UpdatedAt = new DateTime(2021, 5, 15, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 1,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 1,
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 2,
+                    Description = "please grade good",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 2,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 3,
+                    Description = "analysis report is done",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 3,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 4,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 4,
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 5,
+                    Description = "analysis report submission",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 5,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 6,
+                    Description = "we submitted",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 6,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 7,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 7,
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 8,
+                    Description = "hi hocam, we worked hard for this assignment",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 8,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 9,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 9,
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 10,
+                    Description = "can you please give extensive feedback>",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 10,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 11,
+                    Description = "Hey, this is our report",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 11,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221
+                }, new Submission
+                {
+                    Id = sub10221 + 12,
+                    Description = "Hello, we submitted our report",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 12,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221 + 1
+                }, new Submission
+                {
+                    Id = sub10221 + 13,
+                    Description = "Hey, this is our report",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as10221,
+                    AffiliatedGroupId = gr10221 + 13,
+                    UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs10221,
+                    SectionId = sec10221 + 1
                 }
+
+                // 3'ten 11'e kadar
             );
             modelBuilder.Entity<Comment>().HasData(
                 new Comment
@@ -1373,7 +2157,7 @@ namespace backend.Data
                     Id = 2,
                     CommentedUserId = 25,
                     CommentedSubmissionId = 1,
-                    CommentText = "It's a nice report but I'm still attaching some ideas in a file",
+                    CommentText = "It's a nice report but I still have some suggestions",
                     MaxGrade = 10,
                     Grade = (decimal)9.5,
                     CreatedAt = new DateTime(2021, 4, 1, 11, 2, 3),
@@ -1387,6 +2171,39 @@ namespace backend.Data
                     CommentText = "Cool",
                     MaxGrade = 10,
                     Grade = (decimal)10,
+                    CreatedAt = new DateTime(2021, 4, 2, 11, 2, 3),
+                    FileAttachmentAvailability = false,
+                    FilePath = ""
+                }, new Comment
+                {
+                    Id = 4,
+                    CommentedUserId = 16,
+                    CommentedSubmissionId = 1,
+                    CommentText = "You could use more diagrams",
+                    MaxGrade = 10,
+                    Grade = (decimal)9.4,
+                    CreatedAt = new DateTime(2021, 4, 2, 11, 2, 3),
+                    FileAttachmentAvailability = false,
+                    FilePath = ""
+                }, new Comment
+                {
+                    Id = 5,
+                    CommentedUserId = 17,
+                    CommentedSubmissionId = 1,
+                    CommentText = "Wonderful",
+                    MaxGrade = 10,
+                    Grade = (decimal)10,
+                    CreatedAt = new DateTime(2021, 4, 2, 11, 2, 3),
+                    FileAttachmentAvailability = false,
+                    FilePath = ""
+                }, new Comment
+                {
+                    Id = 6,
+                    CommentedUserId = 2,
+                    CommentedSubmissionId = 1,
+                    CommentText = "You can consider using facade design pattern",
+                    MaxGrade = 10,
+                    Grade = (decimal)9,
                     CreatedAt = new DateTime(2021, 4, 2, 11, 2, 3),
                     FileAttachmentAvailability = false,
                     FilePath = ""
@@ -1483,6 +2300,50 @@ namespace backend.Data
                     Accepted = false,
                     Resolved = true,
                     VotedStudents = "1 3 4"
+                }, new JoinRequest
+                {
+                    Id = 9,
+                    RequestingStudentId = 5,
+                    Description = "I know deep learning",
+                    RequestedGroupId = 5,
+                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
+                }, new JoinRequest
+                {
+                    Id = 10,
+                    RequestingStudentId = 5,
+                    Description = "We'd make a good team together",
+                    RequestedGroupId = 9,
+                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                    AcceptedNumber = 2,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = "27 28"
+                }, new JoinRequest
+                {
+                    Id = 11,
+                    RequestingStudentId = 24,
+                    Description = "I have experience with web development",
+                    RequestedGroupId = 1,
+                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                    AcceptedNumber = 1,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = "3"
+                }, new JoinRequest
+                {
+                    Id = 12,
+                    RequestingStudentId = 14,
+                    Description = "I'm good UX designer guys",
+                    RequestedGroupId = 1,
+                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                    AcceptedNumber = 0,
+                    Accepted = false,
+                    Resolved = false,
+                    VotedStudents = ""
                 }
             );
             modelBuilder.Entity<MergeRequest>().HasData(
@@ -1556,17 +2417,58 @@ namespace backend.Data
                     CreatedAt = new DateTime( 2021, 4, 13, 19, 23, 2 ),
                     Accepted = true,
                     Resolved = false
-                },*/, new MergeRequest
-                    {
-                        Id = 8,
-                        SenderGroupId = 5,
-                        Description = "hey, merge",
-                        ReceiverGroupId = 1,
-                        VotedStudents = "1 3 24 4",
-                        CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
-                        Accepted = false,
-                        Resolved = true
-                    }
+                },*/
+                 , new MergeRequest
+                 {
+                     Id = 8,
+                     SenderGroupId = 5,
+                     Description = "hey, merge",
+                     ReceiverGroupId = 1,
+                     VotedStudents = "1 3 24 4",
+                     CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
+                     Accepted = false,
+                     Resolved = true
+                 }, new MergeRequest
+                 {
+                     Id = 9,
+                     SenderGroupId = gr319,
+                     Description = "we are good team players",
+                     ReceiverGroupId = 1,
+                     VotedStudents = "4 3",
+                     CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
+                     Accepted = false,
+                     Resolved = false
+                 }, new MergeRequest
+                 {
+                     Id = 10,
+                     SenderGroupId = 5,
+                     Description = "hey, we are good with design patterns",
+                     ReceiverGroupId = 1,
+                     VotedStudents = "24 25",
+                     CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
+                     Accepted = false,
+                     Resolved = false
+                 }, new MergeRequest
+                 {
+                     Id = 11,
+                     SenderGroupId = 1,
+                     Description = "We're good at algorithms",
+                     ReceiverGroupId = 8,
+                     VotedStudents = "3",
+                     CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
+                     Accepted = false,
+                     Resolved = false
+                 }, new MergeRequest
+                 {
+                     Id = 12,
+                     SenderGroupId = 1,
+                     Description = "We'd make a strong team since we know front-end and you know back-end",
+                     ReceiverGroupId = 9,
+                     VotedStudents = "5 28 3",
+                     CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
+                     Accepted = false,
+                     Resolved = false
+                 }
             );
             modelBuilder.Entity<PeerGradeAssignment>().HasData(
                 new PeerGradeAssignment

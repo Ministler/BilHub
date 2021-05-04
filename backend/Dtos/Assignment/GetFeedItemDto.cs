@@ -11,6 +11,7 @@ namespace backend.Dtos.Assignment
         public int publisherId { get; set; }
         public DateTime publishmentDate { get; set; }
         public DateTime dueDate { get; set; }
+        public string fileName { get; set; }
         public bool hasFile { get; set; }
         public string fileEndpoint { get; set; }
         public int? projectId { get; set; }
