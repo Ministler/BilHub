@@ -36,10 +36,14 @@ export function dateObjectToString(dateObject) {
 }
 
 export function convertDate(dateObject) {
+    if(dateObject[10] === "T") {
     let year = dateObject.slice(0, 4);
     let month = dateObject.slice(5, 7);
     let day = dateObject.slice(8, 10);
     let clock = dateObject.slice(11, 16);
-    let date = day + '/' + month + '/' + year + ' ' + clock;
+    let date = day + '.' + month + '.' + year + ' ' + clock; 
     return date;
+    }
+    else
+        return dateObject;
 }

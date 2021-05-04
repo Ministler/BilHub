@@ -90,6 +90,7 @@ class Course extends Component {
             this.state.courseInformation.maxGroupSize,
             newInformation
         );
+        this.setState({courseInformation: newInformation}); 
     };
 
     onAssignmentFileClicked = (assignmentId) => {
