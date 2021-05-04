@@ -25,7 +25,7 @@ export const InformationSection = (props) => {
     return (
         <div>
             <div style={{ textAlign: 'center' }}>
-                <h1 style={{ display: 'inline', marginLeft: '0px' }}>{props.courseName}</h1>
+                <h1 style={{ display: 'inline', marginLeft: '0px' }}>{  props.courseName}</h1>
                 <span className="CourseNameEdit"> {props.courseSettingsIcon} </span>
                 <p style={{ marginLeft: '-30px' }}>{props.description}</p>
             </div>

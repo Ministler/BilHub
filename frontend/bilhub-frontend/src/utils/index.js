@@ -1,3 +1,3 @@
 export { updateObject } from './updateObject';
 export { inputDateToDateObject, dateObjectToInputDate, dateObjectToString, convertDate } from './dateConversions';
-export { instructerTypeSplit } from './instructerTypeSpliter';
+export { instructerTypeSplitInstructers,  instructerTypeSplitgeTAs} from './instructerTypeSpliter';

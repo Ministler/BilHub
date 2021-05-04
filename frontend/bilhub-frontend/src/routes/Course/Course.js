@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-
+import { instructerTypeSplitInstructers, instructerTypeSplitgeTAs } from '../../utils';
 import {
     getCourseRequest,
     getSectionRequest,
@@ -456,7 +456,7 @@ class Course extends Component {
                 description={this.state.courseInformation?.description}
                 courseSettingsIcon={this.getCourseSettingsIcon()}
                 instructors={this.state.courseInformation?.instructors}
-                TAs={this.state.courseInformation?.TAs}
+                TAs={this.state.courseInformation?.instructors}
                 informationEditIcon={this.getInformationEditIcon()}
                 informationElement={this.getCourseInformationItem()}
                 onUserClicked={this.onUserClicked}
