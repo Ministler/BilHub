@@ -918,7 +918,7 @@ namespace backend.Data
                     CourseInformation = "Programming Languages",
                     CourseDescription = "Language evaluation criteria. Describing syntax and semantics and more...",
                     LockDate = DateTime.Today,
-                    StartDate = new DateTime(2020, 1, 27),
+                    StartDate = new DateTime(2020, 1, 27, 1, 1, 7),
                     CourseSemester = SemesterType.Spring,
                     IsActive = true,
                     NumberOfSections = 1,
