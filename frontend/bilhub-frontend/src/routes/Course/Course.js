@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup } from 'semantic-ui-react';
+import { Segment, TextArea, Icon, Button, Dropdown, Grid, Popup, Input } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { instructerTypeSplitInstructers, instructerTypeSplitgeTAs } from '../../utils';
@@ -30,6 +30,10 @@ import {
 import { Tab, convertAssignmentsToAssignmentList, getCourseStatistics } from '../../components';
 import { CourseAssignment } from './CourseAssignment';
 import { AllStudentPeerReviewPane } from '../../components/Tab/TabUI';
+import { getPeerGradeAssignmentRequest } from '../../API/peerGradeAssignmentAPI/peerGradeAssignmentGET';
+import { putPeerGradeAssignmentRequest } from '../../API/peerGradeAssignmentAPI/peerGradeAssignmentPUT';
+import { postPeerGradeAssignmentRequest } from '../../API/peerGradeAssignmentAPI/peerGradeAssignmentPOST';
+import { getPeerGradeRequestWithReviewee } from '../../API/peerGradeAPI/peerGradeGET';
 
 class Course extends Component {
     constructor(props) {
@@ -57,6 +61,7 @@ class Course extends Component {
             currentSection: 0,
 
             //Peer Review
+            peerReviewAssignment: {},
             isPeerReviewOpen: false,
             currentPeerReviewSections: [],
             currentPeerReviewGroups: [],
@@ -65,6 +70,9 @@ class Course extends Component {
             currentPeerReviewGroup: {},
             currentPeerReviewStudent: {},
             currentReviews: {},
+
+            reviewDueDate: '',
+            reviewMaxGrade: 0,
 
             //
             courseGrades: {},
@@ -164,10 +172,25 @@ class Course extends Component {
             };
 
             this.setState({
+                currentPeerReviewSections: courseData.sections,
                 courseInformation: courseInformation,
                 newInformation: courseInformation.information,
                 currentSection: courseInformation.currentUserSection ? courseInformation.currentUserSection - 1 : 0,
             });
+
+            getPeerGradeAssignmentRequest(this.props.match.params.courseId)
+                .then((response) => {
+                    if (!response.data.success) return;
+                    this.setState({
+                        peerReviewAssignment: response.data.data,
+                        isPeerReviewOpen: true,
+                        reviewDueDate: response.data.data.dueDate,
+                        reviewMaxGrade: response.data.data.maxGrade,
+                    });
+                })
+                .catch((error) => {
+                    this.setState({ peerReviewAssignment: {}, isPeerReviewOpen: false });
+                });
 
             if (!courseData.isLocked) {
                 const sectionRequests = [];
@@ -313,10 +336,20 @@ class Course extends Component {
         });
     };
 
-    onPeerReviewsOpen = (dropdownValues) => {
-        this.setState({
-            isPeerReviewOpen: true,
-        });
+    handleReviewSubmit = () => {
+        if (this.state.reviewMaxGrade && this.state.reviewDueDate) {
+            this.state.isPeerReviewOpen
+                ? putPeerGradeAssignmentRequest(
+                      this.state.peerReviewAssignment.id,
+                      this.state.reviewMaxGrade,
+                      this.state.reviewDueDate
+                  )
+                : postPeerGradeAssignmentRequest(
+                      this.props.match.params.courseId,
+                      this.state.reviewMaxGrade,
+                      this.state.reviewDueDate
+                  );
+        }
     };
 
     onNewAssignmentModalOpened = () => {
@@ -650,6 +683,7 @@ class Course extends Component {
                 i = data.options.length;
             }
         }
+        console.log(this.state);
         this.setState({
             currentPeerReviewSection: data.value,
             currentPeerReviewGroups: this.state.groups[index],
@@ -677,31 +711,50 @@ class Course extends Component {
     };
 
     handleStudentChange = (data) => {
-        this.setState({
-            currentPeerReviewStudent: data.value,
-            currentReviews: comingDummyPeerReviews,
+        getPeerGradeRequestWithReviewee(this.state.currentPeerReviewGroup, data.value).then((response) => {
+            console.log(response.data.data);
+            this.setState({
+                currentPeerReviewStudent: data.value,
+                currentReviews: comingDummyPeerReviews,
+            });
         });
     };
 
     getPeerReviewPane = () => {
         return {
             title: 'Peer Review',
-            content: this.state.isPeerReviewOpen ? (
-                <AllStudentPeerReviewPane
-                    state={{ ...this.state }}
-                    handleStudentChange={(data) => this.handleStudentChange(data)}
-                    handleGroupChange={(data) => this.handleGroupChange(data)}
-                    handleSectionChange={(data) => this.handleSectionChange(data)}
-                />
-            ) : (
-                <Button
-                    content="Open Peer Reviews"
-                    labelPosition="right"
-                    icon="add"
-                    primary
-                    style={{ marginTop: '20px' }}
-                    onClick={this.onPeerReviewsOpen}
-                />
+            content: (
+                <>
+                    {this.state.isPeerReviewOpen && (
+                        <AllStudentPeerReviewPane
+                            state={{ ...this.state }}
+                            handleStudentChange={(data) => this.handleStudentChange(data)}
+                            handleGroupChange={(data) => this.handleGroupChange(data)}
+                            handleSectionChange={(data) => this.handleSectionChange(data)}
+                        />
+                    )}
+
+                    <span
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginTop: '10px',
+                        }}>
+                        <Input
+                            type="datetime-local"
+                            value={this.state.reviewDueDate}
+                            onChange={(e, d) => this.setState({ reviewDueDate: d.value })}></Input>
+                        <Input
+                            type="number"
+                            value={this.state.reviewMaxGrade}
+                            min={1}
+                            onChange={(e, d) => this.setState({ reviewMaxGrade: d.value })}></Input>
+                        <Button primary onClick={this.handleReviewSubmit}>
+                            {this.state.isPeerReviewOpen ? 'Edit Peer Review Assignment' : 'Open Peer Reviews'}
+                        </Button>
+                    </span>
+                </>
             ),
         };
     };

@@ -154,9 +154,10 @@ export const AllStudentPeerReviewPane = (props) => {
     const sections = [];
     const groups = [];
     const students = [];
+    console.log(props);
     for (var i = 0; i < props.state.currentPeerReviewSections.length; i++) {
         sections.push({
-            text: props.state.currentPeerReviewSections[i].sectionId,
+            text: props.state.currentPeerReviewSections[i].sectionNo,
             value: props.state.currentPeerReviewSections[i].id,
         });
     }
@@ -175,8 +176,16 @@ export const AllStudentPeerReviewPane = (props) => {
 
     const visibleReviews = [];
     for (var i in props.state.currentReviews) {
+        let name;
+        for (i in props.state.currentPeerReviewStudents) {
+            if (props.state.currentPeerReviewStudents[i].userId === props.state.currentReviews[i].reviewerId) {
+                name = props.state.currentPeerReviewStudents[i].name;
+                break;
+            }
+        }
+        console.log(props.state.currentReviews[i]);
         visibleReviews.push({
-            name: props.state.currentReviews[i].reviewerId,
+            name: name,
             caption: props.state.currentReviews[i].comment,
             grade: props.state.currentReviews[i].grade,
             maxGrade: props.state.currentReviews[i].maxGrade,
