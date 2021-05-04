@@ -4,7 +4,7 @@ import { store } from '../index';
 import { logout } from '../store';
 
 // General Settings
-axios.defaults.baseURL = 'https://57b2663d01e7.ngrok.io/';
+axios.defaults.baseURL = 'https://5c7746ce1640.ngrok.io/';
 
 // Authorized Requests
 export const authAxios = axios.create();
