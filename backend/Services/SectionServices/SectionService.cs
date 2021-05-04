@@ -140,11 +140,18 @@ namespace backend.Services.SectionServices
                 return serviceResponse;
             }
 
-            int currentProjectGroupId = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedSectionId == sectionId ).ProjectGroupId ;
+            ProjectGroup tmpGroup = await _context.ProjectGroups
+                .Include ( c => c.GroupMembers ).ThenInclude ( cs => cs.User) 
+                .FirstOrDefaultAsync ( c => c.GroupMembers.Any ( cs => cs.UserId == userId ) && c.AffiliatedSectionId == sectionId );
+            int currentProjectGroupId = tmpGroup.Id;
 
             await _projectGroupService.KickStudentFromGroup ( userId, currentProjectGroupId, true );
 
-            int newProjectGroupId = dbUser.ProjectGroups.FirstOrDefault ( c => c.ProjectGroup.AffiliatedSectionId == sectionId ).ProjectGroupId ;
+            tmpGroup = await _context.ProjectGroups
+                .Include ( c => c.GroupMembers ).ThenInclude ( cs => cs.User) 
+                .FirstOrDefaultAsync ( c => c.GroupMembers.Any ( cs => cs.UserId == userId ) && c.AffiliatedSectionId == sectionId );
+
+            int newProjectGroupId = tmpGroup.Id;
 
             await _projectGroupService.DeleteProjectGroup ( newProjectGroupId );
 

@@ -374,6 +374,8 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingJoinRequests)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 i.AcceptedNumber = 0;
                 _context.JoinRequests.Update(i);
@@ -381,12 +383,16 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
 
             foreach (var i in dbProjectGroup.OutgoingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
@@ -677,6 +683,8 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingJoinRequests)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 i.AcceptedNumber = 0;
                 _context.JoinRequests.Update(i);
@@ -684,12 +692,16 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
 
             foreach (var i in dbProjectGroup.OutgoingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
@@ -811,7 +823,7 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbJoinRequest.RequestedGroup);
 
             List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
-                .Where(c => c.RequestedGroupId == dbJoinRequest.RequestedGroupId).ToListAsync();
+                .Where(c => c.RequestedGroupId == dbJoinRequest.RequestedGroupId && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedJoinRequests)
             {
@@ -822,7 +834,7 @@ namespace backend.Services.ProjectGroupServices
             _context.JoinRequests.UpdateRange(resetedJoinRequests);
 
             List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
-                .Where(c => c.ReceiverGroupId == dbJoinRequest.RequestedGroupId || c.SenderGroupId == dbJoinRequest.RequestedGroupId).ToListAsync();
+                .Where(c => (c.ReceiverGroupId == dbJoinRequest.RequestedGroupId || c.SenderGroupId == dbJoinRequest.RequestedGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedMergeRequests)
             {
@@ -925,7 +937,7 @@ namespace backend.Services.ProjectGroupServices
 
             // TEST ETMEK LAZIM
             List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
-                .Where(c => c.RequestedGroupId == senderGroupId || c.RequestedGroupId == receiverGroupId).ToListAsync();
+                .Where(c => (c.RequestedGroupId == senderGroupId || c.RequestedGroupId == receiverGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedJoinRequests)
             {
@@ -936,10 +948,10 @@ namespace backend.Services.ProjectGroupServices
             _context.JoinRequests.UpdateRange(resetedJoinRequests);
 
             List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
-                .Where(c => c.ReceiverGroupId == receiverGroupId
+                .Where(c => (c.ReceiverGroupId == receiverGroupId
                    || c.ReceiverGroupId == senderGroupId
                    || c.SenderGroupId == receiverGroupId
-                   || c.SenderGroupId == senderGroupId).ToListAsync();
+                   || c.SenderGroupId == senderGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedMergeRequests)
             {
@@ -1046,7 +1058,7 @@ namespace backend.Services.ProjectGroupServices
 
             // TEST ETMEK LAZIM
             List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
-                .Where(c => c.RequestedGroupId == dbMergeRequest.SenderGroupId || c.RequestedGroupId == dbMergeRequest.ReceiverGroupId).ToListAsync();
+                .Where(c => (c.RequestedGroupId == dbMergeRequest.SenderGroupId || c.RequestedGroupId == dbMergeRequest.ReceiverGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedJoinRequests)
             {
@@ -1057,10 +1069,10 @@ namespace backend.Services.ProjectGroupServices
             _context.JoinRequests.UpdateRange(resetedJoinRequests);
 
             List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
-                .Where(c => c.ReceiverGroupId == dbMergeRequest.ReceiverGroupId
+                .Where(c => (c.ReceiverGroupId == dbMergeRequest.ReceiverGroupId
                    || c.ReceiverGroupId == dbMergeRequest.SenderGroupId
                    || c.SenderGroupId == dbMergeRequest.ReceiverGroupId
-                   || c.SenderGroupId == dbMergeRequest.SenderGroupId).ToListAsync();
+                   || c.SenderGroupId == dbMergeRequest.SenderGroupId) && !c.Accepted && !c.Resolved ).ToListAsync();
 
             foreach (var i in resetedMergeRequests)
             {

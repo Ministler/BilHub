@@ -8,6 +8,7 @@ using backend.Data;
 using backend.Dtos.Assignment;
 using backend.Dtos.Course;
 using backend.Dtos.ProjectGroup;
+using backend.Dtos.Section;
 using backend.Dtos.User;
 using backend.Models;
 using backend.Services.AssignmentServices;
@@ -696,6 +697,23 @@ namespace backend.Services.CourseServices
             serviceResponse.Success = false;
             serviceResponse.Message = "There were problems in one or more sections, instructor needs to fix the groups of these sections manually.";
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetSectionDto>> RemoveStudentFromCourse(int userId, int courseId)
+        {
+            ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto> ();
+            ProjectGroup dbProjectGroup = await _context.ProjectGroups
+                .Include ( c => c.GroupMembers )
+                .FirstOrDefaultAsync ( c => c.AffiliatedCourseId == courseId && c.GroupMembers.Any ( cs => cs.UserId == userId ) );
+            
+            if ( dbProjectGroup == null ) {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found in the course";
+                return serviceResponse;
+            }
+
+            var tmp = await _sectionService.RemoveStudentFromSection (userId, dbProjectGroup.AffiliatedSectionId);
+            return tmp;
         }
     }
 }
