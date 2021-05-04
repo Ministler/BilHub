@@ -29,6 +29,7 @@ import {
     getAssignmentFileRequest,
     deleteSubmissionSrsGradeRequest,
     postSubmissionSrsGradeRequest,
+    getCommentFileRequest,
 } from '../../../API';
 import {
     getSubmissionFileRequest,
@@ -96,7 +97,7 @@ class ProjectAssignment extends Component {
     };
     onGiveFeedback = (e) => {
         postCommentRequest(
-            null,
+            this.state.commentFile,
             this.state.submission.submissionId,
             this.state.currentFeedbackText2,
             this.state.currentMaxFeedbackGrade2,
@@ -161,6 +162,7 @@ class ProjectAssignment extends Component {
             }
         } else {
             if (modalType === 'isGiveFeedbackOpen') {
+                console.log(this.state.currentFeedbackFile);
                 postCommentRequest(
                     this.state.currentFeedbackFile,
                     this.submission.submissionId,
@@ -227,9 +229,9 @@ class ProjectAssignment extends Component {
                 }
                 const page = {
                     isSubmissionAnonim: !curSubmission.affiliatedAssignment.visibilityOfSubmission,
-                    isInGroup: true,
+                    isInGroup: isInGroup,
                     isTAorInstructor: auth.data.data,
-                    canUserComment: curSubmission.affiliatedAssignment.canBeGradedByStudents,
+                    canUserComment: true,
                     hasSubmission: curSubmission.hasSubmission,
                     isLate: submission.date > assignment.dueDate,
                     isEdittable: true, //ask
@@ -241,14 +243,18 @@ class ProjectAssignment extends Component {
                 feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission?.submissionId));
                 //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
                 const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
+
                 axios.all(feedbackRequests).then(
                     axios.spread((...responses) => {
                         let instGrade = 0;
                         for (let i in responses[0].data.data) {
+                            console.log(responses[0].data.data[i]);
                             feedbacks.InstructorComments.push({
                                 name: responses[0].data.data[i].commentedUser.name,
                                 caption: responses[0].data.data[i].commentText,
                                 grade: responses[0].data.data[i].grade,
+                                hasFile: responses[0].data.data[i].hasFile,
+                                fileName: responses[0].data.data[i].fileName,
                                 date: inputDateToDateObject(responses[0].data.data[i].createdAt),
                                 commentId: responses[0].data.data[i].id,
                                 userId: responses[0].data.data[i].commentedUser.id,
@@ -482,7 +488,7 @@ class ProjectAssignment extends Component {
 
     getNewCommentButton = () => {
         let newCommentButton = null;
-        if (this.state.submissionPage?.canUserComment && !this.state.isInGroup) {
+        if (this.state.submissionPage?.canUserComment && !this.state.submissionPage?.isInGroup) {
             newCommentButton = (
                 <Button
                     content="Give Feedback"
@@ -501,21 +507,34 @@ class ProjectAssignment extends Component {
         this.props.history.push('/profile/' + userId);
     };
 
+    onCommentFileChanged = (file) => {
+        this.setState({
+            commentFile: file,
+        });
+    };
+
+    onFeedbackFileClicked = (commentId, fileName) => {
+        getCommentFileRequest(commentId, fileName);
+    };
+
     getFeedbacksPane = () => {
         const newCommentButton = this.getNewCommentButton();
         const content = (
             <Grid>
-                <div class="sixteen wide column">
-                    <NewCommentModal2
-                        text={this.state.currentFeedbackText2}
-                        grade={this.state.currentFeedbackGrade2}
-                        maxGrade={this.state.currentMaxFeedbackGrade2}
-                        onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
-                        onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
-                        onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
-                        onGiveFeedback={(e) => this.onGiveFeedback(e)}
-                    />
-                </div>
+                {!this.state.submissionPage?.isInGroup ? (
+                    <div class="sixteen wide column">
+                        <NewCommentModal2
+                            text={this.state.currentFeedbackText2}
+                            grade={this.state.currentFeedbackGrade2}
+                            maxGrade={this.state.currentMaxFeedbackGrade2}
+                            onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
+                            onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
+                            onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                            onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                            onFileChanged={this.onCommentFileChanged}
+                        />
+                    </div>
+                ) : null}
                 <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
                     <Divider />
                 </div>
@@ -527,6 +546,7 @@ class ProjectAssignment extends Component {
                             this.onModalOpenedWithCommentOpened,
                             this.onAuthorClicked,
                             this.props.userId,
+                            this.onFeedbackFileClicked,
                             this.onModalOpened
                         )}
                         //newCommentButton={newCommentButton}

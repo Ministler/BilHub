@@ -295,6 +295,7 @@ class Project extends Component {
                 }
                 let studentAvg = 0;
                 for (let i in responses[2].data.data) {
+                    console.log(responses[2].data);
                     feedbacks.StudentComments.push({
                         name: responses[2].data.data[i].userInProjectGradeDto.name,
                         caption: responses[2].data.data[i].comment,
@@ -775,18 +776,20 @@ class Project extends Component {
                 <div class="sixteen wide column" style={{marginTop: "-20px"}}>
                     <Divider/>
                 </div> */}
-                <div class="sixteen wide column">
-                    <NewCommentModal2
-                        text={this.state.currentFeedbackText2}
-                        grade={this.state.currentFeedbackGrade2}
-                        maxGrade={this.state.currentMaxFeedbackGrade2}
-                        onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
-                        onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
-                        onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
-                        onGiveFeedback={(e) => this.onGiveFeedback(e)}
-                        onFileChanged={this.onFileChanged}
-                    />
-                </div>
+                {!this.state.projectGroup.isInGroup ? (
+                    <div class="sixteen wide column">
+                        <NewCommentModal2
+                            text={this.state.currentFeedbackText2}
+                            grade={this.state.currentFeedbackGrade2}
+                            maxGrade={this.state.currentMaxFeedbackGrade2}
+                            onTextChange={(e) => this.onCurrentFeedbackTextChanged2(e)}
+                            onGradeChange={(e) => this.onCurrentFeedbackGradeChanged2(e)}
+                            onMaxGradeChange={(e) => this.onCurrentFeedbackMaxGradeChanged2(e)}
+                            onGiveFeedback={(e) => this.onGiveFeedback(e)}
+                            onFileChanged={this.onFileChanged}
+                        />
+                    </div>
+                ) : null}
                 <div class="sixteen wide column" style={{ marginTop: '-20px' }}>
                     <Divider />
                 </div>

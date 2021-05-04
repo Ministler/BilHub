@@ -178,7 +178,7 @@ export const convertFeedbacksToFeedbackList = (
                     author={feedback.name ? feedback.name : 'Comment is anonymous'}
                     caption={feedback.caption}
                     hasFile={feedback.hasFile}
-                    onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId)}
+                    onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId, feedback.fileName)}
                     grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
                     maxGrade={feedback?.maxGrade}
                     date={convertDate(feedback.date)}

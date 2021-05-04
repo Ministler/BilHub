@@ -89,13 +89,13 @@ export const getSubmissionSrsGradeRequest = async (submissionId, graderId) => {
         });
 };
 
-export const getSubmissionFileRequest = async (submissionId) => {
+export const getSubmissionFileRequest = async (submissionId, fileName) => {
     const url = 'File/' + submissionId;
 
     return authAxios
         .get(BASE_SUBMISSION_URL + url, { responseType: 'blob' })
         .then((response) => {
-            FileDownload(response.data, 'file.pdf');
+            FileDownload(response.data, fileName ? fileName : 'file.pdf');
         })
         .catch((error) => {
             throw error;

@@ -163,6 +163,7 @@ class Course extends Component {
                 maxGroupSize: courseData.maxGroupSize,
             };
 
+            console.log('state set');
             this.setState({
                 courseInformation: courseInformation,
                 newInformation: courseInformation.information,
@@ -713,6 +714,7 @@ class Course extends Component {
     };
     //,,
     getAssignmentPage = () => {
+        console.log(this.state.courseInformation?.numberOfSections);
         return (
             <CourseAssignment
                 isTAorInstructorOfCourse={this.state.courseInformation?.isTAorInstructorOfCourse}
