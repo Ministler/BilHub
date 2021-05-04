@@ -42,6 +42,7 @@ class Home extends Component {
             if (!response.data.success) return;
 
             const feedData = response.data.data;
+            console.log(feedData);
             this.setState({
                 feeds: feedData,
             });
@@ -189,16 +190,19 @@ class Home extends Component {
                     <GridColumn width={4}>
                         <div>
                             <ProfilePrompt name={this.props.userName} onClick={this.onProfilePromptClicked} />
-                            {(this.state.myProjects && this.state.myProjects.length !==0) && (
+                            {this.state.myProjects && this.state.myProjects.length !== 0 && (
                                 <div className="MyProjectsBlock">
                                     <h4 style={{ marginLeft: '20px' }}>My Projects</h4>
                                     {myProjectsComponent}
                                 </div>
                             )}
-                            {((this.state.myProjects && this.state.myProjects.length !==0) && (this.state.instructedCourses && this.state.instructedCourses.length !==0 )) && (
-                                <Divider style={{ width: '70%', margin: 'auto', marginTop: '20px' }} />
-                            )}
-                            {(this.state.instructedCourses && this.state.instructedCourses.length !==0 ) && (
+                            {this.state.myProjects &&
+                                this.state.myProjects.length !== 0 &&
+                                this.state.instructedCourses &&
+                                this.state.instructedCourses.length !== 0 && (
+                                    <Divider style={{ width: '70%', margin: 'auto', marginTop: '20px' }} />
+                                )}
+                            {this.state.instructedCourses && this.state.instructedCourses.length !== 0 && (
                                 <div className="InstructedCoursesBlock">
                                     <h4 style={{ marginLeft: '20px' }}>Instructed Courses</h4>
                                     {instructedCoursesComponent}

@@ -51,7 +51,6 @@ class App extends Component {
         const authenticatedRoutes = (
             <AppLayout>
                 <Switch>
-                    <Route exact path={'/notifications'} component={Notifications} />
                     <Route exact path={'/project/:projectId/submission/:submissionId'} component={Project} />
                     <Route exact path={'/project/:projectId'} component={Project} />
                     <Route exact path={'/profile'} component={Profile} />
@@ -61,6 +60,9 @@ class App extends Component {
                     <Route exact path={'/settings'} component={Settings} />
                     {this.props.userType === 'Instructor' ? (
                         <Route exact path={'/create-new-course'} component={CourseCreation} />
+                    ) : null}
+                    {this.props.userType === 'Student' ? (
+                        <Route exact path={'/notifications'} component={Notifications} />
                     ) : null}
                     <Route exact path={'/'} component={Home} />
                     <Route exact path={'/course/:courseId/settings'} component={CourseSettings} />

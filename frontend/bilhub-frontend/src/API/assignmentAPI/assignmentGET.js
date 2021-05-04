@@ -7,7 +7,7 @@ export const getAssignmentFileRequest = async (assignmentId, fileName) => {
     return authAxios
         .get(BASE_ASSIGNMENT_URL + url, { responseType: 'blob' })
         .then((response) => {
-            FileDownload(response.data, fileName);
+            FileDownload(response.data, fileName ? fileName : 'file.pdf');
         })
         .catch((error) => {
             throw error;

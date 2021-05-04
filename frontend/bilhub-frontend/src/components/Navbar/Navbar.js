@@ -17,9 +17,11 @@ const Navbar = (props) => {
                 <Search />
             </Menu.Item> */}
             <Menu.Menu className="NavigatorRightMenu" position="right">
-                <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
-                    <Icon name="bell" size="large" />
-                </Menu.Item>
+                {props.userType === 'Student' ? (
+                    <Menu.Item className="NotificationNavigate" as={NavLink} to="/notifications" exact position="right">
+                        <Icon name="bell" size="large" />
+                    </Menu.Item>
+                ) : null}
                 <Dropdown icon={{ name: 'user circle outline', size: 'big' }} simple item closeOnChange={true}>
                     <Dropdown.Menu direction="left">
                         <div className="MyDivider" />

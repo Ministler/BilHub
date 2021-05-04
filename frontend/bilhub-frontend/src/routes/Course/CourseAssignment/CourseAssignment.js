@@ -24,8 +24,8 @@ class CourseAssignment extends Component {
         };
     }
 
-    onSubmissionFileClicked = (submissionId) => {
-        getSubmissionFileRequest(submissionId);
+    onSubmissionFileClicked = (submissionId, fileName) => {
+        getSubmissionFileRequest(submissionId, fileName);
     };
 
     onFileClicked = () => {
@@ -79,8 +79,6 @@ class CourseAssignment extends Component {
                             notSubmitted: [],
                         });
                     }
-                    console.log(data.sectionNumber);
-                    console.log(submission);
                     for (let response of responses) {
                         const data = response.data.data;
                         console.log(data);
@@ -98,6 +96,7 @@ class CourseAssignment extends Component {
                                 submissionId: data.id,
                                 hasFile: data.hasFile,
                                 submissionDate: data.updatedAt,
+                                fileName: data.fileName,
                             });
                         } else {
                             submission[data.sectionNumber - 1].graded.push({
@@ -107,6 +106,7 @@ class CourseAssignment extends Component {
                                 hasFile: data.hasFile,
                                 submissionDate: data.updatedAt,
                                 grade: data.srsGrade,
+                                fileName: data.fileName,
                             });
                         }
                     }

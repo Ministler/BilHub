@@ -61,7 +61,6 @@ export const convertAssignmentsToAssignmentList = (
                 </>
             );
         }
-
         return (
             <AssignmentCardElement
                 title={assignment.publisher + ' / ' + assignment.title}
@@ -70,7 +69,7 @@ export const convertAssignmentsToAssignmentList = (
                 caption={assignment.caption}
                 fileIcon={fileIcon}
                 fileClicked={() =>
-                    onAssignmentFileClicked(assignment.submissionId ? assignment.submissionId : assignment.assignmentId)
+                    onAssignmentFileClicked(assignment.assignmentId ? assignment.assignmentId : 0, assignment.fileName)
                 }
                 date={convertDate(date)}
                 publisher={assignment.publisher}

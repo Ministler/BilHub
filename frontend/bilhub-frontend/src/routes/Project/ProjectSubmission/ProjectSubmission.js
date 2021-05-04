@@ -110,7 +110,7 @@ class ProjectAssignment extends Component {
     };
 
     onSubmissionFileClicked = () => {
-        getSubmissionFileRequest(this.state.submission.submissionId);
+        getSubmissionFileRequest(this.state.submission.submissionId, this.state.submission.fileName);
     };
 
     onSubmissionFileChange = (file) => {
@@ -214,11 +214,13 @@ class ProjectAssignment extends Component {
                     dueDate: inputDateToDateObject(curSubmission.affiliatedAssignment.dueDate),
                     submissionInfo: '',
                 };
+                console.log(curSubmission);
                 const submission = {
                     caption: curSubmission.description,
                     hasFile: curSubmission.hasFile,
                     date: inputDateToDateObject(curSubmission.updatedAt),
                     submissionId: curSubmission.id,
+                    fileName: curSubmission.fileName,
                 };
                 let isInGroup = false;
                 for (let i of curSubmission.affiliatedGroup.groupMembers) {

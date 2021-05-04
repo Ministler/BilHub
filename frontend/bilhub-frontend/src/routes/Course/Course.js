@@ -102,6 +102,7 @@ class Course extends Component {
     };
 
     onAssignmentFileClicked = (assignmentId, fileName) => {
+        console.log(fileName);
         getAssignmentFileRequest(assignmentId, fileName);
     };
 
@@ -298,6 +299,7 @@ class Course extends Component {
 
             const data = response.data.data;
             const assignments = [];
+            console.log(data);
             for (let assignment of data) {
                 assignments.push(assignment);
             }

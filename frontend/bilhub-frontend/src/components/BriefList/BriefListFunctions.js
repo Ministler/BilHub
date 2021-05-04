@@ -155,7 +155,7 @@ export const convertSubmissionsToSubmissionElement = (
             <SubmissionBriefElement
                 submission={submission}
                 onSubmissionPageClicked={() => onSubmissionPageClicked(submission.projectId, submission.submissionId)}
-                onSubmissionFileClicked={() => onSubmissionFileClicked(submission.submissionId)}
+                onSubmissionFileClicked={() => onSubmissionFileClicked(submission.submissionId, submission.fileName)}
             />
         );
     });

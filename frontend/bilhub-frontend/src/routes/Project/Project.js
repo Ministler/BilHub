@@ -101,9 +101,9 @@ class Project extends Component {
         putProjectGroupInformationRequest(this.props.match.params.projectId, newInformation);
     };
 
-    onAssignmentFileClicked = (assignmentId) => {
-        console.log(assignmentId);
-        getAssignmentFileRequest(assignmentId);
+    onAssignmentFileClicked = (assignmentId, fileName) => {
+        console.log(fileName);
+        getAssignmentFileRequest(assignmentId, fileName);
     };
 
     onModalClosed = (modalType, isSuccess) => {
@@ -200,11 +200,10 @@ class Project extends Component {
             const temp = [];
             const status = { 0: 'notsubmitted', 1: 'submitted', 2: 'graded' };
 
-            for (var i in projectAssignments) {
-                console.log(projectAssignments[i]);
+            for (let i in projectAssignments) {
                 temp.push({
                     title: projectAssignments[i].title,
-                    status: status[projectAssignments[i].status],
+                    status: projectAssignments[i].status,
                     caption: projectAssignments[i].caption,
                     hasFile: projectAssignments[i].hasFile,
                     publisher: projectAssignments[i].publisher,
@@ -212,10 +211,10 @@ class Project extends Component {
                     publishmentDate: inputDateToDateObject(projectAssignments[i].publishmentDate),
                     projectId: this.props.match.params.projectId,
                     submissionId: projectAssignments[i].submissionId,
-                    assignmentId: projectAssignments[i].id,
+                    assignmentId: projectAssignments[i].assignmentId,
+                    fileName: projectAssignments[i].fileName,
                 });
             }
-
             this.setState({
                 assignments: temp,
             });
@@ -818,7 +817,7 @@ class Project extends Component {
     changeReviewingPeer = (userId) => {
         console.log(userId);
         let currentReview = {};
-        for (var i = 0; i < this.state.peerReviews.length; i++) {
+        for (let i = 0; i < this.state.peerReviews.length; i++) {
             if (this.state.peerReviews[i].revieweeId === userId) {
                 currentReview = { ...this.state.peerReviews[i] };
                 i = this.state.peerReviews.length;
