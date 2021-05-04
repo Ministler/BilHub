@@ -20,9 +20,9 @@ namespace backend
         {
             CreateMap<ProjectGroup, GetProjectGroupDto>()
                 .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)))
-                .ForMember( dto => dto.AffiliatedCourseName, opt => opt.Ignore() )
-                .ForMember( dto => dto.IsActive, opt => opt.Ignore() )
-                .ForMember( dto => dto.ConfirmStateOfCurrentUser, opt => opt.Ignore() );
+                .ForMember(dto => dto.AffiliatedCourseName, opt => opt.Ignore())
+                .ForMember(dto => dto.IsActive, opt => opt.Ignore())
+                .ForMember(dto => dto.ConfirmStateOfCurrentUser, opt => opt.Ignore());
 
             CreateMap<User, UserInProjectGroupDto>();
             CreateMap<User, InstructorInCourseDto>();
@@ -30,46 +30,48 @@ namespace backend
             CreateMap<Section, SectionInProjectGroupDto>();
             CreateMap<Course, GetCourseDto>()
                 .ForMember(dto => dto.Instructors, c => c.MapFrom(c => c.Instructors.Select(cs => cs.User)))
-                .ForMember( dto => dto.CurrentUserSectionId, opt => opt.Ignore() )
-                .ForMember( dto => dto.IsInstructorOrTAInCourse, opt => opt.Ignore() )
-                .ForMember( dto => dto.IsUserInFormedGroup, opt => opt.Ignore() )
-                .ForMember( dto => dto.IsUserAlone, opt => opt.Ignore() );
+                .ForMember(dto => dto.CurrentUserSectionId, opt => opt.Ignore())
+                .ForMember(dto => dto.IsInstructorOrTAInCourse, opt => opt.Ignore())
+                .ForMember(dto => dto.IsUserInFormedGroup, opt => opt.Ignore())
+                .ForMember(dto => dto.IsUserAlone, opt => opt.Ignore());
 
             CreateMap<Course, CourseInSectionDto>();
-            
-            CreateMap<User,GroupMemberInSectionDto>();
+
+            CreateMap<User, GroupMemberInSectionDto>();
             CreateMap<ProjectGroup, ProjectGroupInSectionDto>()
-                .ForMember ( dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
+                .ForMember(dto => dto.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)));
 
             CreateMap<Section, GetSectionOfCourseDto>();
             CreateMap<Section, GetSectionDto>()
-                .ForMember( dto => dto.ProjectGroups, opt => opt.Ignore() );
+                .ForMember(dto => dto.ProjectGroups, opt => opt.Ignore());
             CreateMap<Assignment, GetAssignmentDto>();
             CreateMap<Submission, GetSubmissionDto>();
-            CreateMap<Comment, GetCommentDto>();
+            CreateMap<Comment, GetCommentDto>()
+                .ForMember(c => c.HasFile, c => c.MapFrom(c => c.FileAttachmentAvailability));
+            
             CreateMap<User, GetUserDto>();
             CreateMap<User, GetCommentorDto>();
             CreateMap<PeerGrade, PeerGradeInfoDto>();
 
-            CreateMap<User,UserInJoinRequestDto>();
-            CreateMap<User,GroupMemberInJoinRequestDto>();
-            CreateMap<ProjectGroup,ProjectGroupInJoinRequestDto>()
-                .ForMember( c => c.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
-            CreateMap<JoinRequest,GetJoinRequestDto>()
-                .ForMember( dto => dto.CourseName, opt => opt.Ignore() )
-                .ForMember( dto => dto.LockDate, opt => opt.Ignore() )
-                .ForMember( dto => dto.CurrentUserVote, opt => opt.Ignore() );
-                
-            CreateMap<User,GroupMemberInMergeRequestDto>();
-            CreateMap<ProjectGroup,ProjectGroupInMergeRequestDto>()
-                .ForMember( c => c.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)) );
-            CreateMap<MergeRequest,GetMergeRequestDto>()
-                .ForMember( dto => dto.CourseName, opt => opt.Ignore() )
-                .ForMember( dto => dto.LockDate, opt => opt.Ignore() )
-                .ForMember( dto => dto.CurrentUserVote, opt => opt.Ignore() );
-            CreateMap<User,UsersOfCourseDto>();
+            CreateMap<User, UserInJoinRequestDto>();
+            CreateMap<User, GroupMemberInJoinRequestDto>();
+            CreateMap<ProjectGroup, ProjectGroupInJoinRequestDto>()
+                .ForMember(c => c.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)));
+            CreateMap<JoinRequest, GetJoinRequestDto>()
+                .ForMember(dto => dto.CourseName, opt => opt.Ignore())
+                .ForMember(dto => dto.LockDate, opt => opt.Ignore())
+                .ForMember(dto => dto.CurrentUserVote, opt => opt.Ignore());
 
-            CreateMap<User,GetUserInfoDto>();
+            CreateMap<User, GroupMemberInMergeRequestDto>();
+            CreateMap<ProjectGroup, ProjectGroupInMergeRequestDto>()
+                .ForMember(c => c.GroupMembers, c => c.MapFrom(c => c.GroupMembers.Select(cs => cs.User)));
+            CreateMap<MergeRequest, GetMergeRequestDto>()
+                .ForMember(dto => dto.CourseName, opt => opt.Ignore())
+                .ForMember(dto => dto.LockDate, opt => opt.Ignore())
+                .ForMember(dto => dto.CurrentUserVote, opt => opt.Ignore());
+            CreateMap<User, UsersOfCourseDto>();
+
+            CreateMap<User, GetUserInfoDto>();
         }
 
     }

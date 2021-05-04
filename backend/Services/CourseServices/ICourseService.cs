@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using backend.Dtos.Assignment;
 using backend.Dtos.Course;
 using backend.Dtos.ProjectGroup;
+using backend.Dtos.Section;
 using backend.Dtos.User;
 using backend.Models;
 
@@ -24,5 +25,6 @@ namespace backend.Services.CourseServices
         Task<ServiceResponse<List<GetFeedItemDto>>> GetAssignments(int courseId);
         Task<ServiceResponse<List<UsersOfCourseDto>>> GetUsersOfCourse (int courseId);
         Task<ServiceResponse<string>> LockGroupFormation(int courseId);
+        Task<ServiceResponse<GetSectionDto>> RemoveStudentFromCourse(int userId, int courseId);
     }
 }

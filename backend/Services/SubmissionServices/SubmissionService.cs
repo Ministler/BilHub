@@ -434,12 +434,35 @@ namespace backend.Services.SubmissionServices
                 response.Success = false;
                 return response;
             }
-            List<GetCommentDto> comments = _context.Comments
+            List<Comment> comments2 = _context.Comments
                 .Include(c => c.CommentedUser)
                 .Where(c => c.CommentedSubmissionId == submissionId)
-                .Where(c => c.CommentedUser.UserType == UserTypeClass.Instructor)
-                .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
-
+                .Where(c => c.CommentedUser.UserType == UserTypeClass.Instructor).ToList();
+            List<GetCommentDto> comments = new List<GetCommentDto>();
+            foreach (Comment c in comments2)
+            {
+                comments.Add(
+                    new GetCommentDto
+                    {
+                        CommentedSubmissionId = c.CommentedSubmissionId,
+                        Id = c.Id,
+                        CommentedUser = new GetCommentorDto
+                        {
+                            Id = c.CommentedUser.Id,
+                            Name = c.CommentedUser.Name,
+                            Email = c.CommentedUser.Email,
+                            UserType = c.CommentedUser.UserType
+                        },
+                        CommentText = c.CommentText,
+                        MaxGrade = c.MaxGrade,
+                        Grade = c.Grade,
+                        CreatedAt = c.CreatedAt,
+                        FileEndpoint = "/Comment/" + c.Id,
+                        HasFile = c.FileAttachmentAvailability,
+                        FileName = c.FilePath.Split('/').Last()
+                    }
+                );
+            }
             response.Data = comments;
             return response;
         }
@@ -471,12 +494,35 @@ namespace backend.Services.SubmissionServices
             }
             List<int> intrs = new List<int>();
             intrs = course.Instructors.Select(cu => cu.UserId).ToList();
-            List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
+            List<Comment> comments2 = _context.Comments.Include(c => c.CommentedUser)
                 .Where(c => c.CommentedSubmissionId == submissionId)
                 .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
-                .Where(c => intrs.Contains(c.CommentedUserId))
-                .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
-
+                .Where(c => intrs.Contains(c.CommentedUserId)).ToList();
+            List<GetCommentDto> comments = new List<GetCommentDto>();
+            foreach (Comment c in comments2)
+            {
+                comments.Add(
+                    new GetCommentDto
+                    {
+                        CommentedSubmissionId = c.CommentedSubmissionId,
+                        Id = c.Id,
+                        CommentedUser = new GetCommentorDto
+                        {
+                            Id = c.CommentedUser.Id,
+                            Name = c.CommentedUser.Name,
+                            Email = c.CommentedUser.Email,
+                            UserType = c.CommentedUser.UserType
+                        },
+                        CommentText = c.CommentText,
+                        MaxGrade = c.MaxGrade,
+                        Grade = c.Grade,
+                        CreatedAt = c.CreatedAt,
+                        FileEndpoint = "/Comment/" + c.Id,
+                        HasFile = c.FileAttachmentAvailability,
+                        FileName = c.FilePath.Split('/').Last()
+                    }
+                );
+            }
             response.Data = comments;
             return response;
         }
@@ -508,11 +554,35 @@ namespace backend.Services.SubmissionServices
             }
             List<int> intrs = new List<int>();
             intrs = course.Instructors.Select(cu => cu.UserId).ToList();
-            List<GetCommentDto> comments = _context.Comments.Include(c => c.CommentedUser)
+            List<Comment> comments2 = _context.Comments.Include(c => c.CommentedUser)
                 .Where(c => c.CommentedSubmissionId == submissionId)
                 .Where(c => c.CommentedUser.UserType == UserTypeClass.Student)
-                .Where(c => !intrs.Contains(c.CommentedUserId))
-                .Select(c => _mapper.Map<GetCommentDto>(c)).ToList();
+                .Where(c => !intrs.Contains(c.CommentedUserId)).ToList();
+            List<GetCommentDto> comments = new List<GetCommentDto>();
+            foreach (Comment c in comments2)
+            {
+                comments.Add(
+                    new GetCommentDto
+                    {
+                        CommentedSubmissionId = c.CommentedSubmissionId,
+                        Id = c.Id,
+                        CommentedUser = new GetCommentorDto
+                        {
+                            Id = c.CommentedUser.Id,
+                            Name = c.CommentedUser.Name,
+                            Email = c.CommentedUser.Email,
+                            UserType = c.CommentedUser.UserType
+                        },
+                        CommentText = c.CommentText,
+                        MaxGrade = c.MaxGrade,
+                        Grade = c.Grade,
+                        CreatedAt = c.CreatedAt,
+                        FileEndpoint = "/Comment/" + c.Id,
+                        HasFile = c.FileAttachmentAvailability,
+                        FileName = c.FilePath.Split('/').Last()
+                    }
+                );
+            }
 
             response.Data = comments;
             return response;

@@ -14,6 +14,7 @@ namespace backend.Dtos.ProjectGrade
         public int GradedProjectGroupID { get; set; }
         public string FileEndpoint { get; set; }
         public bool HasFile { get; set; }
+        public string FileName { get; set; }
 
     }
 }

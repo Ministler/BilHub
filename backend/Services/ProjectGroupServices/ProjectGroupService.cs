@@ -148,7 +148,8 @@ namespace backend.Services.ProjectGroupServices
             }
 
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
-            projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
+            projectGroupDto.AffiliatedCourse.Name = dbProjectGroup.AffiliatedCourse.Name + "-" + dbProjectGroup.AffiliatedCourse.CourseSemester + " " + dbProjectGroup.AffiliatedCourse.Year;
+            //projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
             projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
@@ -320,7 +321,7 @@ namespace backend.Services.ProjectGroupServices
                     await _context.SaveChangesAsync();
                 }
             }
-            
+
             dbProjectGroup.ConfirmedGroupMembers = newConfirmedGroupMembers;
 
             _context.ProjectGroups.Update(dbProjectGroup);
@@ -329,7 +330,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(dbProjectGroup);
             projectGroupDto.AffiliatedCourseName = dbProjectGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = dbProjectGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , userId );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, userId);
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Successfully applied the operation";
             return serviceResponse;
@@ -374,6 +375,8 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingJoinRequests)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 i.AcceptedNumber = 0;
                 _context.JoinRequests.Update(i);
@@ -381,12 +384,16 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
 
             foreach (var i in dbProjectGroup.OutgoingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
@@ -677,6 +684,8 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingJoinRequests)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 i.AcceptedNumber = 0;
                 _context.JoinRequests.Update(i);
@@ -684,12 +693,16 @@ namespace backend.Services.ProjectGroupServices
 
             foreach (var i in dbProjectGroup.IncomingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
 
             foreach (var i in dbProjectGroup.OutgoingMergeRequest)
             {
+                if ( i.Accepted || i.Resolved )
+                    continue;
                 i.VotedStudents = "";
                 _context.MergeRequests.Update(i);
             }
@@ -811,7 +824,7 @@ namespace backend.Services.ProjectGroupServices
             _context.ProjectGroups.Update(dbJoinRequest.RequestedGroup);
 
             List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
-                .Where(c => c.RequestedGroupId == dbJoinRequest.RequestedGroupId).ToListAsync();
+                .Where(c => c.RequestedGroupId == dbJoinRequest.RequestedGroupId && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedJoinRequests)
             {
@@ -822,7 +835,7 @@ namespace backend.Services.ProjectGroupServices
             _context.JoinRequests.UpdateRange(resetedJoinRequests);
 
             List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
-                .Where(c => c.ReceiverGroupId == dbJoinRequest.RequestedGroupId || c.SenderGroupId == dbJoinRequest.RequestedGroupId).ToListAsync();
+                .Where(c => (c.ReceiverGroupId == dbJoinRequest.RequestedGroupId || c.SenderGroupId == dbJoinRequest.RequestedGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedMergeRequests)
             {
@@ -848,12 +861,12 @@ namespace backend.Services.ProjectGroupServices
             ProjectGroup SenderGroup = await _context.ProjectGroups
                 .Include(cs => cs.GroupMembers).ThenInclude(css => css.User)
                 .Include(cs => cs.AffiliatedCourse)
-                .FirstOrDefaultAsync ( c => c.Id == senderGroupId );
+                .FirstOrDefaultAsync(c => c.Id == senderGroupId);
 
             ProjectGroup ReceiverGroup = await _context.ProjectGroups
                 .Include(cs => cs.GroupMembers).ThenInclude(css => css.User)
                 .Include(cs => cs.AffiliatedCourse)
-                .FirstOrDefaultAsync ( c => c.Id == receiverGroupId );
+                .FirstOrDefaultAsync(c => c.Id == receiverGroupId);
 
             if (SenderGroup == null || ReceiverGroup == null)
             {
@@ -862,7 +875,7 @@ namespace backend.Services.ProjectGroupServices
                 return serviceResponse;
             }
 
-            if ( !(await isUserInstructorOfGroup(receiverGroupId)))
+            if (!(await isUserInstructorOfGroup(receiverGroupId)))
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Neither user is not an instructor of this course nor the request is accepted by all people.";
@@ -925,7 +938,7 @@ namespace backend.Services.ProjectGroupServices
 
             // TEST ETMEK LAZIM
             List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
-                .Where(c => c.RequestedGroupId == senderGroupId || c.RequestedGroupId == receiverGroupId).ToListAsync();
+                .Where(c => (c.RequestedGroupId == senderGroupId || c.RequestedGroupId == receiverGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedJoinRequests)
             {
@@ -936,10 +949,10 @@ namespace backend.Services.ProjectGroupServices
             _context.JoinRequests.UpdateRange(resetedJoinRequests);
 
             List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
-                .Where(c => c.ReceiverGroupId == receiverGroupId
+                .Where(c => (c.ReceiverGroupId == receiverGroupId
                    || c.ReceiverGroupId == senderGroupId
                    || c.SenderGroupId == receiverGroupId
-                   || c.SenderGroupId == senderGroupId).ToListAsync();
+                   || c.SenderGroupId == senderGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedMergeRequests)
             {
@@ -953,7 +966,7 @@ namespace backend.Services.ProjectGroupServices
             GetProjectGroupDto projectGroupDto = _mapper.Map<GetProjectGroupDto>(ReceiverGroup);
             projectGroupDto.AffiliatedCourseName = ReceiverGroup.AffiliatedCourse.Name;
             projectGroupDto.IsActive = ReceiverGroup.AffiliatedCourse.IsActive;
-            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString ( projectGroupDto.ConfirmedGroupMembers , GetUserId() );
+            projectGroupDto.ConfirmStateOfCurrentUser = IsUserInString(projectGroupDto.ConfirmedGroupMembers, GetUserId());
             serviceResponse.Data = projectGroupDto;
             serviceResponse.Message = "Merge request is completed.";
             return serviceResponse;
@@ -1046,7 +1059,7 @@ namespace backend.Services.ProjectGroupServices
 
             // TEST ETMEK LAZIM
             List<JoinRequest> resetedJoinRequests = await _context.JoinRequests
-                .Where(c => c.RequestedGroupId == dbMergeRequest.SenderGroupId || c.RequestedGroupId == dbMergeRequest.ReceiverGroupId).ToListAsync();
+                .Where(c => (c.RequestedGroupId == dbMergeRequest.SenderGroupId || c.RequestedGroupId == dbMergeRequest.ReceiverGroupId) && !c.Accepted && !c.Resolved).ToListAsync();
 
             foreach (var i in resetedJoinRequests)
             {
@@ -1057,10 +1070,10 @@ namespace backend.Services.ProjectGroupServices
             _context.JoinRequests.UpdateRange(resetedJoinRequests);
 
             List<MergeRequest> resetedMergeRequests = await _context.MergeRequests
-                .Where(c => c.ReceiverGroupId == dbMergeRequest.ReceiverGroupId
+                .Where(c => (c.ReceiverGroupId == dbMergeRequest.ReceiverGroupId
                    || c.ReceiverGroupId == dbMergeRequest.SenderGroupId
                    || c.SenderGroupId == dbMergeRequest.ReceiverGroupId
-                   || c.SenderGroupId == dbMergeRequest.SenderGroupId).ToListAsync();
+                   || c.SenderGroupId == dbMergeRequest.SenderGroupId) && !c.Accepted && !c.Resolved ).ToListAsync();
 
             foreach (var i in resetedMergeRequests)
             {
@@ -1110,11 +1123,16 @@ namespace backend.Services.ProjectGroupServices
                         name = c.GradingUser.Name
                     },
                     GradingUserId = c.GradingUserId,
-
+                    FileName = c.FilePath,
                     FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
                     GradedProjectGroupID = c.GradedProjectGroup.Id,
                     HasFile = c.HasFile
                 }).ToList();
+            foreach (ProjectGradeInfoDto pg in projectGrades)
+            {
+                if (pg.FileName != null || pg.FileName != "")
+                    pg.FileName = pg.FileName.Split('/').Last();
+            }
 
             response.Data = projectGrades;
             return response;
@@ -1156,11 +1174,16 @@ namespace backend.Services.ProjectGroupServices
                         name = c.GradingUser.Name
                     },
                     GradingUserId = c.GradingUserId,
-
+                    HasFile = c.HasFile,
+                    FileName = c.FilePath,
                     FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
                     GradedProjectGroupID = c.GradedProjectGroup.Id
                 }).ToList();
-
+            foreach (ProjectGradeInfoDto pg in projectGrades)
+            {
+                if (pg.FileName != null || pg.FileName != "")
+                    pg.FileName = pg.FileName.Split('/').Last();
+            }
             response.Data = projectGrades;
             return response;
         }
@@ -1200,11 +1223,17 @@ namespace backend.Services.ProjectGroupServices
                         name = c.GradingUser.Name
                     },
                     GradingUserId = c.GradingUserId,
-
+                    FileName = c.FilePath,
+                    HasFile = c.HasFile,
                     FileEndpoint = string.Format("ProjectGrade/DownloadById/{0}", c.Id),
                     GradedProjectGroupID = c.GradedProjectGroup.Id
                 }).ToList();
 
+            foreach (ProjectGradeInfoDto pg in projectGrades)
+            {
+                if (pg.FileName != null || pg.FileName != "")
+                    pg.FileName = pg.FileName.Split('/').Last();
+            }
             response.Data = projectGrades;
             return response;
         }
@@ -1390,11 +1419,13 @@ namespace backend.Services.ProjectGroupServices
                         {
                             assignmentId = a.Id,
                             caption = a.AssignmentDescription,
-                            publisher = a.AfilliatedCourse.Name,
+                            publisher = a.AfilliatedCourse.Name + "-" + a.AfilliatedCourse.CourseSemester + " " + a.AfilliatedCourse.Year,
                             publisherId = a.AfilliatedCourseId,
                             publishmentDate = a.CreatedAt,
                             dueDate = a.DueDate,
                             hasFile = a.HasFile,
+                            status = s.HasSubmission ? s.IsGraded ? 1 : 2 : 3,
+                            fileName = a.FilePath == null ? "" : a.FilePath.Split('/').Last(),
                             fileEndpoint = "Assignment/File/" + a.Id,
                             projectId = projectGroup.Id,
                             submissionId = s.Id,
