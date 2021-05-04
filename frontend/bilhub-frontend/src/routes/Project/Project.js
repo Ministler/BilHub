@@ -44,6 +44,8 @@ import { getPeerGradeRequestWithReviewee, getPeerGradeRequestWithReviewer } from
 import { getProjectGradeDownloadByIdRequest, putProjectGroupRequest } from '../../API';
 import { putPeerGradeRequest } from '../../API/peerGradeAPI';
 
+import { getPeerGradeAssignmentRequest } from '../../API/peerGradeAssignmentAPI';
+
 class Project extends Component {
     constructor(props) {
         super(props);
@@ -77,7 +79,7 @@ class Project extends Component {
             currentMaxFeedbackGrade2: 10,
 
             //Peer Review
-            isPeerReviewOpen: true,
+            isPeerReviewOpen: false,
             currentReviewComment: '',
             currentReviewGrade: -1,
             currentPeer: 0,
@@ -156,7 +158,12 @@ class Project extends Component {
                         break;
                     }
                 }
-                console.log(projectGroupData.groupMembers);
+                console.log(projectGroupData);
+                getPeerGradeAssignmentRequest(projectGroupData.affiliatedCourse.id).then((response) => {
+                    if (!response.data.success) return;
+                    console.log(response.data.data);
+                    this.setState({ isPeerReviewOpen: true, maxReviewGrade: response.data.data.maxGrade });
+                });
                 const projectInformation = {
                     isInGroup: isInGroup,
                     isTAorInstructor: auth.data.data, //look
@@ -855,7 +862,9 @@ class Project extends Component {
                 this.state.currentPeer,
                 this.state.currentReviewGrade,
                 this.state.currentReviewComment
-            );
+            ).then((response) => {
+                console.log(response.data.data);
+            });
         } else {
             putPeerGradeRequest(reviewId, this.state.currentReviewGrade, this.state.currentReviewComment);
             for (let i in reviews) {

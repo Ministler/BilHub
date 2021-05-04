@@ -254,6 +254,7 @@ class Course extends Component {
                             }
                             groups.push(section);
                         }
+                        console.log(groups);
                         this.setState({
                             groups: groups,
                         });
@@ -550,8 +551,8 @@ class Course extends Component {
             groupsTab = this.state.groups ? (
                 <GroupsTab
                     isUserInFormedGroup={this.state.courseInformation?.isUserInFormedGroup}
-                    groupsFormed={this.state.groups[this.state.currentSection].formed}
-                    groupsUnformed={this.state.groups[this.state.currentSection].unformed}
+                    groupsFormed={this.state.groups[this.state.currentSection]?.formed}
+                    groupsUnformed={this.state.groups[this.state.currentSection]?.unformed}
                     isUserInThisSection={
                         this.state.courseInformation?.currentUserSection === this.state.currentSection + 1
                     }

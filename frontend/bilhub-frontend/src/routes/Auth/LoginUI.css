@@ -18,3 +18,8 @@
         vertical-align: middle !important;
     }
 }
+
+.colm > img {
+    width: 20px;
+    height: auto;
+}

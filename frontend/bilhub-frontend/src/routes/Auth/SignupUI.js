@@ -1,6 +1,7 @@
 import React from 'react';
-import { Form, Button, Grid, Segment } from 'semantic-ui-react';
+import { Form, Button, Grid, Segment, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
 import './SignupUI.css';
 
@@ -9,10 +10,8 @@ export const SignupUI = (props) => {
         <div>
             <Grid centered>
                 <Grid.Column style={{ maxWidth: 400, marginTop: 5 }}>
-                    <h2 className="ui center aligned icon header">
-                        <i className="circular users icon"></i>
-                        Create account
-                    </h2>
+                    <Image src={logo} size="small" centered></Image>
+                    <h2 className="ui center aligned icon header">Create account</h2>
                     {props.error && (
                         <div className="ui negative message" style={{ fontSize: '12px' }}>
                             <i className="close icon" onClick={props.onPopupClosed}></i>
