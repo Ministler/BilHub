@@ -81,6 +81,12 @@ namespace backend.Data
 
             var gr319 = 35;
             var sub319 = 40;
+            
+            var crs315 = 10;
+            var us315 = 65;
+            var sec315 = 15;
+            var as315 = 10;
+            var sub315 = 80;
 
             modelBuilder.Entity<User>().HasData(
                 new User
@@ -765,8 +771,32 @@ namespace backend.Data
                     UserType = UserTypeClass.Student,
                     Email = "muge@uzun",
                     VerificationCode = "cs"
+                }, new User
+                {
+                    Id = us315,
+                    Name = "Irmak Turkoz",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "irmak@turkoz",
+                    VerificationCode = "cs"
+                }, new User
+                {
+                    Id = us315 + 1,
+                    Name = "Alper Sahistan",
+                    PasswordHash = hash,
+                    SecondPasswordHash = hash,
+                    PasswordSalt = salt,
+                    VerifiedStatus = true,
+                    DarkModeStatus = false,
+                    UserType = UserTypeClass.Student,
+                    Email = "alper@sahistan",
+                    VerificationCode = "cs"
                 }
-            ); // 19 - 25
+            );
             modelBuilder.Entity<Course>().HasData(
                 new Course
                 {
@@ -779,10 +809,12 @@ namespace backend.Data
                     Year = 2021,
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    MinGroupSize = 2,
+                    MinGroupSize = 3,
                     MaxGroupSize = 6,
                     IsActive = true,
-                }, new Course
+                }
+                /*
+                , new Course
                 {
                     Id = 2,
                     Name = "CS 315",
@@ -790,13 +822,15 @@ namespace backend.Data
                     CourseDescription = "Programming Languages",
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
-                    CourseSemester = SemesterType.Fall,
+                    CourseSemester = SemesterType.Spring,
                     NumberOfSections = 2,
                     Year = 2021,
                     IsActive = true,
                     MinGroupSize = 2,
                     MaxGroupSize = 3
-                }, new Course
+                }
+                */
+                , new Course
                 {
                     Id = 3,
                     Name = "CS 202",
@@ -862,7 +896,7 @@ namespace backend.Data
                     CourseSemester = SemesterType.Spring,
                     IsActive = true,
                     Year = 2021,
-                    MinGroupSize = 3,
+                    MinGroupSize = 1,
                     MaxGroupSize = 3
                 }, new Course
                 {
@@ -878,6 +912,20 @@ namespace backend.Data
                     Year = 2021,
                     MinGroupSize = 4,
                     MaxGroupSize = 6
+                }, new Course
+                {
+                    Id = crs315,
+                    Name = "CS315",
+                    CourseInformation = "Programming Languages",
+                    CourseDescription = "Language evaluation criteria. Describing syntax and semantics and more...",
+                    LockDate = DateTime.Today,
+                    StartDate = new DateTime(2020, 1, 27),
+                    CourseSemester = SemesterType.Spring,
+                    IsActive = true,
+                    NumberOfSections = 1,
+                    Year = 2021,
+                    MinGroupSize = 2,
+                    MaxGroupSize = 3
                 }
             );
             modelBuilder.Entity<CourseUser>().HasData(
@@ -893,11 +941,15 @@ namespace backend.Data
                 {
                     UserId = 17,
                     CourseId = 1
-                }, new CourseUser
+                }
+                /*
+                , new CourseUser
                 {
                     UserId = 18,
                     CourseId = 2
-                }, new CourseUser
+                }
+                */
+                , new CourseUser
                 {
                     UserId = 15,
                     CourseId = 3
@@ -913,11 +965,14 @@ namespace backend.Data
                 {
                     UserId = 22,
                     CourseId = 4
-                }, new CourseUser
+                }, 
+                /*new CourseUser
                 {
                     UserId = 23,
                     CourseId = 2
-                }, new CourseUser
+                },
+                */
+                 new CourseUser
                 {
                     UserId = 20,
                     CourseId = 6
@@ -941,6 +996,18 @@ namespace backend.Data
                 {
                     UserId = idseak,
                     CourseId = crs10221
+                }, new CourseUser
+                {
+                    UserId = 23,
+                    CourseId = crs315
+                }, new CourseUser
+                {
+                    UserId = us315,
+                    CourseId = crs315
+                }, new CourseUser
+                {
+                    UserId = us315 + 1,
+                    CourseId = crs315
                 }
             );
             modelBuilder.Entity<Section>().HasData(
@@ -956,6 +1023,7 @@ namespace backend.Data
                     AffiliatedCourseId = 1,
                     SectionNo = 2
                 },
+                /*
                 new Section
                 {
                     Id = 3,
@@ -968,6 +1036,7 @@ namespace backend.Data
                     AffiliatedCourseId = 2,
                     SectionNo = 2
                 },
+                */
                 new Section
                 {
                     Id = 5,
@@ -1009,6 +1078,12 @@ namespace backend.Data
                     Id = sec10221 + 1,
                     AffiliatedCourseId = crs10221,
                     SectionNo = 2
+                },
+                new Section
+                {
+                    Id = sec315,
+                    AffiliatedCourseId = crs315,
+                    SectionNo = 1
                 }
             );
             modelBuilder.Entity<ProjectGroup>().HasData(
@@ -1045,30 +1120,30 @@ namespace backend.Data
                 }, new ProjectGroup
                 {
                     Id = 3,
-                    AffiliatedSectionId = 3,
-                    AffiliatedCourseId = 2,
-                    ConfirmationState = false,
+                    AffiliatedSectionId = sec315,
+                    AffiliatedCourseId = crs315,
+                    ConfirmationState = true,
                     Name = "AGA inc",
-                    ConfirmedUserNumber = 0,
+                    ConfirmedUserNumber = 3,
                     ProjectInformation = "AGA Language",
-                    ConfirmedGroupMembers = ""
+                    ConfirmedGroupMembers = "1 3 4"
                 }, new ProjectGroup
                 {
                     Id = 4,
-                    AffiliatedSectionId = 3,
-                    AffiliatedCourseId = 2,
-                    ConfirmationState = false,
+                    AffiliatedSectionId = sec315,
+                    AffiliatedCourseId = crs315,
+                    ConfirmationState = true,
                     Name = "STS lng",
-                    ConfirmedUserNumber = 0,
+                    ConfirmedUserNumber = 3,
                     ProjectInformation = "Satis Language",
-                    ConfirmedGroupMembers = ""
+                    ConfirmedGroupMembers = "5 6 7"
                 }, new ProjectGroup
                 {
                     Id = 6,
                     AffiliatedSectionId = 2,
                     Name = "SMS company",
                     AffiliatedCourseId = 1,
-                    ConfirmationState = true,
+                    ConfirmationState = false,
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "SMS - A Student Management System",
                     ConfirmedGroupMembers = ""
@@ -1102,27 +1177,30 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "Best Class Management System",
                     ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                },
+                new ProjectGroup
                 {
                     Id = 10,
-                    AffiliatedSectionId = 3,
-                    AffiliatedCourseId = 2,
-                    Name = "C++ langugage",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "++C",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                    AffiliatedSectionId = sec315,
+                    AffiliatedCourseId = crs315,
+                    Name = "C language",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 2,
+                    ProjectInformation = "Making C Better",
+                    ConfirmedGroupMembers = "26, 27"
+                },
+                new ProjectGroup
                 {
                     Id = 11,
-                    AffiliatedSectionId = 3,
-                    AffiliatedCourseId = 2,
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    Name = "Phyton langug",
-                    ProjectInformation = "Payton",
-                    ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                    AffiliatedSectionId = sec315,
+                    AffiliatedCourseId = crs315,
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 2,
+                    Name = "Pyhton lovers",
+                    ProjectInformation = "PYhLov",
+                    ConfirmedGroupMembers = "28 29"
+                },
+                /*new ProjectGroup
 
                 {
                     Id = 12,
@@ -1143,13 +1221,15 @@ namespace backend.Data
                     ConfirmedUserNumber = 0,
                     ProjectInformation = "NewLanguage()",
                     ConfirmedGroupMembers = ""
-                }, new ProjectGroup
+                }, 
+                */
+                new ProjectGroup
                 {
                     Id = gr10221,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
                     Name = "Course Helper",
-                    ConfirmationState = false,
+                    ConfirmationState = true,
                     ConfirmedUserNumber = 3,
                     ProjectInformation = "Designing a course helper",
                     ConfirmedGroupMembers = "31 32 33"
@@ -1159,7 +1239,7 @@ namespace backend.Data
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
                     Name = "GPS Utilizer",
-                    ConfirmationState = false,
+                    ConfirmationState = true,
                     ConfirmedUserNumber = 3,
                     ProjectInformation = "GPS's are fun",
                     ConfirmedGroupMembers = "3 4 7"
@@ -1169,7 +1249,7 @@ namespace backend.Data
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
                     Name = "UNSCO",
-                    ConfirmationState = false,
+                    ConfirmationState = true,
                     ConfirmedUserNumber = 3,
                     ProjectInformation = "UNESCO",
                     ConfirmedGroupMembers = "34 35 36"
@@ -1178,91 +1258,91 @@ namespace backend.Data
                     Id = gr10221 + 3,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group1",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 2,
+                    ProjectInformation = "g1",
+                    ConfirmedGroupMembers = "37 38"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 4,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group2",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 2,
+                    ProjectInformation = "g2",
+                    ConfirmedGroupMembers = "39 40"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 5,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group3",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 2,
+                    ProjectInformation = "g3",
+                    ConfirmedGroupMembers = "41 42"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 6,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group4",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "g4",
+                    ConfirmedGroupMembers = "43"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 7,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group5",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "g5",
+                    ConfirmedGroupMembers = "44"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 8,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group6",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "g6",
+                    ConfirmedGroupMembers = "45"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 9,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group7",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "g7",
+                    ConfirmedGroupMembers = "46"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 10,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group8",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "g8",
+                    ConfirmedGroupMembers = "47"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 11,
                     AffiliatedSectionId = sec10221,
                     AffiliatedCourseId = crs10221,
-                    Name = "",
-                    ConfirmationState = false,
-                    ConfirmedUserNumber = 0,
-                    ProjectInformation = "",
-                    ConfirmedGroupMembers = ""
+                    Name = "Group9",
+                    ConfirmationState = true,
+                    ConfirmedUserNumber = 1,
+                    ProjectInformation = "g9",
+                    ConfirmedGroupMembers = "48"
                 }, new ProjectGroup
                 {
                     Id = gr10221 + 12,
@@ -1299,7 +1379,7 @@ namespace backend.Data
                     AffiliatedSectionId = 1,
                     AffiliatedCourseId = 1,
                     Name = "Impressive Helper",
-                    ConfirmationState = true,
+                    ConfirmationState = false,
                     ConfirmedUserNumber = 2,
                     ProjectInformation = "The best project ever",
                     ConfirmedGroupMembers = "6 7"
@@ -1422,11 +1502,14 @@ namespace backend.Data
                 {
                     UserId = 29,
                     ProjectGroupId = 11,
-                }, new ProjectGroupUser
+                },
+                /*new ProjectGroupUser
                 {
                     UserId = 9,
                     ProjectGroupId = 12,
-                }, new ProjectGroupUser
+                },
+                */
+                new ProjectGroupUser
                 {
                     UserId = idseak + 1,
                     ProjectGroupId = gr10221,
@@ -1537,6 +1620,7 @@ namespace backend.Data
                 }
             );
             modelBuilder.Entity<Assignment>().HasData(
+                /*
                 new Assignment
                 {
                     Id = 1,
@@ -1581,7 +1665,9 @@ namespace backend.Data
                     CanBeGradedByStudents = true,
                     IsItGraded = false,
                     HasFile = false
-                }, new Assignment
+                },
+                */
+                new Assignment
                 {
                     Id = as10221,
                     Title = "Analysis report",
@@ -1595,9 +1681,25 @@ namespace backend.Data
                     CanBeGradedByStudents = true,
                     IsItGraded = true,
                     HasFile = false
+                },
+                new Assignment
+                {
+                    Id = as315,
+                    Title = "Project 1",
+                    AfilliatedCourseId = crs315,
+                    AssignmentDescription = "A Programming Language for Creating Adventure Games and its Lexical Analyzer",
+                    DueDate = new DateTime(2021, 5, 20, 23, 59, 59),
+                    CreatedAt = new DateTime(2021, 5, 1, 14, 2, 23),
+                    AcceptedTypes = "pdf",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = false,
+                    HasFile = false
                 }
             );
             modelBuilder.Entity<Submission>().HasData(
+                /*
                 new Submission
                 {
                     Id = 1,
@@ -1957,7 +2059,9 @@ namespace backend.Data
                     HasFile = false,
                     CourseId = 1,
                     SectionId = 1
-                }, new Submission
+                },
+                */
+                new Submission
                 {
                     Id = sub10221,
                     Description = "hey, this is our submission",
@@ -2135,11 +2239,66 @@ namespace backend.Data
                     HasFile = false,
                     CourseId = crs10221,
                     SectionId = sec10221 + 1
+                }, new Submission
+                {
+                    Id = sub315,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as315,
+                    AffiliatedGroupId = 3,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 1,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as315,
+                    AffiliatedGroupId = 4,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 2,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as315,
+                    AffiliatedGroupId = 10,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 3,
+                    Description = "",
+                    IsGraded = false,
+                    AffiliatedAssignmentId = as315,
+                    AffiliatedGroupId = 11,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
                 }
 
                 // 3'ten 11'e kadar
             );
+            
+            /*
             modelBuilder.Entity<Comment>().HasData(
+            
                 new Comment
                 {
                     Id = 1,
@@ -2207,8 +2366,11 @@ namespace backend.Data
                     FileAttachmentAvailability = false,
                     FilePath = ""
                 }
-            );
+
+            );*/
+
             modelBuilder.Entity<JoinRequest>().HasData(
+                /*
                 new JoinRequest
                 {
                     Id = 1,
@@ -2266,7 +2428,8 @@ namespace backend.Data
                     Accepted = false,
                     Resolved = false,
                     VotedStudents = "26"
-                }, new JoinRequest
+                }
+                /*, new JoinRequest
                 {
                     Id = 6,
                     RequestingStudentId = 9,
@@ -2277,7 +2440,7 @@ namespace backend.Data
                     Accepted = false,
                     Resolved = false,
                     VotedStudents = ""
-                }, new JoinRequest
+                }*//*, new JoinRequest
                 {
                     Id = 7,
                     RequestingStudentId = 7,
@@ -2288,7 +2451,9 @@ namespace backend.Data
                     Accepted = true,
                     Resolved = false,
                     VotedStudents = "1 3 4 5 6"
-                }, new JoinRequest
+                },*/
+                
+                 new JoinRequest
                 {
                     Id = 8,
                     RequestingStudentId = 25,
@@ -2299,7 +2464,8 @@ namespace backend.Data
                     Accepted = false,
                     Resolved = true,
                     VotedStudents = "1 3 4"
-                }, new JoinRequest
+                },
+                 new JoinRequest
                 {
                     Id = 9,
                     RequestingStudentId = 5,
@@ -2345,6 +2511,7 @@ namespace backend.Data
                     VotedStudents = ""
                 }
             );
+            
             modelBuilder.Entity<MergeRequest>().HasData(
                 new MergeRequest
                 {
@@ -2376,7 +2543,8 @@ namespace backend.Data
                     CreatedAt = new DateTime(2021, 4, 13, 16, 23, 2),
                     Accepted = false,
                     Resolved = false
-                }, new MergeRequest
+                }
+                /*, new MergeRequest
                 {
                     Id = 4,
                     SenderGroupId = 12,
@@ -2406,7 +2574,7 @@ namespace backend.Data
                     CreatedAt = new DateTime(2021, 4, 13, 19, 23, 2),
                     Accepted = false,
                     Resolved = false
-                }/*, new MergeRequest
+                }, new MergeRequest
                 {
                     Id = 7,
                     SenderGroupId = 14,
@@ -2470,23 +2638,25 @@ namespace backend.Data
                  }
             );
             modelBuilder.Entity<PeerGradeAssignment>().HasData(
-                new PeerGradeAssignment
+                /*new PeerGradeAssignment
                 {
                     Id = 1,
                     CourseId = 1,
                     DueDate = new DateTime(2021, 6, 1, 1, 0, 0),
                     LastEdited = new DateTime(2021, 4, 1, 1, 1, 0, 0),
                     MaxGrade = 10
-                }, new PeerGradeAssignment
+                }, */
+                new PeerGradeAssignment
                 {
                     Id = 2,
-                    CourseId = 2,
+                    CourseId = crs315,
                     DueDate = new DateTime(2021, 8, 1, 1, 0, 0),
                     LastEdited = new DateTime(2021, 4, 1, 1, 1, 0, 0),
-                    MaxGrade = 5
+                    MaxGrade = 10
                 }
             );
-            modelBuilder.Entity<ProjectGrade>().HasData(
+            //modelBuilder.Entity<ProjectGrade>().HasData(
+                /*
                 new ProjectGrade
                 {
                     Id = 1,
@@ -2663,32 +2833,36 @@ namespace backend.Data
                     MaxGrade = 10,
                     Grade = 9,
                     LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
-                }
-            );
+                }*/
+            //);
             modelBuilder.Entity<PeerGrade>().HasData(
+                
                 new PeerGrade
                 {
                     Id = 1,
-                    ProjectGroupId = 1,
-                    ReviewerId = 1,
-                    RevieweeId = 3,
+                    ProjectGroupId = 4,
+                    ReviewerId = 5,
+                    RevieweeId = 6,
                     MaxGrade = 10,
                     Grade = 10,
-                    Comment = "nice term",
-                    PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 0, 0)
-                }, new PeerGrade
+                    Comment = "best teammate ever",
+                    PeerGradeAssignmentId = 2,
+                    LastEdited = new DateTime(2021, 4, 3, 1,1,1)
+                }
+                
+                , new PeerGrade
                 {
                     Id = 2,
                     ProjectGroupId = 1,
-                    ReviewerId = 1,
-                    RevieweeId = 4,
+                    ReviewerId = 5,
+                    RevieweeId = 7,
                     MaxGrade = 10,
-                    Grade = 9,
-                    Comment = "",
-                    PeerGradeAssignmentId = 1,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 1, 0)
-                }, new PeerGrade
+                    Grade = 4,
+                    Comment = "He didn't do anything",
+                    PeerGradeAssignmentId = 2,
+                    LastEdited = new DateTime(2021, 4, 1, 3, 1, 1,1 )
+                }
+                /*, new PeerGrade
                 {
                     Id = 3,
                     ProjectGroupId = 1,
@@ -2832,6 +3006,7 @@ namespace backend.Data
                     PeerGradeAssignmentId = 1,
                     LastEdited = new DateTime(2021, 4, 1, 2, 1, 14, 0)
                 }
+                */
             );
 
         }
