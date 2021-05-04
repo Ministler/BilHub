@@ -19,7 +19,7 @@ export const postCourseRequest = async (
         courseInformation: courseInformation,
         numberOfSections: numberOfSections,
         isSectionless: isSectionless,
-        lockDate: lockDate,
+        lockDate: '2022-01-01T00:00:00',
         minGroupSize: minGroupSize,
         maxGroupSize: maxGroupSize,
         courseDescription: courseDescription,
