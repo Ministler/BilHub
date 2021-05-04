@@ -81,7 +81,7 @@ namespace backend.Data
 
             var gr319 = 35;
             var sub319 = 40;
-            
+
             var crs315 = 10;
             var us315 = 65;
             var sec315 = 15;
@@ -810,7 +810,7 @@ namespace backend.Data
                     LockDate = DateTime.Today,
                     StartDate = new DateTime(2021, 2, 15, 7, 0, 0),
                     MinGroupSize = 3,
-                    MaxGroupSize = 6,
+                    MaxGroupSize = 5,
                     IsActive = true,
                 }
                 /*
@@ -886,18 +886,17 @@ namespace backend.Data
                 {
                     Id = crs10221,
                     Name = "CS102",
-                    CourseInformation = "CS102 gives you an opportunity to put the basic computer literacy, design and programming skills you learnt in CS101 into practice. The course has two components. The first is simply a continuation of CS101 aimed at expanding the range of techniques you have available to solve problems. These new techniques will be presented in formal lectures and, as in C"
-                                            + "S101, you will be given lab. assignments designed to let you practice them. Material in this section includes recursion, files and some basic data structures, plus a little about object-oriented programming, event-driven architectures, searching and sorting. There will be written exams on these topics. The second component of the course is a semester"
-                                            + "long design project. The ultimate goal is to produce a commercial-quality program which is fully documented, bug-free and easy to use. You will work in groups, each group selecting possibly a different project. You will be expected to prepare a number of written reports and to present these in class. These documents will include basic requirements, "
-                                            + "pecifications, detailed design and user manuals. Groups will discuss each other's work and offer suggestions and criticisms on it so as to help improve the final product. Projects will be undertaken using Java. Students will be expected to display creativity and an ability to learn independently.",
-                    LockDate = DateTime.Today,
-                    CourseDescription = "Algorithms and Programming",
+                    CourseDescription = "CS102 gives you an opportunity to put the basic computer literacy, design and programming skills you learnt in CS101 into practice. The course has two components. The first is simply a continuation of CS101 aimed at expanding the range of techniques you have available to solve problems. These new techniques will be presented in formal lectures and, as in C"
+                                            + "S101, you will be given lab. assignments designed to let you practice them. Material in this section includes recursion, files and some basic data structures, plus a little about object-oriented programming, event-driven architectures, searching and sorting. ",
                     StartDate = new DateTime(2021, 1, 27, 6, 0, 0),
                     CourseSemester = SemesterType.Spring,
+                    CourseInformation = "Algorithms and Programming",
+                    LockDate = DateTime.Today,//bunlar mi   
                     IsActive = true,
                     Year = 2021,
                     MinGroupSize = 1,
-                    MaxGroupSize = 3
+                    MaxGroupSize = 3,
+                    NumberOfSections = 2
                 }, new Course
                 {
                     Id = crs10221 + 1,
@@ -965,50 +964,50 @@ namespace backend.Data
                 {
                     UserId = 22,
                     CourseId = 4
-                }, 
-                /*new CourseUser
-                {
-                    UserId = 23,
-                    CourseId = 2
                 },
-                */
+                 /*new CourseUser
+                 {
+                     UserId = 23,
+                     CourseId = 2
+                 },
+                 */
                  new CourseUser
-                {
-                    UserId = 20,
-                    CourseId = 6
-                }, new CourseUser
-                {
-                    UserId = 15,
-                    CourseId = 5
-                }, new CourseUser
-                {
-                    UserId = 15,
-                    CourseId = crs10221
-                }, new CourseUser
-                {
-                    UserId = 5,
-                    CourseId = crs10221
-                }, new CourseUser
-                {
-                    UserId = 6,
-                    CourseId = crs10221
-                }, new CourseUser
-                {
-                    UserId = idseak,
-                    CourseId = crs10221
-                }, new CourseUser
-                {
-                    UserId = 23,
-                    CourseId = crs315
-                }, new CourseUser
-                {
-                    UserId = us315,
-                    CourseId = crs315
-                }, new CourseUser
-                {
-                    UserId = us315 + 1,
-                    CourseId = crs315
-                }
+                 {
+                     UserId = 20,
+                     CourseId = 6
+                 }, new CourseUser
+                 {
+                     UserId = 15,
+                     CourseId = 5
+                 }, new CourseUser
+                 {
+                     UserId = 15,
+                     CourseId = crs10221
+                 }, new CourseUser
+                 {
+                     UserId = 5,
+                     CourseId = crs10221
+                 }, new CourseUser
+                 {
+                     UserId = 6,
+                     CourseId = crs10221
+                 }, new CourseUser
+                 {
+                     UserId = idseak,
+                     CourseId = crs10221
+                 }, new CourseUser
+                 {
+                     UserId = 23,
+                     CourseId = crs315
+                 }, new CourseUser
+                 {
+                     UserId = us315,
+                     CourseId = crs315
+                 }, new CourseUser
+                 {
+                     UserId = us315 + 1,
+                     CourseId = crs315
+                 }
             );
             modelBuilder.Entity<Section>().HasData(
                 new Section
@@ -1187,7 +1186,7 @@ namespace backend.Data
                     ConfirmationState = true,
                     ConfirmedUserNumber = 2,
                     ProjectInformation = "Making C Better",
-                    ConfirmedGroupMembers = "26, 27"
+                    ConfirmedGroupMembers = "26 27"
                 },
                 new ProjectGroup
                 {
@@ -1388,24 +1387,24 @@ namespace backend.Data
             modelBuilder.Entity<ProjectGroupUser>().HasData(
                 new ProjectGroupUser
                 {
-                    UserId = 1,
-                    ProjectGroupId = 1,
+                    UserId = 5,
+                    ProjectGroupId = 1, // 
                 }, new ProjectGroupUser
                 {
                     UserId = 3,
-                    ProjectGroupId = 1,
+                    ProjectGroupId = 1, //
                 }, new ProjectGroupUser
                 {
                     UserId = 4,
-                    ProjectGroupId = gr319,
+                    ProjectGroupId = gr319, //
                 }, new ProjectGroupUser
                 {
-                    UserId = 5,
-                    ProjectGroupId = gr319,
+                    UserId = 1,
+                    ProjectGroupId = gr319, // bu 4'u yusufta ayni sectionda gorunuyo ama degiller seed ayni yusufa gitmiyo
                 }, new ProjectGroupUser
                 {
                     UserId = 6,
-                    ProjectGroupId = gr319 + 1,
+                    ProjectGroupId = gr319 + 1, //
                 }, new ProjectGroupUser
                 {
                     UserId = 7,
@@ -1695,6 +1694,21 @@ namespace backend.Data
                     VisibilityOfSubmission = true,
                     CanBeGradedByStudents = true,
                     IsItGraded = false,
+                    HasFile = false
+                },
+                new Assignment
+                {
+                    Id = as315 + 1,
+                    Title = "Homework 2",
+                    AfilliatedCourseId = crs315,
+                    AssignmentDescription = "Data Structures in C, Go, Javascript",
+                    DueDate = new DateTime(2021, 5, 2, 23, 59, 59),
+                    CreatedAt = new DateTime(2021, 4, 10, 14, 2, 23),
+                    AcceptedTypes = "pdf",
+                    MaxFileSizeInBytes = 4096,
+                    VisibilityOfSubmission = true,
+                    CanBeGradedByStudents = true,
+                    IsItGraded = true,
                     HasFile = false
                 }
             );
@@ -2291,11 +2305,67 @@ namespace backend.Data
                     HasFile = false,
                     CourseId = crs315,
                     SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 4,
+                    Description = "",
+                    SrsGrade = (decimal)9.5,
+                    IsGraded = true,
+                    AffiliatedAssignmentId = as315 + 1,
+                    AffiliatedGroupId = 3,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 5,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)9,
+                    AffiliatedAssignmentId = as315 + 1,
+                    AffiliatedGroupId = 4,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 6,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)8,
+                    AffiliatedAssignmentId = as315 +  1,
+                    AffiliatedGroupId = 10,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = false,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
+                }, new Submission
+                {
+                    Id = sub315 + 7,
+                    Description = "",
+                    IsGraded = true,
+                    SrsGrade = (decimal)7,
+                    AffiliatedAssignmentId = as315 + 1, 
+                    AffiliatedGroupId = 11,
+                    //UpdatedAt = new DateTime(2021, 4, 9, 15, 44, 20),
+                    FilePath = "",
+                    HasSubmission = true,
+                    HasFile = false,
+                    CourseId = crs315,
+                    SectionId = sec315
                 }
 
                 // 3'ten 11'e kadar
             );
-            
+
             /*
             modelBuilder.Entity<Comment>().HasData(
             
@@ -2370,148 +2440,148 @@ namespace backend.Data
             );*/
 
             modelBuilder.Entity<JoinRequest>().HasData(
-                /*
-                new JoinRequest
-                {
-                    Id = 1,
-                    RequestingStudentId = 14,
-                    Description = "Hi, I want to join your group. I know .net",
-                    RequestedGroupId = 5,
-                    CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                },
-                new JoinRequest
-                {
-                    Id = 2,
-                    RequestingStudentId = 24,
-                    Description = "Hey, you can check out the projects I did on my github profile",
-                    RequestedGroupId = 5,
-                    CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                },
-                new JoinRequest
-                {
-                    Id = 3,
-                    RequestingStudentId = 24,
-                    Description = "Hey, can I join you?",
-                    RequestedGroupId = 7,
-                    CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                }, new JoinRequest
-                {
-                    Id = 4,
-                    RequestingStudentId = 13,
-                    Description = "Hi, I am very good at Javascript",
-                    RequestedGroupId = 6,
-                    CreatedAt = new DateTime(2021, 4, 29, 10, 29, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                }, new JoinRequest
-                {
-                    Id = 5,
-                    RequestingStudentId = 9,
-                    Description = "Hi, I am looking for a team.",
-                    RequestedGroupId = 10,
-                    CreatedAt = new DateTime(2021, 4, 29, 10, 30, 2),
-                    AcceptedNumber = 1,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = "26"
-                }
-                /*, new JoinRequest
-                {
-                    Id = 6,
-                    RequestingStudentId = 9,
-                    Description = "",
-                    RequestedGroupId = 13,
-                    CreatedAt = new DateTime(2021, 4, 29, 14, 30, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                }*//*, new JoinRequest
-                {
-                    Id = 7,
-                    RequestingStudentId = 7,
-                    Description = "take me",
-                    RequestedGroupId = 1,
-                    CreatedAt = new DateTime(2021, 4, 15, 14, 30, 2),
-                    AcceptedNumber = 5,
-                    Accepted = true,
-                    Resolved = false,
-                    VotedStudents = "1 3 4 5 6"
-                },*/
-                
+                 /*
                  new JoinRequest
-                {
-                    Id = 8,
-                    RequestingStudentId = 25,
-                    Description = "take me",
-                    RequestedGroupId = 1,
-                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
-                    AcceptedNumber = 2,
-                    Accepted = false,
-                    Resolved = true,
-                    VotedStudents = "1 3 4"
-                },
+                 {
+                     Id = 1,
+                     RequestingStudentId = 14,
+                     Description = "Hi, I want to join your group. I know .net",
+                     RequestedGroupId = 5,
+                     CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 },
                  new JoinRequest
-                {
-                    Id = 9,
-                    RequestingStudentId = 5,
-                    Description = "I know deep learning",
-                    RequestedGroupId = 5,
-                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                }, new JoinRequest
-                {
-                    Id = 10,
-                    RequestingStudentId = 5,
-                    Description = "We'd make a good team together",
-                    RequestedGroupId = 9,
-                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
-                    AcceptedNumber = 2,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = "27 28"
-                }, new JoinRequest
-                {
-                    Id = 11,
-                    RequestingStudentId = 24,
-                    Description = "I have experience with web development",
-                    RequestedGroupId = 1,
-                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
-                    AcceptedNumber = 1,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = "3"
-                }, new JoinRequest
-                {
-                    Id = 12,
-                    RequestingStudentId = 14,
-                    Description = "I'm good UX designer guys",
-                    RequestedGroupId = 1,
-                    CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
-                    AcceptedNumber = 0,
-                    Accepted = false,
-                    Resolved = false,
-                    VotedStudents = ""
-                }
+                 {
+                     Id = 2,
+                     RequestingStudentId = 24,
+                     Description = "Hey, you can check out the projects I did on my github profile",
+                     RequestedGroupId = 5,
+                     CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 },
+                 new JoinRequest
+                 {
+                     Id = 3,
+                     RequestingStudentId = 24,
+                     Description = "Hey, can I join you?",
+                     RequestedGroupId = 7,
+                     CreatedAt = new DateTime(2021, 4, 29, 10, 23, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 }, new JoinRequest
+                 {
+                     Id = 4,
+                     RequestingStudentId = 13,
+                     Description = "Hi, I am very good at Javascript",
+                     RequestedGroupId = 6,
+                     CreatedAt = new DateTime(2021, 4, 29, 10, 29, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 }, new JoinRequest
+                 {
+                     Id = 5,
+                     RequestingStudentId = 9,
+                     Description = "Hi, I am looking for a team.",
+                     RequestedGroupId = 10,
+                     CreatedAt = new DateTime(2021, 4, 29, 10, 30, 2),
+                     AcceptedNumber = 1,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = "26"
+                 }
+                 /*, new JoinRequest
+                 {
+                     Id = 6,
+                     RequestingStudentId = 9,
+                     Description = "",
+                     RequestedGroupId = 13,
+                     CreatedAt = new DateTime(2021, 4, 29, 14, 30, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 }*//*, new JoinRequest
+                 {
+                     Id = 7,
+                     RequestingStudentId = 7,
+                     Description = "take me",
+                     RequestedGroupId = 1,
+                     CreatedAt = new DateTime(2021, 4, 15, 14, 30, 2),
+                     AcceptedNumber = 5,
+                     Accepted = true,
+                     Resolved = false,
+                     VotedStudents = "1 3 4 5 6"
+                 },*/
+
+                 new JoinRequest
+                 {
+                     Id = 8,
+                     RequestingStudentId = 25,
+                     Description = "take me",
+                     RequestedGroupId = 1,
+                     CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                     AcceptedNumber = 2,
+                     Accepted = false,
+                     Resolved = true,
+                     VotedStudents = "1 3 4"
+                 },
+                 new JoinRequest
+                 {
+                     Id = 9,
+                     RequestingStudentId = 5,
+                     Description = "I know deep learning",
+                     RequestedGroupId = 5,
+                     CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 }, new JoinRequest
+                 {
+                     Id = 10,
+                     RequestingStudentId = 5,
+                     Description = "We'd make a good team together",
+                     RequestedGroupId = 9,
+                     CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                     AcceptedNumber = 2,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = "27 28"
+                 }, new JoinRequest
+                 {
+                     Id = 11,
+                     RequestingStudentId = 24,
+                     Description = "I have experience with web development",
+                     RequestedGroupId = 1,
+                     CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                     AcceptedNumber = 1,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = "3"
+                 }, new JoinRequest
+                 {
+                     Id = 12,
+                     RequestingStudentId = 14,
+                     Description = "I'm good UX designer guys",
+                     RequestedGroupId = 1,
+                     CreatedAt = new DateTime(2021, 4, 15, 10, 30, 2),
+                     AcceptedNumber = 0,
+                     Accepted = false,
+                     Resolved = false,
+                     VotedStudents = ""
+                 }
             );
-            
+
             modelBuilder.Entity<MergeRequest>().HasData(
                 new MergeRequest
                 {
@@ -2601,7 +2671,7 @@ namespace backend.Data
                      SenderGroupId = gr319,
                      Description = "we are good team players",
                      ReceiverGroupId = 1,
-                     VotedStudents = "4 3",
+                     VotedStudents = "4 3 1",
                      CreatedAt = new DateTime(2021, 4, 10, 19, 23, 2),
                      Accepted = false,
                      Resolved = false
@@ -2656,187 +2726,187 @@ namespace backend.Data
                 }
             );
             //modelBuilder.Entity<ProjectGrade>().HasData(
-                /*
-                new ProjectGrade
-                {
-                    Id = 1,
-                    GradingUserId = 8,
-                    Description = "cool one",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 10,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 0, 0)
-                }, new ProjectGrade
-                {
-                    Id = 2,
-                    GradingUserId = 9,
-                    Description = " ",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 9,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 1, 0)
-                }, new ProjectGrade
-                {
-                    Id = 3,
-                    GradingUserId = 10,
-                    Description = " ",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 8,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 2, 0)
-                }, new ProjectGrade
-                {
-                    Id = 4,
-                    GradingUserId = 2,
-                    Description = " ",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 10,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 3, 0)
-                }, new ProjectGrade
-                {
-                    Id = 5,
-                    GradingUserId = 1,
-                    Description = " ",
-                    GradedProjectGroupID = 2,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 6,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 4, 0)
-                }, new ProjectGrade
-                {
-                    Id = 6,
-                    GradingUserId = 2,
-                    Description = " ",
-                    GradedProjectGroupID = 2,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 7,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 5, 0)
-                }, new ProjectGrade
-                {
-                    Id = 7,
-                    GradingUserId = 3,
-                    Description = " ",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 8,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 6, 0)
-                }, new ProjectGrade
-                {
-                    Id = 8,
-                    GradingUserId = 9,
-                    Description = " ",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 9,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 7, 0)
-                }, new ProjectGrade
-                {
-                    Id = 9,
-                    GradingUserId = 6,
-                    Description = " ",
-                    GradedProjectGroupID = 5,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 9,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 8, 0)
-                }, new ProjectGrade
-                {
-                    Id = 10,
-                    GradingUserId = 2,
-                    Description = " ",
-                    GradedProjectGroupID = 5,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 9,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 9, 0)
-                }, new ProjectGrade
-                {
-                    Id = 11,
-                    GradingUserId = 3,
-                    Description = " ",
-                    GradedProjectGroupID = 5,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 8,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 10, 0)
-                }, new ProjectGrade
-                {
-                    Id = 12,
-                    GradingUserId = 7,
-                    Description = " ",
-                    GradedProjectGroupID = 5,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 10,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
-                }, new ProjectGrade
-                {
-                    Id = 13,
-                    GradingUserId = 17,
-                    Description = "",
-                    GradedProjectGroupID = 5,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 8,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
-                }, new ProjectGrade
-                {
-                    Id = 14,
-                    GradingUserId = 16,
-                    Description = "good job",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 10,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
-                }, new ProjectGrade
-                {
-                    Id = 15,
-                    GradingUserId = 17,
-                    Description = "amazing",
-                    GradedProjectGroupID = 1,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 10,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
-                }, new ProjectGrade
-                {
-                    Id = 16,
-                    GradingUserId = 16,
-                    Description = "",
-                    GradedProjectGroupID = 5,
-                    FilePath = "",
-                    HasFile = false,
-                    MaxGrade = 10,
-                    Grade = 9,
-                    LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
-                }*/
+            /*
+            new ProjectGrade
+            {
+                Id = 1,
+                GradingUserId = 8,
+                Description = "cool one",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 10,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 0, 0)
+            }, new ProjectGrade
+            {
+                Id = 2,
+                GradingUserId = 9,
+                Description = " ",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 9,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 1, 0)
+            }, new ProjectGrade
+            {
+                Id = 3,
+                GradingUserId = 10,
+                Description = " ",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 8,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 2, 0)
+            }, new ProjectGrade
+            {
+                Id = 4,
+                GradingUserId = 2,
+                Description = " ",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 10,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 3, 0)
+            }, new ProjectGrade
+            {
+                Id = 5,
+                GradingUserId = 1,
+                Description = " ",
+                GradedProjectGroupID = 2,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 6,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 4, 0)
+            }, new ProjectGrade
+            {
+                Id = 6,
+                GradingUserId = 2,
+                Description = " ",
+                GradedProjectGroupID = 2,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 7,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 5, 0)
+            }, new ProjectGrade
+            {
+                Id = 7,
+                GradingUserId = 3,
+                Description = " ",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 8,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 6, 0)
+            }, new ProjectGrade
+            {
+                Id = 8,
+                GradingUserId = 9,
+                Description = " ",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 9,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 7, 0)
+            }, new ProjectGrade
+            {
+                Id = 9,
+                GradingUserId = 6,
+                Description = " ",
+                GradedProjectGroupID = 5,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 9,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 8, 0)
+            }, new ProjectGrade
+            {
+                Id = 10,
+                GradingUserId = 2,
+                Description = " ",
+                GradedProjectGroupID = 5,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 9,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 9, 0)
+            }, new ProjectGrade
+            {
+                Id = 11,
+                GradingUserId = 3,
+                Description = " ",
+                GradedProjectGroupID = 5,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 8,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 10, 0)
+            }, new ProjectGrade
+            {
+                Id = 12,
+                GradingUserId = 7,
+                Description = " ",
+                GradedProjectGroupID = 5,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 10,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
+            }, new ProjectGrade
+            {
+                Id = 13,
+                GradingUserId = 17,
+                Description = "",
+                GradedProjectGroupID = 5,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 8,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
+            }, new ProjectGrade
+            {
+                Id = 14,
+                GradingUserId = 16,
+                Description = "good job",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 10,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
+            }, new ProjectGrade
+            {
+                Id = 15,
+                GradingUserId = 17,
+                Description = "amazing",
+                GradedProjectGroupID = 1,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 10,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
+            }, new ProjectGrade
+            {
+                Id = 16,
+                GradingUserId = 16,
+                Description = "",
+                GradedProjectGroupID = 5,
+                FilePath = "",
+                HasFile = false,
+                MaxGrade = 10,
+                Grade = 9,
+                LastEdited = new DateTime(2021, 4, 1, 2, 1, 11, 0)
+            }*/
             //);
             modelBuilder.Entity<PeerGrade>().HasData(
-                
+
                 new PeerGrade
                 {
                     Id = 1,
@@ -2847,9 +2917,9 @@ namespace backend.Data
                     Grade = 10,
                     Comment = "best teammate ever",
                     PeerGradeAssignmentId = 2,
-                    LastEdited = new DateTime(2021, 4, 3, 1,1,1)
+                    LastEdited = new DateTime(2021, 4, 3, 1, 1, 1)
                 }
-                
+
                 , new PeerGrade
                 {
                     Id = 2,
@@ -2860,7 +2930,7 @@ namespace backend.Data
                     Grade = 4,
                     Comment = "He didn't do anything",
                     PeerGradeAssignmentId = 2,
-                    LastEdited = new DateTime(2021, 4, 1, 3, 1, 1,1 )
+                    LastEdited = new DateTime(2021, 4, 1, 3, 1, 1, 1)
                 }
                 /*, new PeerGrade
                 {
