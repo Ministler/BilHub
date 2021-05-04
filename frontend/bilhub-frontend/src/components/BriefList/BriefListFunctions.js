@@ -13,7 +13,7 @@ export const convertMyProjectsToBriefList = (myProjects, onProjectClicked, onCou
         ) : (
             <Icon name="lock" style={{ color: 'rgb(196, 126, 5)' }} />
         );
-        const title = project.isActive
+        const title = project.isLocked
             ? project.projectName !== null
                 ? project.courseCode + '/' + project.projectName
                 : project.courseCode + '/' + 'Formed Group'
