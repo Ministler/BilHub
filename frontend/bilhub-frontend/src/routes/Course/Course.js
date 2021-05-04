@@ -776,6 +776,7 @@ class Course extends Component {
     };
     //,,
     getAssignmentPage = () => {
+        console.log(this.state.courseInformation?.numberOfSections);
         return (
             <CourseAssignment
                 isTAorInstructorOfCourse={this.state.courseInformation?.isTAorInstructorOfCourse}

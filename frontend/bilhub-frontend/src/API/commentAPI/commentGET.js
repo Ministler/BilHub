@@ -13,13 +13,13 @@ export const getCommentFileZipRequest = async (commentId) => {
         });
 };
 
-export const getCommentFileRequest = async (commentId) => {
+export const getCommentFileRequest = async (commentId, fileName) => {
     const url = 'File/' + commentId;
 
     return authAxios
         .get(BASE_COMMENT_URL + url, { responseType: 'blob' })
         .then((response) => {
-            FileDownload(response.data, 'file.pdf');
+            FileDownload(response.data, fileName ? fileName : 'file.pdf');
         })
         .catch((error) => {
             throw error;

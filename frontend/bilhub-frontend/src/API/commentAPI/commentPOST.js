@@ -15,16 +15,19 @@ export const postCommentFileRequest = async (File, commentId) => {
 };
 
 export const postCommentRequest = async (File, CommentedSubmissionId, CommentText, MaxGrade, Grade) => {
-    const body = {
-        File: File,
-        CommentedSubmissionId: CommentedSubmissionId,
-        CommentText: CommentText,
-        MaxGrade: MaxGrade,
-        Grade: Grade,
-    };
+    let fd = new FormData();
+    fd.append('File', File);
+    fd.append('AddCommentDto.CommentedSubmissionId', CommentedSubmissionId);
+    fd.append('AddCommentDto.CommentText', CommentText);
+    fd.append('AddCommentDto.MaxGrade', MaxGrade);
+    fd.append('AddCommentDto.Grade', Grade);
 
     return authAxios
-        .post(BASE_COMMENT_URL, body)
+        .post(BASE_COMMENT_URL, fd, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
         .then((response) => response)
         .catch((error) => {
             throw error;
