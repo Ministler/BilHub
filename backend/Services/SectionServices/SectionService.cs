@@ -100,7 +100,7 @@ namespace backend.Services.SectionServices
             serviceResponse.Data.ProjectGroups = tmp.Data;
             return serviceResponse;
         }
-
+        
         public async Task<ServiceResponse<GetSectionDto>> RemoveStudentFromSection(int userId, int sectionId)
         {
             ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto>();
@@ -145,7 +145,7 @@ namespace backend.Services.SectionServices
                 .FirstOrDefaultAsync ( c => c.GroupMembers.Any ( cs => cs.UserId == userId ) && c.AffiliatedSectionId == sectionId );
             int currentProjectGroupId = tmpGroup.Id;
 
-            await _projectGroupService.KickStudentFromGroup ( userId, currentProjectGroupId, true );
+            await _projectGroupService.KickStudentFromGroup ( currentProjectGroupId, userId, true );
 
             tmpGroup = await _context.ProjectGroups
                 .Include ( c => c.GroupMembers ).ThenInclude ( cs => cs.User) 
@@ -285,5 +285,6 @@ namespace backend.Services.SectionServices
             serviceResponse.Data = "Possible merges are done.";
             return serviceResponse;
         }
+
     }
 }

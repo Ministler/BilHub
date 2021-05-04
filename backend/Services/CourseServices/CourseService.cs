@@ -711,8 +711,8 @@ namespace backend.Services.CourseServices
                 serviceResponse.Message = "User not found in the course";
                 return serviceResponse;
             }
-
-            var tmp = await _sectionService.RemoveStudentFromSection (userId, dbProjectGroup.AffiliatedSectionId);
+            int sectionId = dbProjectGroup.AffiliatedSectionId;
+            var tmp = await _sectionService.RemoveStudentFromSection (userId, sectionId);
             return tmp;
         }
     }
