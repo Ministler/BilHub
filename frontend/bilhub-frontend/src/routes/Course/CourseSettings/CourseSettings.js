@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
+import axios from 'axios';
 import {
     Divider,
     Input,
@@ -17,7 +18,16 @@ import {
 import { UserSearchBar } from '../CourseComponents';
 
 import './CourseSettings.css';
-import { getCourseRequest, postDeactivateCourseRequest, putCourseRequest, deleteCourseRequest } from '../../../API';
+import {
+    getCourseRequest,
+    postDeactivateCourseRequest,
+    putCourseRequest,
+    deleteCourseRequest,
+    postActivateCourseRequest,
+    getIdByEmailRequest,
+    postCourseInstructorRequest,
+    postStudentToSectionRequest,
+} from '../../../API';
 import { FormedGroupsBriefList, convertUnformedGroupsToBriefList } from '../../../components';
 import { dateObjectToInputDate, inputDateToDateObject } from '../../../utils';
 
@@ -60,7 +70,6 @@ export class CourseSettings extends Component {
             autoSection: null,
             minSize: null,
             maxSize: null,
-            groupFormationDate: null,
             groups: null,
             users: null,
             isLocked: null,
@@ -76,46 +85,57 @@ export class CourseSettings extends Component {
                 arr[i].push(this.state.studentManualList[i][k]);
             }
         }
-        //System.DateTime
-        let date = inputDateToDateObject(this.state.groupFormationDate);
 
-        let request = null;
         if (this.state.courseInformation?.isLocked) {
-            request = {
-                courseName: this.state.code + '/' + this.state.year + this.state.semester,
-                description: this.state.shortDescription,
-
-                newStudents: arr,
-                newTAs: this.state.TAList,
-                newinstructors: this.state.instructorList,
-            };
+            putCourseRequest(
+                this.props.match.params.courseId,
+                this.state.code,
+                this.state.semester,
+                this.state.year,
+                this.state.shortDescription,
+                this.state.information
+            );
         } else {
-            request = {
-                courseName: this.state.code + '/' + this.state.year + this.state.semester,
-                description: this.state.shortDescription,
-
-                newStudents: arr,
-                newTAs: this.state.TAList,
-                newinstructors: this.state.instructorList,
-
-                minSize: this.state.minSize,
-                maxSize: this.state.maxSize,
-                groupFormationDate: date,
-            };
+            putCourseRequest(
+                this.props.match.params.courseId,
+                this.state.code,
+                this.state.semester,
+                this.state.year,
+                this.state.shortDescription,
+                this.state.information,
+                this.state.minSize,
+                this.state.maxSize
+            );
         }
 
-        putCourseRequest(
-            this.props.match.params.courseId,
-            this.state.code,
-            this.state.semester,
-            this.state.year,
-            this.state.courseInformation,
-            this.state.lockDate,
-            this.state.minSize,
-            this.state.maxSize
+        const idRequests = [];
+        const authList = this.state.instructorList.concat(this.state.TAList);
+        for (let i = 0; i < authList.length; i++) {
+            idRequests.push(getIdByEmailRequest(authList[i]));
+        }
+
+        axios.all(idRequests).then(
+            axios.spread((...responses) => {
+                for (let i = 0; i < responses.length; i++) {
+                    postCourseInstructorRequest(responses[i].data.data, this.props.match.params.courseId);
+                }
+            })
         );
 
-        console.log(request);
+        // for (let i = 0; i < this.state.studentAutoList.length; i++) {
+        //     let studentIdRequests = [];
+        //     for (let j = 0; j < this.state.studentAutoList[i].length; j++) {
+        //         studentIdRequests.push(getIdByEmailRequest(this.state.studentAutoList[i][j]));
+        //     }
+
+        //     axios.all(studentIdRequests).then(
+        //         axios.spread((...responses) => {
+        //             for (let k = 0; k < responses.length; k++) {
+        //                 postStudentToSectionRequest(responses[k].data.data, sections[i].id);
+        //             }
+        //         })
+        //     );
+        // }
     };
 
     deleteCourse = () => {
@@ -126,45 +146,21 @@ export class CourseSettings extends Component {
         postDeactivateCourseRequest(this.props.match.params.courseId);
     };
 
+    activateCourse = () => {
+        postActivateCourseRequest(this.props.match.params.courseId);
+    };
+
     removeUserFromCourse = (userMail) => {
-        const request = {
-            userMail: userMail,
-            courseId: this.props.match.params.courseId,
-            remove: true,
-        };
-
-        console.log(request);
+        getIdByEmailRequest(userMail).then((response) => {
+            const id = response.data.data;
+        });
     };
 
-    ungroup = (groupId) => {
-        const request = {
-            groupId: groupId,
-            courseId: this.props.match.params.courseId,
-            ungroup: true,
-        };
+    ungroup = (groupId) => {};
 
-        console.log(request);
-    };
+    removeStudent = (groupId, studentId) => {};
 
-    removeStudent = (groupId, studentId) => {
-        const request = {
-            groupId: groupId,
-            studentId: studentId,
-            remove: true,
-        };
-
-        console.log(request);
-    };
-
-    mergeGroup = (groupId, otherGroupId) => {
-        const request = {
-            groupId: groupId,
-            otherGroupId: otherGroupId,
-            merge: true,
-        };
-
-        console.log(request);
-    };
+    mergeGroup = (groupId, otherGroupId) => {};
 
     componentDidMount() {
         getCourseRequest(this.props.match.params.courseId).then((response) => {
@@ -188,8 +184,6 @@ export class CourseSettings extends Component {
                 });
             }
 
-            let date = courseData.lockDate;
-
             this.setState({
                 settingTitle:
                     'Course Settings ' + courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
@@ -197,9 +191,14 @@ export class CourseSettings extends Component {
                 year: courseData.year,
                 semester: courseData.courseSemester,
                 shortDescription: courseData.courseInformation,
+                information: courseData.courseDescription,
                 isSectionless: courseData.isSectionless,
                 isLocked: courseData.isLocked,
                 numberOfSections: numberOfSections,
+                minSize: courseData.minGroupSize,
+                maxSize: courseData.maxGroupSize,
+                isActive: courseData.isActive,
+
                 instructorList: [],
                 currentInstructor: '',
                 TAList: [],
@@ -210,14 +209,7 @@ export class CourseSettings extends Component {
                 studentAutoList: studentAutoList,
                 autoSection: 1,
                 groupChangeSection: 1,
-                minSize: courseData.minGroupSize,
-                maxSize: courseData.maxGroupSize,
-                groupFormationDate: date,
             });
-
-            //groups: dummyGroups,
-            //users: dummyUsers,
-            //sections: sections,
         });
     }
 
@@ -376,7 +368,6 @@ export class CourseSettings extends Component {
     };
 
     render() {
-        console.log(this.state.groups, this.state.groupChangeSection);
         return (
             <>
                 <Form className="SettingsForm" onSubmit={this.onFormSubmit} onKeyDown={this.onKeyDown}>
@@ -533,12 +524,6 @@ export class CourseSettings extends Component {
                                             value={this.state.maxSize}
                                             onChange={this.handleChange}
                                             type="number"></Input>
-                                        Group Formation Date
-                                        <Input
-                                            value={this.state.groupFormationDate}
-                                            type="datetime-local"
-                                            name="groupFormationDate"
-                                            onChange={this.handleChange}></Input>
                                     </div>
                                 </Form.Field>
                             </Form.Group>
@@ -553,13 +538,23 @@ export class CourseSettings extends Component {
                         style={{ marginLeft: '10px' }}
                         onClick={this.deleteCourse}
                     />
-                    <Button
-                        color="red"
-                        content="Deactivate Course"
-                        icon="exclamation"
-                        style={{ marginLeft: '10px' }}
-                        onClick={this.deactiveCourse}
-                    />
+                    {this.state.isActive ? (
+                        <Button
+                            color="red"
+                            content="Deactivate Course"
+                            icon="exclamation"
+                            style={{ marginLeft: '10px' }}
+                            onClick={this.deactiveCourse}
+                        />
+                    ) : (
+                        <Button
+                            color="red"
+                            content="Activate Course"
+                            icon="exclamation"
+                            style={{ marginLeft: '10px' }}
+                            onClick={this.activateCourse}
+                        />
+                    )}
                     <Divider />
                     <h2>Remove Instructors/TAs/Students From Course</h2>
                     <UserSearchBar users={this.state.users} removeUserFromCourse={this.removeUserFromCourse} />
@@ -588,7 +583,7 @@ export class CourseSettings extends Component {
                                 : null,
                             this.ungroup
                         )}
-                    {this.state.isLocked && (
+                    {this.state.isLocked && this.state.groups && (
                         <FormedGroupsBriefList
                             removeStudent={this.removeStudent}
                             mergeGroup={this.mergeGroup}

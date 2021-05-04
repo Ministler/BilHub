@@ -115,7 +115,6 @@ export class CourseCreation extends Component {
             if (!response.data.success) return;
             const data = response.data.data;
             const courseId = data.id;
-            const sections = data.sections;
 
             const idRequests = [];
             const authList = this.state.instructorList.concat(this.state.TAList);

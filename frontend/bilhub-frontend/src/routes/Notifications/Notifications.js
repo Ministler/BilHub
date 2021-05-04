@@ -13,6 +13,7 @@ import {
     getCourseRequest,
     putJoinRequest,
     putMergeRequest,
+    deleteJoinRequest,
 } from '../../API';
 import './Notifications.css';
 import {
@@ -61,17 +62,17 @@ class Notifications extends Component {
         });
         if (!isSuccess) return;
 
-        let request = 'error';
         if (modalType === 'isApprovalModalOpen' || modalType === 'isDisapprovalModalOpen') {
             let isApproved = false;
             if (modalType === 'isApprovalModalOpen') {
                 isApproved = true;
             }
 
-            request = {
-                requestId: this.state.currentRequestId,
-                isApproved: isApproved,
-            };
+            if (this.state.currentRequestType === 'Join') {
+                putJoinRequest(this.state.currentRequestId, isApproved);
+            } else if (this.state.currentRequestType === 'Merge') {
+                putMergeRequest(this.state.currentRequestId, isApproved);
+            }
         } else if (modalType === 'isUndoModalOpen') {
             if (this.state.currentRequestType === 'Join') {
                 putJoinRequest(this.state.currentRequestId, false);
@@ -79,10 +80,7 @@ class Notifications extends Component {
                 putMergeRequest(this.state.currentRequestId, false);
             }
         } else if (modalType === 'isDeleteModalOpen') {
-            request = {
-                requestId: this.state.currentRequestId,
-                deleteRequest: true,
-            };
+            deleteJoinRequest(this.state.currentRequestId);
         }
     };
 
@@ -215,7 +213,6 @@ class Notifications extends Component {
                                 request = {
                                     type: 'Join',
                                     requestId: req.id,
-                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
                                     yourGroup: myGroup,
                                     user: {
                                         userId: req.requestingStudent.id,
@@ -247,7 +244,6 @@ class Notifications extends Component {
                                 request = {
                                     type: 'Merge',
                                     requestId: req.id,
-                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
                                     yourGroup: myGroup,
                                     otherGroup: otherGroup,
                                     course: req.courseName,
@@ -271,7 +267,6 @@ class Notifications extends Component {
                                 request = {
                                     type: 'Join',
                                     requestId: req.id,
-                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
                                     yourGroup: myGroup,
                                     user: {
                                         userId: req.requestingStudent.id,
@@ -303,7 +298,6 @@ class Notifications extends Component {
                                 request = {
                                     type: 'Merge',
                                     requestId: req.id,
-                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
                                     yourGroup: myGroup,
                                     otherGroup: otherGroup,
                                     course: req.courseName,
@@ -318,7 +312,7 @@ class Notifications extends Component {
                     }
                     i++;
                 }
-
+                console.log(incomingRequests);
                 this.setState({
                     incomingRequests: incomingRequests,
                 });
@@ -332,9 +326,232 @@ class Notifications extends Component {
         axios.all(outgoingRequests).then(
             axios.spread((...responses) => {
                 let outgoingRequests = { pending: [], unresolved: [], resolved: [] };
+                let i = 0;
                 for (let response of responses) {
                     let data = response.data.data;
+                    for (let req of data) {
+                        let request = {};
+                        if (req.resolved) {
+                            if (i === 0) {
+                                let otherGroup = [];
+                                for (let member of req.requestedGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: 'Dissapproved',
+                                    otherGroup: otherGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            } else {
+                                let otherGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let myGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            }
+                            outgoingRequests.resolved.push(request);
+                        } else if (req.accepted) {
+                            let otherGroup = [];
+                            for (let member of req.requestedGroup.groupMembers) {
+                                otherGroup.push({
+                                    userId: member.id,
+                                    name: member.name,
+                                });
+                            }
+                            if (i === 0) {
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: 'Approved',
+                                    otherGroup: otherGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            } else {
+                                let otherGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let myGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: 'Approved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    approvalDate: req.createdAt,
+                                    message: req.description,
+                                };
+                            }
+                            outgoingRequests.resolved.push(request);
+                        } else if (req.currentUserVote) {
+                            if (i === 0) {
+                                let otherGroup = [];
+                                for (let member of req.requestedGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    otherGroup: otherGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            } else {
+                                let otherGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let myGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            }
+                            outgoingRequests.unresolved.push(request);
+                        } else {
+                            if (i === 0) {
+                                let otherGroup = [];
+                                for (let member of req.requestedGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Join',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    yourGroup: otherGroup,
+                                    user: {
+                                        userId: req.requestingStudent.id,
+                                        name: req.requestingStudent.name,
+                                    },
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            } else {
+                                let otherGroup = [];
+                                for (let member of req.receiverGroup.groupMembers) {
+                                    otherGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                let myGroup = [];
+                                for (let member of req.senderGroup.groupMembers) {
+                                    myGroup.push({
+                                        userId: member.id,
+                                        name: member.name,
+                                    });
+                                }
+
+                                request = {
+                                    type: 'Merge',
+                                    requestId: req.id,
+                                    status: req.isAccepted ? 'Approved' : 'Dissapproved',
+                                    yourGroup: myGroup,
+                                    otherGroup: otherGroup,
+                                    course: req.courseName,
+                                    requestDate: req.createdAt,
+                                    formationDate: req.lockDate,
+                                    message: req.description,
+                                    voteStatus: req.votedStudents.split(' ').length,
+                                };
+                            }
+                            outgoingRequests.pending.push(request);
+                        }
+                    }
+                    i++;
                 }
+
+                this.setState({
+                    outgoingRequests: outgoingRequests,
+                });
             })
         );
 

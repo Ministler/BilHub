@@ -43,6 +43,7 @@ export {
     getInstructedCoursesRequest,
     postDeactivateCourseRequest,
     getCourseAssignmentRequest,
+    postActivateCourseRequest,
     postLockCourseRequest,
 } from './courseAPI';
 export { getSectionRequest, deleteStudentFromSectionRequest, postStudentToSectionRequest } from './sectionAPI';
@@ -62,6 +63,7 @@ export {
     postJoinRequest,
     putMergeRequest,
     putJoinRequest,
+    deleteJoinRequest,
 } from './requestAPI';
 export {
     deleteSubmissionRequest,

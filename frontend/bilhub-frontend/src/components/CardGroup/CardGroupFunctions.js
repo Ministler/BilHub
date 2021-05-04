@@ -1,5 +1,5 @@
 import { Card, Icon, Button } from 'semantic-ui-react';
-import { dateObjectToString } from '../../utils';
+import { dateObjectToString, convertDate } from '../../utils';
 import { convertMembersToMemberElement } from '../BriefList';
 
 import { AssignmentCardElement, FeedbackCardElement, RequestCardElement } from './CardGroupUI';
@@ -17,17 +17,17 @@ export const convertAssignmentsToAssignmentList = (
         const date =
             'Publishment Date: ' +
             (typeof assignment.publishmentDate === 'object'
-                ? dateObjectToString(assignment.publishmentDate)
-                : assignment.publishmentDate) +
+                ? convertDate(dateObjectToString(assignment.publishmentDate))
+                : convertDate(assignment.publishmentDate)) +
             ' / Due Date: ' +
-            (typeof assignment.dueDate === 'object' ? dateObjectToString(assignment.dueDate) : assignment.dueDate);
+            (typeof assignment.dueDate === 'object' ? convertDate(dateObjectToString(assignment.dueDate)) : convertDate(assignment.dueDate));
 
         let statusIcon = null;
-        if (assignment.status === 'graded') {
+        if (assignment.status === 1 || assignment.status === 4) {
             statusIcon = <Icon name="check circle outline" style={{ marginLeft: '5px' }} color="blue" />;
-        } else if (assignment.status === 'submitted') {
+        } else if (assignment.status === 2 || assignment.status === 5) {
             statusIcon = <Icon name="clock outline" style={{ marginLeft: '5px', color: 'rgb(251, 178, 4)' }} />;
-        } else if (assignment.status === 'notsubmitted') {
+        } else if (assignment.status === 3) {
             statusIcon = <Icon name="remove circle" style={{ marginLeft: '5px' }} color="red" />;
         }
 
@@ -62,7 +62,7 @@ export const convertAssignmentsToAssignmentList = (
 
         return (
             <AssignmentCardElement
-                title={assignment.title}
+                title={ assignment.publisher + " / " + assignment.title}
                 titleIcon={statusIcon || assignmentIcons}
                 titleClicked={onAssignmentClickedId}
                 caption={assignment.caption}
@@ -70,7 +70,7 @@ export const convertAssignmentsToAssignmentList = (
                 fileClicked={() =>
                     onAssignmentFileClicked(assignment.submissionId ? assignment.submissionId : assignment.assignmentId)
                 }
-                date={date}
+                date={convertDate(date)}
                 publisher={assignment.publisher}
             />
         );
@@ -119,7 +119,7 @@ export const convertNewFeedbacksToFeedbackList = (newFeedbacks, onSubmissionClic
                     titleElement={titleElement}
                     caption={feedback.feedback?.caption}
                     grade={feedback.feedback?.grade}
-                    date={feedback.feedback?.date}
+                    date={convertDate(feedback.feedback?.date)}
                 />
             );
         })
@@ -179,7 +179,7 @@ export const convertFeedbacksToFeedbackList = (
                     onFeedbackFileClicked={() => onFeedbackFileClicked(feedback.commentId)}
                     grade={feedback.grade ? feedback.grade : 'Grade is anonymous'}
                     maxGrade={feedback?.maxGrade}
-                    date={feedback.date}
+                    date={convertDate(feedback.date)}
                     icons={icons}
                     onAuthorClicked={() => onAuthorClicked(feedback.userId)}
                 />
@@ -251,7 +251,7 @@ export const convertSRSFeedbackToSRSCardElement = (
                     onAuthorClicked={() => onAuthorClicked(SRSResult.userId)}
                     caption={SRSResult.caption}
                     grade={SRSResult.grade}
-                    date={SRSResult.date}
+                    date={convertDate(SRSResult.date)}
                     icons={icons}
                     maxGrade={SRSResult.maxGrade}
                     isSrs={true}
@@ -480,10 +480,10 @@ export const convertRequestsToRequestsList = (
                             otherGroup={otherGroup}
                             voteStatus={request.voteStatus}
                             voteIcons={voteIcons}
-                            requestDate={request.requestDate}
-                            formationDate={request.formationDate}
-                            approvalDate={request.approvalDate}
-                            disapprovalDate={request.disapprovalDate}
+                            requestDate={convertDate(request.requestDate)}
+                            formationDate={convertDate(request.formationDate)}
+                            approvalDate={convertDate(request.approvalDate)}
+                            disapprovalDate={convertDate(request.disapprovalDate)}
                             onUserClicked={() => onUserClicked(userId)}
                         />
                     );

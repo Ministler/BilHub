@@ -4,3 +4,4 @@ export { postJoinRequest } from './joinRequestPOST';
 export { postMergeRequest } from './mergeRequestPOST';
 export { putJoinRequest } from './joinRequestPUT';
 export { putMergeRequest } from './mergeRequestPUT';
+export { deleteJoinRequest } from './joinRequestDELETE';
