@@ -454,6 +454,7 @@ namespace backend.Services.AssignmentServices
                                         fileEndpoint = "Assignment/File/" + s.AffiliatedAssignment.Id,
                                         projectId = pg.Id,
                                         submissionId = s.Id,
+                                        fileName = s.AffiliatedAssignment.HasFile ? s.AffiliatedAssignment.FilePath.Split('/').Last() : "",
                                         assignmentId = s.AffiliatedAssignmentId
                                     }
                                 );
@@ -489,6 +490,7 @@ namespace backend.Services.AssignmentServices
                                     publishmentDate = a.CreatedAt,
                                     dueDate = a.DueDate,
                                     hasFile = a.HasFile,
+                                    fileName = a.HasFile ? a.FilePath.Split('/').Last() : "",
                                     fileEndpoint = "Assignment/File/" + a.Id,
                                     courseId = c.Id,
                                     assignmentId = a.Id

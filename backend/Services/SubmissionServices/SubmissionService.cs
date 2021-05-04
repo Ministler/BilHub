@@ -270,7 +270,7 @@ namespace backend.Services.SubmissionServices
                 return response;
             }
             response.Data = _context.Submissions.Include(s => s.AffiliatedAssignment)
-                .Where(s => !s.IsGraded && s.AffiliatedAssignment.IsItGraded).Select(s => s.FilePath);
+                .Where(s => !s.IsGraded && s.AffiliatedAssignment.IsItGraded && s.HasFile).Select(s => s.FilePath);
             return response;
         }
 
