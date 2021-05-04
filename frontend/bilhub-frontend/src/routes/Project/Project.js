@@ -965,12 +965,7 @@ class Project extends Component {
                         {!this.props.match.params.submissionId ? (
                             <Tab tabPanes={this.getPaneElements()} />
                         ) : (
-                            <ProjectSubmission
-                                projectName={this.state.projectGroup?.name}
-                                projectId={this.props.match.params.projectId}
-                                submissionId={this.props.match.params.submissionId}
-                                userId={this.props.userId}
-                            />
+                            <ProjectSubmission projectName={this.state.projectGroup?.name} />
                         )}
                     </div>
                 </Grid.Row>

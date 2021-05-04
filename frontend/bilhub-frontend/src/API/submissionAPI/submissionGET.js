@@ -82,8 +82,8 @@ export const getSubmissionStudentCommentsRequest = async (submissionId) => {
         });
 };
 
-export const getSubmissionSrsGradeRequest = async (submissionId, graderId) => {
-    const url = 'Grade/' + submissionId + '/' + graderId;
+export const getSubmissionSrsGradeRequest = async (submissionId) => {
+    const url = 'SrsGrade/' + submissionId;
 
     return authAxios
         .get(BASE_SUBMISSION_URL + url)

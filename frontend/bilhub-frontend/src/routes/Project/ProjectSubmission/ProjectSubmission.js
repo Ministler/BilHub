@@ -243,7 +243,7 @@ class ProjectAssignment extends Component {
                 feedbackRequests.push(getSubmissionInstructorCommentsRequest(this.state.submission?.submissionId));
                 feedbackRequests.push(getSubmissionTACommentsRequest(this.state.submission?.submissionId));
                 feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission?.submissionId));
-                //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
+                //feedbackRequests.push(getSubmissionSrsGradeRequest(this.props.match.params.submissionId));
                 const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
 
                 axios.all(feedbackRequests).then(
@@ -325,7 +325,7 @@ class ProjectAssignment extends Component {
     }
 
     onReturnProjectPage = () => {
-        this.props.history.replace('/project/' + this.props.projectId);
+        this.props.history.replace('/project/' + this.props.match.params.projectId);
     };
 
     onSubmissionModalOpened = (modalType) => {
@@ -712,7 +712,7 @@ class ProjectAssignment extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return { userId: state.userId, token: state.token };
+    return { userId: state.userId };
 };
 
 export default withRouter(connect(mapStateToProps)(ProjectAssignment));
