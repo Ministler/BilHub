@@ -74,6 +74,8 @@ export {
     postSubmissionFileRequest,
     putSubmissionRequest,
     postSubmissionSrsGradeRequest,
+    getUngradedSubmissionFileRequest,
+    getSubmissionFileOfSectionRequest,
 } from './submissionAPI';
 
 export { putPeerGradeRequest } from './peerGradeAPI';

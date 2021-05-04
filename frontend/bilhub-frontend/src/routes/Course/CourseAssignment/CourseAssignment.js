@@ -8,6 +8,8 @@ import {
     getSubmissionRequest,
     getAssignmentStatisticsRequest,
     getSubmissionFileRequest,
+    getUngradedSubmissionFileRequest,
+    getSubmissionFileOfSectionRequest,
 } from '../../../API';
 import './CourseAssignment.css';
 import { AssignmentCardElement, Tab, getSubmissionsAsAccordion, getAssignmentStatistics } from '../../../components';
@@ -33,11 +35,11 @@ class CourseAssignment extends Component {
     };
 
     onDownloadAllFiles = () => {
-        console.log('File');
+        getSubmissionFileOfSectionRequest(this.props.match.params.courseId, -1, this.props.match.params.assignmentId);
     };
 
     onDownloadNotGradedFiles = () => {
-        console.log('file');
+        getUngradedSubmissionFileRequest(this.props.match.params.courseId);
     };
 
     componentDidMount() {
@@ -45,7 +47,6 @@ class CourseAssignment extends Component {
             if (!response.data.success) return;
 
             const data = response.data.data;
-
             const assignment = {
                 title: data.title,
                 caption: data.assignmentDescription,
@@ -134,7 +135,7 @@ class CourseAssignment extends Component {
 
     getAssignmentControlIcons = () => {
         let controlIcons = null;
-        if (this.props.isTAorInstructorOfCourse) {
+        if (this.props.isUserTAorInstructor) {
             controlIcons = (
                 <>
                     <Icon
@@ -257,7 +258,7 @@ class CourseAssignment extends Component {
                         Download All Files <Icon name="download" />
                     </Button>
                     <Button color="green" compact onClick={this.onDownloadNotGradedFiles} icon labelPosition="right">
-                        Donwload Only Not Graded Files <Icon name="download" />
+                        Download Not Graded Files <Icon name="download" />
                     </Button>
                 </>
             );

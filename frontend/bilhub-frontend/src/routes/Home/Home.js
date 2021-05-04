@@ -145,8 +145,8 @@ class Home extends Component {
         this.props.history.push('course/' + courseId + '/assignment/' + assignmentId);
     };
 
-    onFeedFileClicked = (assignmentId) => {
-        getAssignmentFileRequest(assignmentId);
+    onFeedFileClicked = (assignmentId, fileName) => {
+        getAssignmentFileRequest(assignmentId, fileName);
     };
 
     test = () => {
