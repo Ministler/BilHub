@@ -92,13 +92,14 @@ class Course extends Component {
             this.state.courseInformation.name,
             this.state.courseInformation.courseSemester,
             this.state.courseInformation.year,
+            newInformation,
             this.state.courseInformation.description,
             this.state.courseInformation.lockDate,
             this.state.courseInformation.minGroupSize,
             this.state.courseInformation.maxGroupSize,
-            newInformation
+            this.state.courseInformation.isActive,
+            this.state.courseInformation.isLocked
         );
-        this.setState({ courseInformation: newInformation });
     };
 
     onAssignmentFileClicked = (assignmentId, fileName) => {
@@ -150,17 +151,19 @@ class Course extends Component {
 
             const courseData = response.data?.data;
             console.log(courseData);
+            const TAs = instructerTypeSplitgeTAs(courseData?.instructors);
+            const Ins = instructerTypeSplitInstructers(courseData?.instructors);
             const courseInformation = {
                 name: courseData?.name,
                 year: courseData?.year,
                 courseSemester: courseData?.courseSemester,
                 courseName: courseData?.name + '-' + courseData?.year + courseData?.courseSemester,
-                description: courseData?.courseInformation,
+                description: courseData.courseDescription,
                 instructors: courseData?.instructors,
                 formationDate: courseData?.lockDate,
                 numberOfSections: courseData?.numberOfSections,
                 isCourseActive: courseData?.isActive,
-                information: courseData.courseDescription,
+                information: courseData?.courseInformation,
                 isLocked: courseData.isLocked,
                 lockDate: courseData.lockDate,
                 currentUserSection: courseData.currentUserSectionId,
@@ -169,8 +172,9 @@ class Course extends Component {
                 isUserAlone: courseData.isUserAlone,
                 minGroupSize: courseData.minGroupSize,
                 maxGroupSize: courseData.maxGroupSize,
+                TAs: TAs,
+                Ins: Ins,
             };
-
             this.setState({
                 currentPeerReviewSections: courseData.sections,
                 courseInformation: courseInformation,
@@ -417,6 +421,7 @@ class Course extends Component {
     getCourseInformationItem = () => {
         let courseInformationElement = this.state.courseInformation?.information;
         if (this.state.informationEditMode) {
+            console.log(this.state.newInformation);
             courseInformationElement = (
                 <TextArea
                     className="InformationText"
@@ -437,6 +442,9 @@ class Course extends Component {
                     onClick={() => {
                         this.changeCourseInformation(this.state.newInformation);
                         this.onEditModeToggled('informationEditMode');
+                        let CI = { ...this.state.courseInformation };
+                        CI.information = this.state.newInformation;
+                        this.setState({ courseInformation: CI });
                     }}
                     name={'check'}
                     color="blue"
@@ -446,6 +454,7 @@ class Course extends Component {
                 <Icon
                     className="clickableChangeColor"
                     onClick={() => {
+                        this.setState({ newInformation: this.state.courseInformation.information });
                         this.onEditModeToggled('informationEditMode');
                     }}
                     name={'edit'}
@@ -488,8 +497,8 @@ class Course extends Component {
                 courseName={this.state.courseInformation?.courseName}
                 description={this.state.courseInformation?.description}
                 courseSettingsIcon={this.getCourseSettingsIcon()}
-                instructors={this.state.courseInformation?.instructors}
-                TAs={this.state.courseInformation?.instructors}
+                Ins={this.state.courseInformation?.Ins}
+                TAs={this.state.courseInformation?.TAs}
                 informationEditIcon={this.getInformationEditIcon()}
                 informationElement={this.getCourseInformationItem()}
                 onUserClicked={this.onUserClicked}
@@ -586,7 +595,8 @@ class Course extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getCourseStatistics(this.state.courseGrades, this.state.finalGrades)} </>,
+            content:
+                'Not Implemented Yet' /*  <>{getCourseStatistics(this.state.courseGrades, this.state.finalGrades)} </>,*/,
         };
     };
 

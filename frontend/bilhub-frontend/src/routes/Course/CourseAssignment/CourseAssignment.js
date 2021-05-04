@@ -240,7 +240,7 @@ class CourseAssignment extends Component {
     getStatisticsPane = () => {
         return {
             title: 'Statistics',
-            content: <>{getAssignmentStatistics(dummyAssignmentGrades, dummyFinalGrades)}</>,
+            content: 'Not Implemented Yet' /*<>{getAssignmentStatistics(dummyAssignmentGrades, dummyFinalGrades)}</>*/,
         };
     };
 

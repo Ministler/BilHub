@@ -312,9 +312,9 @@ class Project extends Component {
                 const grades = {
                     persons: persons,
                     studentAvg: studentAvg,
-                    projectAverage: projectAverage,
-                    courseAverage: studentAvg,
-                    finalGrade: 40, //kendim belirledim
+                    projectAverage: projectAverage.toFixed(2),
+                    courseAverage: studentAvg.toFixed(2),
+                    finalGrade: 40,
                 };
                 this.setState({ feedbacks: feedbacks, grades: grades });
             })
