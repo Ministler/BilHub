@@ -49,6 +49,7 @@ export const MemberBriefElement = (props) => {
 };
 
 export const SubmissionBriefElement = (props) => {
+    console.log(props.submission?.hasFile);
     return (
         <div style={{ marginTop: '10px', marginLeft: '25px' }}>
             <span onClick={props.onSubmissionPageClicked} style={{ fontWeight: 'bold' }}>

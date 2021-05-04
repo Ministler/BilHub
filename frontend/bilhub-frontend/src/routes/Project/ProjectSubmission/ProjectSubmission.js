@@ -105,15 +105,11 @@ class ProjectAssignment extends Component {
     };
 
     onAssignmentFileClicked = () => {
-        getAssignmentFileRequest(this.props.match.params.submissionId).then((response) => {
-            if (!response.data.success) return;
-        });
+        getAssignmentFileRequest(this.state.assignment.id, this.state.assignment.fileName);
     };
 
     onSubmissionFileClicked = () => {
-        getSubmissionFileRequest(this.state.submission.submissionId).then((response) => {
-            if (!response.data.success) return;
-        });
+        getSubmissionFileRequest(this.state.submission.submissionId);
     };
 
     onSubmissionFileChange = (file) => {
@@ -207,16 +203,18 @@ class ProjectAssignment extends Component {
                     title: curSubmission.affiliatedAssignment.title,
                     id: curSubmission.affiliatedAssignment.id,
                     status: status,
+                    hasFile: curSubmission.affiliatedAssignment.hasFile,
+                    fileName: curSubmission.affiliatedAssignment.fileName,
+
                     caption: curSubmission.affiliatedAssignment.assignmentDescription,
                     publisher: curSubmission.affiliatedAssignment.publisher,
                     publishmentDate: inputDateToDateObject(curSubmission.affiliatedAssignment.createdAt),
                     dueDate: inputDateToDateObject(curSubmission.affiliatedAssignment.dueDate),
-                    file: curSubmission.affiliatedAssignment.hasFile ? curSubmission.affiliatedAssignment.fileName : '',
                     submissionInfo: '',
                 };
                 const submission = {
                     caption: curSubmission.description,
-                    file: curSubmission.fileName,
+                    hasFile: curSubmission.hasFile,
                     date: inputDateToDateObject(curSubmission.updatedAt),
                     submissionId: curSubmission.id,
                 };
@@ -237,10 +235,10 @@ class ProjectAssignment extends Component {
                     isEdittable: true, //ask
                 };
                 this.setState({ assignment: assignment, submissionPage: page, submission: submission });
-                console.log(this.state.submission.submissionId);
-                feedbackRequests.push(getSubmissionInstructorCommentsRequest(this.state.submission.submissionId));
-                feedbackRequests.push(getSubmissionTACommentsRequest(this.state.submission.submissionId));
-                feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission.submissionId));
+                console.log(this.state.submission?.submissionId);
+                feedbackRequests.push(getSubmissionInstructorCommentsRequest(this.state.submission?.submissionId));
+                feedbackRequests.push(getSubmissionTACommentsRequest(this.state.submission?.submissionId));
+                feedbackRequests.push(getSubmissionStudentCommentsRequest(this.state.submission?.submissionId));
                 //feedbackRequests.push(getSubmissionSrsGradeRequest()) graderi nasil alirim dusun
                 const feedbacks = { InstructorComments: [], TAComments: [], StudentComments: [] };
                 axios.all(feedbackRequests).then(

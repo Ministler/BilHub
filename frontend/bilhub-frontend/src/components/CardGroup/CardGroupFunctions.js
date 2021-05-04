@@ -20,7 +20,9 @@ export const convertAssignmentsToAssignmentList = (
                 ? convertDate(dateObjectToString(assignment.publishmentDate))
                 : convertDate(assignment.publishmentDate)) +
             ' / Due Date: ' +
-            (typeof assignment.dueDate === 'object' ? convertDate(dateObjectToString(assignment.dueDate)) : convertDate(assignment.dueDate));
+            (typeof assignment.dueDate === 'object'
+                ? convertDate(dateObjectToString(assignment.dueDate))
+                : convertDate(assignment.dueDate));
 
         let statusIcon = null;
         if (assignment.status === 1 || assignment.status === 4) {
@@ -62,7 +64,7 @@ export const convertAssignmentsToAssignmentList = (
 
         return (
             <AssignmentCardElement
-                title={ assignment.publisher + " / " + assignment.title}
+                title={assignment.publisher + ' / ' + assignment.title}
                 titleIcon={statusIcon || assignmentIcons}
                 titleClicked={onAssignmentClickedId}
                 caption={assignment.caption}
@@ -480,10 +482,10 @@ export const convertRequestsToRequestsList = (
                             otherGroup={otherGroup}
                             voteStatus={request.voteStatus}
                             voteIcons={voteIcons}
-                            requestDate={convertDate(request.requestDate)}
-                            formationDate={convertDate(request.formationDate)}
-                            approvalDate={convertDate(request.approvalDate)}
-                            disapprovalDate={convertDate(request.disapprovalDate)}
+                            requestDate={request.requestDate}
+                            formationDate={request.formationDate}
+                            approvalDate={request.approvalDate}
+                            disapprovalDate={request.disapprovalDate}
                             onUserClicked={() => onUserClicked(userId)}
                         />
                     );

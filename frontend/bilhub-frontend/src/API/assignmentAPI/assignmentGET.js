@@ -1,13 +1,13 @@
 import { authAxios, BASE_ASSIGNMENT_URL } from '../axiosConfigs';
 import FileDownload from 'js-file-download';
 
-export const getAssignmentFileRequest = async (assignmentId) => {
+export const getAssignmentFileRequest = async (assignmentId, fileName) => {
     const url = 'File/' + assignmentId;
-
+    console.log(fileName);
     return authAxios
         .get(BASE_ASSIGNMENT_URL + url, { responseType: 'blob' })
         .then((response) => {
-            FileDownload(response.data, 'file.pdf');
+            FileDownload(response.data, fileName);
         })
         .catch((error) => {
             throw error;

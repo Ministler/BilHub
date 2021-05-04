@@ -29,7 +29,7 @@ class CourseAssignment extends Component {
     };
 
     onFileClicked = () => {
-        getAssignmentFileRequest(this.props.match.params.assignmentId);
+        getAssignmentFileRequest(this.props.match.params.assignmentId, this.state.assignment.fileName);
     };
 
     onDownloadAllFiles = () => {
@@ -51,6 +51,7 @@ class CourseAssignment extends Component {
                 caption: data.assignmentDescription,
                 publisher: data.publisher,
                 hasFile: data.hasFile,
+                fileName: data.fileName,
                 isUserTAorInstructor: this.props.isUserTAorInstructor,
                 publishmentDate: data.createdAt,
                 dueDate: data.dueDate,
@@ -109,7 +110,7 @@ class CourseAssignment extends Component {
                             });
                         }
                     }
-
+                    console.log(submission);
                     this.setState({
                         submissions: submission,
                     });
