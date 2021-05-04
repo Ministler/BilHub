@@ -57,3 +57,4 @@ export const BASE_PEER_GRADE_URL = 'PeerGrade/';
 export const BASE_PROJECT_GRADE_URL = 'ProjectGrade/';
 export const BASE_PROJECT_GROUP_URL = 'ProjectGroup/';
 export const BASE_SUBMISSION_URL = 'Submission/';
+export const BASE_PEER_GRADE_ASSIGNMENT_URL = 'PeerGradeAssignment/';
